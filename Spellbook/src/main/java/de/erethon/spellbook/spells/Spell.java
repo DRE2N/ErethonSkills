@@ -18,16 +18,33 @@ public class Spell extends YamlConfiguration {
     Spellbook spellbook;
     SpellQueue queue;
     private int cooldown;
+    private String id;
     private String name;
     private List<String> description = new ArrayList<>();
 
-    public Spell(Spellbook spellbook) {
+    public Spell(Spellbook spellbook, String id) {
         this.spellbook = spellbook;
         queue = spellbook.getQueue();
     }
 
-    public void queue(SpellCaster caster) {
-         queue.addToQueue(new ActiveSpell(caster, this));
+    public ActiveSpell queue(SpellCaster caster) {
+         ActiveSpell activeSpell = new ActiveSpell(caster, this);
+         queue.addToQueue(activeSpell);
+         return activeSpell;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public List<String> getDescription() {
+        return description;
     }
 
     public int getCooldown() {

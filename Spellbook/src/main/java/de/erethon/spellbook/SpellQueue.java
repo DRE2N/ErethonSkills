@@ -18,9 +18,9 @@ public class SpellQueue extends BukkitRunnable {
     @Override
     public void run() {
         int i = 0;
-        for (ActiveSpell skill : queue) {
-            skill.cast();
-            queue.remove(skill);
+        for (ActiveSpell spell : queue) {
+            spell.cast();
+            queue.remove(spell);
             i++;
             if (i >= 5) {
                 break;
@@ -28,8 +28,9 @@ public class SpellQueue extends BukkitRunnable {
         }
     }
 
-    public void addToQueue(ActiveSpell spell) {
+    public ActiveSpell addToQueue(ActiveSpell spell) {
         queue.add(spell);
+        return spell;
     }
 
 }

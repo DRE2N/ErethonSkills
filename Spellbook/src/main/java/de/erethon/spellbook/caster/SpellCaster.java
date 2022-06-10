@@ -11,7 +11,7 @@ public abstract class SpellCaster {
 
     Spellbook spellbook;
     LivingEntity entity;
-    Map<Spell, Double> spells = new LinkedHashMap<>();
+    Map<Spell, Double> usedSpells = new LinkedHashMap<>();
 
     public SpellCaster(Spellbook spellbook, LivingEntity entity) {
         this.spellbook = spellbook;
@@ -26,7 +26,7 @@ public abstract class SpellCaster {
     }
 
     public boolean canCast(Spell spell) {
-        double time = spells.get(spell);
+        double time = usedSpells.get(spell);
         double skillCD = spell.getCooldown();
         double now = System.currentTimeMillis();
         return now - time > (skillCD * 1000);
@@ -34,7 +34,7 @@ public abstract class SpellCaster {
 
     public void setCooldown(Spell skill) {
         double now = System.currentTimeMillis();
-        spells.put(skill, now);
+        usedSpells.put(skill, now);
     }
 
     public LivingEntity getEntity() {
