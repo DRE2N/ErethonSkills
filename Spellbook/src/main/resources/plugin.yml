@@ -1,4 +1,0 @@
-name: Spellbook
-version: ${project.version}
-main: de.erethon.spellbook.Spellbook
-api-version: 1.16

@@ -20,7 +20,6 @@ public class Spell extends YamlConfiguration {
     private int cooldown;
     private String name;
     private List<String> description = new ArrayList<>();
-    private
 
     public Spell(Spellbook spellbook) {
         this.spellbook = spellbook;
