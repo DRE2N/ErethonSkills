@@ -37,7 +37,7 @@ public final class Hecate extends EPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+
     }
 
     public Spellbook getSpellbook() {

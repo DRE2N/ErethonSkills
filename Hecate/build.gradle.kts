@@ -1,20 +1,29 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 
 repositories {
-    maven("https://erethon.de/repo")
-    maven("https://repo.dmulloy2.net/repository/public/")
+    mavenLocal()
+    mavenCentral()
+    maven("https://oss.sonatype.org/content/groups/public/")
+    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://ci.emc.gs/nexus/content/groups/aikar/")
+    maven("https://repo.aikar.co/content/groups/aikar")
+    maven("https://repo.md-5.net/content/repositories/releases/")
+    maven("https://hub.spigotmc.org/nexus/content/groups/public/")
+    maven("https://jitpack.io")
+    maven("https://repo.purpurmc.org/snapshots") // for mojang api
+    //maven("https://erethon.de/repo")
 }
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "1.3.6-SNAPSHOT"
+    id("io.papermc.paperweight.userdev") version "1.3.8-SNAPSHOT"
     id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
 }
 
-group = "de.erethon.hecate"
-version = "1.0."
+group = "de.erethon"
+version = "1.0-SNAPSHOT"
 description = "Spell plugin for Erethon"
 
 java {
@@ -22,7 +31,8 @@ java {
 }
 
 dependencies {
-    paperDevBundle("1.18.2-R0.1-SNAPSHOT")
+    paperweightDevBundle("de.erethon.papyrus", "1.19")
+    //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
     implementation("de.erethon:bedrock:1.2.0") { isTransitive = false }
     implementation(project(":Spellbook"))
     //compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
@@ -32,7 +42,6 @@ dependencies {
 tasks {
     assemble {
         dependsOn(reobfJar)
-        dependsOn(shadowJar)
     }
 
     compileJava {
