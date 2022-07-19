@@ -3,7 +3,7 @@ package de.erethon.hecate.commands;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.PlayerCaster;
+import de.erethon.hecate.casting.HPlayer;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.spells.ActiveSpell;
 import de.erethon.spellbook.spells.Spell;
@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 
 public class SkillCommand extends ECommand {
 
-    private Spellbook spellbook = Hecate.getInstance().getSpellbook();
+    private final Spellbook spellbook = Hecate.getInstance().getSpellbook();
 
     public SkillCommand() {
         setCommand("skill");
@@ -27,14 +27,14 @@ public class SkillCommand extends ECommand {
 
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
-        PlayerCaster caster = new PlayerCaster(spellbook, (Player) commandSender);
+        HPlayer player = new HPlayer(spellbook, (Player) commandSender);
         Spell spell = spellbook.getLibrary().getSpellByID(args[0]);
 
         if (spell == null) {
             MessageUtil.sendMessage(commandSender, "Invalid spell.");
             return;
         }
-        ActiveSpell activeSpell = spell.queue(caster);
+        ActiveSpell activeSpell = spell.queue(player.getCaster());
         MessageUtil.log("Spell " + activeSpell.getSpell().getId() + " (" + activeSpell.getUuid() + ") queued.");
     }
 }

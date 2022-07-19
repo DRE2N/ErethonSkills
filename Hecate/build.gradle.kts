@@ -32,7 +32,7 @@ java {
 dependencies {
     paperweightDevBundle("de.erethon.papyrus", "1.19-R1")
     //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
-    implementation("de.erethon:bedrock:1.2.0") { isTransitive = false }
+    implementation("de.erethon:bedrock:1.2.3") { isTransitive = false }
     implementation(project(":Spellbook"))
     //compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
 }
@@ -53,7 +53,7 @@ tasks {
 
     shadowJar {
         dependencies {
-            include(dependency("de.erethon:bedrock:1.2.0"))
+            include(dependency("de.erethon:bedrock:1.2.3"))
             include(project(":Spellbook"))
         }
         relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
@@ -62,7 +62,7 @@ tasks {
         load = BukkitPluginDescription.PluginLoadOrder.STARTUP
         main = "de.erethon.hecate.Hecate"
         apiVersion = "1.18"
-        authors = listOf("Malfrador")
+        authors = listOf("Malfrador", "Fyreum")
         commands {
             register("hecate") {
                 description = "Main command for Hecate"

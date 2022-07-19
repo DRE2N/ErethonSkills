@@ -10,9 +10,9 @@ import java.io.File;
 public class Spellbook {
     private static Spellbook instance;
     public static File SPELLS;
-    private SpellQueue queue;
-    private SpellLibrary library;
-    private Plugin implementingPlugin;
+    private final SpellQueue queue;
+    private final SpellLibrary library;
+    private final Plugin implementingPlugin;
 
     public Spellbook(Plugin plugin) {
         instance = this;
