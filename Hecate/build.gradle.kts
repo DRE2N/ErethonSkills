@@ -10,8 +10,7 @@ repositories {
     maven("https://repo.md-5.net/content/repositories/releases/")
     maven("https://hub.spigotmc.org/nexus/content/groups/public/")
     maven("https://jitpack.io")
-    maven("https://repo.purpurmc.org/snapshots") // for mojang api
-    //maven("https://erethon.de/repo")
+    maven("https://erethon.de/repo")
 }
 plugins {
     `java-library`
@@ -31,7 +30,7 @@ java {
 }
 
 dependencies {
-    paperweightDevBundle("de.erethon.papyrus", "1.19")
+    paperweightDevBundle("de.erethon.papyrus", "1.19-R1")
     //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
     implementation("de.erethon:bedrock:1.2.0") { isTransitive = false }
     implementation(project(":Spellbook"))
