@@ -11,7 +11,11 @@ import de.erethon.spellbook.spells.Spell;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HPlayer extends EConfig implements LoadableUser {
