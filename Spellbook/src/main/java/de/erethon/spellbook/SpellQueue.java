@@ -19,7 +19,7 @@ public class SpellQueue extends BukkitRunnable {
     public void run() {
         int i = 0;
         for (ActiveSpell spell : queue) {
-            spell.cast();
+            spell.ready();
             queue.remove(spell);
             i++;
             if (i >= 5) {

@@ -4,7 +4,6 @@ import de.erethon.spellbook.SpellQueue;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.caster.SpellCaster;
 import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Spell extends YamlConfiguration {
+public abstract class SpellData extends YamlConfiguration {
     Spellbook spellbook;
     SpellQueue queue;
     private int cooldown;
@@ -22,8 +21,9 @@ public class Spell extends YamlConfiguration {
     private String name;
     private List<String> description = new ArrayList<>();
 
-    public Spell(Spellbook spellbook, String id) {
+    public SpellData(Spellbook spellbook, String id) {
         this.spellbook = spellbook;
+        this.id = id;
         queue = spellbook.getQueue();
     }
 

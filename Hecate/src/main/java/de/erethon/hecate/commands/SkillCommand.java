@@ -6,7 +6,7 @@ import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.spells.ActiveSpell;
-import de.erethon.spellbook.spells.Spell;
+import de.erethon.spellbook.spells.SpellData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -28,13 +28,13 @@ public class SkillCommand extends ECommand {
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         HPlayer player = new HPlayer(spellbook, (Player) commandSender);
-        Spell spell = spellbook.getLibrary().getSpellByID(args[0]);
+        SpellData spellData = spellbook.getLibrary().getSpellByID(args[0]);
 
-        if (spell == null) {
+        if (spellData == null) {
             MessageUtil.sendMessage(commandSender, "Invalid spell.");
             return;
         }
-        ActiveSpell activeSpell = spell.queue(player.getCaster());
+        ActiveSpell activeSpell = spellData.queue(player.getCaster());
         MessageUtil.log("Spell " + activeSpell.getSpell().getId() + " (" + activeSpell.getUuid() + ") queued.");
     }
 }

@@ -7,7 +7,7 @@ import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.caster.SpellCaster;
-import de.erethon.spellbook.spells.Spell;
+import de.erethon.spellbook.spells.SpellData;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
@@ -24,8 +24,8 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     private Player player;
     private final SpellCaster caster;
-    private Set<Spell> unlockedSpells = new HashSet<>();
-    private final Spell[] assignedSlots = new Spell[8];
+    private Set<SpellData> unlockedSpellData = new HashSet<>();
+    private final SpellData[] assignedSlots = new SpellData[8];
 
     private int level;
     private double xp;
@@ -53,7 +53,7 @@ public class HPlayer extends EConfig implements LoadableUser {
         }
         if (hClass.getSpellsUnlockedAtLevel(level) != null) {
             // Set spells instead of adding them, so that it is possible to replace spells with more powerful versions.
-            unlockedSpells = hClass.getSpellsUnlockedAtLevel(level);
+            unlockedSpellData = hClass.getSpellsUnlockedAtLevel(level);
             updateSlots();
         }
 
@@ -77,12 +77,12 @@ public class HPlayer extends EConfig implements LoadableUser {
     public void load() {
         Spellbook spellbook = Hecate.getInstance().getSpellbook();
         for (String spellId : config.getStringList("unlockedSpells")) {
-            Spell spell = spellbook.getLibrary().getSpellByID(spellId);
-            if (spell == null) {
+            SpellData spellData = spellbook.getLibrary().getSpellByID(spellId);
+            if (spellData == null) {
                 MessageUtil.log("Unknown spell '" + spellId + "' found under 'unlockedSlots'");
                 continue;
             }
-            unlockedSpells.add(spell);
+            unlockedSpellData.add(spellData);
         }
         List<String> slotList = config.getStringList("assignedSlots");
         if (slotList.size() > 8) {
@@ -91,12 +91,12 @@ public class HPlayer extends EConfig implements LoadableUser {
         }
         for (int i = 0; i < slotList.size(); i++) {
             String spellId = slotList.get(i);
-            Spell spell = spellbook.getLibrary().getSpellByID(spellId);
-            if (spell == null) {
+            SpellData spellData = spellbook.getLibrary().getSpellByID(spellId);
+            if (spellData == null) {
                 MessageUtil.log("Unknown spell '" + spellId + "' found under 'assignedSlots'");
                 continue;
             }
-            assignedSlots[i] = spell;
+            assignedSlots[i] = spellData;
         }
         xp = config.getDouble("xp", 0);
         level = config.getInt("level", 1);
@@ -111,7 +111,7 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     @Override
     public void saveUser() {
-        config.set("unlockedSpells", unlockedSpells.stream().map(Spell::getId).collect(Collectors.toList()));
+        config.set("unlockedSpells", unlockedSpellData.stream().map(SpellData::getId).collect(Collectors.toList()));
         config.set("assignedSlots", Arrays.stream(assignedSlots).map(s -> s == null ? "empty" : s.getId()).collect(Collectors.toList()));
         config.set("level", level);
         config.set("xp", xp);
@@ -128,15 +128,15 @@ public class HPlayer extends EConfig implements LoadableUser {
         return caster;
     }
 
-    public Set<Spell> getUnlockedSpells() {
-        return unlockedSpells;
+    public Set<SpellData> getUnlockedSpells() {
+        return unlockedSpellData;
     }
 
-    public Spell getSpellAt(int slot) {
+    public SpellData getSpellAt(int slot) {
         return assignedSlots[slot];
     }
 
-    public Spell[] getAssignedSlots() {
+    public SpellData[] getAssignedSlots() {
         return assignedSlots;
     }
 

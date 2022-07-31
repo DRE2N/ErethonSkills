@@ -2,7 +2,7 @@ package de.erethon.hecate.classes;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import de.erethon.spellbook.spells.Spell;
+import de.erethon.spellbook.spells.SpellData;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -17,14 +17,14 @@ import java.util.Set;
 
 public class HClass extends YamlConfiguration {
 
-    private final HashMap<Integer, Set<Spell>> spellLevelMap = new HashMap<>();
+    private final HashMap<Integer, Set<SpellData>> spellLevelMap = new HashMap<>();
     private String displayName;
     private String description;
     private int maxLevel;
     private HashMap<Integer, HashMap<Attribute, Double>> baseAttributesPerLevel = new HashMap<>();
     private HashMap<Integer, Double> xpPerLevel = new HashMap<>();
 
-    public Set<Spell> getSpellsUnlockedAtLevel(int level) {
+    public Set<SpellData> getSpellsUnlockedAtLevel(int level) {
         return spellLevelMap.get(level);
     }
 
@@ -48,14 +48,14 @@ public class HClass extends YamlConfiguration {
             ConfigurationSection levelEntry = spellLevelSection.getConfigurationSection(key);
             int level = Integer.parseInt(key);
             if (levelEntry != null) {
-                HashSet<Spell> spells = new HashSet<>();
+                HashSet<SpellData> spells = new HashSet<>();
                 for (String spellId : levelEntry.getStringList("spells")) {
-                    Spell spell = Hecate.getInstance().getSpellbook().getLibrary().getSpellByID(spellId);
-                    if (spell == null) {
+                    SpellData spellData = Hecate.getInstance().getSpellbook().getLibrary().getSpellByID(spellId);
+                    if (spellData == null) {
                         MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getName());
                         continue;
                     }
-                    spells.add(spell);
+                    spells.add(spellData);
                     spellLevelMap.put(level, spells);
                 }
             }
