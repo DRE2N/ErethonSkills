@@ -17,14 +17,15 @@ public class TestSpell extends SpellData {
 
     @Override
     public boolean cast(SpellCaster caster, ActiveSpell activeSpell) {
+        Player player = (Player) caster.getEntity();
+        player.sendMessage("TestSpell. Hui!");
+        player.setVelocity(player.getLocation().getDirection().multiply(5));
         return true;
     }
 
     @Override
     public void afterCast(SpellCaster caster, ActiveSpell activeSpell) {
-        Player player = (Player) caster.getEntity();
-        player.sendMessage("TestSpell. Hui!");
-        player.setVelocity(player.getLocation().getDirection().multiply(5));
+        caster.setCooldown(this);
     }
 
     @Override

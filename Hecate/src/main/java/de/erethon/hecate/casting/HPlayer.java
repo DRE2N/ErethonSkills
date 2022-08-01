@@ -8,10 +8,15 @@ import de.erethon.hecate.classes.HClass;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.caster.SpellCaster;
 import de.erethon.spellbook.spells.SpellData;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +36,11 @@ public class HPlayer extends EConfig implements LoadableUser {
     private double xp;
 
     private HClass hClass;
+
+    private boolean isInCastmode = false;
+
+    private final List<ItemStack> hotbarItems = new ArrayList<>();
+    private int hotbarSlot = 0;
 
 
 
@@ -69,6 +79,58 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     public void updateSlots() {
         // Do something about spells getting replaced due to levelups
+    }
+
+    public void switchMode() {
+        MessageUtil.sendMessage(player, "Castmode: " + isInCastmode);
+        if (!isInCastmode) {
+            hotbarItems.clear();
+            PlayerInventory inventory = player.getInventory();
+            hotbarSlot = inventory.getHeldItemSlot();
+            inventory.setHeldItemSlot(0);
+            for (int slot = 0; slot < 8; slot++) {
+                hotbarItems.add(slot, inventory.getItem(slot)); // TODO: Put this into PDC or something so it never gets lost, ever.
+            }
+            // Cooldowns are per material for some reason.
+            inventory.setItem(0, new ItemStack(Material.BLACK_DYE));
+            inventory.setItem(1, new ItemStack(Material.BLUE_DYE));
+            inventory.setItem(2, new ItemStack(Material.BROWN_DYE));
+            inventory.setItem(3, new ItemStack(Material.CYAN_DYE));
+            inventory.setItem(4, new ItemStack(Material.GRAY_DYE));
+            inventory.setItem(5, new ItemStack(Material.GREEN_DYE));
+            inventory.setItem(6, new ItemStack(Material.LIGHT_BLUE_DYE));
+            inventory.setItem(7, new ItemStack(Material.LIGHT_GRAY_DYE));
+            isInCastmode = true;
+        } else {
+            PlayerInventory inventory = player.getInventory();
+            inventory.setHeldItemSlot(hotbarSlot);
+            for (int slot = 0; slot < 8; slot++) {
+                inventory.setItem(slot, hotbarItems.get(slot));
+            }
+            isInCastmode = false;
+        }
+        MessageUtil.sendMessage(player, "Switched to castmode: " + isInCastmode);
+    }
+
+    public void update() {
+        if (!isInCastmode) {
+            return;
+        }
+        PlayerInventory inventory = player.getInventory();
+        for (int slot = 1; slot < 8; slot++) { // Start at 1, 0 is weapon
+            if (inventory.getItem(slot) == null || getSpellAt(slot) == null) {
+                continue;
+            }
+            SpellData spellData = getSpellAt(slot);
+            inventory.getItem(slot).setAmount(caster.calculateCooldown(spellData));
+            if (spellData.getCooldown() == caster.calculateCooldown(spellData)) {
+                player.setCooldown(inventory.getItem(slot).getType(), (caster.calculateCooldown(getSpellAt(slot)) * 20) - 15); // its slightly offset visually
+            }
+        }
+    }
+
+    public boolean isInCastmode() {
+        return isInCastmode;
     }
 
     /* EConfig methods */
@@ -147,6 +209,18 @@ public class HPlayer extends EConfig implements LoadableUser {
     public double getXp() {
         return xp;
     }
+
+    public void learnSpell(SpellData spellData) {
+        unlockedSpellData.add(spellData);
+        updateSlots();
+    }
+
+    public void learnSpell(SpellData spellData, int slot) {
+        unlockedSpellData.add(spellData);
+        assignedSlots[slot] = spellData;
+        updateSlots();
+    }
+
 
     public void addXp(double amount) {
         xp += amount;

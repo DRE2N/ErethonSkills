@@ -5,6 +5,7 @@ import de.erethon.spellbook.spells.SpellData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -12,7 +13,8 @@ public class SpellCaster {
 
     Spellbook spellbook;
     LivingEntity entity;
-    Map<SpellData, Double> usedSpells = new LinkedHashMap<>();
+    Map<SpellData, Long> usedSpells = new LinkedHashMap<>();
+
 
     public SpellCaster(Spellbook spellbook, LivingEntity entity) {
         this.spellbook = spellbook;
@@ -32,16 +34,26 @@ public class SpellCaster {
         }
     }
 
+    public int calculateCooldown(SpellData spellData) {
+        long timestamp = getCooldown(spellData);
+        long now = System.currentTimeMillis();
+        int cooldown = (int) (now - timestamp) / 1000;
+        return Math.max(spellData.getCooldown() - cooldown, 1); // 1 because amount = 0 removes the item.
+    }
+
     public boolean canCast(SpellData spellData) {
-        double time = usedSpells.get(spellData);
+        long time = usedSpells.getOrDefault(spellData, 0L);
         double skillCD = spellData.getCooldown();
-        double now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         return now - time > (skillCD * 1000);
     }
 
+    public long getCooldown(SpellData spellData) {
+        return usedSpells.getOrDefault(spellData, 0L);
+    }
+
     public void setCooldown(SpellData skill) {
-        double now = System.currentTimeMillis();
-        usedSpells.put(skill, now);
+        usedSpells.put(skill, System.currentTimeMillis());
     }
 
     public LivingEntity getEntity() {

@@ -6,6 +6,7 @@ import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
 import de.erethon.hecate.casting.HPlayerCache;
 import de.erethon.hecate.commands.HecateCommandCache;
+import de.erethon.hecate.listeners.PlayerCastListener;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.spells.SpellData;
 import org.bukkit.Bukkit;
@@ -48,6 +49,7 @@ public final class Hecate extends EPlugin {
         initFolders();
         instantiate();
         registerCommands();
+        getServer().getPluginManager().registerEvents(new PlayerCastListener(), this);
     }
 
     @Override
