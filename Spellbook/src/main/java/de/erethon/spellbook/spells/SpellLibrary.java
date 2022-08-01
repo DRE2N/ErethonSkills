@@ -17,6 +17,10 @@ public class SpellLibrary {
         this.spellbook = spellbook;
     }
 
+    public HashMap<String, SpellData> getLoaded() {
+        return loaded;
+    }
+
     public SpellData getSpellByID(String id) {
         return loaded.get(id);
     }
@@ -29,7 +33,9 @@ public class SpellLibrary {
             String id = f.getName().replace(".yml", "");
             spellbook.getImplementingPlugin().getLogger().info("Loading spell " + id);
             try {
-                Object spellClass = Class.forName(this.getClass().getPackageName() + id).getDeclaredConstructor(Spellbook.class, String.class).newInstance(spellbook, id);
+                spellbook.getImplementingPlugin().getLogger().info(this.getClass().getPackageName() + "." + id);
+                Object spellClass = Class.forName(this.getClass().getPackageName() + "." + id).getDeclaredConstructor(Spellbook.class, String.class).newInstance(spellbook, id);
+                spellbook.getImplementingPlugin().getLogger().info("Spellbook instance: " + spellbook.getClass().getName());
                 SpellData spellData = (SpellData) spellClass;
                 spellData.load(f);
                 loaded.put(id, spellData);

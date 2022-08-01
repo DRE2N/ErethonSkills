@@ -1,9 +1,11 @@
 package de.erethon.spellbook;
 
 import de.erethon.spellbook.spells.ActiveSpell;
+import org.bukkit.Server;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class SpellQueue extends BukkitRunnable {
@@ -12,28 +14,55 @@ public class SpellQueue extends BukkitRunnable {
     private final List<ActiveSpell> queue = new ArrayList<>();
     private final List<ActiveSpell> activeSpells = new ArrayList<>();
 
+    private int maxSpellsPerTickQueue = 5;
+    private Server server;
+
     public SpellQueue(Spellbook spellbook) {
         this.spellbook = spellbook;
+        this.server = spellbook.getImplementingPlugin().getServer();
     }
 
     @Override
     public void run() {
+        maxSpellsPerTickQueue = updateMaxSpellsPerTick();
         int i = 0;
-        for (ActiveSpell spell : activeSpells) {
-            spell.tick();
-            if (spell.shouldRemove()) {
-                activeSpells.remove(spell);
+        Iterator<ActiveSpell> activeSpellIterator = activeSpells.iterator();
+        while (activeSpellIterator.hasNext()) {
+            ActiveSpell activeSpell = activeSpellIterator.next();
+            activeSpell.tick();
+            if (activeSpell.shouldRemove()) {
+                activeSpellIterator.remove();
             }
         }
-        for (ActiveSpell spell : queue) {
+        Iterator<ActiveSpell> queueIterator = queue.iterator();
+        while (queueIterator.hasNext()) {
+            ActiveSpell spell = queueIterator.next();
             spell.ready();
-            queue.remove(spell);
+            queueIterator.remove();
             activeSpells.add(spell);
             i++;
-            if (i >= 5) {
+            if (i >= maxSpellsPerTickQueue) { // TODO: Make this change with server mspt
+                spellbook.getImplementingPlugin().getLogger().warning("Queue overflow! Queue size " + queue.size() + "/" + maxSpellsPerTickQueue + " | Tick time: " + server.getAverageTickTime());
                 break;
             }
         }
+    }
+
+    private int updateMaxSpellsPerTick() {
+        double tickTime = server.getAverageTickTime();
+        if (tickTime > 50.0) {
+            return 2;
+        }
+        if (tickTime > 40.0) {
+            return 4;
+        }
+        if (tickTime > 30.0) {
+            return 8;
+        }
+        if (tickTime > 20.0) {
+            return 16;
+        }
+        return 32;
     }
 
     public ActiveSpell addToQueue(ActiveSpell spell) {

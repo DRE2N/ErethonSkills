@@ -1,15 +1,18 @@
 package de.erethon.hecate;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
 import de.erethon.hecate.casting.HPlayerCache;
 import de.erethon.hecate.commands.HecateCommandCache;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.spells.SpellData;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
 import java.io.File;
+import java.util.Map;
 
 public final class Hecate extends EPlugin {
 
@@ -38,6 +41,10 @@ public final class Hecate extends EPlugin {
 
     public void loadCore() {
         spellbook = new Spellbook(this);
+        MessageUtil.log("Loading spells...");
+        for (String spell : spellbook.getLibrary().getLoaded().keySet()) {
+            MessageUtil.log("- " + spell);
+        }
         initFolders();
         instantiate();
         registerCommands();

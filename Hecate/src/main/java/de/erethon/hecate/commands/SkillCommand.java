@@ -18,17 +18,17 @@ public class SkillCommand extends ECommand {
         setCommand("skill");
         setAliases("s");
         setMinArgs(0);
-        setMaxArgs(0);
+        setMaxArgs(1);
         setPlayerCommand(true);
         setConsoleCommand(false);
-        setHelp("Help.");
-        setPermission("hecate.reload");
+        setHelp("Invalid amount of args.");
+        setPermission("hecate.skill");
     }
 
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         HPlayer player = new HPlayer(spellbook, (Player) commandSender);
-        SpellData spellData = spellbook.getLibrary().getSpellByID(args[0]);
+        SpellData spellData = spellbook.getLibrary().getSpellByID(args[1]);
 
         if (spellData == null) {
             MessageUtil.sendMessage(commandSender, "Invalid spell.");

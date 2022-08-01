@@ -23,11 +23,13 @@ public class Spellbook {
             SPELLS.mkdir();
         }
 
+        queue = new SpellQueue(this);
+        queue.runTaskTimer(implementingPlugin, 2, 2); // Make this configurable.
+
         library = new SpellLibrary(this);
         library.loadSpells(SPELLS);
 
-        queue = new SpellQueue(this);
-        queue.runTaskTimer(implementingPlugin, 10, 10);
+
     }
 
     public static Spellbook getInstance() {
