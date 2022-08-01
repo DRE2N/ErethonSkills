@@ -14,6 +14,9 @@ public class ActiveSpell {
     private final SpellData spellData;
     private final SpellCaster caster;
 
+    private int keepAliveTicks = 0;
+    private int currentTicks = 0;
+
     private SpellError error;
 
     public ActiveSpell(SpellCaster caster, SpellData spellData) {
@@ -32,6 +35,19 @@ public class ActiveSpell {
         } else {
             sendError();
         }
+    }
+
+    public void tick() {
+        currentTicks++;
+        spellData.tick(caster, this);
+    }
+
+    public boolean shouldRemove() {
+        return currentTicks >= keepAliveTicks;
+    }
+
+    public void setKeepAliveTicks(int keepAliveTicks) {
+        this.keepAliveTicks = keepAliveTicks;
     }
 
     private void sendError() {

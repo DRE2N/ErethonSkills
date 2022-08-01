@@ -73,6 +73,8 @@ public abstract class SpellData extends YamlConfiguration {
      */
     public abstract void afterCast(SpellCaster caster, ActiveSpell activeSpell);
 
+    public abstract void tick(SpellCaster caster, ActiveSpell activeSpell);
+
     public ActiveSpell queue(SpellCaster caster) {
          ActiveSpell activeSpell = new ActiveSpell(caster, this);
          queue.addToQueue(activeSpell);
