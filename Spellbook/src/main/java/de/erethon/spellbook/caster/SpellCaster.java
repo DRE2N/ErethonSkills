@@ -1,11 +1,10 @@
 package de.erethon.spellbook.caster;
 
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.spells.SpellData;
+import de.erethon.spellbook.SpellData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

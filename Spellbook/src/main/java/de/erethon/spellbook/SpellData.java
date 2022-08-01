@@ -1,14 +1,11 @@
-package de.erethon.spellbook.spells;
+package de.erethon.spellbook;
 
-import de.erethon.spellbook.SpellQueue;
-import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.caster.SpellCaster;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

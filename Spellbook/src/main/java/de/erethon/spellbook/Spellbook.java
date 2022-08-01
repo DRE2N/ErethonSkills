@@ -1,7 +1,6 @@
 package de.erethon.spellbook;
 
 
-import de.erethon.spellbook.spells.SpellLibrary;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 

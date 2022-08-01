@@ -1,6 +1,5 @@
-package de.erethon.spellbook.spells;
+package de.erethon.spellbook;
 
-import de.erethon.spellbook.Spellbook;
 import org.bukkit.configuration.InvalidConfigurationException;
 
 import java.io.File;
@@ -33,8 +32,8 @@ public class SpellLibrary {
             String id = f.getName().replace(".yml", "");
             spellbook.getImplementingPlugin().getLogger().info("Loading spell " + id);
             try {
-                spellbook.getImplementingPlugin().getLogger().info(this.getClass().getPackageName() + "." + id);
-                Object spellClass = Class.forName(this.getClass().getPackageName() + "." + id).getDeclaredConstructor(Spellbook.class, String.class).newInstance(spellbook, id);
+                spellbook.getImplementingPlugin().getLogger().info(this.getClass().getPackageName() + ".spells." + id);
+                Object spellClass = Class.forName(this.getClass().getPackageName() + ".spells." + id).getDeclaredConstructor(Spellbook.class, String.class).newInstance(spellbook, id);
                 spellbook.getImplementingPlugin().getLogger().info("Spellbook instance: " + spellbook.getClass().getName());
                 SpellData spellData = (SpellData) spellClass;
                 spellData.load(f);

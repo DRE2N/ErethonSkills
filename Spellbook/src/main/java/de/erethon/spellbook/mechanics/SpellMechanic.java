@@ -1,7 +1,7 @@
 package de.erethon.spellbook.mechanics;
 
 import de.erethon.spellbook.conditions.SpellCondition;
-import de.erethon.spellbook.spells.ActiveSpell;
+import de.erethon.spellbook.ActiveSpell;
 import de.erethon.spellbook.targeters.SpellTargeter;
 
 import java.util.ArrayList;

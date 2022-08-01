@@ -8,12 +8,10 @@ import de.erethon.hecate.casting.HPlayerCache;
 import de.erethon.hecate.commands.HecateCommandCache;
 import de.erethon.hecate.listeners.PlayerCastListener;
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.spells.SpellData;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
 import java.io.File;
-import java.util.Map;
 
 public final class Hecate extends EPlugin {
 

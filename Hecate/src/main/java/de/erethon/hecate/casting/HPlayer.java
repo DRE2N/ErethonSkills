@@ -7,7 +7,7 @@ import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.caster.SpellCaster;
-import de.erethon.spellbook.spells.SpellData;
+import de.erethon.spellbook.SpellData;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -16,7 +16,6 @@ import org.bukkit.inventory.PlayerInventory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;

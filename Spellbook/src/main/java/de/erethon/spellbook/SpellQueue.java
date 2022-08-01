@@ -1,6 +1,5 @@
 package de.erethon.spellbook;
 
-import de.erethon.spellbook.spells.ActiveSpell;
 import org.bukkit.Server;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -14,8 +13,7 @@ public class SpellQueue extends BukkitRunnable {
     private final List<ActiveSpell> queue = new ArrayList<>();
     private final List<ActiveSpell> activeSpells = new ArrayList<>();
 
-    private int maxSpellsPerTickQueue = 5;
-    private Server server;
+    private final Server server;
 
     public SpellQueue(Spellbook spellbook) {
         this.spellbook = spellbook;
@@ -24,7 +22,7 @@ public class SpellQueue extends BukkitRunnable {
 
     @Override
     public void run() {
-        maxSpellsPerTickQueue = updateMaxSpellsPerTick();
+        int maxSpellsPerTickQueue = updateMaxSpellsPerTick();
         int i = 0;
         Iterator<ActiveSpell> activeSpellIterator = activeSpells.iterator();
         while (activeSpellIterator.hasNext()) {
@@ -41,7 +39,7 @@ public class SpellQueue extends BukkitRunnable {
             queueIterator.remove();
             activeSpells.add(spell);
             i++;
-            if (i >= maxSpellsPerTickQueue) { // TODO: Make this change with server mspt
+            if (i >= maxSpellsPerTickQueue) {
                 spellbook.getImplementingPlugin().getLogger().warning("Queue overflow! Queue size " + queue.size() + "/" + maxSpellsPerTickQueue + " | Tick time: " + server.getAverageTickTime());
                 break;
             }

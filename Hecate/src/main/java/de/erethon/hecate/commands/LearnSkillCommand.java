@@ -4,7 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
-import de.erethon.spellbook.spells.SpellData;
+import de.erethon.spellbook.SpellData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

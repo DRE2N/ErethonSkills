@@ -1,8 +1,8 @@
-package de.erethon.spellbook.spells;
+package de.erethon.spellbook;
 
-import de.erethon.spellbook.SpellError;
-import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.caster.SpellCaster;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 
 import java.util.UUID;
 
@@ -16,6 +16,12 @@ public class ActiveSpell {
 
     private int keepAliveTicks = 0;
     private int currentTicks = 0;
+
+    private int tickInterval = 1;
+    private int currentTickInterval = 0;
+
+    private Location location = null;
+    private Entity targetEntity= null;
 
     private SpellError error;
 
@@ -39,13 +45,22 @@ public class ActiveSpell {
 
     public void tick() {
         currentTicks++;
-        spellData.tick(caster, this);
+        if (currentTickInterval >= tickInterval) {
+            currentTickInterval = 0;
+            getSpell().tick(caster, this);
+        } else {
+            currentTickInterval++;
+        }
     }
 
     public boolean shouldRemove() {
         return currentTicks >= keepAliveTicks;
     }
 
+    /** Sets the amount of ticks this spell should be kept alive. Every tick, the tick() method is called.
+     * if you want to run logic every x ticks, use the setTickInterval() method.
+     * @param keepAliveTicks the keepAliveTicks to set. This is in SpellQueue ticks, not server ticks.
+     */
     public void setKeepAliveTicks(int keepAliveTicks) {
         this.keepAliveTicks = keepAliveTicks;
     }
@@ -54,6 +69,32 @@ public class ActiveSpell {
         if (error != null) {
             caster.sendMessage(error.getMessage());
         }
+    }
+
+    /**
+     * Sets a tick interval for this spell. This is in SpellQueue ticks. The default is 0.
+     * The SpellQueue will always tick all ActiveSpells at the same interval, so if you want to have a spell that ticks differently from this,
+     * this method can be used to achieve this.
+     * @param tickInterval the interval between each tick
+     */
+    public void setTickInterval(int tickInterval) {
+        this.tickInterval = tickInterval;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Entity getTargetEntity() {
+        return targetEntity;
+    }
+
+    public void setTargetEntity(Entity targetEntity) {
+        this.targetEntity = targetEntity;
     }
 
     public SpellError getError() {
