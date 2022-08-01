@@ -106,7 +106,7 @@ public abstract class SpellData extends YamlConfiguration {
     }
 
     @Override
-    public void load(@NotNull File file) throws FileNotFoundException, IOException, InvalidConfigurationException {
+    public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
         super.load(file);
         cooldown = getInt("cooldown", 0);
 
