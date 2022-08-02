@@ -14,6 +14,7 @@ import org.bukkit.util.Vector;
 public class GrapplingHook extends SpellbookSpell {
 
     Block targetBlock = null;
+    Vector vec;
 
     public GrapplingHook(SpellCaster caster, SpellData spellData) {
         super(caster, spellData);
@@ -35,7 +36,7 @@ public class GrapplingHook extends SpellbookSpell {
 
     @Override
     protected boolean onCast() {
-        Vector vec = caster.getLocation().clone().toVector().subtract(targetBlock.getLocation().clone().toVector());
+        vec = caster.getLocation().clone().toVector().subtract(targetBlock.getLocation().clone().toVector());
         LineEffect line = new LineEffect(effectManager);
         line.setLocation(caster.getLocation().add(0, -1, 0));
         line.setTargetLocation(targetBlock.getLocation().add(0.5, 0.5, 0.5));
@@ -44,14 +45,13 @@ public class GrapplingHook extends SpellbookSpell {
         line.color = Color.WHITE;
         line.iterations = 20;
         line.start();
-        double speed = -1 * data.getDouble("speedModifier", 2);
-        BukkitRunnable delay = new BukkitRunnable() {
-            @Override
-            public void run() {
-                caster.getEntity().setVelocity(vec.multiply(speed));
-            }
-        };
-        delay.runTaskLater(data.getSpellbook().getImplementingPlugin(), 10);
+        keepAliveTicks = 10;
         return true;
+    }
+
+    @Override
+    protected void onTickFinish() {
+        double speed = -1 * data.getDouble("speedModifier", 2);
+        caster.getEntity().setVelocity(vec.multiply(speed));
     }
 }
