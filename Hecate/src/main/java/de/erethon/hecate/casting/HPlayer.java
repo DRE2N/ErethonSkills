@@ -6,9 +6,12 @@ import de.erethon.bedrock.user.LoadableUser;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.SpellbookSpell;
 import de.erethon.spellbook.caster.SpellCaster;
 import de.erethon.spellbook.SpellData;
+import de.erethon.spellbook.effects.SpellEffect;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
@@ -19,6 +22,7 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,10 +34,15 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
 
     private Player player;
     private Set<SpellData> unlockedSpellData = new HashSet<>();
+    private Set<SpellData> passiveSpells = new HashSet<>();
     private final SpellData[] assignedSlots = new SpellData[8];
 
-    private int level;
-    private double xp;
+    Map<SpellData, Long> usedSpells = new LinkedHashMap<>();
+    Set<SpellEffect> effects = new HashSet<>();
+    Set<SpellbookSpell> runningPassiveSpells = new HashSet<>();
+
+    private int level = 1;
+    private double xp = 0;
 
     private HClass hClass;
 
@@ -47,6 +56,7 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
     public HPlayer(Spellbook spellbook, Player player) {
         super(HPlayerCache.getPlayerFile(player), CONFIG_VERSION);
         this.player = player;
+        load();
     }
 
     public void levelUp(double overflowXp) {
@@ -146,6 +156,14 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
             }
             unlockedSpellData.add(spellData);
         }
+        for (String spellId : config.getStringList("passiveSpells")) {
+            SpellData spellData = spellbook.getLibrary().getSpellByID(spellId);
+            if (spellData == null) {
+                MessageUtil.log("Unknown spell '" + spellId + "' found under 'passiveSpells'");
+                continue;
+            }
+            addPassiveSpell(spellData.getActiveSpell(this));
+        }
         List<String> slotList = config.getStringList("assignedSlots");
         if (slotList.size() > 8) {
             MessageUtil.log("Illegal amount of slots assigned");
@@ -162,6 +180,7 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
         }
         xp = config.getDouble("xp", 0);
         level = config.getInt("level", 1);
+        energy = config.getInt("energy", 50);
     }
 
     /* LoadableUser methods */
@@ -173,10 +192,13 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
 
     @Override
     public void saveUser() {
+        MessageUtil.log("User saved!");
         config.set("unlockedSpells", unlockedSpellData.stream().map(SpellData::getId).collect(Collectors.toList()));
+        config.set("passiveSpells", getPassiveSpells().stream().map(SpellbookSpell::getId).collect(Collectors.toList()));
         config.set("assignedSlots", Arrays.stream(assignedSlots).map(s -> s == null ? "empty" : s.getId()).collect(Collectors.toList()));
         config.set("level", level);
         config.set("xp", xp);
+        config.set("energy", energy);
         save();
     }
 
@@ -234,6 +256,26 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
     }
 
     @Override
+    public Location getLocation() {
+        return player.getLocation();
+    }
+
+    @Override
+    public Map<SpellData, Long> getUsedSpells() {
+        return usedSpells;
+    }
+
+    @Override
+    public Set<SpellEffect> getEffects() {
+        return effects;
+    }
+
+    @Override
+    public Set<SpellbookSpell> getPassiveSpells() {
+        return runningPassiveSpells;
+    }
+
+    @Override
     public LivingEntity getEntity() {
         return player;
     }
@@ -262,5 +304,7 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
         player.sendActionBar(Component.text("Energie: " + energy));
         return energy;
     }
+
+
 
 }

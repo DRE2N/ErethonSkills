@@ -55,8 +55,10 @@ tasks {
         dependencies {
             include(dependency("de.erethon:bedrock:1.2.3"))
             include(project(":Spellbook"))
+            include(dependency("com.elmakers.mine.bukkit:EffectLib:9.4"))
         }
         relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
+        relocate("com.elmakers.mine.bukkit", "de.erethon.hecate.effectlib")
     }
     bukkit {
         load = BukkitPluginDescription.PluginLoadOrder.STARTUP

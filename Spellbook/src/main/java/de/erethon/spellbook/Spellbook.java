@@ -1,17 +1,20 @@
 package de.erethon.spellbook;
 
 
+import de.slikey.effectlib.EffectManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 
-public class Spellbook {
+public class Spellbook  {
     private static Spellbook instance;
     public static File SPELLS;
     private final SpellQueue queue;
     private final SpellLibrary library;
     private final Plugin implementingPlugin;
+
+    private final EffectManager effectManager;
 
     public Spellbook(Plugin plugin) {
         instance = this;
@@ -23,11 +26,11 @@ public class Spellbook {
         }
 
         queue = new SpellQueue(this);
-        queue.runTaskTimer(implementingPlugin, 2, 2); // Make this configurable.
+        implementingPlugin.getServer().getPluginManager().registerEvents(queue, implementingPlugin);
 
         library = new SpellLibrary(this);
         library.loadSpells(SPELLS);
-
+        effectManager = new EffectManager(implementingPlugin);
 
     }
 
@@ -45,5 +48,9 @@ public class Spellbook {
 
     public SpellQueue getQueue() {
         return queue;
+    }
+
+    public EffectManager getEffectManager() {
+        return effectManager;
     }
 }

@@ -12,26 +12,9 @@ public class AssassinPassiveEnergyGain extends PassiveSpell {
     }
 
     @Override
-    protected boolean onPrecast() {
-        return true;
-    }
-
-    @Override
     protected boolean onCast() {
         caster.addEnergy(5);
         return true;
-    }
-
-    @Override
-    protected void onAfterCast() {
-    }
-
-    @Override
-    protected void onTick() {
-    }
-
-    @Override
-    protected void onTickFinish() {
     }
 
     @EventHandler

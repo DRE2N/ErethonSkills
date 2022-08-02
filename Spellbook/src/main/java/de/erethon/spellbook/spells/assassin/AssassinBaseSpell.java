@@ -10,7 +10,7 @@ public abstract class AssassinBaseSpell extends SpellbookSpell {
 
     public AssassinBaseSpell(SpellCaster caster, SpellData spellData) {
         super(caster, spellData);
-        energyCost = spellData.getInt("energyCost", 0);
+        energyCost = spellData.getInt("energyCost", 10);
     }
 
     @Override

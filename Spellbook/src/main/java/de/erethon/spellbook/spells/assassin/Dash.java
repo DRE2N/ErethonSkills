@@ -2,7 +2,7 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.SpellData;
 import de.erethon.spellbook.caster.SpellCaster;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.Location;
 
 public class Dash extends AssassinBaseSpell {
 
@@ -11,32 +11,12 @@ public class Dash extends AssassinBaseSpell {
     }
 
     @Override
-    protected boolean onPrecast() {
-        LivingEntity entity = caster.getEntity();
-        if (entity.getLocation().getPitch() < -10) {
-            caster.sendActionbar("<red>Ungültiger Winkel.");
-            return false;
-        }
-        return super.onPrecast();
-    }
-
-    @Override
     protected boolean onCast() {
-        caster.getEntity().setVelocity(caster.getEntity().getLocation().getDirection().multiply(data.getDouble("dashMultiplier", 2.0)));
+        Location location = caster.getEntity().getLocation();
+        location.setYaw(-10);
+        caster.getEntity().setVelocity(location.getDirection().multiply(data.getDouble("dashMultiplier", 2.0)));
         return true;
     }
 
-    @Override
-    protected void onAfterCast() {
-        super.onAfterCast();
-    }
-
-    @Override
-    protected void onTick() {
-    }
-
-    @Override
-    protected void onTickFinish() {
-    }
 }
 

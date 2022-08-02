@@ -1,13 +1,17 @@
 package de.erethon.spellbook;
 
+import com.destroystokyo.paper.event.server.ServerTickEndEvent;
+import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import org.bukkit.Server;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class SpellQueue extends BukkitRunnable {
+public class SpellQueue implements Listener {
 
     Spellbook spellbook;
     private final List<SpellbookSpell> queue = new ArrayList<>();
@@ -20,16 +24,25 @@ public class SpellQueue extends BukkitRunnable {
         this.server = spellbook.getImplementingPlugin().getServer();
     }
 
-    @Override
+    @EventHandler
+    public void onTick(ServerTickEndEvent event) {
+        if (event.getTimeRemaining() < 0) { // Don't execute spells if the tick is already over 50ms
+            spellbook.getImplementingPlugin().getLogger().warning("Skipped SpellQueue because the tick is already over 50ms.");
+            return;
+        }
+        run();
+    }
+
     public void run() {
         int maxSpellsPerTickQueue = updateMaxSpellsPerTick();
         int i = 0;
         Iterator<SpellbookSpell> activeSpellIterator = activeSpells.iterator();
         while (activeSpellIterator.hasNext()) {
-            SpellbookSpell spellbookSpell = activeSpellIterator.next();
-            spellbookSpell.tick();
-            if (spellbookSpell.shouldRemove()) {
+            SpellbookSpell spell = activeSpellIterator.next();
+            if (spell.shouldRemove()) {
                 activeSpellIterator.remove();
+            } else {
+                spell.tick();
             }
         }
         Iterator<SpellbookSpell> queueIterator = queue.iterator();

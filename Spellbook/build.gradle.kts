@@ -23,6 +23,7 @@ repositories {
 
 dependencies {
     paperweightDevBundle("de.erethon.papyrus", "1.19-R1")
+    implementation("com.elmakers.mine.bukkit:EffectLib:9.4")
 }
 
 tasks {

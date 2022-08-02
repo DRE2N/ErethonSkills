@@ -25,7 +25,7 @@ public class SpellData extends YamlConfiguration {
         this.spellbook = spellbook;
         this.id = id;
         queue = spellbook.getQueue();
-        spellbook.getImplementingPlugin().getLogger().info("Created new SpellData with " + spellbook.getClass().getName() + " and queue ID " + queue.getTaskId());
+        spellbook.getImplementingPlugin().getLogger().info("Created new SpellData with " + spellbook.getClass().getName());
     }
     /* Casting process:
     Player clicks button -> ActiveSpell is created and queued -> queue calls ActiveSpell#ready -> precast -> cast -> afterCast

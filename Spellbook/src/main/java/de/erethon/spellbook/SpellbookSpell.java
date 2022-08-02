@@ -1,6 +1,7 @@
 package de.erethon.spellbook;
 
 import de.erethon.spellbook.caster.SpellCaster;
+import de.slikey.effectlib.EffectManager;
 
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ public abstract class SpellbookSpell {
 
     protected final SpellData data;
     protected final SpellCaster caster;
+    protected EffectManager effectManager;
 
     protected int keepAliveTicks = 0;
     private int currentTicks = 0;
@@ -18,44 +20,62 @@ public abstract class SpellbookSpell {
     protected int tickInterval = 1;
     private int currentTickInterval = 0;
 
+    private boolean failed = false;
+
     public SpellbookSpell(SpellCaster caster, SpellData spellData) {
         this.data = spellData;
         this.caster = caster;
+        this.effectManager = spellbook.getEffectManager();
         uuid = UUID.randomUUID();
     }
 
 
     /**
      * This should be used to check for prerequisites for the spell, such as mana, target, location, etc.
+     *
      * @return true if the spell can be cast, false otherwise
      */
-    protected abstract boolean onPrecast();
+    protected boolean onPrecast() {
+        return true;
+    }
 
     /**
      * This should be used to implement the spell itself.
+     *
      * @return true if the spell was successfully cast, false otherwise
      */
-    protected abstract boolean onCast();
+    protected boolean onCast() {
+        return true;
+    }
 
     /**
      * This should be used do execute code after the spell was cast, like removing mana.
-
      */
-    protected abstract void onAfterCast();
+    protected void onAfterCast() {
+    }
 
-    protected abstract void onTick();
+    protected void onTick() {
+    }
 
-    protected abstract void onTickFinish();
+    protected void onTickFinish() {
+    }
 
     public void ready() {
         if (onPrecast()) {
             if (onCast()) {
                 onAfterCast();
+            } else {
+                failed = true;
             }
+        } else {
+            failed = true;
         }
     }
 
     public void tick() {
+        if (failed) {
+            return;
+        }
         currentTicks++;
         if (currentTickInterval >= tickInterval) {
             currentTickInterval = 0;
@@ -70,6 +90,9 @@ public abstract class SpellbookSpell {
 
 
     public boolean shouldRemove() {
+        if (failed) {
+            return true;
+        }
         if (keepAliveTicks < 0) {
             return false;
         }
@@ -86,5 +109,9 @@ public abstract class SpellbookSpell {
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public String getId() {
+        return data.getId();
     }
 }
