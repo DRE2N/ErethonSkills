@@ -10,8 +10,8 @@ import java.util.List;
 public class SpellQueue extends BukkitRunnable {
 
     Spellbook spellbook;
-    private final List<ActiveSpell> queue = new ArrayList<>();
-    private final List<ActiveSpell> activeSpells = new ArrayList<>();
+    private final List<SpellbookSpell> queue = new ArrayList<>();
+    private final List<SpellbookSpell> activeSpells = new ArrayList<>();
 
     private final Server server;
 
@@ -24,17 +24,17 @@ public class SpellQueue extends BukkitRunnable {
     public void run() {
         int maxSpellsPerTickQueue = updateMaxSpellsPerTick();
         int i = 0;
-        Iterator<ActiveSpell> activeSpellIterator = activeSpells.iterator();
+        Iterator<SpellbookSpell> activeSpellIterator = activeSpells.iterator();
         while (activeSpellIterator.hasNext()) {
-            ActiveSpell activeSpell = activeSpellIterator.next();
-            activeSpell.tick();
-            if (activeSpell.shouldRemove()) {
+            SpellbookSpell spellbookSpell = activeSpellIterator.next();
+            spellbookSpell.tick();
+            if (spellbookSpell.shouldRemove()) {
                 activeSpellIterator.remove();
             }
         }
-        Iterator<ActiveSpell> queueIterator = queue.iterator();
+        Iterator<SpellbookSpell> queueIterator = queue.iterator();
         while (queueIterator.hasNext()) {
-            ActiveSpell spell = queueIterator.next();
+            SpellbookSpell spell = queueIterator.next();
             spell.ready();
             queueIterator.remove();
             activeSpells.add(spell);
@@ -63,7 +63,7 @@ public class SpellQueue extends BukkitRunnable {
         return 32;
     }
 
-    public ActiveSpell addToQueue(ActiveSpell spell) {
+    public SpellbookSpell addToQueue(SpellbookSpell spell) {
         queue.add(spell);
         return spell;
     }

@@ -1,11 +1,11 @@
 package de.erethon.spellbook.spells;
 
-import de.erethon.spellbook.ActiveSpell;
+import de.erethon.spellbook.SpellbookSpell;
 import de.erethon.spellbook.SpellData;
 import de.erethon.spellbook.caster.SpellCaster;
 import org.bukkit.entity.Player;
 
-public class TestSpell extends ActiveSpell {
+public class TestSpell extends SpellbookSpell {
 
     public TestSpell(SpellCaster caster, SpellData spellData) {
         super(caster, spellData);
@@ -26,6 +26,7 @@ public class TestSpell extends ActiveSpell {
 
     @Override
     protected void onAfterCast() {
+        caster.setCooldown(data);
     }
 
     @Override

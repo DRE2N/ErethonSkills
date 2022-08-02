@@ -3,6 +3,7 @@ package de.erethon.hecate.listeners;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
 import de.erethon.spellbook.SpellData;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +18,7 @@ public class PlayerCastListener implements Listener {
     public void onModeSwitch(PlayerSwapHandItemsEvent event) {
         HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(event.getPlayer());
         // The OffHandItem is the item that WOULD BE in the offhand if the event is not cancelled. Thanks Spigot for great method naming!
-        if ((event.getOffHandItem() != null && event.getOffHandItem().getItemMeta() != null && event.getOffHandItem().getItemMeta().getDisplayName().contains("Spell")) || hPlayer.isInCastmode()) {
+        if ((event.getOffHandItem() != null && event.getOffHandItem().getType() == Material.STICK || hPlayer.isInCastmode())) {
             event.setCancelled(true);
             hPlayer.switchMode();
         }

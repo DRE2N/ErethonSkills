@@ -1,12 +1,12 @@
 package de.erethon.spellbook.spells;
 
-import de.erethon.spellbook.ActiveSpell;
+import de.erethon.spellbook.SpellbookSpell;
 import de.erethon.spellbook.SpellData;
 import de.erethon.spellbook.caster.SpellCaster;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public abstract class EntityTargetSpell extends ActiveSpell {
+public abstract class EntityTargetSpell extends SpellbookSpell {
 
     protected Entity targetEntity = null;
     private int maxDistance = 32;

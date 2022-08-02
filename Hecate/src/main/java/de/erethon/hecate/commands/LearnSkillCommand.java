@@ -14,10 +14,10 @@ public class LearnSkillCommand extends ECommand {
         setCommand("learn");
         setAliases("l");
         setMinArgs(2);
-        setMaxArgs(2);
+        setMaxArgs(3);
         setPlayerCommand(true);
         setConsoleCommand(false);
-        setHelp("Invalid amount of args. /h l <Spell> <Slot>");
+        setHelp("Invalid amount of args. /h l <Spell> <Slot> [<true/false>]");
         setPermission("hecate.learn");
     }
 
@@ -25,8 +25,13 @@ public class LearnSkillCommand extends ECommand {
     public void onExecute(String[] strings, CommandSender commandSender) {
         HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer((Player) commandSender);
         SpellData spellData = Hecate.getInstance().getSpellbook().getLibrary().getSpellByID(strings[1]);
-        hPlayer.learnSpell(spellData, Integer.parseInt(strings[2]));
-        MessageUtil.sendMessage(commandSender, "Learned spell " + spellData.getId() + " in slot " + strings[2]);
+        if (strings.length == 3) {
+            hPlayer.learnSpell(spellData, Integer.parseInt(strings[2]));
+            MessageUtil.sendMessage(commandSender, "Learned spell " + spellData.getId() + " in slot " + strings[2]);
+        } else {
+            hPlayer.addPassiveSpell(spellData.getActiveSpell(hPlayer));
+            MessageUtil.sendMessage(commandSender, "Learned passive spell " + spellData.getId());
+        }
     }
 
 }

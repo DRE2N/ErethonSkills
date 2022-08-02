@@ -1,12 +1,10 @@
 package de.erethon.spellbook;
 
 import de.erethon.spellbook.caster.SpellCaster;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 
 import java.util.UUID;
 
-public abstract class ActiveSpell {
+public abstract class SpellbookSpell {
 
     Spellbook spellbook = Spellbook.getInstance();
     protected final UUID uuid;
@@ -20,7 +18,7 @@ public abstract class ActiveSpell {
     protected int tickInterval = 1;
     private int currentTickInterval = 0;
 
-    public ActiveSpell(SpellCaster caster, SpellData spellData) {
+    public SpellbookSpell(SpellCaster caster, SpellData spellData) {
         this.data = spellData;
         this.caster = caster;
         uuid = UUID.randomUUID();
@@ -72,6 +70,9 @@ public abstract class ActiveSpell {
 
 
     public boolean shouldRemove() {
+        if (keepAliveTicks < 0) {
+            return false;
+        }
         return currentTicks >= keepAliveTicks;
     }
 

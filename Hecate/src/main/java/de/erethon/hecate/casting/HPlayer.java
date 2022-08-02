@@ -8,6 +8,7 @@ import de.erethon.hecate.classes.HClass;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.caster.SpellCaster;
 import de.erethon.spellbook.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
@@ -41,7 +42,7 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
     private final List<ItemStack> hotbarItems = new ArrayList<>();
     private int hotbarSlot = 0;
 
-
+    private int energy = 0;
 
     public HPlayer(Spellbook spellbook, Player player) {
         super(HPlayerCache.getPlayerFile(player), CONFIG_VERSION);
@@ -111,6 +112,7 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
     }
 
     public void update() {
+        tick();
         if (!isInCastmode) {
             return;
         }
@@ -227,7 +229,38 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
     }
 
     @Override
+    public void sendActionbar(String message) {
+        MessageUtil.sendActionBarMessage(player, message);
+    }
+
+    @Override
     public LivingEntity getEntity() {
         return player;
     }
+
+    @Override
+    public int getEnergy() {
+        return energy;
+    }
+
+    @Override
+    public int setEnergy(int e) {
+        energy = e;
+        return energy;
+    }
+
+    @Override
+    public int addEnergy(int e) {
+        energy = Math.min(energy + e, 100);
+        player.sendActionBar(Component.text("Energie: " + energy));
+        return energy;
+    }
+
+    @Override
+    public int removeEnergy(int e) {
+        energy = Math.max(energy - e, 0);
+        player.sendActionBar(Component.text("Energie: " + energy));
+        return energy;
+    }
+
 }

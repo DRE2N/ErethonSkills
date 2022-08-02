@@ -5,7 +5,7 @@ import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.ActiveSpell;
+import de.erethon.spellbook.SpellbookSpell;
 import de.erethon.spellbook.SpellData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -34,7 +34,7 @@ public class SkillCommand extends ECommand {
             MessageUtil.sendMessage(commandSender, "Invalid spell.");
             return;
         }
-        ActiveSpell activeSpell = spellData.queue(player);
-        MessageUtil.log("Spell " + activeSpell.getData().getId() + " (" + activeSpell.getUuid() + ") queued.");
+        SpellbookSpell spellbookSpell = spellData.queue(player);
+        MessageUtil.log("Spell " + spellbookSpell.getData().getId() + " (" + spellbookSpell.getUuid() + ") queued.");
     }
 }

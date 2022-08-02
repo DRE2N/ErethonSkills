@@ -19,7 +19,7 @@ public class SpellData extends YamlConfiguration {
     private String name;
     private List<String> description = new ArrayList<>();
 
-    private Class<? extends ActiveSpell> spellClass;
+    private Class<? extends SpellbookSpell> spellClass;
 
     public SpellData(Spellbook spellbook, String id) {
         this.spellbook = spellbook;
@@ -47,16 +47,19 @@ public class SpellData extends YamlConfiguration {
      */
 
 
-    public ActiveSpell queue(SpellCaster caster) {
-        ActiveSpell activeSpell;
+    public SpellbookSpell queue(SpellCaster caster) {
+        return queue.addToQueue(getActiveSpell(caster));
+    }
+
+    public SpellbookSpell getActiveSpell(SpellCaster caster) {
+        SpellbookSpell spellbookSpell;
         try {
-            activeSpell = spellClass.getDeclaredConstructor(SpellCaster.class, SpellData.class).newInstance(caster, this);
+            spellbookSpell = spellClass.getDeclaredConstructor(SpellCaster.class, SpellData.class).newInstance(caster, this);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            spellbook.getImplementingPlugin().getLogger().warning("Could not create ActiveSpell for spell " + id + " with class " + spellClass.getName());
+            spellbook.getImplementingPlugin().getLogger().warning("Could not create class for spell " + id + ": " + spellClass.getName());
             throw new RuntimeException(e);
         }
-        queue.addToQueue(activeSpell);
-         return activeSpell;
+        return spellbookSpell;
     }
 
     public String getId() {
@@ -77,6 +80,10 @@ public class SpellData extends YamlConfiguration {
         return cooldown;
     }
 
+    public Spellbook getSpellbook() {
+        return spellbook;
+    }
+
     @Override
     public void save(@NotNull File file) throws IOException {
         super.save(file);
@@ -86,9 +93,9 @@ public class SpellData extends YamlConfiguration {
     public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
         super.load(file);
         String className = getString("class");
-        spellbook.getImplementingPlugin().getLogger().info(this.getClass().getPackageName() + ".spells." + className);
+        spellbook.getImplementingPlugin().getLogger().info("Spell class: " + this.getClass().getPackageName() + ".spells." + className);
         try {
-            spellClass = (Class<? extends ActiveSpell>) Class.forName(this.getClass().getPackageName() + ".spells." + className);
+            spellClass = (Class<? extends SpellbookSpell>) Class.forName(this.getClass().getPackageName() + ".spells." + className);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
