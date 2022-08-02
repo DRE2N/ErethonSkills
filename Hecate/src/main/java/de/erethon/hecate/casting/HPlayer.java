@@ -10,6 +10,7 @@ import de.erethon.spellbook.caster.SpellCaster;
 import de.erethon.spellbook.SpellData;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -22,12 +23,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class HPlayer extends EConfig implements LoadableUser {
+public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
 
     public static final int CONFIG_VERSION = 1;
 
     private Player player;
-    private final SpellCaster caster;
     private Set<SpellData> unlockedSpellData = new HashSet<>();
     private final SpellData[] assignedSlots = new SpellData[8];
 
@@ -46,7 +46,6 @@ public class HPlayer extends EConfig implements LoadableUser {
     public HPlayer(Spellbook spellbook, Player player) {
         super(HPlayerCache.getPlayerFile(player), CONFIG_VERSION);
         this.player = player;
-        this.caster = new SpellCaster(spellbook, player);
     }
 
     public void levelUp(double overflowXp) {
@@ -121,9 +120,9 @@ public class HPlayer extends EConfig implements LoadableUser {
                 continue;
             }
             SpellData spellData = getSpellAt(slot);
-            inventory.getItem(slot).setAmount(caster.calculateCooldown(spellData));
-            if (spellData.getCooldown() == caster.calculateCooldown(spellData)) {
-                player.setCooldown(inventory.getItem(slot).getType(), (caster.calculateCooldown(getSpellAt(slot)) * 20) - 15); // its slightly offset visually
+            inventory.getItem(slot).setAmount(calculateCooldown(spellData));
+            if (spellData.getCooldown() == calculateCooldown(spellData)) {
+                player.setCooldown(inventory.getItem(slot).getType(), (calculateCooldown(getSpellAt(slot)) * 20) - 15); // its slightly offset visually
             }
         }
     }
@@ -185,10 +184,6 @@ public class HPlayer extends EConfig implements LoadableUser {
         return player;
     }
 
-    public SpellCaster getCaster() {
-        return caster;
-    }
-
     public Set<SpellData> getUnlockedSpells() {
         return unlockedSpellData;
     }
@@ -224,5 +219,15 @@ public class HPlayer extends EConfig implements LoadableUser {
     public void addXp(double amount) {
         xp += amount;
         checkLevel();
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        MessageUtil.sendMessage(player, message);
+    }
+
+    @Override
+    public LivingEntity getEntity() {
+        return player;
     }
 }

@@ -4,7 +4,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 public class SpellLibrary {
@@ -31,17 +30,13 @@ public class SpellLibrary {
             }
             String id = f.getName().replace(".yml", "");
             spellbook.getImplementingPlugin().getLogger().info("Loading spell " + id);
+            SpellData spellData = new SpellData(spellbook, id);
             try {
-                spellbook.getImplementingPlugin().getLogger().info(this.getClass().getPackageName() + ".spells." + id);
-                Object spellClass = Class.forName(this.getClass().getPackageName() + ".spells." + id).getDeclaredConstructor(Spellbook.class, String.class).newInstance(spellbook, id);
-                spellbook.getImplementingPlugin().getLogger().info("Spellbook instance: " + spellbook.getClass().getName());
-                SpellData spellData = (SpellData) spellClass;
                 spellData.load(f);
-                loaded.put(id, spellData);
-            } catch (IOException | InvalidConfigurationException | ClassNotFoundException | NoSuchMethodException |
-                     InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            } catch (IOException | InvalidConfigurationException e) {
                 throw new RuntimeException(e);
             }
+            loaded.put(id, spellData);
         }
         spellbook.getImplementingPlugin().getLogger().info("Loaded " + loaded.size() + " spells.");
     }

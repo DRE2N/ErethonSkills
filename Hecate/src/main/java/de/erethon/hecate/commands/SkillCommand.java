@@ -34,7 +34,7 @@ public class SkillCommand extends ECommand {
             MessageUtil.sendMessage(commandSender, "Invalid spell.");
             return;
         }
-        ActiveSpell activeSpell = spellData.queue(player.getCaster());
-        MessageUtil.log("Spell " + activeSpell.getSpell().getId() + " (" + activeSpell.getUuid() + ") queued.");
+        ActiveSpell activeSpell = spellData.queue(player);
+        MessageUtil.log("Spell " + activeSpell.getData().getId() + " (" + activeSpell.getUuid() + ") queued.");
     }
 }

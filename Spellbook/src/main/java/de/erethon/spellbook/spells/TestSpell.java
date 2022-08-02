@@ -2,49 +2,37 @@ package de.erethon.spellbook.spells;
 
 import de.erethon.spellbook.ActiveSpell;
 import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.caster.SpellCaster;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
+public class TestSpell extends ActiveSpell {
 
-public class TestSpell extends SpellData {
-
-    private double dashMultiplier = 1;
-
-    public TestSpell(Spellbook spellbook, String id) {
-        super(spellbook, id);
+    public TestSpell(SpellCaster caster, SpellData spellData) {
+        super(caster, spellData);
     }
 
     @Override
-    public boolean precast(SpellCaster caster, ActiveSpell activeSpell) {
+    protected boolean onPrecast() {
         return true;
     }
 
     @Override
-    public boolean cast(SpellCaster caster, ActiveSpell activeSpell) {
+    protected boolean onCast() {
         Player player = (Player) caster.getEntity();
         player.sendMessage("TestSpell. Hui!");
-        player.setVelocity(player.getLocation().getDirection().multiply(dashMultiplier));
+        player.setVelocity(player.getLocation().getDirection().multiply(data.getDouble("dashMultiplier", 5.0)));
         return true;
     }
 
     @Override
-    public void afterCast(SpellCaster caster, ActiveSpell activeSpell) {
-        caster.setCooldown(this);
+    protected void onAfterCast() {
     }
 
     @Override
-    public void tick(SpellCaster caster, ActiveSpell activeSpell) {
+    protected void onTick() {
     }
 
-
     @Override
-    public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
-        super.load(file);
-        getDouble("dashMultiplier", dashMultiplier);
+    protected void onTickFinish() {
     }
 }

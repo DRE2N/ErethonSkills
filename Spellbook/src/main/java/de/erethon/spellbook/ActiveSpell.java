@@ -6,40 +6,54 @@ import org.bukkit.entity.Entity;
 
 import java.util.UUID;
 
-public class ActiveSpell {
+public abstract class ActiveSpell {
 
     Spellbook spellbook = Spellbook.getInstance();
-    private final UUID uuid;
+    protected final UUID uuid;
 
-    private final SpellData spellData;
-    private final SpellCaster caster;
+    protected final SpellData data;
+    protected final SpellCaster caster;
 
-    private int keepAliveTicks = 0;
+    protected int keepAliveTicks = 0;
     private int currentTicks = 0;
 
-    private int tickInterval = 1;
+    protected int tickInterval = 1;
     private int currentTickInterval = 0;
 
-    private Location location = null;
-    private Entity targetEntity= null;
-
-    private SpellError error;
-
     public ActiveSpell(SpellCaster caster, SpellData spellData) {
-        this.spellData = spellData;
+        this.data = spellData;
         this.caster = caster;
         uuid = UUID.randomUUID();
     }
 
+
+    /**
+     * This should be used to check for prerequisites for the spell, such as mana, target, location, etc.
+     * @return true if the spell can be cast, false otherwise
+     */
+    protected abstract boolean onPrecast();
+
+    /**
+     * This should be used to implement the spell itself.
+     * @return true if the spell was successfully cast, false otherwise
+     */
+    protected abstract boolean onCast();
+
+    /**
+     * This should be used do execute code after the spell was cast, like removing mana.
+
+     */
+    protected abstract void onAfterCast();
+
+    protected abstract void onTick();
+
+    protected abstract void onTickFinish();
+
     public void ready() {
-        if (getSpell().precast(caster, this)) {
-            if (getSpell().cast(caster, this)) {
-                getSpell().afterCast(caster, this);
-            } else {
-                sendError();
+        if (onPrecast()) {
+            if (onCast()) {
+                onAfterCast();
             }
-        } else {
-            sendError();
         }
     }
 
@@ -47,73 +61,29 @@ public class ActiveSpell {
         currentTicks++;
         if (currentTickInterval >= tickInterval) {
             currentTickInterval = 0;
-            getSpell().tick(caster, this);
+            onTick();
         } else {
             currentTickInterval++;
         }
+        if (shouldRemove()) {
+            onTickFinish();
+        }
     }
+
 
     public boolean shouldRemove() {
         return currentTicks >= keepAliveTicks;
     }
 
-    /** Sets the amount of ticks this spell should be kept alive. Every tick, the tick() method is called.
-     * if you want to run logic every x ticks, use the setTickInterval() method.
-     * @param keepAliveTicks the keepAliveTicks to set. This is in SpellQueue ticks, not server ticks.
-     */
-    public void setKeepAliveTicks(int keepAliveTicks) {
-        this.keepAliveTicks = keepAliveTicks;
-    }
-
-    private void sendError() {
-        if (error != null) {
-            caster.sendMessage(error.getMessage());
-        }
-    }
-
-    /**
-     * Sets a tick interval for this spell. This is in SpellQueue ticks. The default is 0.
-     * The SpellQueue will always tick all ActiveSpells at the same interval, so if you want to have a spell that ticks differently from this,
-     * this method can be used to achieve this.
-     * @param tickInterval the interval between each tick
-     */
-    public void setTickInterval(int tickInterval) {
-        this.tickInterval = tickInterval;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Entity getTargetEntity() {
-        return targetEntity;
-    }
-
-    public void setTargetEntity(Entity targetEntity) {
-        this.targetEntity = targetEntity;
-    }
-
-    public SpellError getError() {
-        return error;
-    }
-
-    public void setError(SpellError error) {
-        this.error = error;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public SpellData getSpell() {
-        return spellData;
+    public SpellData getData() {
+        return data;
     }
 
     public SpellCaster getCaster() {
         return caster;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 }

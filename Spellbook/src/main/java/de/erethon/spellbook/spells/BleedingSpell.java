@@ -1,54 +1,42 @@
 package de.erethon.spellbook.spells;
 
-import de.erethon.spellbook.ActiveSpell;
 import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.caster.SpellCaster;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class BleedingSpell extends SpellData {
+public class BleedingSpell extends EntityTargetSpell {
 
-    public BleedingSpell(Spellbook spellbook, String id) {
-        super(spellbook, id);
+    public BleedingSpell(SpellCaster caster, SpellData spellData) {
+        super(caster, spellData);
     }
 
     @Override
-    public boolean precast(SpellCaster caster, ActiveSpell activeSpell) {
-        LivingEntity casterEntity = caster.getEntity();
-        Entity target = casterEntity.getTargetEntity(32);
-        if (target == null) {
-            return false;
-        } else {
-            activeSpell.setTargetEntity(target);
-            return true;
-        }
+    public boolean onPrecast() {
+        return super.onPrecast();
     }
 
     @Override
-    public boolean cast(SpellCaster caster, ActiveSpell activeSpell) {
-        Entity target = activeSpell.getTargetEntity();
-        target.getWorld().playEffect(target.getLocation(), Effect.GHAST_SHRIEK, 1);
-        activeSpell.setKeepAliveTicks(100);
-        activeSpell.setTickInterval(10);
+    public boolean onCast() {
+        targetEntity.getWorld().playEffect(targetEntity.getLocation(), Effect.GHAST_SHRIEK, 1);
+        keepAliveTicks = 100;
+        tickInterval = 6;
         return true;
     }
 
     @Override
-    public void afterCast(SpellCaster caster, ActiveSpell activeSpell) {
-        caster.setCooldown(this);
+    public void onAfterCast() {
+        caster.setCooldown(data);
     }
 
     @Override
-    public void tick(SpellCaster caster, ActiveSpell activeSpell) {
-        Entity target = activeSpell.getTargetEntity();
-        if (target == null) {
+    public void onTick() {
+        if (targetEntity == null) {
             return;
         }
-        if (target instanceof LivingEntity livingEntity) {
+        if (targetEntity instanceof LivingEntity livingEntity) {
             livingEntity.customName(Component.text(livingEntity.getHealth()));
             if (livingEntity.isDead() ||livingEntity.getHealth() <= 0) {
                 return;
@@ -56,6 +44,10 @@ public class BleedingSpell extends SpellData {
             livingEntity.setHealth(livingEntity.getHealth() - 2);
             livingEntity.playEffect(EntityEffect.HURT);
         }
+    }
+
+    @Override
+    protected void onTickFinish() {
     }
 }
 

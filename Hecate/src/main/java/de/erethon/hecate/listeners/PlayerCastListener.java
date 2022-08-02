@@ -31,8 +31,8 @@ public class PlayerCastListener implements Listener {
         }
         event.setCancelled(true);
         SpellData spell = hPlayer.getSpellAt(event.getNewSlot());
-        if (spell != null && hPlayer.getCaster().canCast(spell)) {
-            hPlayer.getSpellAt(event.getNewSlot()).queue(hPlayer.getCaster());
+        if (spell != null && hPlayer.canCast(spell)) {
+            hPlayer.getSpellAt(event.getNewSlot()).queue(hPlayer);
             hPlayer.update();
         }
     }
