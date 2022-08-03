@@ -10,6 +10,9 @@ import de.erethon.spellbook.SpellData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SkillCommand extends ECommand {
 
     private final Spellbook spellbook = Hecate.getInstance().getSpellbook();
@@ -36,5 +39,19 @@ public class SkillCommand extends ECommand {
         }
         SpellbookSpell spellbookSpell = spellData.queue(player);
         MessageUtil.log("Spell " + spellbookSpell.getData().getId() + " (" + spellbookSpell.getUuid() + ") queued.");
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            List<String> completes = new ArrayList<>();
+            for (String spell : spellbook.getLibrary().getLoaded().keySet()) {
+                if (spell.toLowerCase().startsWith(args[1].toLowerCase())) {
+                    completes.add(spell);
+                }
+            }
+            return completes;
+        }
+        return null;
     }
 }

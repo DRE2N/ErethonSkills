@@ -8,7 +8,13 @@ import de.erethon.spellbook.SpellData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class LearnSkillCommand extends ECommand {
+
+    private final List<String> slots = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8");
 
     public LearnSkillCommand() {
         setCommand("learn");
@@ -34,4 +40,26 @@ public class LearnSkillCommand extends ECommand {
         }
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            List<String> completes = new ArrayList<>();
+            for (String spell : Hecate.getInstance().getSpellbook().getLibrary().getLoaded().keySet()) {
+                if (spell.toLowerCase().startsWith(args[1].toLowerCase())) {
+                    completes.add(spell);
+                }
+            }
+            return completes;
+        }
+        if (args.length == 3) {
+            List<String> completes = new ArrayList<>();
+            for (String slot : slots) {
+                if (slot.startsWith(args[1])) {
+                    completes.add(slot);
+                }
+            }
+            return completes;
+        }
+        return null;
+    }
 }
