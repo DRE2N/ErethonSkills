@@ -1,5 +1,6 @@
 package de.erethon.spellbook;
 
+import de.erethon.bedrock.misc.FileUtil;
 import org.bukkit.configuration.InvalidConfigurationException;
 
 import java.io.File;
@@ -24,7 +25,7 @@ public class SpellLibrary {
     }
 
     public void loadSpells(File spellFolder) {
-        for (File f : spellFolder.listFiles()) {
+        for (File f : FileUtil.getFilesForFolder(spellFolder)) {
             if (!f.getName().endsWith(".yml")) {
                 continue;
             }
