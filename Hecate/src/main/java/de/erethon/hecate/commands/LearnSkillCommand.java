@@ -54,7 +54,7 @@ public class LearnSkillCommand extends ECommand {
         if (args.length == 3) {
             List<String> completes = new ArrayList<>();
             for (String slot : slots) {
-                if (slot.startsWith(args[1])) {
+                if (slot.startsWith(args[2])) {
                     completes.add(slot);
                 }
             }
