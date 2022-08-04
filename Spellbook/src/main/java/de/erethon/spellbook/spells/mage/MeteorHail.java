@@ -35,20 +35,27 @@ public class MeteorHail extends MageBaseSpell {
     @Override
     protected boolean onCast() {
         random = new Random();
-        tickInterval = 10;
+        tickInterval = 5;
         keepAliveTicks = 100;
         return true;
     }
 
     @Override
     protected void onTick() {
+        Location castLocation = getOffsetLocation(20);
+        Fireball meteor = castLocation.getWorld().spawn(castLocation, Fireball.class);
+        meteor.setShooter(caster.getEntity());
+        meteor.setIsIncendiary(false);
+        meteor.setYield(0F);
+        meteor.setDirection(getOffsetLocation(0).subtract(castLocation).toVector());
+        meteor.setVelocity(meteor.getDirection().multiply(10));
+    }
+
+    private Location getOffsetLocation(int yOffset) {
         Location location = targetBlock.getLocation();
         int xOffset = (random.nextBoolean() ? 1 : -1) * random.nextInt(radius + 1);
         int zOffset = (random.nextBoolean() ? 1 : -1) * random.nextInt(radius + 1);
-        Location castLocation = location.clone().add(xOffset, 20, zOffset);
-        Fireball meteor = castLocation.getWorld().spawn(castLocation, Fireball.class);
-        meteor.setShooter(caster.getEntity());
-        meteor.setVelocity(location.subtract(castLocation).toVector().multiply(10));
+        return location.clone().add(xOffset, yOffset, zOffset);
     }
 
     @Override
