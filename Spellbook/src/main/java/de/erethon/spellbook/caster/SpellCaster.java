@@ -5,6 +5,7 @@ import de.erethon.spellbook.SpellbookSpell;
 import de.erethon.spellbook.effects.SpellEffect;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.scoreboard.Team;
 
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,14 @@ public interface SpellCaster {
     void sendMessage(String message);
 
     void sendActionbar(String message);
+
+    Team getTeam();
+
+    void setTeam(Team team);
+
+    default boolean sameTeam(SpellCaster other) {
+        return getTeam().equals(other.getTeam());
+    }
 
     Location getLocation();
 

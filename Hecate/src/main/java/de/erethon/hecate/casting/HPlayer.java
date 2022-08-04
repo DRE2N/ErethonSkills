@@ -11,6 +11,7 @@ import de.erethon.spellbook.caster.SpellCaster;
 import de.erethon.spellbook.SpellData;
 import de.erethon.spellbook.effects.SpellEffect;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -18,6 +19,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -317,6 +319,14 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
         return energy;
     }
 
+    @Override
+    public Team getTeam() {
+        return Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player);
+    }
 
-
+    @Override
+    public void setTeam(Team team) {
+        getTeam().removePlayer(player);
+        team.addPlayer(player);
+    }
 }
