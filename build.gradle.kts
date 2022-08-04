@@ -21,10 +21,11 @@ tasks {
         dependsOn("Hecate:assemble")
     }
 
+
 }
 
 
 
 dependencies {
-    paperweightDevBundle("de.erethon.papyrus", "1.19-R1")
+    paperweightDevBundle("de.erethon.papyrus", "1.19.1-R0.1-SNAPSHOT")
 }

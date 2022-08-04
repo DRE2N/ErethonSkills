@@ -30,7 +30,7 @@ java {
 }
 
 dependencies {
-    paperweightDevBundle("de.erethon.papyrus", "1.19-R1")
+    paperweightDevBundle("de.erethon.papyrus", "1.19.1-R0.1-SNAPSHOT")
     //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
     implementation("de.erethon:bedrock:1.2.3") { isTransitive = false }
     implementation(project(":Spellbook"))
@@ -43,6 +43,9 @@ tasks {
         dependsOn(reobfJar)
     }
 
+    runServer {
+        serverJar
+    }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
         options.release.set(17)
