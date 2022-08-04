@@ -44,7 +44,7 @@ tasks {
     }
 
     runServer {
-        serverJar
+        serverJar(File(rootProject.projectDir, "server.jar"))
     }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
