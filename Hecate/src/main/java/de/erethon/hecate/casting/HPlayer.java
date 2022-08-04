@@ -11,6 +11,7 @@ import de.erethon.spellbook.caster.SpellCaster;
 import de.erethon.spellbook.SpellData;
 import de.erethon.spellbook.SpellEffect;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -55,6 +56,8 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
 
     private int maxEnergy = 0;
     private int energy = 0;
+
+    MiniMessage miniMessage = MiniMessage.miniMessage();
 
     public HPlayer(Spellbook spellbook, Player player) {
         super(HPlayerCache.getPlayerFile(player), CONFIG_VERSION);
@@ -140,6 +143,20 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
                 player.setCooldown(inventory.getItem(slot).getType(), (calculateCooldown(getSpellAt(slot)) * 20) - 15); // its slightly offset visually
             }
         }
+        StringBuilder positive = new StringBuilder("<green>");
+        StringBuilder negative = new StringBuilder("<red>");
+        int health = (int) player.getHealth();
+        int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+
+        for (SpellEffect effect : getEffects()) {
+            if (effect.getData().isPositive()) {
+                positive.append(effect.getData().getIcon()).append(" ");
+            } else {
+                negative.append(effect.getData().getIcon()).append(" ");
+            }
+        }
+        Component component = miniMessage.deserialize("<dark_red>" + health + "<dark_gray>/<dark_red>" + maxHealth + " <<<    <green>+" + positive + " <dark_gray>| <red>-" + negative + "  <yellow>>>> " + energy + "<dark_gray>/<yellow>" + maxEnergy);
+        player.sendActionBar(component);
     }
 
     public boolean isInCastmode() {

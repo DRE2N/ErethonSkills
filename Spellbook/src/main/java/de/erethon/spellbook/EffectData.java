@@ -25,6 +25,7 @@ public class EffectData extends YamlConfiguration {
 
     private StackMode stackMode;
 
+    private boolean isPositive;
     private Class<? extends SpellEffect> effectClass;
 
     public EffectData(Spellbook spellbook, String id) {
@@ -48,6 +49,10 @@ public class EffectData extends YamlConfiguration {
 
     public StackMode getStackMode() {
         return stackMode;
+    }
+
+    public boolean isPositive() {
+        return isPositive;
     }
 
     public SpellEffect getActiveEffect(SpellCaster target, int duration, int stack) {
