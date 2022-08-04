@@ -8,6 +8,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -52,6 +53,8 @@ public class GrapplingHook extends SpellbookSpell {
     @Override
     protected void onTickFinish() {
         double speed = -1 * data.getDouble("speedModifier", 2);
-        caster.getEntity().setVelocity(vec.multiply(speed));
+        LivingEntity entity = caster.getEntity();
+        entity.setFallDistance(0);
+        entity.setVelocity(vec.multiply(speed));
     }
 }
