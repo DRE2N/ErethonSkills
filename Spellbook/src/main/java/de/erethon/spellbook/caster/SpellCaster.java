@@ -85,6 +85,8 @@ public interface SpellCaster {
 
     int getEnergy();
     int setEnergy(int energy);
+    int getMaxEnergy();
+    int setMaxEnergy(int maxEnergy);
     int addEnergy(int energy);
     int removeEnergy(int energy);
 

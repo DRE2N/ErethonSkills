@@ -51,6 +51,7 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
     private final List<ItemStack> hotbarItems = new ArrayList<>();
     private int hotbarSlot = 0;
 
+    private int maxEnergy = 0;
     private int energy = 0;
 
     public HPlayer(Spellbook spellbook, Player player) {
@@ -180,6 +181,7 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
         }
         xp = config.getDouble("xp", 0);
         level = config.getInt("level", 1);
+        maxEnergy = config.getInt("maxEnergy", 100);
         energy = config.getInt("energy", 50);
     }
 
@@ -198,6 +200,7 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
         config.set("assignedSlots", Arrays.stream(assignedSlots).map(s -> s == null ? "empty" : s.getId()).collect(Collectors.toList()));
         config.set("level", level);
         config.set("xp", xp);
+        config.set("maxEnergy", maxEnergy);
         config.set("energy", energy);
         save();
     }
@@ -287,13 +290,22 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
 
     @Override
     public int setEnergy(int e) {
-        energy = e;
-        return energy;
+        return energy = Math.min(e, maxEnergy);
+    }
+
+    @Override
+    public int getMaxEnergy() {
+        return maxEnergy;
+    }
+
+    @Override
+    public int setMaxEnergy(int e) {
+        return maxEnergy = e;
     }
 
     @Override
     public int addEnergy(int e) {
-        energy = Math.min(energy + e, 100);
+        energy = Math.min(energy + e, maxEnergy);
         player.sendActionBar(Component.text("Energie: " + energy));
         return energy;
     }
