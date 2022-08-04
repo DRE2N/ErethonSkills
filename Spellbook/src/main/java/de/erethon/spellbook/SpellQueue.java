@@ -27,7 +27,6 @@ public class SpellQueue implements Listener {
     @EventHandler
     public void onTick(ServerTickEndEvent event) {
         if (event.getTimeRemaining() < 0) { // Don't execute spells if the tick is already over 50ms
-            spellbook.getImplementingPlugin().getLogger().warning("Skipped SpellQueue because the tick is already over 50ms.");
             return;
         }
         run();
