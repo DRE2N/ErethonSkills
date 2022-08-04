@@ -4,8 +4,6 @@ import de.erethon.spellbook.SpellData;
 import de.erethon.spellbook.caster.SpellCaster;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
 
 import java.util.Random;
@@ -45,15 +43,12 @@ public class MeteorHail extends MageBaseSpell {
     @Override
     protected void onTick() {
         Location location = targetBlock.getLocation();
-        int x = location.getBlockX();
-        int z = location.getBlockZ();
-        int xOffset = random.nextInt(Math.min(x + radius, x - radius), Math.max(x + radius, x - radius));
-        int zOffset = random.nextInt(Math.min(z + radius, z - radius), Math.max(z + radius, z - radius));
+        int xOffset = (random.nextBoolean() ? 1 : -1) * random.nextInt(radius + 1);
+        int zOffset = (random.nextBoolean() ? 1 : -1) * random.nextInt(radius + 1);
         Location castLocation = location.clone().add(xOffset, 20, zOffset);
         Fireball meteor = castLocation.getWorld().spawn(castLocation, Fireball.class);
-        meteor.setInvulnerable(true);
         meteor.setShooter(caster.getEntity());
-        meteor.setVelocity(location.subtract(castLocation).toVector().multiply(2));
+        meteor.setVelocity(location.subtract(castLocation).toVector().multiply(10));
     }
 
     @Override
