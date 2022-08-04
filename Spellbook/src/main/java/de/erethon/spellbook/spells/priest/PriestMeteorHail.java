@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.mage;
+package de.erethon.spellbook.spells.priest;
 
 import de.erethon.spellbook.SpellData;
 import de.erethon.spellbook.caster.SpellCaster;
@@ -11,13 +11,13 @@ import java.util.Random;
 /**
  * @author Fyreum
  */
-public class MeteorHail extends MageBaseSpell {
+public class PriestMeteorHail extends PriestBaseSpell {
 
     int radius;
     Block targetBlock;
     Random random;
 
-    public MeteorHail(SpellCaster caster, SpellData spellData) {
+    public PriestMeteorHail(SpellCaster caster, SpellData spellData) {
         super(caster, spellData);
         radius = data.getInt("radius", 5);
     }

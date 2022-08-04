@@ -10,14 +10,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
-public class Backstab extends AssassinBaseSpell {
+public class AssassinBackstab extends AssassinBaseSpell {
 
     Entity target;
     Location location = null;
 
-    public Backstab(SpellCaster caster, SpellData spellData) {
+    public AssassinBackstab(SpellCaster caster, SpellData spellData) {
         super(caster, spellData);
     }
 

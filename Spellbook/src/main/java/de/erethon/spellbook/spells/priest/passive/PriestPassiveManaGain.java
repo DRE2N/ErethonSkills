@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.mage.passive;
+package de.erethon.spellbook.spells.priest.passive;
 
 import de.erethon.spellbook.SpellData;
 import de.erethon.spellbook.caster.SpellCaster;
@@ -7,9 +7,9 @@ import de.erethon.spellbook.spells.PassiveSpell;
 /**
  * @author Fyreum
  */
-public class MagePassiveManaGain extends PassiveSpell {
+public class PriestPassiveManaGain extends PassiveSpell {
 
-    public MagePassiveManaGain(SpellCaster caster, SpellData spellData) {
+    public PriestPassiveManaGain(SpellCaster caster, SpellData spellData) {
         super(caster, spellData);
         tickInterval = 10;
     }
