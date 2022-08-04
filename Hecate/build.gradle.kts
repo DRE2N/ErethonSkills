@@ -1,4 +1,5 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+import java.io.FileInputStream
 
 repositories {
     mavenLocal()
@@ -29,8 +30,10 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
+val papyrusVersion = "1.19.1-R0.1-SNAPSHOT"
+
 dependencies {
-    paperweightDevBundle("de.erethon.papyrus", "1.19.1-R0.1-SNAPSHOT")
+    paperweightDevBundle("de.erethon.papyrus", papyrusVersion)
     //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
     implementation("de.erethon:bedrock:1.2.3") { isTransitive = false }
     implementation(project(":Spellbook"))
@@ -44,7 +47,9 @@ tasks {
     }
 
     runServer {
-        serverJar(File(rootProject.projectDir, "server.jar"))
+        val f = File(project.buildDir, "server.jar");
+        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-reobf.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        serverJar(f)
     }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
