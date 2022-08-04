@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SpellData extends YamlConfiguration {
+
     Spellbook spellbook;
     SpellQueue queue;
     private int cooldown;
@@ -97,6 +98,7 @@ public class SpellData extends YamlConfiguration {
         try {
             spellClass = (Class<? extends SpellbookSpell>) Class.forName(this.getClass().getPackageName() + ".spells." + className);
         } catch (ClassNotFoundException e) {
+            spellbook.getImplementingPlugin().getLogger().warning("Could not find class for spell " + id + ": " + className);
             throw new RuntimeException(e);
         }
         cooldown = getInt("cooldown", 0);

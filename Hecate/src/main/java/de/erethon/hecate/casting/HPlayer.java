@@ -9,7 +9,7 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.SpellbookSpell;
 import de.erethon.spellbook.caster.SpellCaster;
 import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.effects.SpellEffect;
+import de.erethon.spellbook.SpellEffect;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
