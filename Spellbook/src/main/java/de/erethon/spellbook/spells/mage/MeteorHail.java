@@ -47,6 +47,7 @@ public class MeteorHail extends MageBaseSpell {
         meteor.setShooter(caster.getEntity());
         meteor.setIsIncendiary(false);
         meteor.setYield(0F);
+        meteor.setSilent(true);
         meteor.setDirection(getOffsetLocation(0).subtract(castLocation).toVector());
         meteor.setVelocity(meteor.getDirection().multiply(10));
     }
