@@ -2,7 +2,7 @@ package de.erethon.hecate.classes;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import de.erethon.spellbook.SpellData;
+import de.erethon.spellbook.api.SpellData;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -50,7 +50,7 @@ public class HClass extends YamlConfiguration {
             if (levelEntry != null) {
                 HashSet<SpellData> spells = new HashSet<>();
                 for (String spellId : levelEntry.getStringList("spells")) {
-                    SpellData spellData = Hecate.getInstance().getSpellbook().getLibrary().getSpellByID(spellId);
+                    SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
                     if (spellData == null) {
                         MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getName());
                         continue;

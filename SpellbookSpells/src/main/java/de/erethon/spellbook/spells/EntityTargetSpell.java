@@ -2,7 +2,6 @@ package de.erethon.spellbook.spells;
 
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.caster.SpellCaster;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
@@ -11,15 +10,14 @@ public abstract class EntityTargetSpell extends SpellbookSpell {
     protected Entity targetEntity = null;
     private int maxDistance = 32;
 
-    public EntityTargetSpell(SpellCaster caster, SpellData spellData) {
+    public EntityTargetSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         maxDistance = data.getInt("maxDistance", maxDistance);
     }
 
     @Override
     public boolean onPrecast() {
-        LivingEntity casterEntity = caster.getEntity();
-        Entity target = casterEntity.getTargetEntity(maxDistance);
+        Entity target = caster.getTargetEntity(maxDistance);
         if (target == null) {
             return false;
         } else {

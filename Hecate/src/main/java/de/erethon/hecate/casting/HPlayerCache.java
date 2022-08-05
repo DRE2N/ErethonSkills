@@ -37,7 +37,7 @@ public class HPlayerCache extends UserCache<HPlayer> {
         Player player = offlinePlayer.getPlayer();
         if (player != null) {
             MessageUtil.log("Loading player " + player.getUniqueId() + " (" + player.getName() + ")");
-            return new HPlayer(Hecate.getInstance().getSpellbook(), player);
+            return new HPlayer(Hecate.getInstance().getAPI(), player);
         }
         return null;
     }

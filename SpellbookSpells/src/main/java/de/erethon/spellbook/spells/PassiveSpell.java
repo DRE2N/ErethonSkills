@@ -1,16 +1,16 @@
 package de.erethon.spellbook.spells;
 
-import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.SpellbookSpell;
-import de.erethon.spellbook.caster.SpellCaster;
+import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellbookSpell;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Listener;
 
 public abstract class PassiveSpell extends SpellbookSpell implements Listener {
 
-    public PassiveSpell(SpellCaster caster, SpellData spellData) {
+    public PassiveSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         keepAliveTicks = -1;
-        data.getSpellbook().getImplementingPlugin().getServer().getPluginManager().registerEvents(this, data.getSpellbook().getImplementingPlugin());
+        //data.getSpellbook().getServer().getPluginManager().registerEvents(this, data.getSpellbook().getImplementingPlugin());
     }
 
 }

@@ -24,7 +24,6 @@ repositories {
 dependencies {
     paperweightDevBundle("de.erethon.papyrus", "1.19.1-R0.1-SNAPSHOT")
     implementation("com.elmakers.mine.bukkit:EffectLib:9.4")
-    compileOnly(project(":SpellbookAPI"))
     compileOnly("de.erethon:bedrock:1.2.4")
 }
 

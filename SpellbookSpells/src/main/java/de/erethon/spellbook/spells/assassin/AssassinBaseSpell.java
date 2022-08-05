@@ -2,13 +2,13 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.caster.SpellCaster;
+import org.bukkit.entity.LivingEntity;
 
 public abstract class AssassinBaseSpell extends SpellbookSpell {
 
     protected final int energyCost;
 
-    public AssassinBaseSpell(SpellCaster caster, SpellData spellData) {
+    public AssassinBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         energyCost = spellData.getInt("energyCost", 10);
     }

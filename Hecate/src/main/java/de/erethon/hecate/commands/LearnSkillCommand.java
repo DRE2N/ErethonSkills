@@ -4,7 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
-import de.erethon.spellbook.SpellData;
+import de.erethon.spellbook.api.SpellData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,13 +29,14 @@ public class LearnSkillCommand extends ECommand {
 
     @Override
     public void onExecute(String[] strings, CommandSender commandSender) {
-        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer((Player) commandSender);
-        SpellData spellData = Hecate.getInstance().getSpellbook().getLibrary().getSpellByID(strings[1]);
+        Player player = (Player) commandSender;
+        HPlayer hPlayer = new HPlayer(Hecate.getInstance().getAPI(), player);
+        SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(strings[1]);
         if (strings.length == 3) {
             hPlayer.learnSpell(spellData, Integer.parseInt(strings[2]));
             MessageUtil.sendMessage(commandSender, "Learned spell " + spellData.getId() + " in slot " + strings[2]);
         } else {
-            hPlayer.addPassiveSpell(spellData.getActiveSpell(hPlayer));
+            player.addPassiveSpell(spellData.getActiveSpell(player));
             MessageUtil.sendMessage(commandSender, "Learned passive spell " + spellData.getId());
         }
     }
@@ -44,7 +45,7 @@ public class LearnSkillCommand extends ECommand {
     public List<String> onTabComplete(CommandSender sender, String[] args) {
         if (args.length == 2) {
             List<String> completes = new ArrayList<>();
-            for (String spell : Hecate.getInstance().getSpellbook().getLibrary().getLoaded().keySet()) {
+            for (String spell : Hecate.getInstance().getAPI().getLibrary().getLoaded().keySet()) {
                 if (spell.toLowerCase().startsWith(args[1].toLowerCase())) {
                     completes.add(spell);
                 }

@@ -1,12 +1,15 @@
 package de.erethon.spellbook.spells.assassin;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.caster.SpellCaster;
+import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -16,14 +19,14 @@ public class AssassinBackstab extends AssassinBaseSpell {
     Entity target;
     Location location = null;
 
-    public AssassinBackstab(SpellCaster caster, SpellData spellData) {
+    public AssassinBackstab(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 
 
     @Override
     protected boolean onPrecast() {
-        target = caster.getEntity().getTargetEntity(data.getInt("range", 10));
+        target = caster.getTargetEntity(data.getInt("range", 10));
         if (target == null) {
             caster.sendActionbar("<red>Kein Target!");
             return false;
@@ -31,14 +34,14 @@ public class AssassinBackstab extends AssassinBaseSpell {
         location = target.getLocation().clone().toVector().subtract(target.getLocation().getDirection().multiply(1.5)).toLocation(target.getWorld());
         if (location.getBlock().isSolid()) {
             caster.sendActionbar("<red>Kein Platz!");
-            return false;
         }
         return super.onPrecast();
     }
 
     @Override
     protected boolean onCast() {
-        CylinderEffect effectTarget = new CylinderEffect(effectManager);
+        EffectManager manager = Spellbook.getInstance().getEffectManager();
+        CylinderEffect effectTarget = new CylinderEffect(manager);
         effectTarget.setLocation(location);
         effectTarget.particle = Particle.REDSTONE;
         effectTarget.particleSize = 0.4f;
@@ -46,8 +49,8 @@ public class AssassinBackstab extends AssassinBaseSpell {
         effectTarget.duration = 500;
         effectTarget.height = 1.5f;
         effectTarget.start();
-        CylinderEffect effectCaster = new CylinderEffect(effectManager);
-        effectCaster.setEntity(caster.getEntity());
+        CylinderEffect effectCaster = new CylinderEffect(manager);
+        effectCaster.setEntity(caster);
         effectCaster.particle = Particle.REDSTONE;
         effectCaster.particleSize = 0.4f;
         effectCaster.color = Color.BLACK;
@@ -61,11 +64,11 @@ public class AssassinBackstab extends AssassinBaseSpell {
     @Override
     protected void onTickFinish() {
         float yaw = target.getLocation().getYaw();
-        float pitch = caster.getEntity().getLocation().getPitch();
+        float pitch = caster.getLocation().getPitch();
         location.setYaw(yaw);
         location.setPitch(pitch);
-        caster.getEntity().addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1));
-        caster.getEntity().teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
-        caster.getEntity().attack(target);
+        caster.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1));
+        caster.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+        caster.attack(target);
     }
 }

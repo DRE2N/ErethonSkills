@@ -35,7 +35,7 @@ val papyrusVersion = "1.19.1-R0.1-SNAPSHOT"
 dependencies {
     paperweightDevBundle("de.erethon.papyrus", papyrusVersion)
     //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
-    implementation("de.erethon:bedrock:1.2.3") { isTransitive = false }
+    implementation("de.erethon:bedrock:1.2.4") { isTransitive = false }
     implementation(project(":SpellbookSpells"))
     //compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
 }
@@ -47,6 +47,9 @@ tasks {
     }
 
     runServer {
+        if (!project.buildDir.exists()) {
+            project.buildDir.mkdir()
+        }
         val f = File(project.buildDir, "server.jar");
         uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-reobf.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
@@ -61,7 +64,7 @@ tasks {
 
     shadowJar {
         dependencies {
-            include(dependency("de.erethon:bedrock:1.2.3"))
+            include(dependency("de.erethon:bedrock:1.2.4"))
             include(project(":SpellbookSpells"))
             include(dependency("com.elmakers.mine.bukkit:EffectLib:9.4"))
         }

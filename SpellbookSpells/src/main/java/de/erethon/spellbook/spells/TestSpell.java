@@ -1,13 +1,12 @@
 package de.erethon.spellbook.spells;
 
-import de.erethon.spellbook.SpellbookSpell;
-import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.caster.SpellCaster;
-import org.bukkit.entity.Player;
+import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.api.SpellData;
+import org.bukkit.entity.LivingEntity;
 
 public class TestSpell extends SpellbookSpell {
 
-    public TestSpell(SpellCaster caster, SpellData spellData) {
+    public TestSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 
@@ -18,9 +17,8 @@ public class TestSpell extends SpellbookSpell {
 
     @Override
     protected boolean onCast() {
-        Player player = (Player) caster.getEntity();
-        player.sendMessage("TestSpell. Hui!");
-        player.setVelocity(player.getLocation().getDirection().multiply(data.getDouble("dashMultiplier", 5.0)));
+        caster.sendMessage("TestSpell. Hui!");
+        caster.setVelocity(caster.getLocation().getDirection().multiply(data.getDouble("dashMultiplier", 5.0)));
         return true;
     }
 
