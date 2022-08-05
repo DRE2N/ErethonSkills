@@ -1,10 +1,8 @@
 package de.erethon.spellbook;
 
 import de.erethon.bedrock.misc.FileUtil;
-import org.bukkit.configuration.InvalidConfigurationException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 public class SpellLibrary {
@@ -36,7 +34,7 @@ public class SpellLibrary {
                 EffectData effectData = new EffectData(spellbook, id);
                 try {
                     effectData.load(f);
-                } catch (IOException | InvalidConfigurationException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     continue;
                 }
@@ -47,7 +45,7 @@ public class SpellLibrary {
             SpellData spellData = new SpellData(spellbook, id);
             try {
                 spellData.load(f);
-            } catch (IOException | InvalidConfigurationException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 continue;
             }
