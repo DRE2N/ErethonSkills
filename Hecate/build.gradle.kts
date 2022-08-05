@@ -36,7 +36,7 @@ dependencies {
     paperweightDevBundle("de.erethon.papyrus", papyrusVersion)
     //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
     implementation("de.erethon:bedrock:1.2.3") { isTransitive = false }
-    implementation(project(":Spellbook"))
+    implementation(project(":SpellbookSpells"))
     //compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
 }
 
@@ -62,7 +62,7 @@ tasks {
     shadowJar {
         dependencies {
             include(dependency("de.erethon:bedrock:1.2.3"))
-            include(project(":Spellbook"))
+            include(project(":SpellbookSpells"))
             include(dependency("com.elmakers.mine.bukkit:EffectLib:9.4"))
         }
         relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")

@@ -6,7 +6,7 @@ import de.erethon.bedrock.user.LoadableUser;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.SpellbookSpell;
+import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.caster.SpellCaster;
 import de.erethon.spellbook.SpellData;
 import de.erethon.spellbook.SpellEffect;
@@ -128,7 +128,6 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
     }
 
     public void update() {
-        tick();
         if (!isInCastmode) {
             return;
         }

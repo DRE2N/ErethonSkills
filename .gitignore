@@ -115,4 +115,4 @@ run/
 # Project exclude paths
 /.gradle/
 /build/
-/Spellbook/build/
+/SpellbookSpells/build/

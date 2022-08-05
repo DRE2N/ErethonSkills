@@ -1,7 +1,7 @@
 package de.erethon.spellbook.spells;
 
-import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.caster.SpellCaster;
+import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.caster.SpellCaster;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;

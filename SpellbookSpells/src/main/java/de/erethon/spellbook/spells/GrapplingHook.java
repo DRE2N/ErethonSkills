@@ -1,15 +1,14 @@
 package de.erethon.spellbook.spells;
 
-import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.SpellbookSpell;
-import de.erethon.spellbook.caster.SpellCaster;
+import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.api.caster.SpellCaster;
 import de.slikey.effectlib.effect.LineEffect;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class GrapplingHook extends SpellbookSpell {

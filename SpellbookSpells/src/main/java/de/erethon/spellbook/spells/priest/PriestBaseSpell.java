@@ -1,8 +1,8 @@
 package de.erethon.spellbook.spells.priest;
 
-import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.SpellbookSpell;
-import de.erethon.spellbook.caster.SpellCaster;
+import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.api.caster.SpellCaster;
 
 /**
  * @author Fyreum

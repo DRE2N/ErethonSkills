@@ -1,7 +1,7 @@
 package de.erethon.spellbook.spells.priest;
 
-import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.caster.SpellCaster;
+import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.caster.SpellCaster;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Fireball;

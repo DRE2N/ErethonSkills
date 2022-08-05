@@ -17,7 +17,7 @@ repositories {
 }
 tasks {
     assemble {
-        dependsOn("Spellbook:assemble")
+        dependsOn("SpellbookSpells:assemble")
         dependsOn("Hecate:assemble")
     }
 

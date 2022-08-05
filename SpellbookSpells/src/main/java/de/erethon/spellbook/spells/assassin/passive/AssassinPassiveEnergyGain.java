@@ -1,7 +1,7 @@
 package de.erethon.spellbook.spells.assassin.passive;
 
-import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.caster.SpellCaster;
+import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.caster.SpellCaster;
 import de.erethon.spellbook.spells.PassiveSpell;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
