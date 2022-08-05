@@ -8,6 +8,7 @@ import de.erethon.hecate.casting.HPlayerCache;
 import de.erethon.hecate.commands.HecateCommandCache;
 import de.erethon.hecate.listeners.PlayerCastListener;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellbookAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 
@@ -19,7 +20,7 @@ public final class Hecate extends EPlugin {
 
     public static File PLAYERS;
 
-    private Spellbook spellbook;
+    private SpellbookAPI spellbook;
     private HPlayerCache hPlayerCache;
     private HecateCommandCache commands;
 
@@ -39,7 +40,7 @@ public final class Hecate extends EPlugin {
     }
 
     public void loadCore() {
-        spellbook = new Spellbook(this);
+        spellbook = Bukkit.getServer().getSpellbookAPI();
         MessageUtil.log("Loading spells...");
         for (String spell : spellbook.getLibrary().getLoaded().keySet()) {
             MessageUtil.log("- " + spell);
@@ -78,7 +79,7 @@ public final class Hecate extends EPlugin {
 
     /* getter */
 
-    public Spellbook getSpellbook() {
+    public SpellbookAPI getSpellbook() {
         return spellbook;
     }
 

@@ -1,8 +1,9 @@
 package de.erethon.spellbook.spells;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.api.caster.SpellCaster;
+import de.erethon.spellbook.api.SpellCaster;
 import de.slikey.effectlib.effect.LineEffect;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -16,19 +17,20 @@ public class GrapplingHook extends SpellbookSpell {
     Block targetBlock = null;
     Vector vec;
 
-    public GrapplingHook(SpellCaster caster, SpellData spellData) {
+    public GrapplingHook(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 
     @Override
     protected boolean onPrecast() {
-        targetBlock = caster.getEntity().getTargetBlock(data.getInt("range", 64));
+        targetBlock = caster.getTargetBlock(data.getInt("range", 64));
         if (targetBlock == null) {
-            caster.sendActionbar("<red>Kein Target!");
+            caster.sendActionbar("<red>Kein Ziel gefunden!");
             return false;
         }
         if (targetBlock.getType() != Material.RED_CONCRETE) {
-            caster.sendActionbar("<red>Kein Grappling-Target!");
+            caster.sendActionbar("<red>Kein Grappling-Ziel gefunden!");
+
             return false;
         }
         return super.onPrecast();
@@ -37,7 +39,7 @@ public class GrapplingHook extends SpellbookSpell {
     @Override
     protected boolean onCast() {
         vec = caster.getLocation().clone().toVector().subtract(targetBlock.getLocation().clone().toVector());
-        LineEffect line = new LineEffect(effectManager);
+        LineEffect line = new LineEffect(Spellbook.getInstance().getEffectManager());
         line.setLocation(caster.getLocation().add(0, -1, 0));
         line.setTargetLocation(targetBlock.getLocation().add(0.5, 0.5, 0.5));
         line.particle = Particle.REDSTONE;
@@ -52,8 +54,7 @@ public class GrapplingHook extends SpellbookSpell {
     @Override
     protected void onTickFinish() {
         double speed = -1 * data.getDouble("speedModifier", 2);
-        LivingEntity entity = caster.getEntity();
-        entity.setFallDistance(0);
-        entity.setVelocity(vec.multiply(speed));
+        caster.setFallDistance(0);
+        caster.setVelocity(vec.multiply(speed));
     }
 }

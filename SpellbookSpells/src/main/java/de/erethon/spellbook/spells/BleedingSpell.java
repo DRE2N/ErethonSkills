@@ -1,7 +1,6 @@
 package de.erethon.spellbook.spells;
 
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.caster.SpellCaster;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
@@ -9,7 +8,7 @@ import org.bukkit.entity.LivingEntity;
 
 public class BleedingSpell extends EntityTargetSpell {
 
-    public BleedingSpell(SpellCaster caster, SpellData spellData) {
+    public BleedingSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 

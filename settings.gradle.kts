@@ -8,4 +8,3 @@ pluginManagement {
 rootProject.name = "ErethonSkills"
 include("Hecate")
 include("SpellbookSpells")
-include("SpellbookAPI")

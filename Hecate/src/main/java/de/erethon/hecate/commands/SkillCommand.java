@@ -5,8 +5,9 @@ import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.SpellbookSpell;
-import de.erethon.spellbook.SpellData;
+import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellbookAPI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class SkillCommand extends ECommand {
 
-    private final Spellbook spellbook = Hecate.getInstance().getSpellbook();
+    private final SpellbookAPI spellbook = Hecate.getInstance().getSpellbook();
 
     public SkillCommand() {
         setCommand("skill");
@@ -37,7 +38,7 @@ public class SkillCommand extends ECommand {
             MessageUtil.sendMessage(commandSender, "Invalid spell.");
             return;
         }
-        SpellbookSpell spellbookSpell = spellData.queue(player);
+        SpellbookSpell spellbookSpell = spellData.queue(player.getPlayer());
         MessageUtil.log("Spell " + spellbookSpell.getData().getId() + " (" + spellbookSpell.getUuid() + ") queued.");
     }
 

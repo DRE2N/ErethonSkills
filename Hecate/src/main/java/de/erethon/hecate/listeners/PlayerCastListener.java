@@ -2,7 +2,7 @@ package de.erethon.hecate.listeners;
 
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
-import de.erethon.spellbook.SpellData;
+import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -32,8 +32,8 @@ public class PlayerCastListener implements Listener {
         }
         event.setCancelled(true);
         SpellData spell = hPlayer.getSpellAt(event.getNewSlot());
-        if (spell != null && hPlayer.canCast(spell)) {
-            hPlayer.getSpellAt(event.getNewSlot()).queue(hPlayer);
+        if (spell != null && event.getPlayer().canCast(spell)) {
+            hPlayer.getSpellAt(event.getNewSlot()).queue(event.getPlayer());
             hPlayer.update();
         }
     }

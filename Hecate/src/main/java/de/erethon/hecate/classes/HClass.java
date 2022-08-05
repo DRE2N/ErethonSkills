@@ -2,7 +2,7 @@ package de.erethon.hecate.classes;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import de.erethon.spellbook.SpellData;
+import de.erethon.spellbook.api.SpellData;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;

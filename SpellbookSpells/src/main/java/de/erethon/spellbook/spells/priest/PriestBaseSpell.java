@@ -2,7 +2,7 @@ package de.erethon.spellbook.spells.priest;
 
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.api.caster.SpellCaster;
+import org.bukkit.entity.LivingEntity;
 
 /**
  * @author Fyreum
@@ -11,7 +11,7 @@ public class PriestBaseSpell extends SpellbookSpell {
 
     protected final int manaCost;
 
-    public PriestBaseSpell(SpellCaster caster, SpellData spellData) {
+    public PriestBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         manaCost = spellData.getInt("manaCost", 10);
     }

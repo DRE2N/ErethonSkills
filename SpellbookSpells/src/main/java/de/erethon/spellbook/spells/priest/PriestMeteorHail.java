@@ -1,10 +1,10 @@
 package de.erethon.spellbook.spells.priest;
 
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.caster.SpellCaster;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Fireball;
+import org.bukkit.entity.LivingEntity;
 
 import java.util.Random;
 
@@ -17,16 +17,16 @@ public class PriestMeteorHail extends PriestBaseSpell {
     Block targetBlock;
     Random random;
 
-    public PriestMeteorHail(SpellCaster caster, SpellData spellData) {
+    public PriestMeteorHail(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         radius = data.getInt("radius", 5);
     }
 
     @Override
     protected boolean onPrecast() {
-        targetBlock = caster.getEntity().getTargetBlock(64);
+        targetBlock = caster.getTargetBlock(64);
         if (targetBlock == null) {
-            caster.sendActionbar("<red>Kein Target!");
+            caster.sendActionbar("<red>Kein Ziel gefunden!");
             return false;
         }
         return super.onPrecast();
@@ -44,7 +44,7 @@ public class PriestMeteorHail extends PriestBaseSpell {
     protected void onTick() {
         Location castLocation = getOffsetLocation(20);
         Fireball meteor = castLocation.getWorld().spawn(castLocation, Fireball.class);
-        meteor.setShooter(caster.getEntity());
+        meteor.setShooter(caster);
         meteor.setIsIncendiary(false);
         meteor.setYield(0F);
         meteor.setSilent(true);

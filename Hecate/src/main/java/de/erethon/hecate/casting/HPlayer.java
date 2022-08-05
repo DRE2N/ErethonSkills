@@ -3,13 +3,12 @@ package de.erethon.hecate.casting;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.config.EConfig;
 import de.erethon.bedrock.user.LoadableUser;
-import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.caster.SpellCaster;
-import de.erethon.spellbook.SpellData;
-import de.erethon.spellbook.SpellEffect;
+import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellEffect;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -31,35 +30,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
+public class HPlayer extends EConfig implements LoadableUser {
 
     public static final int CONFIG_VERSION = 1;
 
     private Player player;
-    private Set<SpellData> unlockedSpellData = new HashSet<>();
-    private Set<SpellData> passiveSpells = new HashSet<>();
-    private final SpellData[] assignedSlots = new SpellData[8];
-
-    Map<SpellData, Long> usedSpells = new LinkedHashMap<>();
-    Set<SpellEffect> effects = new HashSet<>();
-    Set<SpellbookSpell> runningPassiveSpells = new HashSet<>();
 
     private int level = 1;
     private double xp = 0;
 
     private HClass hClass;
+    private final SpellData[] assignedSlots = new SpellData[8];
 
     private boolean isInCastmode = false;
 
     private final List<ItemStack> hotbarItems = new ArrayList<>();
     private int hotbarSlot = 0;
 
-    private int maxEnergy = 0;
-    private int energy = 0;
 
     MiniMessage miniMessage = MiniMessage.miniMessage();
 
-    public HPlayer(Spellbook spellbook, Player player) {
+    public HPlayer(SpellbookAPI spellbook, Player player) {
         super(HPlayerCache.getPlayerFile(player), CONFIG_VERSION);
         this.player = player;
         load();
@@ -77,8 +68,7 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
             }
         }
         if (hClass.getSpellsUnlockedAtLevel(level) != null) {
-            // Set spells instead of adding them, so that it is possible to replace spells with more powerful versions.
-            unlockedSpellData = hClass.getSpellsUnlockedAtLevel(level);
+            player.getUnlockedSpells().addAll(hClass.getSpellsUnlockedAtLevel(level));
             updateSlots();
         }
 
@@ -137,9 +127,9 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
                 continue;
             }
             SpellData spellData = getSpellAt(slot);
-            inventory.getItem(slot).setAmount(calculateCooldown(spellData));
-            if (spellData.getCooldown() == calculateCooldown(spellData)) {
-                player.setCooldown(inventory.getItem(slot).getType(), (calculateCooldown(getSpellAt(slot)) * 20) - 15); // its slightly offset visually
+            inventory.getItem(slot).setAmount(player.calculateCooldown(spellData));
+            if (spellData.getCooldown() == player.calculateCooldown(spellData)) {
+                player.setCooldown(inventory.getItem(slot).getType(), (player.calculateCooldown(getSpellAt(slot)) * 20) - 15); // its slightly offset visually
             }
         }
         StringBuilder positive = new StringBuilder("<green>");
@@ -147,14 +137,14 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
         int health = (int) player.getHealth();
         int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
 
-        for (SpellEffect effect : getEffects()) {
+        for (SpellEffect effect : player.getEffects()) {
             if (effect.getData().isPositive()) {
                 positive.append(effect.getData().getIcon()).append(" ");
             } else {
                 negative.append(effect.getData().getIcon()).append(" ");
             }
         }
-        Component component = miniMessage.deserialize("<dark_red>" + health + "<dark_gray>/<dark_red>" + maxHealth + " <<<    <green>+" + positive + " <dark_gray>| <red>-" + negative + "  <yellow>>>> " + energy + "<dark_gray>/<yellow>" + maxEnergy);
+        Component component = miniMessage.deserialize("<dark_red>" + health + "<dark_gray>/<dark_red>" + maxHealth + " <<<    <green>+" + positive + " <dark_gray>| <red>-" + negative + "  <yellow>>>> " + player.getEnergy() + "<dark_gray>/<yellow>" + player.getMaxEnergy());
         player.sendActionBar(component);
     }
 
@@ -166,14 +156,14 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
 
     @Override
     public void load() {
-        Spellbook spellbook = Hecate.getInstance().getSpellbook();
+        SpellbookAPI spellbook = Bukkit.getServer().getSpellbookAPI();
         for (String spellId : config.getStringList("unlockedSpells")) {
             SpellData spellData = spellbook.getLibrary().getSpellByID(spellId);
             if (spellData == null) {
                 MessageUtil.log("Unknown spell '" + spellId + "' found under 'unlockedSlots'");
                 continue;
             }
-            unlockedSpellData.add(spellData);
+            player.getUnlockedSpells().add(spellData);
         }
         for (String spellId : config.getStringList("passiveSpells")) {
             SpellData spellData = spellbook.getLibrary().getSpellByID(spellId);
@@ -181,7 +171,7 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
                 MessageUtil.log("Unknown spell '" + spellId + "' found under 'passiveSpells'");
                 continue;
             }
-            addPassiveSpell(spellData.getActiveSpell(this));
+            player.getPassiveSpells().add(spellData.getActiveSpell(player));
         }
         List<String> slotList = config.getStringList("assignedSlots");
         if (slotList.size() > 8) {
@@ -199,8 +189,8 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
         }
         xp = config.getDouble("xp", 0);
         level = config.getInt("level", 1);
-        maxEnergy = config.getInt("maxEnergy", 100);
-        energy = config.getInt("energy", 50);
+        player.setMaxEnergy(config.getInt("maxEnergy", 100));
+        player.setEnergy(config.getInt("energy", 50));
     }
 
     /* LoadableUser methods */
@@ -213,13 +203,13 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
     @Override
     public void saveUser() {
         MessageUtil.log("User saved!");
-        config.set("unlockedSpells", unlockedSpellData.stream().map(SpellData::getId).collect(Collectors.toList()));
-        config.set("passiveSpells", getPassiveSpells().stream().map(SpellbookSpell::getId).collect(Collectors.toList()));
+        config.set("unlockedSpells", player.getUnlockedSpells().stream().map(SpellData::getId).collect(Collectors.toList()));
+        config.set("passiveSpells", player.getPassiveSpells().stream().map(SpellbookSpell::getId).collect(Collectors.toList()));
         config.set("assignedSlots", Arrays.stream(assignedSlots).map(s -> s == null ? "empty" : s.getId()).collect(Collectors.toList()));
         config.set("level", level);
         config.set("xp", xp);
-        config.set("maxEnergy", maxEnergy);
-        config.set("energy", energy);
+        config.set("maxEnergy", player.getMaxEnergy());
+        config.set("energy", player.getEnergy());
         save();
     }
 
@@ -229,9 +219,6 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
         return player;
     }
 
-    public Set<SpellData> getUnlockedSpells() {
-        return unlockedSpellData;
-    }
 
     public SpellData getSpellAt(int slot) {
         return assignedSlots[slot];
@@ -250,12 +237,12 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
     }
 
     public void learnSpell(SpellData spellData) {
-        unlockedSpellData.add(spellData);
+        player.getUnlockedSpells().add(spellData);
         updateSlots();
     }
 
     public void learnSpell(SpellData spellData, int slot) {
-        unlockedSpellData.add(spellData);
+        player.getUnlockedSpells().add(spellData);
         assignedSlots[slot] = spellData;
         updateSlots();
     }
@@ -266,83 +253,4 @@ public class HPlayer extends EConfig implements LoadableUser, SpellCaster {
         checkLevel();
     }
 
-    @Override
-    public void sendMessage(String message) {
-        MessageUtil.sendMessage(player, message);
-    }
-
-    @Override
-    public void sendActionbar(String message) {
-        MessageUtil.sendActionBarMessage(player, message);
-    }
-
-    @Override
-    public Location getLocation() {
-        return player.getLocation();
-    }
-
-    @Override
-    public Map<SpellData, Long> getUsedSpells() {
-        return usedSpells;
-    }
-
-    @Override
-    public Set<SpellEffect> getEffects() {
-        return effects;
-    }
-
-    @Override
-    public Set<SpellbookSpell> getPassiveSpells() {
-        return runningPassiveSpells;
-    }
-
-    @Override
-    public LivingEntity getEntity() {
-        return player;
-    }
-
-    @Override
-    public int getEnergy() {
-        return energy;
-    }
-
-    @Override
-    public int setEnergy(int e) {
-        return energy = Math.min(e, maxEnergy);
-    }
-
-    @Override
-    public int getMaxEnergy() {
-        return maxEnergy;
-    }
-
-    @Override
-    public int setMaxEnergy(int e) {
-        return maxEnergy = e;
-    }
-
-    @Override
-    public int addEnergy(int e) {
-        energy = Math.min(energy + e, maxEnergy);
-        player.sendActionBar(Component.text("Energie: " + energy));
-        return energy;
-    }
-
-    @Override
-    public int removeEnergy(int e) {
-        energy = Math.max(energy - e, 0);
-        player.sendActionBar(Component.text("Energie: " + energy));
-        return energy;
-    }
-
-    @Override
-    public Team getTeam() {
-        return Bukkit.getScoreboardManager().getMainScoreboard().getPlayerTeam(player);
-    }
-
-    @Override
-    public void setTeam(Team team) {
-        getTeam().removePlayer(player);
-        team.addPlayer(player);
-    }
 }
