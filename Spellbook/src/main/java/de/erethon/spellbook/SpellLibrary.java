@@ -37,7 +37,8 @@ public class SpellLibrary {
                 try {
                     effectData.load(f);
                 } catch (IOException | InvalidConfigurationException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
+                    continue;
                 }
                 loadedEffects.put(id, effectData);
                 continue;
@@ -47,7 +48,8 @@ public class SpellLibrary {
             try {
                 spellData.load(f);
             } catch (IOException | InvalidConfigurationException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
+                continue;
             }
             loadedSpells.put(id, spellData);
         }
