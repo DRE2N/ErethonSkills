@@ -9,8 +9,8 @@ public class BlindnessEffect extends EventBasedEffect {
 
     double missChancePerStack = data.getDouble("missChancePerStack", 0.1);
 
-    public BlindnessEffect(EffectData data, LivingEntity target, int duration) {
-        super(data, target, duration);
+    public BlindnessEffect(EffectData data, LivingEntity target, int duration, int stacks) {
+        super(data, target, duration, stacks);
     }
 
     @EventHandler

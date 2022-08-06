@@ -138,10 +138,10 @@ public class HPlayer extends EConfig implements LoadableUser {
         int maxHealth = (int) player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
 
         for (SpellEffect effect : player.getEffects()) {
-            if (effect.getData().isPositive()) {
-                positive.append(effect.getData().getIcon()).append(" ");
+            if (effect.data.isPositive()) {
+                positive.append(effect.data.getIcon()).append(" ");
             } else {
-                negative.append(effect.getData().getIcon()).append(" ");
+                negative.append(effect.data.getIcon()).append(" ");
             }
         }
         Component component = miniMessage.deserialize("<dark_red>" + health + "<dark_gray>/<dark_red>" + maxHealth + " <<<    <green>+" + positive + " <dark_gray>| <red>-" + negative + "  <yellow>>>> " + player.getEnergy() + "<dark_gray>/<yellow>" + player.getMaxEnergy());

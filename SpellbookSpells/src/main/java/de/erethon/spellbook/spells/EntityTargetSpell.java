@@ -7,7 +7,7 @@ import org.bukkit.entity.LivingEntity;
 
 public abstract class EntityTargetSpell extends SpellbookSpell {
 
-    protected Entity targetEntity = null;
+    protected LivingEntity targetEntity = null;
     private int maxDistance = 32;
 
     public EntityTargetSpell(LivingEntity caster, SpellData spellData) {
@@ -18,11 +18,10 @@ public abstract class EntityTargetSpell extends SpellbookSpell {
     @Override
     public boolean onPrecast() {
         Entity target = caster.getTargetEntity(maxDistance);
-        if (target == null) {
-            return false;
-        } else {
-            targetEntity = target;
+        if (target instanceof LivingEntity livingEntity) {
+            targetEntity = livingEntity;
             return true;
         }
+        return false;
     }
 }
