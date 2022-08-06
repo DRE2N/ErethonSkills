@@ -33,7 +33,7 @@ java {
 val papyrusVersion = "1.19.1-R0.1-SNAPSHOT"
 
 dependencies {
-    paperweightDevBundle("de.erethon.papyrus", papyrusVersion)
+    paperweightDevBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true}
     //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
     implementation("de.erethon:bedrock:1.2.4") { isTransitive = false }
     implementation(project(":SpellbookSpells"))
