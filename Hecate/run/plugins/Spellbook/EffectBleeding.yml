@@ -1,5 +1,5 @@
 class: BleedingEffect
-maxStacks: 5
-maxDuration: 1000
+maxStacks: 1
+maxDuration: 400
 isPositive: false
 stackMode: prolong

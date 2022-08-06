@@ -1,0 +1,5 @@
+class: FuryEffect
+maxStacks: 5
+maxDuration: 200
+isPositive: true
+stackMode: intensify
