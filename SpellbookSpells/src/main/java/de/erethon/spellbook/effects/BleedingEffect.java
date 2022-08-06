@@ -11,8 +11,8 @@ public class BleedingEffect extends SpellEffect {
 
     private int tick = 0;
 
-    public BleedingEffect(EffectData data, LivingEntity target, int duration, int stacks) {
-        super(data, target, duration, stacks);
+    public BleedingEffect(EffectData data, LivingEntity caster, LivingEntity target, int duration, int stacks) {
+        super(data, caster, target, duration, stacks);
     }
 
     @Override

@@ -11,8 +11,8 @@ public class FuryEffect extends SpellEffect {
     AttributeInstance instance;
     double value = 0.0; // Important to make sure that only modifications from this effect are applied/removed!
 
-    public FuryEffect(EffectData data, LivingEntity target, int duration, int stacks) {
-        super(data, target, duration, stacks);
+    public FuryEffect(EffectData data, LivingEntity caster, LivingEntity target, int duration, int stacks) {
+        super(data, caster, target, duration, stacks);
         instance = target.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
     }
 

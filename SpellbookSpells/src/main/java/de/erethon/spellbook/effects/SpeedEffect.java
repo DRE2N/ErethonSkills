@@ -11,8 +11,8 @@ public class SpeedEffect extends SpellEffect {
     AttributeInstance instance;
     double value = 0.0;
 
-    public SpeedEffect(EffectData data, LivingEntity target, int duration, int stacks) {
-        super(data, target, duration, stacks);
+    public SpeedEffect(EffectData data, LivingEntity caster, LivingEntity target, int duration, int stacks) {
+        super(data, caster, target, duration, stacks);
         instance = target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
     }
 

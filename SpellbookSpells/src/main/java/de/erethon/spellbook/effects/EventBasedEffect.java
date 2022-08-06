@@ -10,8 +10,8 @@ import org.bukkit.event.Listener;
 
 public class EventBasedEffect extends SpellEffect implements Listener {
 
-    public EventBasedEffect(EffectData data, LivingEntity target, int duration, int stacks) {
-        super(data, target, duration, stacks);
+    public EventBasedEffect(EffectData data, LivingEntity caster, LivingEntity target, int duration, int stacks) {
+        super(data, caster, target, duration, stacks);
     }
 
     @Override

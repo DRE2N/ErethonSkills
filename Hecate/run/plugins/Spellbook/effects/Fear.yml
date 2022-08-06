@@ -1,0 +1,6 @@
+class: FearEffect
+maxStacks: 1
+maxDuration: 60
+isPositive: false
+stackMode: prolong
+speed: 0.5

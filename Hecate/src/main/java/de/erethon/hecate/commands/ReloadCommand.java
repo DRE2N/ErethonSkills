@@ -3,6 +3,7 @@ package de.erethon.hecate.commands;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 public class ReloadCommand extends ECommand {
@@ -21,6 +22,7 @@ public class ReloadCommand extends ECommand {
     @Override
     public void onExecute(String[] strings, CommandSender commandSender) {
         Hecate.getInstance().onDisable();
+        Bukkit.getServer().getSpellbookAPI().getLibrary().reload();
         Hecate.getInstance().onEnable();
         MessageUtil.sendMessage(commandSender, "<green>Reloaded.");
     }

@@ -20,8 +20,8 @@ public class BleedingSpell extends EntityTargetSpell {
     @Override
     public boolean onCast() {
         targetEntity.getWorld().playEffect(targetEntity.getLocation(), Effect.GHAST_SHRIEK, 1);
-        EffectData data  = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("BleedingEffect");
-        targetEntity.addEffect(data, 20 * data.getInt("duration", 10), 1);
+        EffectData data  = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("FearEffect");
+        targetEntity.addEffect(caster, data,data.getInt("duration", 10), 1);
         return true;
     }
 

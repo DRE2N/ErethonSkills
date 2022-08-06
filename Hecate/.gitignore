@@ -111,19 +111,5 @@ gradle-app.setting
 
 **/build/
 
-# Common working directory
-run/*
-!run/plugins/
-run/plugins/*
-# Needs to be done this way because git stupid
-!run/plugins/Spellbook
-run/plugins/Spellbook/*
-!run/plugins/Spellbook/assassin
-!run/plugins/Spellbook/priest
-!run/plugins/Spellbook/warrior
-!run/plugins/Spellbook/archer
-!run/plugins/Spellbook/necromancer
-!run/plugins/Spellbook/paladin
-
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
