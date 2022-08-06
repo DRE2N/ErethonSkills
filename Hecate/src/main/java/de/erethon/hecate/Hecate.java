@@ -20,7 +20,7 @@ public final class Hecate extends EPlugin {
 
     public static File PLAYERS;
 
-    private SpellbookAPI spellbook;
+    private Spellbook spellbook;
     private HPlayerCache hPlayerCache;
     private HecateCommandCache commands;
 
@@ -40,7 +40,7 @@ public final class Hecate extends EPlugin {
     }
 
     public void loadCore() {
-        spellbook = Bukkit.getServer().getSpellbookAPI();
+        spellbook = new Spellbook(this);
         MessageUtil.log("Loading spells...");
         for (String spell : spellbook.getAPI().getLibrary().getLoaded().keySet()) {
             MessageUtil.log("- " + spell);
@@ -79,7 +79,7 @@ public final class Hecate extends EPlugin {
 
     /* getter */
 
-    public SpellbookAPI getSpellbook() {
+    public Spellbook getSpellbook() {
         return spellbook;
     }
 
