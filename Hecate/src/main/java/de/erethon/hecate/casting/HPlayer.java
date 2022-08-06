@@ -4,30 +4,23 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.config.EConfig;
 import de.erethon.bedrock.user.LoadableUser;
 import de.erethon.hecate.classes.HClass;
-import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.api.SpellbookAPI;
-import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
+import de.erethon.spellbook.api.SpellbookAPI;
+import de.erethon.spellbook.api.SpellbookSpell;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HPlayer extends EConfig implements LoadableUser {
@@ -160,18 +153,18 @@ public class HPlayer extends EConfig implements LoadableUser {
         for (String spellId : config.getStringList("unlockedSpells")) {
             SpellData spellData = spellbook.getLibrary().getSpellByID(spellId);
             if (spellData == null) {
-                MessageUtil.log("Unknown spell '" + spellId + "' found under 'unlockedSlots'");
+                if (!spellId.equals("empty")) MessageUtil.log("Unknown spell '" + spellId + "' found under 'unlockedSlots'");
                 continue;
             }
-            player.getUnlockedSpells().add(spellData);
+            player.addSpell(spellData);
         }
         for (String spellId : config.getStringList("passiveSpells")) {
             SpellData spellData = spellbook.getLibrary().getSpellByID(spellId);
             if (spellData == null) {
-                MessageUtil.log("Unknown spell '" + spellId + "' found under 'passiveSpells'");
+                if (!spellId.equals("empty")) MessageUtil.log("Unknown spell '" + spellId + "' found under 'passiveSpells'");
                 continue;
             }
-            player.getPassiveSpells().add(spellData.getActiveSpell(player.getPlayer()));
+            player.addPassiveSpell(spellData.getActiveSpell(player.getPlayer()));
         }
         List<String> slotList = config.getStringList("assignedSlots");
         if (slotList.size() > 8) {
@@ -182,7 +175,7 @@ public class HPlayer extends EConfig implements LoadableUser {
             String spellId = slotList.get(i);
             SpellData spellData = spellbook.getLibrary().getSpellByID(spellId);
             if (spellData == null) {
-                MessageUtil.log("Unknown spell '" + spellId + "' found under 'assignedSlots'");
+                if (!spellId.equals("empty")) MessageUtil.log("Unknown spell '" + spellId + "' found under 'assignedSlots'");
                 continue;
             }
             assignedSlots[i] = spellData;
@@ -221,6 +214,16 @@ public class HPlayer extends EConfig implements LoadableUser {
 
 
     public SpellData getSpellAt(int slot) {
+        MessageUtil.broadcastMessage("GetAt");
+        int i = 0;
+        for (SpellData data : assignedSlots) {
+            MessageUtil.broadcastMessage(i + ": ");
+            i++;
+            if (data == null) {
+                continue;
+            }
+            MessageUtil.broadcastMessage(data.getId());
+        }
         return assignedSlots[slot];
     }
 
@@ -237,13 +240,25 @@ public class HPlayer extends EConfig implements LoadableUser {
     }
 
     public void learnSpell(SpellData spellData) {
-        player.getUnlockedSpells().add(spellData);
+        player.addSpell(spellData);
+        MessageUtil.log(player.getName() + " learned spell " + spellData.getId());
         updateSlots();
     }
 
     public void learnSpell(SpellData spellData, int slot) {
-        player.getUnlockedSpells().add(spellData);
+        player.addSpell(spellData);
+        MessageUtil.log(player.getUnlockedSpells().size() + " spells learned");
         assignedSlots[slot] = spellData;
+        MessageUtil.log(player.getName() + " learned spell " + spellData.getId() + " at slot " + slot);
+        int i = 0;
+        for (SpellData data : assignedSlots) {
+            MessageUtil.broadcastMessage(i + ": ");
+            i++;
+            if (data == null) {
+                continue;
+            }
+            MessageUtil.broadcastMessage(data.getId());
+        }
         updateSlots();
     }
 

@@ -1,5 +1,6 @@
 package de.erethon.hecate.listeners;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
 import de.erethon.spellbook.api.SpellData;
@@ -33,7 +34,8 @@ public class PlayerCastListener implements Listener {
         event.setCancelled(true);
         SpellData spell = hPlayer.getSpellAt(event.getNewSlot());
         if (spell != null && event.getPlayer().canCast(spell)) {
-            hPlayer.getSpellAt(event.getNewSlot()).queue(event.getPlayer());
+            MessageUtil.broadcastMessage("Found spell: " + spell.getId());
+            spell.queue(event.getPlayer());
             hPlayer.update();
         }
     }
