@@ -29,7 +29,7 @@ public class AssassinBackstab extends AssassinBaseSpell {
         target = caster.getTargetEntity(data.getInt("range", 10));
         if (target == null) {
             caster.sendActionbar("<red>Kein Target!");
-            return false;
+
         }
         location = target.getLocation().clone().toVector().subtract(target.getLocation().getDirection().multiply(1.5)).toLocation(target.getWorld());
         if (location.getBlock().isSolid()) {
