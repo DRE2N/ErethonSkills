@@ -1,0 +1,5 @@
+class: SpeedEffect
+maxStacks: 1
+maxDuration: 2400 # 2 Minutes
+isPositive: true
+stackMode: prolong
