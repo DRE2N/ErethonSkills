@@ -4,9 +4,9 @@ import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
-public class AssassinDash extends AssassinBaseSpell {
+public class Dash extends AssassinBaseSpell {
 
-    public AssassinDash(LivingEntity caster, SpellData spellData) {
+    public Dash(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 

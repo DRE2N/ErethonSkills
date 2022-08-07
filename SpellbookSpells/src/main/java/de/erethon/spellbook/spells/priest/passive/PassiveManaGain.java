@@ -7,9 +7,9 @@ import org.bukkit.entity.LivingEntity;
 /**
  * @author Fyreum
  */
-public class PriestPassiveManaGain extends PassiveSpell {
+public class PassiveManaGain extends PassiveSpell {
 
-    public PriestPassiveManaGain(LivingEntity caster, SpellData spellData) {
+    public PassiveManaGain(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         tickInterval = 10;
     }

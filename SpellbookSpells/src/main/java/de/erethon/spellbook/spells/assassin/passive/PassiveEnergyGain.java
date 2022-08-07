@@ -6,8 +6,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-public class AssassinPassiveEnergyGain extends PassiveSpell {
-    public AssassinPassiveEnergyGain(LivingEntity caster, SpellData spellData) {
+public class PassiveEnergyGain extends PassiveSpell {
+    public PassiveEnergyGain(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 

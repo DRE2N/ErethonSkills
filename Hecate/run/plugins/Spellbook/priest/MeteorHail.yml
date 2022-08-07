@@ -1,2 +1,2 @@
-class: priest.PriestMeteorHail
+class: priest.MeteorHail
 cooldown: 10

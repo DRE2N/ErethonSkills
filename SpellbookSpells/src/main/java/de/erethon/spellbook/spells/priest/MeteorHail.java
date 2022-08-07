@@ -11,13 +11,13 @@ import java.util.Random;
 /**
  * @author Fyreum
  */
-public class PriestMeteorHail extends PriestBaseSpell {
+public class MeteorHail extends PriestBaseSpell {
 
     int radius;
     Block targetBlock;
     Random random;
 
-    public PriestMeteorHail(LivingEntity caster, SpellData spellData) {
+    public MeteorHail(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         radius = data.getInt("radius", 5);
     }
