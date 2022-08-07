@@ -1,0 +1,6 @@
+class: SlowEffect
+maxStacks: 1
+maxDuration: 2400 # 2 Minutes
+isPositive: false
+stackMode: prolong
+strength: 0.2 # Result = speed * (1 - strength)
