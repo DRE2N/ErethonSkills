@@ -195,7 +195,6 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     @Override
     public void saveUser() {
-        MessageUtil.log("User saved!");
         config.set("unlockedSpells", player.getUnlockedSpells().stream().map(SpellData::getId).collect(Collectors.toList()));
         config.set("passiveSpells", player.getPassiveSpells().stream().map(SpellbookSpell::getId).collect(Collectors.toList()));
         config.set("assignedSlots", Arrays.stream(assignedSlots).map(s -> s == null ? "empty" : s.getId()).collect(Collectors.toList()));
@@ -204,6 +203,7 @@ public class HPlayer extends EConfig implements LoadableUser {
         config.set("maxEnergy", player.getMaxEnergy());
         config.set("energy", player.getEnergy());
         save();
+        MessageUtil.log("User " + player.getName() + " saved!");
     }
 
     /* getter and setter */
