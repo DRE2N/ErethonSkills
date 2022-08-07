@@ -34,7 +34,6 @@ public class PlayerCastListener implements Listener {
         event.setCancelled(true);
         SpellData spell = hPlayer.getSpellAt(event.getNewSlot());
         if (spell != null && event.getPlayer().canCast(spell)) {
-            MessageUtil.broadcastMessage("Found spell: " + spell.getId());
             spell.queue(event.getPlayer());
             hPlayer.update();
         }

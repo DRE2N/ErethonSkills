@@ -214,16 +214,6 @@ public class HPlayer extends EConfig implements LoadableUser {
 
 
     public SpellData getSpellAt(int slot) {
-        MessageUtil.broadcastMessage("GetAt");
-        int i = 0;
-        for (SpellData data : assignedSlots) {
-            MessageUtil.broadcastMessage(i + ": ");
-            i++;
-            if (data == null) {
-                continue;
-            }
-            MessageUtil.broadcastMessage(data.getId());
-        }
         return assignedSlots[slot];
     }
 
@@ -247,18 +237,8 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     public void learnSpell(SpellData spellData, int slot) {
         player.addSpell(spellData);
-        MessageUtil.log(player.getUnlockedSpells().size() + " spells learned");
         assignedSlots[slot] = spellData;
         MessageUtil.log(player.getName() + " learned spell " + spellData.getId() + " at slot " + slot);
-        int i = 0;
-        for (SpellData data : assignedSlots) {
-            MessageUtil.broadcastMessage(i + ": ");
-            i++;
-            if (data == null) {
-                continue;
-            }
-            MessageUtil.broadcastMessage(data.getId());
-        }
         updateSlots();
     }
 
