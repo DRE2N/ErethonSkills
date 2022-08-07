@@ -30,7 +30,7 @@ public class LearnSkillCommand extends ECommand {
     @Override
     public void onExecute(String[] strings, CommandSender commandSender) {
         Player player = (Player) commandSender;
-        HPlayer hPlayer = new HPlayer(Hecate.getInstance().getAPI(), player);
+        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(player);
         SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(strings[1]);
         if (strings.length == 3) {
             hPlayer.learnSpell(spellData, Integer.parseInt(strings[2]));

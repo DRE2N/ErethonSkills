@@ -43,7 +43,7 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     MiniMessage miniMessage = MiniMessage.miniMessage();
 
-    public HPlayer(SpellbookAPI spellbook, Player player) {
+    public HPlayer(Player player) {
         super(HPlayerCache.getPlayerFile(player), CONFIG_VERSION);
         this.player = player;
         load();
