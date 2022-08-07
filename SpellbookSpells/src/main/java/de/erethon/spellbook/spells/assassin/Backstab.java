@@ -2,6 +2,7 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellbookSpell;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import org.bukkit.Color;
@@ -9,12 +10,11 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class Backstab extends AssassinBaseSpell {
+public class Backstab extends SpellbookSpell {
 
     Entity target;
     Location location = null;
@@ -28,14 +28,20 @@ public class Backstab extends AssassinBaseSpell {
     protected boolean onPrecast() {
         target = caster.getTargetEntity(data.getInt("range", 10));
         if (target == null) {
-            caster.sendActionbar("<red>Kein Target!");
-
+            caster.sendActionbar("<color:#ff0000>Kein gültiges Ziel!");
+            return false;
         }
-        location = target.getLocation().clone().toVector().subtract(target.getLocation().getDirection().multiply(1.5)).toLocation(target.getWorld());
+        location = target.getLocation().clone().add(0, 1, 0).toVector().subtract(target.getLocation().getDirection().multiply(1.5)).toLocation(target.getWorld());
         if (location.getBlock().isSolid()) {
-            caster.sendActionbar("<red>Kein Platz!");
+            caster.sendActionbar("<color:#ff0000>Nicht genug Platz!");
+            return false;
         }
-        return super.onPrecast();
+        return AssassinUtils.hasEnergy(caster, data);
+    }
+
+    @Override
+    protected void onAfterCast() {
+        caster.removeEnergy(data.getInt("energyCost", 0));
     }
 
     @Override

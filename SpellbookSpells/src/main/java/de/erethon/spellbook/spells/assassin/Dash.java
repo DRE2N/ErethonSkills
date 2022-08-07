@@ -1,13 +1,19 @@
 package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
-public class Dash extends AssassinBaseSpell {
+public class Dash extends SpellbookSpell {
 
     public Dash(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
+    }
+
+    @Override
+    protected boolean onPrecast() {
+        return AssassinUtils.hasEnergy(caster, data);
     }
 
     @Override
@@ -18,5 +24,9 @@ public class Dash extends AssassinBaseSpell {
         return true;
     }
 
+    @Override
+    protected void onAfterCast() {
+        caster.removeEnergy(data.getInt("energyCost", 0));
+    }
 }
 

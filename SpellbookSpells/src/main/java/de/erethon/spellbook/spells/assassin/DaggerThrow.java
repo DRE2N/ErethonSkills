@@ -1,28 +1,24 @@
 package de.erethon.spellbook.spells.assassin;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.events.ItemProjectileHitEvent;
 import de.erethon.spellbook.utils.ItemProjectile;
-import de.erethon.spellbook.utils.NMSUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 /**
  * @author Fyreum
  */
-public class DaggerThrow extends AssassinBaseSpell implements Listener {
+public class DaggerThrow extends SpellbookSpell implements Listener {
 
     double damage;
     Vector direction;
@@ -34,6 +30,11 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
         tickInterval = 1;
         keepAliveTicks = 2000;
         Bukkit.getServer().getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
+    }
+
+    @Override
+    protected boolean onPrecast() {
+        return AssassinUtils.hasEnergy(caster, data);
     }
 
     @Override
@@ -63,4 +64,8 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
         }
     }
 
+    @Override
+    protected void onAfterCast() {
+        caster.removeEnergy(data.getInt("energyCost", 0));
+    }
 }

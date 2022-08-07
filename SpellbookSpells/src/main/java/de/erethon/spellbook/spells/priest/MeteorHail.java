@@ -26,7 +26,7 @@ public class MeteorHail extends PriestBaseSpell {
     protected boolean onPrecast() {
         targetBlock = caster.getTargetBlock(64);
         if (targetBlock == null) {
-            caster.sendActionbar("<red>Kein Ziel gefunden!");
+            caster.sendActionbar("<color:#ff0000>Kein Ziel gefunden!");
             return false;
         }
         return super.onPrecast();
