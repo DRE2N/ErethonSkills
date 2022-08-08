@@ -20,7 +20,7 @@ public class LifeStealPassiveSpell extends PassiveSpell {
 
 
     @Override
-    public double onDamage(SpellCaster attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
         if (damage <= 0) {
             return damage;
         }

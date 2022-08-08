@@ -20,7 +20,7 @@ public class PoisonWeapon extends SpellbookSpell {
     }
 
     @Override
-    public double onAttack(SpellCaster target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, DamageType type) {
         if (count > 0) {
             count--;
             target.addEffect(caster, effectData, 1, 1);

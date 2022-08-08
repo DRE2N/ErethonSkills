@@ -13,7 +13,7 @@ public class ConfusionEffect extends SpellEffect {
     }
 
     @Override
-    public double onAttack(SpellCaster attackTarget, double damage, DamageType type) {
+    public double onAttack(LivingEntity attackTarget, double damage, DamageType type) {
         for (int i = 0; i <= stacks; i++) {
             target.damage(data.getDouble("attackDamage", 1.0), DamageType.PHYSICAL);
         }

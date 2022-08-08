@@ -13,7 +13,7 @@ public class WeaknessEffect extends SpellEffect {
     }
 
     @Override
-    public double onAttack(SpellCaster target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, DamageType type) {
         for (int i = 0; i <= stacks; i++) {
             damage = damage - data.getDouble("malusDamage", 1.0);
         }

@@ -30,7 +30,7 @@ public class StackingAttack extends SpellbookSpell {
     }
 
     @Override
-    public double onAttack(SpellCaster target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, DamageType type) {
         if (target != this.target) {
             return damage;
         }

@@ -12,7 +12,7 @@ public class PassiveEnergyGain extends PassiveSpell {
     }
 
     @Override
-    public double onAttack(SpellCaster target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, DamageType type) {
         caster.addEnergy((int) (damage / 2));
         return damage;
     }
