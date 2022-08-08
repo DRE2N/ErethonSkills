@@ -19,7 +19,7 @@ public class Dash extends SpellbookSpell {
     @Override
     protected boolean onCast() {
         Location location = caster.getLocation();
-        location.setYaw(-10);
+        location.setPitch(-10);
         caster.setVelocity(location.getDirection().multiply(data.getDouble("dashMultiplier", 2.0)));
         return true;
     }
