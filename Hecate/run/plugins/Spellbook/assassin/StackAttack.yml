@@ -1,0 +1,5 @@
+class: StackingAttack
+energyCost: 20
+duration: 10
+bonusDamagePerStack: 1.0
+maxStacks: 7
