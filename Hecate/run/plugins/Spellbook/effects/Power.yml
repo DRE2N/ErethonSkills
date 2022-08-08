@@ -1,0 +1,6 @@
+class: PowerEffect
+maxStacks: 25
+maxDuration: 200
+isPositive: true
+stackMode: intensify
+bonusDamage: 1.0

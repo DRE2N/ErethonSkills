@@ -1,0 +1,7 @@
+class: ConfusionEffect
+maxStacks: 3
+maxDuration: 200
+isPositive: false
+stackMode: intensify
+attackDamage: 1.0
+castDamage: 2.0
