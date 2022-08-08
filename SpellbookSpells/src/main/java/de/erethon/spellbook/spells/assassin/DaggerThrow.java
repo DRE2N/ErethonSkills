@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -67,5 +68,10 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
     @Override
     protected void onAfterCast() {
         caster.removeEnergy(data.getInt("energyCost", 0));
+    }
+
+    @Override
+    protected void onTickFinish() {
+        HandlerList.unregisterAll(this);
     }
 }
