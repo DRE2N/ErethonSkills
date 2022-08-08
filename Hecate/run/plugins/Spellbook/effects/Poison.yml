@@ -1,0 +1,5 @@
+class: PoisonEffect
+maxStacks: 3
+maxDuration: 200
+isPositive: false
+stackMode: intensify
