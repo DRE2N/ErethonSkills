@@ -18,7 +18,7 @@ public class SpeedEffect extends SpellEffect {
 
     @Override
     public void onApply() {
-        value = data.getDouble("bonus", 1.0);
+        value = data.getDouble("bonus", 0.2);
         instance.setBaseValue(instance.getBaseValue() + value);
     }
 
