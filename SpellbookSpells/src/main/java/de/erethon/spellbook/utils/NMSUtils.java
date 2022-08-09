@@ -4,6 +4,9 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.Level;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftLivingEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.util.Optional;
@@ -40,5 +43,11 @@ public class NMSUtils {
         entity.getBukkitEntity().teleport(location);
         Level world = entity.getCommandSenderWorld();
         world.addFreshEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+    }
+
+    public static void addAttachment(org.bukkit.entity.LivingEntity living, Entity bukkitentity) {
+        net.minecraft.world.entity.LivingEntity nms = ((CraftLivingEntity) living).getHandle();
+        net.minecraft.world.entity.Entity entity= ((CraftEntity) bukkitentity).getHandle();
+        nms.addAttachment(entity, "head", 0, 0.1, 0);
     }
 }
