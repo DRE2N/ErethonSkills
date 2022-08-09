@@ -21,15 +21,16 @@ import org.bukkit.util.Vector;
  */
 public class DaggerThrow extends SpellbookSpell implements Listener {
 
-    double damage;
     Vector direction;
     ItemProjectile arrow;
+    private final float speed = (float) data.getDouble("speed", 2.0);
+    private final double damage = data.getDouble("damage", 30.0);
+    private final int divergence = data.getInt("divergence", 1);
 
     public DaggerThrow(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        damage = data.getDouble("damage", 30.0);
         tickInterval = 1;
-        keepAliveTicks = 2000;
+        keepAliveTicks = 200;
         Bukkit.getServer().getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
     }
 
@@ -42,7 +43,7 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
     protected boolean onCast() {
         direction = caster.getEyeLocation().getDirection();
         arrow = new ItemProjectile(new ItemStack(Material.IRON_SWORD), caster.getEyeLocation().getX(), caster.getEyeLocation().getY(), caster.getEyeLocation().getZ(), caster.getWorld(), this);
-        arrow.shoot(direction.getX(), direction.getY(), direction.getZ(), 1.5f, 0);
+        arrow.shoot(direction.getX(), direction.getY(), direction.getZ(), speed, divergence);
         return true;
     }
 
