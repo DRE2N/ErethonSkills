@@ -4,6 +4,7 @@ import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellEffect;
+import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.entity.LivingEntity;
 
 public class ConfusionEffect extends SpellEffect {
@@ -21,11 +22,11 @@ public class ConfusionEffect extends SpellEffect {
     }
 
     @Override
-    public void onCast() {
+    public boolean onCast(SpellbookSpell spell) {
         for (int i = 0; i <= stacks; i++) {
             target.damage(data.getDouble("castDamage", 1.0), DamageType.MAGIC);
         }
-        super.onCast();
+        return true;
     }
 }
 
