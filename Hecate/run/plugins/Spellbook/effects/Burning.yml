@@ -1,0 +1,6 @@
+class: BurningEffect
+maxStacks: 16
+maxDuration: 50
+isPositive: false
+stackMode: intensify
+damage: 3

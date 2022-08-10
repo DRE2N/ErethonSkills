@@ -1,0 +1,5 @@
+class: assassin.Masterthief
+duration: 20
+energyCost: 90
+maxDistance: 8
+

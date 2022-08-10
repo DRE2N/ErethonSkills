@@ -1,0 +1,8 @@
+class: assassin.TrapPoison
+energyCost: 30
+size: 2
+maxDistance: 16
+customItemDataFriendly: 20
+customItemDataEnemy: 21
+duration: 20
+coefficient-ADV_MAGIC: 0.8

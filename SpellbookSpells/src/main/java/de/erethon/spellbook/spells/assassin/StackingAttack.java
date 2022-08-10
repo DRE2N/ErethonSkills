@@ -1,6 +1,7 @@
 package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.papyrus.DamageType;
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -12,7 +13,7 @@ public class StackingAttack extends SpellbookSpell {
 
     LivingEntity target;
     int stacks;
-    private final double bonus = caster.getAttribute(Attribute.ADV_PHYSICAL).getValue() * data.getDouble("damageCoefficient", 0.3);
+    private final double bonus = Spellbook.getScaledValue(data, caster, Attribute.ADV_PHYSICAL);
 
     public StackingAttack(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);

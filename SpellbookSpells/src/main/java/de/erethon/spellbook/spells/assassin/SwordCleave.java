@@ -1,6 +1,7 @@
 package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.papyrus.DamageType;
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.EntityTargetSpell;
 import org.bukkit.attribute.Attribute;
@@ -22,9 +23,9 @@ public class SwordCleave extends EntityTargetSpell {
     @Override
     protected boolean onCast() {
         caster.attack(targetEntity);
-        double attackDmg = caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).getValue() + caster.getAttribute(Attribute.ADV_PHYSICAL).getValue();
+        double attackDmg = Spellbook.getScaledValue(data, caster, Attribute.ADV_PHYSICAL);
         for (LivingEntity entity : targetEntity.getLocation().getNearbyLivingEntities(radius)) {
-            entity.damage(attackDmg * data.getDouble("damageMultiplier", 0.8), caster, DamageType.PHYSICAL);
+            entity.damage(attackDmg, caster, DamageType.PHYSICAL);
         }
         return true;
     }

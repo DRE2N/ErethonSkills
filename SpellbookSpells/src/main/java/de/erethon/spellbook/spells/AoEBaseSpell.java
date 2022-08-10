@@ -28,6 +28,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +37,7 @@ public class AoEBaseSpell extends SpellbookSpell {
     protected Location target = null;
     CraftServer server = (CraftServer) caster.getServer();
     private final int maxDistance;
+    private final boolean self;
     private final double size;
     private final int customItemDataFriendly;
     private final int customItemDataEnemy;
@@ -50,10 +52,25 @@ public class AoEBaseSpell extends SpellbookSpell {
         customItemDataEnemy = spellData.getInt("customItemDataEnemy", 1);
         maxDistance = spellData.getInt("maxDistance", 32);
         size = spellData.getDouble("size", 2);
+        this.self = false;
     }
+
+    public AoEBaseSpell(LivingEntity caster, SpellData spellData, boolean self) {
+        super(caster, spellData);
+        customItemDataFriendly = spellData.getInt("customItemDataFriendly", 2);
+        customItemDataEnemy = spellData.getInt("customItemDataEnemy", 1);
+        maxDistance = 120;
+        this.self = self;
+        size = spellData.getDouble("size", 2);
+    }
+
 
     @Override
     public boolean onPrecast() {
+        if (self) {
+            caster.getLocation().add(0, -1, 0);
+            return true;
+        }
         Block targetBlock = caster.getTargetBlockExact(64);
         if (targetBlock != null && targetBlock.isSolid()) {
             if (targetBlock.getLocation().distanceSquared(caster.getLocation()) > maxDistance * maxDistance) {
@@ -92,10 +109,12 @@ public class AoEBaseSpell extends SpellbookSpell {
             entities.add(entity);
             onEnter(entity);
         }
-        for (LivingEntity entity : entities) {
+        Iterator<LivingEntity> iterator = entities.iterator();
+        while(iterator.hasNext()) {
+            LivingEntity entity = iterator.next();
             if (!nearbyEntities.contains(entity)) {
+                iterator.remove();
                 onLeave(entity);
-                entities.remove(entity);
             }
         }
     }

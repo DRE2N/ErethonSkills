@@ -1,0 +1,8 @@
+class: assassin.TrapExplosion
+energyCost: 30
+size: 2
+maxDistance: 16
+customItemDataFriendly: 18
+customItemDataEnemy: 19
+duration: 20
+power: 2.5

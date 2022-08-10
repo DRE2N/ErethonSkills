@@ -22,7 +22,7 @@ public class DaggerStorm extends SpellbookSpell implements Listener {
 
     private final int daggers = data.getInt("daggers", 5);
     private final int divergence = data.getInt("divergence", 5);
-    private final double damage = caster.getAttribute(Attribute.ADV_PHYSICAL).getValue() * data.getDouble("damageCoefficient", 0.7);
+    private final double damage = Spellbook.getScaledValue(data, caster, Attribute.ADV_PHYSICAL);
     private final float speed = (float) data.getDouble("speed", 3.0);
 
     public DaggerStorm(LivingEntity caster, SpellData spellData) {

@@ -25,7 +25,7 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
     Vector direction;
     ItemProjectile arrow;
     private final float speed = (float) data.getDouble("speed", 2.0);
-    private final double damage = caster.getAttribute(Attribute.ADV_PHYSICAL).getValue() * data.getDouble("damageCoefficient", 0.7);
+    private final double damage = Spellbook.getScaledValue(data, caster, Attribute.ADV_PHYSICAL);
     private final int divergence = data.getInt("divergence", 1);
 
     public DaggerThrow(LivingEntity caster, SpellData spellData) {
@@ -56,7 +56,7 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
                     return;
                 }
                 entity.damage(damage, caster, DamageType.PHYSICAL);
-                EffectData effect = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Shock");
+                EffectData effect = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
                 if (effect != null) {
                     entity.addEffect(caster, effect, 1, 5);
                 }

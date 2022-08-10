@@ -1,5 +1,5 @@
 class: assassin.DaggerThrow
 energyCost: 0
-damage: 30
+coefficient-ADV_PHYSICAL: 1.1
 speed: 2.0
 divergence: 1

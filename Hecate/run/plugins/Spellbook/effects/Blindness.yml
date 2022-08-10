@@ -1,0 +1,6 @@
+class: BlindnessEffect
+maxStacks: 7
+maxDuration: 200
+isPositive: false
+stackMode: intensify
+missChancePerStack: 0.1
