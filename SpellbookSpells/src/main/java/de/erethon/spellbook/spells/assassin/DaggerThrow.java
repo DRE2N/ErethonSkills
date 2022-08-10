@@ -9,6 +9,7 @@ import de.erethon.spellbook.events.ItemProjectileHitEvent;
 import de.erethon.spellbook.utils.ItemProjectile;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -24,7 +25,7 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
     Vector direction;
     ItemProjectile arrow;
     private final float speed = (float) data.getDouble("speed", 2.0);
-    private final double damage = data.getDouble("damage", 30.0);
+    private final double damage = caster.getAttribute(Attribute.ADV_PHYSICAL).getValue() * data.getDouble("damageCoefficient", 0.7);
     private final int divergence = data.getInt("divergence", 1);
 
     public DaggerThrow(LivingEntity caster, SpellData spellData) {

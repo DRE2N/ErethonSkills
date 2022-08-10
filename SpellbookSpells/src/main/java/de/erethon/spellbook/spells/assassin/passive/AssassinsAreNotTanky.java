@@ -8,7 +8,7 @@ import org.bukkit.entity.LivingEntity;
 
 public class AssassinsAreNotTanky extends PassiveSpell {
 
-    private double bonusDamage = data.getDouble("bonusDamage", 2.0);
+    private final double bonusDamage = caster.getAttribute(Attribute.ADV_PHYSICAL).getValue() * data.getDouble("damageCoefficient", 0.7);
     private double threshold = data.getDouble("threshold", 0.8);
 
     public AssassinsAreNotTanky(LivingEntity caster, SpellData spellData) {

@@ -4,6 +4,7 @@ import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
@@ -11,6 +12,7 @@ public class StackingAttack extends SpellbookSpell {
 
     LivingEntity target;
     int stacks;
+    private final double bonus = caster.getAttribute(Attribute.ADV_PHYSICAL).getValue() * data.getDouble("damageCoefficient", 0.3);
 
     public StackingAttack(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -34,7 +36,7 @@ public class StackingAttack extends SpellbookSpell {
         if (target != this.target) {
             return damage;
         }
-        damage = damage + (data.getDouble("bonusDamagePerStack", 1.0) * stacks);
+        damage = damage + (bonus * stacks);
         if (stacks <= data.getInt("maxStacks", 7)) {
             stacks++;
         }
