@@ -1,0 +1,4 @@
+class: assassin.SwordCleave
+energyCost: 10
+maxDistance: 4
+damageMultiplier: 0.4

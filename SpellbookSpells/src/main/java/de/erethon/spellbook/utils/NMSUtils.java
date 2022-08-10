@@ -1,5 +1,6 @@
 package de.erethon.spellbook.utils;
 
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.Level;
 import org.bukkit.Location;
@@ -45,9 +46,14 @@ public class NMSUtils {
         world.addFreshEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
     }
 
-    public static void addAttachment(org.bukkit.entity.LivingEntity living, Entity bukkitentity) {
+    public static void addAttachment(org.bukkit.entity.LivingEntity living, Entity bukkitentity, double offset) {
         net.minecraft.world.entity.LivingEntity nms = ((CraftLivingEntity) living).getHandle();
         net.minecraft.world.entity.Entity entity= ((CraftEntity) bukkitentity).getHandle();
-        nms.addAttachment(entity, "head", 0, 0.1, 0);
+        entity.setInvulnerable(true);
+        entity.noPhysics = true;
+        if (entity instanceof LivingEntity livingEntity) {
+            livingEntity.collides = false;
+        }
+        nms.addAttachment(entity, "head", 0, offset, 0);
     }
 }

@@ -1,0 +1,4 @@
+class: assassin.MarkTarget
+energyCost: 30
+duration: 10
+critDmgBonus: 20

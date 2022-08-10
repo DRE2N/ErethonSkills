@@ -1,0 +1,4 @@
+class: assassin.Evasion
+energyCost: 30
+duration: 8
+chance: 0.8

@@ -1,0 +1,6 @@
+class: assassin.Assassination
+energyCost: 80
+duration: 10
+critAmount: 30
+critChance: 50
+resistances: -10

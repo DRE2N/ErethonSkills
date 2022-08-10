@@ -1,6 +1,5 @@
 package de.erethon.hecate.listeners;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
 import de.erethon.spellbook.api.SpellData;
