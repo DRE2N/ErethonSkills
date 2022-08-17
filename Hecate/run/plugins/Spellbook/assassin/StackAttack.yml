@@ -1,5 +1,6 @@
 class: assassin.StackingAttack
 energyCost: 20
 duration: 10
-coefficient-ADV_PHYSICAL: 0.5
 maxStacks: 7
+coefficients:
+  adv_physical: 0.5

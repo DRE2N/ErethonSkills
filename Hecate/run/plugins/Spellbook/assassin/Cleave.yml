@@ -1,4 +1,5 @@
 class: assassin.SwordCleave
 energyCost: 10
 maxDistance: 4
-coefficient-ADV_PHYSICAL: 0.5
+coefficients:
+  adv_physical: 0.5

@@ -5,4 +5,5 @@ daggers: 2
 duration: 20
 divergence: 10
 speed: 0.8
-coefficient-ADV_PHYSICAL: 0.3
+coefficients:
+  adv_physical: 0.3

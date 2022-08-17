@@ -1,6 +1,7 @@
 class: assassin.BlindnessArea
 energyCost: 30
 maxDistance: 16
-coefficient-ADV_MAGIC: 0.5
 effectDuration: 200
+coefficients:
+  adv_magic: 0.5
 

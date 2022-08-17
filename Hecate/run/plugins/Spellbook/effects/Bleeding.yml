@@ -3,4 +3,5 @@ maxStacks: 1
 maxDuration: 400
 isPositive: false
 stackMode: prolong
-coefficient-PHYSICAL: 0.2
+coefficients:
+  adv_physical: 0.5

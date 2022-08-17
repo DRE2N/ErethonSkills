@@ -3,4 +3,5 @@ maxStacks: 3
 maxDuration: 200
 isPositive: false
 stackMode: intensify
-coefficient-MAGIC: 0.5
+coefficients:
+  adv_magic: 0.5
