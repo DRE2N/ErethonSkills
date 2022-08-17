@@ -4,3 +4,4 @@ maxDuration: 50
 isPositive: false
 stackMode: intensify
 damage: 3
+coefficient-PHYSICAL: 0.2

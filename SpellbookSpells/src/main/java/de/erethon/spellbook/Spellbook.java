@@ -5,6 +5,7 @@ import de.erethon.spellbook.api.SpellbookAPI;
 import de.slikey.effectlib.EffectManager;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.Plugin;
 
@@ -38,7 +39,14 @@ public class Spellbook {
         return effectManager;
     }
 
-    public static double getScaledValue(SpellData data, LivingEntity entity, Attribute attribute) {
-        return entity.getAttribute(attribute).getValue() * data.getDouble("coefficient-" + attribute.name(), 1.0);
+    public static double getScaledValue(YamlConfiguration data, LivingEntity entity, Attribute attribute) {
+        return getScaledValue(data, entity, attribute, 1.0);
     }
+
+    public static double getScaledValue(YamlConfiguration data, LivingEntity entity, Attribute attribute, double multiplier) {
+        return (entity.getAttribute(attribute).getValue() * data.getDouble("coefficient-" + attribute.name(), 1.0)) * multiplier;
+    }
+
+
+
 }
