@@ -5,4 +5,5 @@ maxDistance: 16
 customItemDataFriendly: 16
 customItemDataEnemy: 17
 duration: 20
-effectDuration: 10
+effectDuration: 5
+effectStacks: 1

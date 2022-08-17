@@ -10,7 +10,9 @@ import org.bukkit.entity.LivingEntity;
 
 public class TrapPoison extends AoEBaseSpell {
 
-    EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Poison");
+    private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Poison");
+    private final int effectDuration = data.getInt("effectDuration", 5) * 20;
+    private final int effectStacks = data.getInt("effectStacks", 1);
 
     public TrapPoison(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -39,7 +41,7 @@ public class TrapPoison extends AoEBaseSpell {
         super.onTick();
         for (LivingEntity entity : getEntities()) {
             if (!entity.hasEffect(effectData)) {
-                entity.addEffect(caster, effectData, (int) Spellbook.getScaledValue(data, caster, Attribute.ADV_MAGIC), 1);
+                entity.addEffect(caster, effectData, effectDuration, effectStacks);
             }
         }
     }

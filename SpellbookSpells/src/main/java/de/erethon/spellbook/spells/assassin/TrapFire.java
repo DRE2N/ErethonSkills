@@ -11,7 +11,9 @@ import org.bukkit.entity.LivingEntity;
 
 public class TrapFire extends AoEBaseSpell {
 
-    EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Burning");
+    private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Burning");
+    private final int effectDuration = data.getInt("effectDuration", 5) * 20;
+    private final int effectStacks = data.getInt("effectStacks", 1);
 
     public TrapFire(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -39,7 +41,7 @@ public class TrapFire extends AoEBaseSpell {
     public void onTick() {
         super.onTick();
         for (LivingEntity entity : getEntities()) {
-            entity.addEffect(caster, effectData, (int) Spellbook.getScaledValue(data, caster, Attribute.ADV_FIRE), 1);
+            entity.addEffect(caster, effectData, effectDuration, effectStacks);
         }
     }
 

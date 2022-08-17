@@ -5,4 +5,5 @@ maxDistance: 16
 customItemDataFriendly: 20
 customItemDataEnemy: 21
 duration: 20
-coefficient-ADV_MAGIC: 0.8
+effectDuration: 5
+effectStacks: 1

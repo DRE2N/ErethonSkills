@@ -5,4 +5,5 @@ maxDistance: 16
 customItemDataFriendly: 18
 customItemDataEnemy: 19
 duration: 20
-coefficient-ADV_WATER: 0.5
+effectDuration: 5
+effectStacks: 1
