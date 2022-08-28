@@ -46,7 +46,8 @@ public class MeteorHail extends PriestBaseSpell {
         Fireball meteor = castLocation.getWorld().spawn(castLocation, Fireball.class);
         meteor.setShooter(caster);
         meteor.setIsIncendiary(false);
-        meteor.setYield(0F);
+        meteor.setYield(1F);
+        meteor.setBlockDamage(false);
         meteor.setSilent(true);
         meteor.setDirection(getOffsetLocation(0).subtract(castLocation).toVector());
         meteor.setVelocity(meteor.getDirection().multiply(10));
