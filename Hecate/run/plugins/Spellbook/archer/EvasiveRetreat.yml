@@ -1,0 +1,3 @@
+class: archer.EvasiveRetreat
+retreatMultiplier: 2.0
+duration: 10

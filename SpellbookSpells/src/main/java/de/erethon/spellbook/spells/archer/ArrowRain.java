@@ -2,11 +2,9 @@ package de.erethon.spellbook.spells.archer;
 
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.spells.priest.PriestBaseSpell;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.Random;
