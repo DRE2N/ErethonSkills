@@ -1,7 +1,6 @@
 package de.erethon.spellbook;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.slikey.effectlib.EffectManager;
 import org.bukkit.Bukkit;
@@ -10,12 +9,22 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Random;
+
 public class Spellbook {
 
     private static Spellbook instance;
     private final SpellbookAPI api;
     private final Plugin implementer;
     private final EffectManager effectManager;
+
+    private static final Random random = new Random();
+
+    /**
+     * Damage is divided by this value, and the result is the maximum variance.
+     * Used to make damage values slightly less predictable.
+     */
+    private static final int VARIANCE = 10;
 
     public Spellbook(Plugin implementer) {
         instance = this;
@@ -40,16 +49,48 @@ public class Spellbook {
         return effectManager;
     }
 
+    /**
+     * @param data the SpellData file
+     * @param entity the entity that cast the spell
+     * @param attribute the attribute
+     * @return the value of the attribute after applying the coefficients defined in the SpellData file
+     */
     public static double getScaledValue(YamlConfiguration data, LivingEntity entity, Attribute attribute) {
         return getScaledValue(data, entity, attribute, 1.0);
     }
 
+    /**
+     * @param data the SpellData file
+     * @param entity the entity that cast the spell
+     * @param attribute the attribute
+     * @param multiplier an optional multiplier of the result
+     * @return the value of the attribute after applying the coefficients defined in the SpellData file and the multiplier
+     */
     public static double getScaledValue(YamlConfiguration data, LivingEntity entity, Attribute attribute, double multiplier) {
         if (data.contains("coefficients." + attribute.name().toUpperCase())) {
             MessageUtil.log("Coefficient for " + attribute.name() + " not defined in " + data.getName());
             return entity.getAttribute(attribute).getValue() * multiplier;
         }
         return (entity.getAttribute(attribute).getValue() * data.getDouble("coefficients." + attribute.name().toUpperCase(), 1.0)) * multiplier;
+    }
+
+    /**
+     * @param damage initial damage value
+     * @param entity the entity that dealt the damage
+     * @param canCrit if this damage can crit
+     * @return the damage value after applying crit chance & damage, as well as random variation.
+     */
+    public static double getVariedDamage(double damage, LivingEntity entity, boolean canCrit) {
+        double maxVariance = damage / VARIANCE;
+        double variance = -maxVariance + random.nextDouble(maxVariance * 2);
+        damage += variance;
+        if (canCrit) {
+            int crit = random.nextInt(101);
+            if (crit < entity.getAttribute(Attribute.STAT_CRIT_CHANCE).getValue()) {
+                damage = (float) (damage + entity.getAttribute(Attribute.STAT_CRIT_DMG).getValue());
+            }
+        }
+        return damage;
     }
 
 

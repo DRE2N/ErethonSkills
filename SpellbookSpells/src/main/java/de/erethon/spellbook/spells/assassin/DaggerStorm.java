@@ -2,7 +2,6 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.events.ItemProjectileHitEvent;
@@ -15,8 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
-import java.util.Random;
 
 public class DaggerStorm extends SpellbookSpell implements Listener {
 
@@ -59,7 +56,7 @@ public class DaggerStorm extends SpellbookSpell implements Listener {
                 if (entity == caster) {
                     return;
                 }
-                entity.damage(damage, caster, DamageType.PHYSICAL);
+                entity.damage(Spellbook.getVariedDamage(damage, caster, true), caster, DamageType.PHYSICAL);
             }
         }
     }
