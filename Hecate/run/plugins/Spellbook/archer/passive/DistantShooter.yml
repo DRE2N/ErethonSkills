@@ -1,0 +1,3 @@
+class: archer.passive.HighGround
+damageMultiplier: 1.05
+minDistance: 5
