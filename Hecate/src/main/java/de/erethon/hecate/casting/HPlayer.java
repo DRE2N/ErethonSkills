@@ -16,6 +16,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,6 +77,7 @@ public class HPlayer extends EConfig implements LoadableUser {
     }
 
     public void updateSlots() {
+        updateDescriptions();
         // Do something about spells getting replaced due to levelups
     }
 
@@ -99,6 +101,7 @@ public class HPlayer extends EConfig implements LoadableUser {
             inventory.setItem(6, new ItemStack(Material.LIGHT_BLUE_DYE));
             inventory.setItem(7, new ItemStack(Material.LIGHT_GRAY_DYE));
             isInCastmode = true;
+            updateDescriptions();
         } else {
             PlayerInventory inventory = player.getInventory();
             inventory.setHeldItemSlot(hotbarSlot);
@@ -139,6 +142,21 @@ public class HPlayer extends EConfig implements LoadableUser {
         }
         Component component = miniMessage.deserialize("<dark_red>" + health + "<dark_gray>/<dark_red>" + maxHealth + " <<<    <green>+" + positive + " <dark_gray>| <red>-" + negative + "  <yellow>>>> " + player.getEnergy() + "<dark_gray>/<yellow>" + player.getMaxEnergy());
         player.sendActionBar(component);
+    }
+
+    public void updateDescriptions() {
+        PlayerInventory inventory = player.getInventory();
+        for (int slot = 1; slot < 8; slot++) { // Start at 1, 0 is weapon
+            if (inventory.getItem(slot) == null || getSpellAt(slot) == null) {
+                continue;
+            }
+            ItemStack item = inventory.getItem(slot);
+            ItemMeta meta = item.getItemMeta();
+            SpellData spellData = getSpellAt(slot);
+            meta.lore(spellData.getDescription());
+            meta.displayName(spellData.getDisplayName());
+            item.setItemMeta(meta);
+        }
     }
 
     public boolean isInCastmode() {
