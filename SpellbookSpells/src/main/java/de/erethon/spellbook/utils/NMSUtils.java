@@ -1,12 +1,19 @@
 package de.erethon.spellbook.utils;
 
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
@@ -24,9 +31,24 @@ public class NMSUtils {
         stand.noPhysics = true;
         stand.collides = false;
         stand.setInvulnerable(invulnerable);
-        stand.getBukkitEntity().teleport(location);
+        stand.setPos(location.getX(), location.getY(), location.getZ());
         world.addFreshEntity(stand, CreatureSpawnEvent.SpawnReason.CUSTOM);
         return stand;
+    }
+
+    // less stupid than ItemMeta at least
+    public static org.bukkit.inventory.ItemStack getItemStackWithModelData(Material material, int data) {
+        ItemStack itemStack = new ItemStack(Registry.ITEM.get(new ResourceLocation(material.getKey().toString())), 1);
+        itemStack.getOrCreateTag().putInt("CustomModelData", data);
+        return itemStack.getBukkitStack();
+    }
+
+    public static org.bukkit.entity.ArmorStand spawnItemArmorstand(org.bukkit.inventory.ItemStack stack, Location location) {
+        ArmorStand stand = spawnInvisibleArmorstand(location, false, true, true);
+        ItemStack itemStack = CraftItemStack.asNMSCopy(stack);
+        stand.setItemSlot(EquipmentSlot.HEAD, itemStack);
+        stand.setItemSlot(EquipmentSlot.HEAD, itemStack);
+        return (org.bukkit.entity.ArmorStand) stand.getBukkitEntity();
     }
 
     public static net.minecraft.world.entity.Entity spawnEntityWithoutSending(Location location, org.bukkit.entity.EntityType type) {
@@ -46,7 +68,7 @@ public class NMSUtils {
         world.addFreshEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
     }
 
-    public static void addAttachment(org.bukkit.entity.LivingEntity living, Entity bukkitentity, double offset) {
+    public static Entity addAttachment(org.bukkit.entity.LivingEntity living, Entity bukkitentity, double offset) {
         net.minecraft.world.entity.LivingEntity nms = ((CraftLivingEntity) living).getHandle();
         net.minecraft.world.entity.Entity entity= ((CraftEntity) bukkitentity).getHandle();
         entity.setInvulnerable(true);
@@ -55,5 +77,6 @@ public class NMSUtils {
             livingEntity.collides = false;
         }
         nms.addAttachment(entity, "head", 0, offset, 0);
+        return entity.getBukkitEntity();
     }
 }
