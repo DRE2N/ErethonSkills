@@ -9,7 +9,7 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.Random;
 
-public class ArrowRain extends SpellbookSpell {
+public class ArrowRain extends ArcherBaseSpell {
 
     int radius;
     Block targetBlock;

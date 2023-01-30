@@ -24,7 +24,7 @@ public class DoubleAttack extends SpellbookSpell {
 
     @Override
     public double onAttack(LivingEntity target, double damage, DamageType type) {
-        caster.attack(target);
+        //caster.attack(target); TODO
         return super.onAttack(target, damage, type);
     }
 }

@@ -15,8 +15,8 @@ import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.EulerAngle;
@@ -35,14 +35,14 @@ public class ItemProjectile extends Arrow {
     public ItemProjectile(org.bukkit.inventory.ItemStack item, double x, double y, double z, World world, SpellbookSpell spell) {
         super(((CraftWorld) world).getHandle(), x, y, z);
         this.spell = spell;
-        net.minecraft.world.entity.decoration.ArmorStand nms = NMSUtils.spawnInvisibleArmorstand(new Location(world, x, y, z), false, true, true);
+        net.minecraft.world.entity.decoration.ArmorStand nms = NMSUtils.spawnInvisibleArmorstand(new Location(world, x, y, z), false, true, true, false);
         itemStack = CraftItemStack.asNMSCopy(item);
         nms.setItemSlot(EquipmentSlot.HEAD, itemStack);
         armorStandNMS = nms;
         armorStand = (ArmorStand) nms.getBukkitEntity();
         arrow = (org.bukkit.entity.Arrow) getBukkitEntity();
         ServerLevel level = ((CraftWorld) world).getHandle().getLevel();
-        level.entityManager.addNewEntity(this);
+        level.getEntityLookup().addNewEntity(this);
         setSilent(true);
         setBaseDamage(0);
         level.getServer().getPlayerList().broadcastAll(new ClientboundRemoveEntitiesPacket(this.getId()));

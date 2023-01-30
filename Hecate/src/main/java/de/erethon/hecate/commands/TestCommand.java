@@ -10,13 +10,15 @@ import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.Level;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -62,24 +64,34 @@ public class TestCommand extends ECommand {
         double ox = center.getBlockX();
         double oy = center.getBlockY() + 1;
         double oz = center.getBlockZ();
-        for (int xMod = -size; xMod <= size; xMod++) {
-            for (int zMod = -size; zMod <= size; zMod++) {
-                BlockPos pos = new BlockPos(ox + xMod, oy, oz + zMod);
-                ItemFrame itemFrame = new ItemFrame(world, pos, Direction.UP);
-                ItemStack map = MapItem.create(world, 0, 0, (byte) 4, false, false);
-                ids.add(MapItem.getMapId(map));
-                itemFrame.setItem(map);
-                itemFrame.setInvisible(true);
-                ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(itemFrame);
-                ClientboundSetEntityDataPacket dataPacket = new ClientboundSetEntityDataPacket(itemFrame.getId(), itemFrame.getEntityData(), true);
-                ClientboundMoveEntityPacket moveEntityPacket = new ClientboundMoveEntityPacket.Rot(itemFrame.getId(), (byte) 0, (byte) -64, false);
-                ServerPlayer nmsplayer = ((CraftPlayer) player).getHandle();
-                nmsplayer.connection.send(addEntityPacket);
-                nmsplayer.connection.send(dataPacket);
-                nmsplayer.connection.send(moveEntityPacket);
-            }
-        }
+        BlockPos pos = new BlockPos(ox , oy, oz);
+        ItemFrame itemFrame = new ItemFrame(world, pos, Direction.UP);
+        ItemStack map = new ItemStack(Items.FILLED_MAP);
+        itemFrame.setItem(map);
+        itemFrame.setInvisible(true);
+        ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(itemFrame);
+        ClientboundSetEntityDataPacket dataPacket = new ClientboundSetEntityDataPacket(itemFrame.getId(), itemFrame.getEntityData(), true);
+        ClientboundMoveEntityPacket moveEntityPacket = new ClientboundMoveEntityPacket.Rot(itemFrame.getId(), (byte) 0, (byte) 0, false);
+        ClientboundMoveEntityPacket movePos = new ClientboundMoveEntityPacket.Pos(itemFrame.getId(), (short) 4, (short) 1, (short) 1,  false);
+        ServerPlayer nmsplayer = ((CraftPlayer) player).getHandle();
+        nmsplayer.connection.send(addEntityPacket);
+        //nmsplayer.connection.send(dataPacket);
+        nmsplayer.connection.send(moveEntityPacket);
+        nmsplayer.connection.send(movePos);
+
         player.sendRawMessage("Created " + ids.size() + " frames.");
+        BukkitRunnable runnable = new BukkitRunnable() {
+
+            int i = 0;
+            @Override
+            public void run() {
+                ClientboundMoveEntityPacket move = new ClientboundMoveEntityPacket.Pos(itemFrame.getId(), (short) i, (short) i, (short) i,  false);
+                i++;
+                nmsplayer.connection.send(move);
+                player.sendRawMessage("Moving...");
+            }
+        };
+        runnable.runTaskTimer(Hecate.getInstance(), 2, 2);
     }
 
 

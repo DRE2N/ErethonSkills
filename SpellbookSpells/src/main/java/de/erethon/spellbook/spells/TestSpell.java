@@ -1,13 +1,18 @@
 package de.erethon.spellbook.spells;
 
-import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.utils.ItemProjectile;
+import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.NMSUtils;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.minecraft.network.chat.Component;
 import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Random;
 
 public class TestSpell extends SpellbookSpell {
 
@@ -22,11 +27,9 @@ public class TestSpell extends SpellbookSpell {
 
     @Override
     protected boolean onCast() {
-        Random random = new Random();
-        for (int i = 0; i < 10; i++) {
-            ItemProjectile projectile = new ItemProjectile(new ItemStack(Material.DIRT), caster.getEyeLocation().getX(), caster.getEyeLocation().getY(), caster.getEyeLocation().getZ(), caster.getWorld(), this);
-            projectile.shoot(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5, 1.5f, 0);
-        }
+        ArmorStand armorstand = caster.getWorld().spawn(caster.getLocation(), ArmorStand.class);
+        armorstand.customName(MiniMessage.miniMessage().deserialize("<lang:block.minecraft.diamond_block>"));
+        armorstand.setCustomNameVisible(true);
         return true;
     }
 
@@ -35,9 +38,6 @@ public class TestSpell extends SpellbookSpell {
         caster.setCooldown(data);
     }
 
-    @Override
-    protected void onTick() {
-    }
 
     @Override
     protected void onTickFinish() {

@@ -37,13 +37,13 @@ public class LearnSkillCommand extends ECommand {
             MessageUtil.sendMessage(sender, "SpellData '" + args[1] + "' not found");
             return;
         }
-        if (spellData.getSpellClass().isAssignableFrom(PassiveSpell.class)) {
+        /*if (spellData.getSpellClass().isAssignableFrom(PassiveSpell.class)) {
             player.addPassiveSpell(spellData.getActiveSpell(player));
             MessageUtil.sendMessage(sender, "Learned passive spell " + spellData.getId());
         } else if (args.length != 3) {
             MessageUtil.sendMessage(sender, "Active spells require a slot number");
             return;
-        }
+        }*/
         hPlayer.learnSpell(spellData, Integer.parseInt(args[2]));
         MessageUtil.sendMessage(sender, "Learned spell " + spellData.getId() + " in slot " + args[2]);
     }

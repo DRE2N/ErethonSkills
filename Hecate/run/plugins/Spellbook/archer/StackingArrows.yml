@@ -1,0 +1,3 @@
+class: archer.StackingArrows
+duration: 200
+manaCost: 5

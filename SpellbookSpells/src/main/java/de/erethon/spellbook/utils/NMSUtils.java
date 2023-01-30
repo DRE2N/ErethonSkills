@@ -10,10 +10,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_19_R1.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_19_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
@@ -21,14 +21,14 @@ import java.util.Optional;
 
 public class NMSUtils {
 
-    public static ArmorStand spawnInvisibleArmorstand(Location location, boolean gravity, boolean marker, boolean invulnerable) {
+    public static ArmorStand spawnInvisibleArmorstand(Location location, boolean gravity, boolean marker, boolean invulnerable, boolean physics) {
         CraftWorld craftWorld = (CraftWorld) location.getWorld();
         Level world = craftWorld.getHandle();
         ArmorStand stand = new ArmorStand(net.minecraft.world.entity.EntityType.ARMOR_STAND, world);
         stand.setInvisible(true);
         stand.setNoGravity(!gravity);
         stand.setMarker(marker);
-        stand.noPhysics = true;
+        stand.noPhysics = !physics;
         stand.collides = false;
         stand.setInvulnerable(invulnerable);
         stand.setPos(location.getX(), location.getY(), location.getZ());
@@ -44,9 +44,8 @@ public class NMSUtils {
     }
 
     public static org.bukkit.entity.ArmorStand spawnItemArmorstand(org.bukkit.inventory.ItemStack stack, Location location) {
-        ArmorStand stand = spawnInvisibleArmorstand(location, false, true, true);
+        ArmorStand stand = spawnInvisibleArmorstand(location, false, true, true, false);
         ItemStack itemStack = CraftItemStack.asNMSCopy(stack);
-        stand.setItemSlot(EquipmentSlot.HEAD, itemStack);
         stand.setItemSlot(EquipmentSlot.HEAD, itemStack);
         return (org.bukkit.entity.ArmorStand) stand.getBukkitEntity();
     }

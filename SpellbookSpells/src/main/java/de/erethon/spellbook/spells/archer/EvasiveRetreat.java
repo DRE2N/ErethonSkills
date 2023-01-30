@@ -7,7 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 
-public class EvasiveRetreat extends SpellbookSpell {
+public class EvasiveRetreat extends ArcherBaseSpell {
 
 
     public EvasiveRetreat(LivingEntity caster, SpellData spellData) {

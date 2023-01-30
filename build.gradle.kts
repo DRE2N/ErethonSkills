@@ -27,5 +27,5 @@ tasks {
 
 
 dependencies {
-    paperweightDevBundle("de.erethon.papyrus", "1.19.2-R0.1-SNAPSHOT") { isChanging = true }
+    paperweightDevBundle("de.erethon.papyrus", "1.19.3-R0.1-SNAPSHOT") { isChanging = true }
 }

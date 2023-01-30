@@ -1,0 +1,6 @@
+class: archer.StackingArrowDebuff
+maxStacks: 10
+maxDuration: 600
+isPositive: false
+stackMode: intensify
+bonusDamage: 5.0
