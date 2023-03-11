@@ -1,0 +1,5 @@
+class: archer.LargeArrow
+modelData: 1
+damage: 2.0
+damageType: PHYSICAL
+arrowBoxSize: 3.0
