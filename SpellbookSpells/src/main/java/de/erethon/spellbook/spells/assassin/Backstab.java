@@ -28,12 +28,12 @@ public class Backstab extends SpellbookSpell {
     protected boolean onPrecast() {
         target = caster.getTargetEntity(data.getInt("range", 10));
         if (target == null) {
-            caster.sendActionbar("<color:#ff0000>Kein gültiges Ziel!");
+            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
         }
         location = target.getLocation().clone().add(0, 1, 0).toVector().subtract(target.getLocation().getDirection().multiply(1.5)).toLocation(target.getWorld());
         if (location.getBlock().isSolid()) {
-            caster.sendActionbar("<color:#ff0000>Nicht genug Platz!");
+            caster.sendParsedActionBar("<color:#ff0000>Nicht genug Platz!");
             return false;
         }
         return AssassinUtils.hasEnergy(caster, data);

@@ -18,7 +18,7 @@ public class ArcherBaseSpell extends SpellbookSpell {
     protected boolean onPrecast() {
         boolean canCast = manaCost <= caster.getEnergy();
         if (!canCast) {
-            caster.sendActionbar("<color:#ff0000>Nicht genug Mana!");
+            caster.sendParsedActionBar("<color:#ff0000>Nicht genug Mana!");
         }
         return canCast;
     }

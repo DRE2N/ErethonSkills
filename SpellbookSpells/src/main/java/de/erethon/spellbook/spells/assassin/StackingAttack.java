@@ -27,7 +27,7 @@ public class StackingAttack extends SpellbookSpell {
             target = entity;
             return AssassinUtils.hasEnergy(caster, data);
         } else {
-            caster.sendActionbar("<color:#ff0000>Kein gültiges Ziel!");
+            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
         }
     }

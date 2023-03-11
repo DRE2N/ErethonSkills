@@ -23,13 +23,13 @@ public class GrapplingHook extends SpellbookSpell {
 
     @Override
     protected boolean onPrecast() {
-        targetBlock = caster.getTargetBlock(data.getInt("range", 64));
+        targetBlock = caster.getTargetBlockExact(data.getInt("range", 64));
         if (targetBlock == null) {
-            caster.sendActionbar("<color:#ff0000>Kein Ziel gefunden!");
+            caster.sendParsedActionBar("<color:#ff0000>Kein Ziel gefunden!");
             return false;
         }
         if (targetBlock.getType() != Material.RED_CONCRETE) {
-            caster.sendActionbar("<color:#ff0000>Kein Grappling-Ziel gefunden!");
+            caster.sendParsedActionBar("<color:#ff0000>Kein Grappling-Ziel gefunden!");
 
             return false;
         }

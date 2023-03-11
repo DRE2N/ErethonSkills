@@ -12,13 +12,28 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class ChannelingSpell extends SpellbookSpell implements Listener {
 
     protected boolean interrupted = false;
+    private int currentTicks = 0;
+    protected int channelTime;
 
     public ChannelingSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
+        channelTime = spellData.getInt("channelTime", 60);
         Bukkit.getServer().getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
     }
 
     protected void onInterrupt() {}
+
+    protected void onChannelFinish() {}
+
+    @Override
+    protected void onTick() {
+        super.onTick();
+        currentTicks++;
+        caster.sendParsedActionBar("<color:#ff0000>Channeling... <color:#ffffff>" + currentTicks + " / " + channelTime);
+        if(currentTicks >= channelTime) {
+            onChannelFinish();
+        }
+    }
 
     @EventHandler
     private void onMove(PlayerMoveEvent event) {
@@ -26,6 +41,7 @@ public class ChannelingSpell extends SpellbookSpell implements Listener {
             return;
         }
         interrupted = true;
+        onInterrupt();
     }
 
     @Override

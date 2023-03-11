@@ -22,9 +22,9 @@ public class ArrowRain extends ArcherBaseSpell {
 
     @Override
     protected boolean onPrecast() {
-        targetBlock = caster.getTargetBlock(64);
+        targetBlock = caster.getTargetBlockExact(64);
         if (targetBlock == null) {
-            caster.sendActionbar("<color:#ff0000>Kein Ziel gefunden!");
+            caster.sendParsedActionBar("<color:#ff0000>Kein Ziel gefunden!");
             return false;
         }
         return super.onPrecast();

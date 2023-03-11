@@ -24,9 +24,9 @@ public class MeteorHail extends PriestBaseSpell {
 
     @Override
     protected boolean onPrecast() {
-        targetBlock = caster.getTargetBlock(64);
+        targetBlock = caster.getTargetBlockExact(64);
         if (targetBlock == null) {
-            caster.sendActionbar("<color:#ff0000>Kein Ziel gefunden!");
+            caster.sendParsedActionBar("<color:#ff0000>Kein Ziel gefunden!");
             return false;
         }
         return super.onPrecast();
@@ -47,7 +47,7 @@ public class MeteorHail extends PriestBaseSpell {
         meteor.setShooter(caster);
         meteor.setIsIncendiary(false);
         meteor.setYield(1F);
-        meteor.setBlockDamage(false);
+        //meteor.setBlockDamage(false);
         meteor.setSilent(true);
         meteor.setDirection(getOffsetLocation(0).subtract(castLocation).toVector());
         meteor.setVelocity(meteor.getDirection().multiply(10));

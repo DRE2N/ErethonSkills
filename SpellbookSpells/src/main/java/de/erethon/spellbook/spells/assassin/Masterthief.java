@@ -26,12 +26,12 @@ public class Masterthief extends EntityTargetSpell {
     protected boolean onCast() {
         List<SpellData> datas = targetEntity.getUsedSpells().keySet().stream().toList();
         if (datas.isEmpty()) {
-            caster.sendActionbar("<#ff0000>Das Ziel hat keine Spells eingesetzt.");
+            caster.sendParsedActionBar("<#ff0000>Das Ziel hat keine Spells eingesetzt.");
             return false;
         }
         spell = datas.get(random.nextInt(datas.size()));
         caster.addSpell(spell);
-        caster.sendActionbar("<green>Du hast " + spell.getId() + " gestohlen!");
+        caster.sendParsedActionBar("<green>Du hast " + spell.getId() + " gestohlen!");
         return true;
     }
 
@@ -43,6 +43,6 @@ public class Masterthief extends EntityTargetSpell {
     @Override
     protected void onTickFinish() {
         caster.removeSpell(spell);
-        caster.sendActionbar("<gray>Dein gestohlener Spell " + spell.getId() + " ist ausgelaufen.");
+        caster.sendParsedActionBar("<gray>Dein gestohlener Spell " + spell.getId() + " ist ausgelaufen.");
     }
 }

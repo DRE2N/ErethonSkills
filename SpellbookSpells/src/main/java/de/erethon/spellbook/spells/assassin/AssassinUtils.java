@@ -10,7 +10,7 @@ public abstract class AssassinUtils {
     public static boolean hasEnergy(LivingEntity caster, SpellData data) {
         boolean canCast = data.getInt("energyCost", 0) <= caster.getEnergy();
         if (!canCast) {
-            caster.sendActionbar("<color:#ff0000>Nicht genug Energie!");
+            caster.sendParsedActionBar("<color:#ff0000>Nicht genug Energie!");
         }
         return canCast;
     }

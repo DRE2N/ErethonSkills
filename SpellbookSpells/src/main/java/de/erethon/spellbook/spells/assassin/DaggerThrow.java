@@ -61,7 +61,7 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
                     entity.addEffect(caster, effect, 1, 5);
                 }
                 keepAliveTicks = 0;
-                caster.sendActionbar("<green>Getroffen!");
+                caster.sendParsedActionBar("<green>Getroffen!");
                 event.getArrow().remove();
             }
         }

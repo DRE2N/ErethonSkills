@@ -70,12 +70,12 @@ public class TestCommand extends ECommand {
         itemFrame.setItem(map);
         itemFrame.setInvisible(true);
         ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(itemFrame);
-        ClientboundSetEntityDataPacket dataPacket = new ClientboundSetEntityDataPacket(itemFrame.getId(), itemFrame.getEntityData(), true);
+        ClientboundSetEntityDataPacket dataPacket = new ClientboundSetEntityDataPacket(itemFrame.getId(), itemFrame.getEntityData().packDirty());
         ClientboundMoveEntityPacket moveEntityPacket = new ClientboundMoveEntityPacket.Rot(itemFrame.getId(), (byte) 0, (byte) 0, false);
         ClientboundMoveEntityPacket movePos = new ClientboundMoveEntityPacket.Pos(itemFrame.getId(), (short) 4, (short) 1, (short) 1,  false);
         ServerPlayer nmsplayer = ((CraftPlayer) player).getHandle();
         nmsplayer.connection.send(addEntityPacket);
-        //nmsplayer.connection.send(dataPacket);
+        nmsplayer.connection.send(dataPacket);
         nmsplayer.connection.send(moveEntityPacket);
         nmsplayer.connection.send(movePos);
 

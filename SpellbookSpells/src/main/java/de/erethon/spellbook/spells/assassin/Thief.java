@@ -27,13 +27,13 @@ public class Thief extends EntityTargetSpell {
     protected boolean onCast() {
         List<SpellEffect> datas = targetEntity.getEffects().stream().toList();
         if (datas.isEmpty()) {
-            caster.sendActionbar("<#ff0000>Das Ziel hat keine Effekte");
+            caster.sendParsedActionBar("<#ff0000>Das Ziel hat keine Effekte");
             return false;
         }
         effectData = datas.get(random.nextInt(datas.size())).data;
         caster.addEffect(caster, effectData, data.getInt("duration", 5) * 20, 1);
         targetEntity.removeEffect(effectData);
-        caster.sendActionbar("<green>Du hast " + effectData.getName() + " gestohlen!");
+        caster.sendParsedActionBar("<green>Du hast " + effectData.getName() + " gestohlen!");
         return true;
     }
 

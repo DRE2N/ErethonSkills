@@ -74,13 +74,13 @@ public class AoEBaseSpell extends SpellbookSpell {
         Block targetBlock = caster.getTargetBlockExact(64);
         if (targetBlock != null && targetBlock.isSolid()) {
             if (targetBlock.getLocation().distanceSquared(caster.getLocation()) > maxDistance * maxDistance) {
-                caster.sendActionbar("<color:#ff0000>Ziel zu weit entfernt!");
+                caster.sendParsedActionBar("<color:#ff0000>Ziel zu weit entfernt!");
                 return false;
             }
             target = targetBlock.getLocation().add(0.5, 1,0.5);
             return true;
         }
-        caster.sendActionbar("<color:#ff0000>Kein gültiges Ziel!");
+        caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
         return false;
     }
 
@@ -152,7 +152,7 @@ public class AoEBaseSpell extends SpellbookSpell {
         frame.setInvulnerable(true);
         entityIDs.add(frame.getId());
         ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(frame);
-        ClientboundSetEntityDataPacket dataPacket = new ClientboundSetEntityDataPacket(frame.getId(), frame.getEntityData(), true);
+        ClientboundSetEntityDataPacket dataPacket = new ClientboundSetEntityDataPacket(frame.getId(), frame.getEntityData().packDirty());
         ClientboundMoveEntityPacket moveEntityPacket = new ClientboundMoveEntityPacket.Rot(frame.getId(), (byte) 0, (byte) -64, false);
         nmsplayer.connection.send(addEntityPacket);
         nmsplayer.connection.send(dataPacket);
