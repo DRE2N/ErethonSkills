@@ -1,13 +1,16 @@
 package de.erethon.spellbook.utils;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
@@ -16,6 +19,7 @@ import org.bukkit.craftbukkit.v1_19_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.util.BoundingBox;
 
 import java.util.Optional;
 
@@ -38,9 +42,21 @@ public class NMSUtils {
 
     // less stupid than ItemMeta at least
     public static org.bukkit.inventory.ItemStack getItemStackWithModelData(Material material, int data) {
-        ItemStack itemStack = new ItemStack(Registry.ITEM.get(new ResourceLocation(material.getKey().toString())), 1);
+        ItemStack itemStack = ItemStack.fromBukkitCopy(new org.bukkit.inventory.ItemStack(material, 1));
         itemStack.getOrCreateTag().putInt("CustomModelData", data);
         return itemStack.getBukkitStack();
+    }
+
+    public static void setEntityBoundingBox(Entity entity, BoundingBox box) {
+        CraftEntity craftEntity = (CraftEntity) entity;
+        net.minecraft.world.entity.Entity nmsEntity = craftEntity.getHandle();
+        nmsEntity.setBoundingBox(new AABB(box.getMinX(), box.getMinY(), box.getMinZ(), box.getMaxX(), box.getMaxY(), box.getMaxZ()));
+    }
+
+    public static AABB getAABB(Entity entity) {
+        CraftEntity craftEntity = (CraftEntity) entity;
+        net.minecraft.world.entity.Entity nmsEntity = craftEntity.getHandle();
+        return nmsEntity.getBoundingBox();
     }
 
     public static org.bukkit.entity.ArmorStand spawnItemArmorstand(org.bukkit.inventory.ItemStack stack, Location location) {
