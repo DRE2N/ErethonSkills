@@ -86,17 +86,17 @@ public class Spellbook {
      */
     public static double getScaledValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, double multiplier) {
         if (target instanceof Player) {
-            if (!data.contains("coefficients.players" + attribute.name().toUpperCase())) {
-                MessageUtil.log("Coefficient for player: " + attribute.name() + " not defined in " + data.getName());
+            if (!data.contains("coefficients.players." + attribute.name().toUpperCase())) {
+                MessageUtil.log("Coefficient for player: " + attribute.name() + " not defined in " + data.getCurrentPath());
                 return caster.getAttribute(attribute).getValue() * multiplier;
             }
-            return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players" + attribute.name().toUpperCase(), 1.0)) * multiplier;
+            return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + attribute.name().toUpperCase(), 1.0)) * multiplier;
         }
-        if (!data.contains("coefficients.entities" + attribute.name().toUpperCase())) {
-            MessageUtil.log("Coefficient for entities: " + attribute.name() + " not defined in " + data.getName());
+        if (!data.contains("coefficients.entities." + attribute.name().toUpperCase())) {
+            MessageUtil.log("Coefficient for entities: " + attribute.name() + " not defined in " + data.getCurrentPath());
             return caster.getAttribute(attribute).getValue() * multiplier;
         }
-        return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities" + attribute.name().toUpperCase(), 1.0)) * multiplier;
+        return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + attribute.name().toUpperCase(), 1.0)) * multiplier;
     }
 
     /**
