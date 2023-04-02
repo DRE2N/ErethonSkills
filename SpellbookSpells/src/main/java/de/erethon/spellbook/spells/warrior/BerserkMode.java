@@ -20,9 +20,9 @@ public class BerserkMode extends SpellbookSpell {
     private final int duration = data.getInt("duration", 5);
     private final int baseDamagePerTick = data.getInt("damagePerTick", 10);
 
-    private WorldBorder fakeBorder = Bukkit.getServer().createWorldBorder();
+    private final WorldBorder fakeBorder = Bukkit.getServer().createWorldBorder();
 
-    private EffectManager manager = Spellbook.getInstance().getEffectManager();
+    private final EffectManager manager = Spellbook.getInstance().getEffectManager();
 
     public BerserkMode(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
