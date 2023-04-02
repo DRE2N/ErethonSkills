@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Random;
@@ -50,28 +51,52 @@ public class Spellbook {
     }
 
     /**
+     * Get the scaled value of an attribute.
+     * <b>Only use this method if the spell can not have a target.</b>
      * @param data the SpellData file
-     * @param entity the entity that cast the spell
+     * @param caster the entity that cast the spell
      * @param attribute the attribute
      * @return the value of the attribute after applying the coefficients defined in the SpellData file
+     *
      */
-    public static double getScaledValue(YamlConfiguration data, LivingEntity entity, Attribute attribute) {
-        return getScaledValue(data, entity, attribute, 1.0);
+    public static double getScaledValue(YamlConfiguration data, LivingEntity caster, Attribute attribute) {
+        return getScaledValue(data, caster, null, attribute, 1.0);
     }
 
     /**
+     * Get the scaled value of an attribute.
      * @param data the SpellData file
-     * @param entity the entity that cast the spell
+     * @param caster the entity that cast the spell
+     * @param target the entity that is the target of the spell
+     * @param attribute the attribute
+     * @return the value of the attribute after applying the coefficients defined in the SpellData file
+     */
+    public static double getScaledValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute) {
+        return getScaledValue(data, caster, target, attribute, 1.0);
+    }
+
+    /**
+     * Get the scaled value of an attribute.
+     * @param data the SpellData file
+     * @param caster the entity that cast the spell
+     * @param target the entity that is the target of the spell
      * @param attribute the attribute
      * @param multiplier an optional multiplier of the result
      * @return the value of the attribute after applying the coefficients defined in the SpellData file and the multiplier
      */
-    public static double getScaledValue(YamlConfiguration data, LivingEntity entity, Attribute attribute, double multiplier) {
-        if (data.contains("coefficients." + attribute.name().toUpperCase())) {
-            MessageUtil.log("Coefficient for " + attribute.name() + " not defined in " + data.getName());
-            return entity.getAttribute(attribute).getValue() * multiplier;
+    public static double getScaledValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, double multiplier) {
+        if (target instanceof Player) {
+            if (!data.contains("coefficients.players" + attribute.name().toUpperCase())) {
+                MessageUtil.log("Coefficient for player: " + attribute.name() + " not defined in " + data.getName());
+                return caster.getAttribute(attribute).getValue() * multiplier;
+            }
+            return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players" + attribute.name().toUpperCase(), 1.0)) * multiplier;
         }
-        return (entity.getAttribute(attribute).getValue() * data.getDouble("coefficients." + attribute.name().toUpperCase(), 1.0)) * multiplier;
+        if (!data.contains("coefficients.entities" + attribute.name().toUpperCase())) {
+            MessageUtil.log("Coefficient for entities: " + attribute.name() + " not defined in " + data.getName());
+            return caster.getAttribute(attribute).getValue() * multiplier;
+        }
+        return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities" + attribute.name().toUpperCase(), 1.0)) * multiplier;
     }
 
     /**
@@ -91,6 +116,11 @@ public class Spellbook {
             }
         }
         return damage;
+    }
+
+    public static double getVariedAttributeBasedDamage(YamlConfiguration data, LivingEntity caster, LivingEntity target, boolean canCrit, Attribute attribute) {
+        double damage = getScaledValue(data, caster, target, attribute);
+        return getVariedDamage(damage, caster, canCrit);
     }
 
 

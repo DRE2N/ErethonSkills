@@ -20,7 +20,7 @@ public class PoisonEffect extends SpellEffect {
         tick++;
         if (tick >= 20) {
             tick = 0;
-            target.damage(Spellbook.getScaledValue(data, caster, Attribute.ADV_MAGIC), DamageType.MAGIC);
+            target.damage(Spellbook.getScaledValue(data, caster, target, Attribute.ADV_MAGIC), DamageType.MAGIC);
         }
     }
 }

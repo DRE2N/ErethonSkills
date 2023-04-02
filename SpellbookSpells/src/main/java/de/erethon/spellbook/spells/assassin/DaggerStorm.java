@@ -19,7 +19,6 @@ public class DaggerStorm extends SpellbookSpell implements Listener {
 
     private final int daggers = data.getInt("daggers", 5);
     private final int divergence = data.getInt("divergence", 5);
-    private final double damage = Spellbook.getScaledValue(data, caster, Attribute.ADV_PHYSICAL);
     private final float speed = (float) data.getDouble("speed", 3.0);
 
     public DaggerStorm(LivingEntity caster, SpellData spellData) {
@@ -56,7 +55,7 @@ public class DaggerStorm extends SpellbookSpell implements Listener {
                 if (entity == caster) {
                     return;
                 }
-                entity.damage(Spellbook.getVariedDamage(damage, caster, true), caster, DamageType.PHYSICAL);
+                entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
             }
         }
     }

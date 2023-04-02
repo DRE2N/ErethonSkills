@@ -57,7 +57,7 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
                 if (entity == caster) {
                     return;
                 }
-                entity.damage(Spellbook.getVariedDamage(damage, caster, true), caster, DamageType.PHYSICAL);
+                entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
                 EffectData effect = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
                 if (effect != null) {
                     entity.addEffect(caster, effect, 1, 5);

@@ -13,7 +13,6 @@ public class StackingAttack extends SpellbookSpell {
 
     LivingEntity target;
     int stacks;
-    private final double bonus = Spellbook.getScaledValue(data, caster, Attribute.ADV_PHYSICAL);
 
     public StackingAttack(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -37,7 +36,7 @@ public class StackingAttack extends SpellbookSpell {
         if (target != this.target) {
             return damage;
         }
-        damage = damage + (bonus * stacks);
+        damage = damage + (Spellbook.getScaledValue(data, caster, target, Attribute.ADV_AIR) * stacks);
         if (stacks <= data.getInt("maxStacks", 7)) {
             stacks++;
         }
