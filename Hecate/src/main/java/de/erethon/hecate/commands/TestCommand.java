@@ -54,7 +54,7 @@ public class TestCommand extends ECommand {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        spawnFrames(player, player.getTargetBlock(20).getLocation(), Integer.parseInt(args[1]));
+        spawnFrames(player, player.getTargetBlockExact(20).getLocation(), Integer.parseInt(args[1]));
     }
 
 
