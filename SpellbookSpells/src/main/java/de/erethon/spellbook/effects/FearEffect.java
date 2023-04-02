@@ -17,7 +17,6 @@ public class FearEffect extends SpellEffect {
 
     @Override
     public void onApply() {
-        MessageUtil.log("Vektor: " + awayVector.toString());
         target.setRotation(awayVector.toLocation(target.getWorld()).getYaw(), target.getLocation().getPitch());
     }
 

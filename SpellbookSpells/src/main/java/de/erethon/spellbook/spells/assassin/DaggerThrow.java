@@ -7,6 +7,8 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.events.ItemProjectileHitEvent;
 import de.erethon.spellbook.utils.ItemProjectile;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -62,6 +64,7 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
                 }
                 keepAliveTicks = 0;
                 caster.sendParsedActionBar("<green>Getroffen!");
+                caster.playSound(Sound.sound(Key.key("entity.arrow.hit_player"), Sound.Source.RECORD, 1, 0.9f));
                 event.getArrow().remove();
             }
         }

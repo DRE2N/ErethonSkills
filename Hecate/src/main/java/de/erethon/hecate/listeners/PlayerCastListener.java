@@ -59,7 +59,6 @@ public class PlayerCastListener implements Listener {
     public void onDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player player) {
             Location location = event.getEntity().getLocation().add(player.getLocation().getDirection().multiply(event.getEntity().getLocation().distance(player.getLocation())).crossProduct(new Vector(1, 0, 1)));
-            MessageUtil.broadcastMessage(location.toString());
             ArmorStand armorStand = NMSUtils.spawnInvisibleArmorstand(location, true, false, true, true);
             armorStand.getBukkitEntity().setVelocity(new Vector(0, 1, 0));
             armorStand.setCustomName(PaperAdventure.asVanilla(Component.text("-" + event.getDamage() + "❤").color(NamedTextColor.RED)));

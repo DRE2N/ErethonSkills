@@ -16,10 +16,10 @@ import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -87,7 +87,7 @@ public class AoEBaseSpell extends SpellbookSpell {
     @Override
     protected boolean onCast() {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        BlockPos pos = new BlockPos(target.getX(), target.getY(), target.getZ());
+        BlockPos pos = new BlockPos((int) target.getX(), (int) target.getY(), (int) target.getZ());
 
            /* for (OfflinePlayer player : team.getPlayers()) {
                 sendPackets((Player) player, customItemDataFriendly, pos);

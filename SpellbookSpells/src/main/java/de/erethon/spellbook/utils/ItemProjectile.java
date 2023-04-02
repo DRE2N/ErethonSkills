@@ -15,8 +15,8 @@ import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.EulerAngle;
@@ -143,7 +143,7 @@ public class ItemProjectile extends Arrow {
     }
 
     @Override
-    protected void preOnHit(@NotNull HitResult hitResult) {
+    public void preOnHit(@NotNull HitResult hitResult) {
         super.preOnHit(hitResult);
         Entity entity = null;
         if (hitResult.getType() == HitResult.Type.ENTITY) {

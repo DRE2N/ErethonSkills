@@ -15,8 +15,8 @@ import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.Level;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_19_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -64,7 +64,7 @@ public class TestCommand extends ECommand {
         double ox = center.getBlockX();
         double oy = center.getBlockY() + 1;
         double oz = center.getBlockZ();
-        BlockPos pos = new BlockPos(ox , oy, oz);
+        BlockPos pos = new BlockPos((int) ox, (int) oy, (int) oz);
         ItemFrame itemFrame = new ItemFrame(world, pos, Direction.UP);
         ItemStack map = new ItemStack(Items.FILLED_MAP);
         itemFrame.setItem(map);

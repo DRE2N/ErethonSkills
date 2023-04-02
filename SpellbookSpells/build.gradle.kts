@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("io.papermc.paperweight.userdev") version "1.3.8-SNAPSHOT"
+    id("io.papermc.paperweight.userdev") version "1.5.3"
 
 }
 
@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    paperweightDevBundle("de.erethon.papyrus", "1.19.3-R0.1-SNAPSHOT") { isChanging = true }
+    paperweight.devBundle("de.erethon.papyrus", "1.19.4-R0.1-SNAPSHOT") { isChanging = true }
     implementation("com.elmakers.mine.bukkit:EffectLib:9.4")
     compileOnly("de.erethon:bedrock:1.2.4")
 }
