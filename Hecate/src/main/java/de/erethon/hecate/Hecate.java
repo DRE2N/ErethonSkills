@@ -49,6 +49,9 @@ public final class Hecate extends EPlugin {
         instantiate();
         registerCommands();
         getServer().getPluginManager().registerEvents(new PlayerCastListener(), this);
+        Bukkit.getScheduler().runTaskLater(this, () -> { // Workaround for Spellbook not loading spells on load
+            Bukkit.getServer().getSpellbookAPI().getLibrary().reload();
+        }, 30);
     }
 
     @Override
