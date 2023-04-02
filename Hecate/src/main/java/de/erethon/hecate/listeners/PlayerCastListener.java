@@ -8,12 +8,17 @@ import de.erethon.spellbook.utils.NMSUtils;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ArmorStand;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Display;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -23,27 +28,47 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PlayerCastListener implements Listener {
 
-    Set<ArmorStand> armorStandSet = new HashSet<>();
+    private ConcurrentHashMap<TextDisplay, Long> displays = new ConcurrentHashMap<>();
 
     BukkitRunnable remover = new BukkitRunnable() {
         @Override
         public void run() {
-            for (ArmorStand armorStand : armorStandSet) {
-                armorStand.remove(Entity.RemovalReason.DISCARDED);
+            for (Map.Entry<TextDisplay, Long> entry : displays.entrySet()) {
+                if (entry.getValue() + 3000 < System.currentTimeMillis()) {
+                    TextDisplay display = entry.getKey();
+                    Entity vehicle = display.getVehicle();
+                    display.remove();
+                    displays.remove(entry.getKey());
+                    if (vehicle != null) { // Update other displays if the entity is still there
+                        updateTransforms(vehicle);
+                    }
+                }
             }
-            armorStandSet.clear();
         }
     };
 
     public PlayerCastListener() {
-        remover.runTaskTimer(Hecate.getInstance(), 0, 25);
+        remover.runTaskTimer(Hecate.getInstance(), 0, 20);
     }
 
     @EventHandler
@@ -58,14 +83,39 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player player) {
-            Location location = event.getEntity().getLocation().add(player.getLocation().getDirection().multiply(event.getEntity().getLocation().distance(player.getLocation())).crossProduct(new Vector(1, 0, 1)));
-            ArmorStand armorStand = NMSUtils.spawnInvisibleArmorstand(location, true, false, true, true);
-            armorStand.getBukkitEntity().setVelocity(new Vector(0, 1, 0));
-            armorStand.setCustomName(PaperAdventure.asVanilla(Component.text("-" + event.getDamage() + "❤").color(NamedTextColor.RED)));
-            armorStand.setCustomNameVisible(true);
-            //armorStandSet.add(armorStand);
+        if (event.getDamager() instanceof Player && event.getEntity() instanceof LivingEntity entity) {
+            addDisplayDamage(entity, event.getDamage());
         }
+    }
+
+    private void addDisplayDamage(LivingEntity entity, double damage) {
+        double rounded = Math.round(damage * 100.0) / 100.0;
+        TextDisplay display = entity.getWorld().spawn(entity.getLocation().add(0, 0,0), TextDisplay.class, textDisplay -> {
+            entity.addPassenger(textDisplay);
+            textDisplay.setBillboard(Display.Billboard.VERTICAL);
+            textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
+            textDisplay.text(Component.text("-" + rounded + "❤").color(NamedTextColor.RED));
+        });
+        displays.put(display, System.currentTimeMillis());
+        updateTransforms(entity);
+    }
+
+    private void updateTransforms(Entity entity) {
+        Map<Display, Long> activeDisplays = new HashMap<>();
+        for (org.bukkit.entity.Entity passenger : entity.getPassengers()) {
+            if (passenger instanceof TextDisplay display) {
+                activeDisplays.put(display, displays.get(display));
+            }
+        }
+        List<Display> sorted = activeDisplays.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).map(Map.Entry::getKey).toList();
+        float offset = 0.2f;
+        for (Display display : sorted) {
+            float sideOffset = (float) (entity.getWidth() / 2 + 0.4);
+            display.setTransformation(new Transformation(new Vector3f(sideOffset, offset, 0), new AxisAngle4f(0,0,0,0), new Vector3f(1, 1, 1), new AxisAngle4f(0,0,0,0)));
+            offset += 0.2f;
+        }
+
+
     }
 
     @EventHandler
