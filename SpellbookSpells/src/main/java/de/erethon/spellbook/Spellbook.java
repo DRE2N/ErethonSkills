@@ -19,6 +19,8 @@ public class Spellbook {
     private final Plugin implementer;
     private final EffectManager effectManager;
 
+    private boolean DEBUG = false;
+
     private static final Random random = new Random();
 
     /**
@@ -48,6 +50,14 @@ public class Spellbook {
 
     public EffectManager getEffectManager() {
         return effectManager;
+    }
+
+    public void setDebug(boolean debug) {
+        this.DEBUG = debug;
+    }
+
+    public boolean isDebug() {
+        return DEBUG;
     }
 
     /**
@@ -85,16 +95,25 @@ public class Spellbook {
      * @return the value of the attribute after applying the coefficients defined in the SpellData file and the multiplier
      */
     public static double getScaledValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, double multiplier) {
+        if (getInstance().DEBUG) {
+            MessageUtil.log("Caster: " + caster.getName() + " Target: " + (target == null ? "null" : target.getName()) + " Attribute: " + attribute.name() + " Multiplier: " + multiplier);
+        }
         if (target instanceof Player) {
             if (!data.contains("coefficients.players." + attribute.name().toUpperCase())) {
                 MessageUtil.log("Coefficient for player: " + attribute.name() + " not defined in " + data.getCurrentPath());
                 return caster.getAttribute(attribute).getValue() * multiplier;
+            }
+            if (getInstance().DEBUG) {
+                MessageUtil.log("Scaled value for entity damage " + attribute.name() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + attribute.name().toUpperCase(), 1.0));
             }
             return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + attribute.name().toUpperCase(), 1.0)) * multiplier;
         }
         if (!data.contains("coefficients.entities." + attribute.name().toUpperCase())) {
             MessageUtil.log("Coefficient for entities: " + attribute.name() + " not defined in " + data.getCurrentPath());
             return caster.getAttribute(attribute).getValue() * multiplier;
+        }
+        if (getInstance().DEBUG) {
+            MessageUtil.log("Scaled value for entity damage " + attribute.name() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + attribute.name().toUpperCase(), 1.0));
         }
         return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + attribute.name().toUpperCase(), 1.0)) * multiplier;
     }
@@ -114,6 +133,9 @@ public class Spellbook {
             if (crit < entity.getAttribute(Attribute.STAT_CRIT_CHANCE).getValue()) {
                 damage = (float) (damage + entity.getAttribute(Attribute.STAT_CRIT_DMG).getValue());
             }
+        }
+        if (getInstance().DEBUG) {
+            MessageUtil.log("Entity: " + entity.getName() + " | Initial damage: " + damage + " | Variance: " + variance + " | Crit: " + canCrit + " | Final damage: " + damage);
         }
         return damage;
     }

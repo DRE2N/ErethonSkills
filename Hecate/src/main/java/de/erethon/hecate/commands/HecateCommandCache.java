@@ -17,5 +17,6 @@ public class HecateCommandCache extends ECommandCache {
         addCommand(new ReloadCommand());
         addCommand(new LearnGUICommand());
         addCommand(new AttributeCommand());
+        addCommand(new DebugModeCommand());
     }
 }
