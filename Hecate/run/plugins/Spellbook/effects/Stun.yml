@@ -1,0 +1,6 @@
+class: StunEffect
+maxStacks: 1
+maxDuration: 100 # 5 Seconds
+isPositive: false
+stackMode: prolong
+icon: X
