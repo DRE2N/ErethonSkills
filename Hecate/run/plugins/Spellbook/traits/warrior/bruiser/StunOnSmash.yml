@@ -1,0 +1,5 @@
+class: warrior.StunOnSmash
+name: StunOnSmash
+description: "StunOnSmash"
+affectedSpells:
+  - HammerSMASH

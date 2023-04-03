@@ -82,12 +82,15 @@ public class HammerSMASH extends SpellbookSpell implements Listener {
             effect.radius = 6.5f;
             effect.start();
             caster.playSound(impactSound);
+            Set<LivingEntity> affectedForTrait = new HashSet<>();
             caster.getLocation().getNearbyEntitiesByType(LivingEntity.class, 6).forEach(entity -> {
                 if (entity == caster) {
                     return;
                 }
                 entity.damage(Spellbook.getVariedAttributeBasedDamage(getData(), caster, entity, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
+                affectedForTrait.add(entity);
             });
+            triggerTraits(affectedForTrait);
           }
     }
 

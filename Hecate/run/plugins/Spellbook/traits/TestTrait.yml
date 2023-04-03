@@ -2,3 +2,4 @@ class: TestTrait
 affectedSpells:
   - Backstab
 description: "blah blah blah"
+name: TestTrait
