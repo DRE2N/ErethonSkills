@@ -38,6 +38,8 @@ public class HammerSMASH extends SpellbookSpell implements Listener {
     private final Sound impactSound = Sound.sound(Key.key("entity.ender_dragon.hurt"), Sound.Source.PLAYER, 0.5f, 0);
     private final double pushVector = data.getDouble("pushVector", 0.3);
 
+    private final int smashAfterTicks = data.getInt("smashAfterTicks", 20);
+
     private final Set<FallingBlock> blocks = new HashSet<>();
 
     public HammerSMASH(LivingEntity caster, SpellData spellData) {
@@ -48,7 +50,8 @@ public class HammerSMASH extends SpellbookSpell implements Listener {
 
     @Override
     protected boolean onCast() {
-        return true;
+        caster.getUsedSpells().put(data, System.currentTimeMillis());
+        return super.onCast();
     }
 
     @Override
@@ -58,12 +61,13 @@ public class HammerSMASH extends SpellbookSpell implements Listener {
             caster.playSound(chargeSound);
         }
         if (animationTicks == 5) {
-            caster.setVelocity(new Vector(0, pushVector, 0).add(caster.getLocation().getDirection()));
+            Vector loc = caster.getLocation().getDirection().clone().setY(0);
+            caster.setVelocity(new Vector(0, pushVector, 0).add(loc));
         }
         if (animationTicks >= 5 && animationTicks <= 10) {
             caster.playSound(sound);
         }
-        if (animationTicks == 15) {
+        if (animationTicks == smashAfterTicks) {
             caster.sendParsedActionBar("<red><bold>SMASH!");
             spawnFallingBlocks(caster.getLocation());
             CylinderEffect effect = new CylinderEffect(manager);

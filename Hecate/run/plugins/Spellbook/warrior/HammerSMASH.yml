@@ -1,11 +1,12 @@
 class: warrior.HammerSMASH
-name: Hammer SMASH
-description: "You smash your hammer into the ground, dealing damage to all enemies in front"
+name: Hammer SMASH!
+description: "SMASH!"
 cooldown: 45
 pushVector: 0.9
 inFrontVector: 1.5
+smashAfterTicks: 18
 coefficients:
     players:
         adv_physical: 5
     entities:
-        ADV_PHYSICAL: 5
+        adv_physical: 0.2

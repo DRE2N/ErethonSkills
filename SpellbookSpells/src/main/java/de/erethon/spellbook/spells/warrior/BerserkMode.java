@@ -35,11 +35,6 @@ public class BerserkMode extends SpellbookSpell {
     }
 
     @Override
-    protected boolean onPrecast() {
-        return super.onPrecast();
-    }
-
-    @Override
     protected boolean onCast() {
         if (caster instanceof Player player) {
             player.setWorldBorder(fakeBorder);
@@ -54,6 +49,7 @@ public class BerserkMode extends SpellbookSpell {
         effect.duration = duration * 20 * 50;
         effect.height = 1.3f;
         effect.start();
+        caster.getUsedSpells().put(data, System.currentTimeMillis());
         return super.onCast();
     }
 
