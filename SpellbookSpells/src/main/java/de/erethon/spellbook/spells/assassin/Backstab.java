@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Collections;
+
 public class Backstab extends SpellbookSpell {
 
     Entity target;
@@ -76,5 +78,6 @@ public class Backstab extends SpellbookSpell {
         caster.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1));
         caster.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
         caster.attack(target);
+        triggerTraits(Collections.singleton((LivingEntity) target));
     }
 }
