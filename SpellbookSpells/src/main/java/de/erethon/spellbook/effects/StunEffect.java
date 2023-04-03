@@ -29,33 +29,33 @@ public class StunEffect extends SpellEffect {
         if (particleCD-- > 0) {
             return;
         }
-        caster.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, caster.getLocation().add(random.nextDouble(-0.5, 0.5), 1.9,random.nextDouble(-0.5, 0.5)), 1);
+        target.getWorld().spawnParticle(Particle.VILLAGER_ANGRY, target.getLocation().add(random.nextDouble(-0.5, 0.5), 1.9,random.nextDouble(-0.5, 0.5)), 1);
         particleCD = 5;
     }
 
     @Override
     public void onApply() {
-        for (SpellbookSpell spell : caster.getActiveSpells()) {
+        for (SpellbookSpell spell : target.getActiveSpells()) {
             spell.interrupt();
         }
-        caster.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 10000, 128, true, false, false));
-        caster.playSound(Sound.sound(Key.key("block.anvil.place"), Sound.Source.RECORD, 0.5f, 0));
-        if (caster instanceof Player player) {
+        target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 10000, 128, true, false, false));
+        target.playSound(Sound.sound(Key.key("block.anvil.place"), Sound.Source.RECORD, 0.5f, 0));
+        if (target instanceof Player player) {
             prevMoveSpeed = player.getWalkSpeed(); // Walk speed doesn't change FOV.
             player.setWalkSpeed(0);
             return;
         }
-        prevMoveSpeed = caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0);
+        prevMoveSpeed = target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
+        target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0);
     }
 
     @Override
     public void onRemove() {
-        caster.removePotionEffect(PotionEffectType.JUMP);
-        if (caster instanceof Player player) {
+        target.removePotionEffect(PotionEffectType.JUMP);
+        if (target instanceof Player player) {
             player.setWalkSpeed((float) prevMoveSpeed);
             return;
         }
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(prevMoveSpeed);
+        target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(prevMoveSpeed);
     }
 }
