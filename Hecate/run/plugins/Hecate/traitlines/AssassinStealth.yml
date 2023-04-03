@@ -1,0 +1,11 @@
+class: Assassin
+name: Stealth
+description: "Shhhhhh"
+traitLine:
+  0:
+    TestTrait:
+      cost: 2
+      levelRequirement: 0
+    StunOnSmash:
+      cost: 2
+      levelRequirement: 0

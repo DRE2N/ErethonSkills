@@ -11,18 +11,31 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class HClass extends YamlConfiguration {
 
     private final HashMap<Integer, Set<SpellData>> spellLevelMap = new HashMap<>();
+    private List<Traitline> traitlines = new ArrayList<>();
+
+    private String id;
     private String displayName;
     private String description;
     private int maxLevel;
     private HashMap<Integer, HashMap<Attribute, Double>> baseAttributesPerLevel = new HashMap<>();
     private HashMap<Integer, Double> xpPerLevel = new HashMap<>();
+
+    public HClass(File file) {
+        try {
+            load(file);
+        } catch (IOException | InvalidConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public Set<SpellData> getSpellsUnlockedAtLevel(int level) {
         return spellLevelMap.get(level);
@@ -36,9 +49,18 @@ public class HClass extends YamlConfiguration {
         return maxLevel;
     }
 
+    public List<Traitline> getTraitlines() {
+        return traitlines;
+    }
+
+    public String getId() {
+        return id;
+    }
+
     @Override
     public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
         super.load(file);
+        id = file.getName().replace(".yml", "");
         ConfigurationSection spellLevelSection = getConfigurationSection("spellLevels");
         if (spellLevelSection == null) {
             MessageUtil.log("Class " + getName() + " has no spell levels configured!");
@@ -59,6 +81,14 @@ public class HClass extends YamlConfiguration {
                     spellLevelMap.put(level, spells);
                 }
             }
+        }
+        for (String id : getStringList("traitlines")) {
+            Traitline traitline = Hecate.getInstance().getTraitline(id);
+            if (traitline == null) {
+                MessageUtil.log("Unknown traitline '" + id + "' found under 'traitlines' in class file " + getName());
+                continue;
+            }
+            traitlines.add(traitline);
         }
         ConfigurationSection attributesSection = getConfigurationSection("attributeLevels");
         if (attributesSection == null) {
