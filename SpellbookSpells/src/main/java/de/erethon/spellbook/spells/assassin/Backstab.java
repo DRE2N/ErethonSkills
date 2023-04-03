@@ -70,7 +70,7 @@ public class Backstab extends SpellbookSpell {
     }
 
     @Override
-    protected void onTickFinish() {
+    protected void cleanup() {
         float yaw = target.getLocation().getYaw();
         float pitch = caster.getLocation().getPitch();
         location.setYaw(yaw);

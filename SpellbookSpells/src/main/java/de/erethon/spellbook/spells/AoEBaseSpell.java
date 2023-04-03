@@ -127,6 +127,11 @@ public class AoEBaseSpell extends SpellbookSpell {
 
     @Override
     protected void onTickFinish() {
+        super.onTickFinish();
+    }
+
+    @Override
+    protected void cleanup() {
         for (ServerPlayer player : server.getServer().getPlayerList().players) {
             for (int entityID : entityIDs) {
                 player.connection.send(new ClientboundRemoveEntitiesPacket(entityID));

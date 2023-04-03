@@ -39,7 +39,4 @@ public class TestSpell extends SpellbookSpell {
     }
 
 
-    @Override
-    protected void onTickFinish() {
-    }
 }

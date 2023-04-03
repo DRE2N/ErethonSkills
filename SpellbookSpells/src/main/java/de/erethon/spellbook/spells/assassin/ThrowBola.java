@@ -38,7 +38,7 @@ public class ThrowBola extends EntityTargetSpell {
     }
 
     @Override
-    protected void onTickFinish() {
+    protected void cleanup() {
         targetEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
         armorStand.remove();
     }

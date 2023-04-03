@@ -52,7 +52,7 @@ public class GrapplingHook extends SpellbookSpell {
     }
 
     @Override
-    protected void onTickFinish() {
+    protected void cleanup() {
         double speed = -1 * data.getDouble("speedModifier", 2);
         caster.setFallDistance(0);
         caster.setVelocity(vec.multiply(speed));

@@ -23,7 +23,7 @@ public class PerformanceTestSpell extends SpellbookSpell {
 
 
     @Override
-    protected void onTickFinish() {
+    protected void cleanup() {
         SpellbookAPI api = Bukkit.getServer().getSpellbookAPI();
         SpellData spellbookSpell = api.getLibrary().getSpellByID("TestSpell");
         for (int i = 0; i < iterations; i++) {

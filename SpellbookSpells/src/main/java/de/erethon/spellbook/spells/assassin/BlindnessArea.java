@@ -42,9 +42,5 @@ public class BlindnessArea extends AoEBaseSpell {
         }
     }
 
-    @Override
-    protected void onTickFinish() {
-        super.onTickFinish();
-    }
 }
 

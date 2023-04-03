@@ -41,7 +41,7 @@ public class Masterthief extends EntityTargetSpell {
     }
 
     @Override
-    protected void onTickFinish() {
+    protected void cleanup() {
         caster.removeSpell(spell);
         caster.sendParsedActionBar("<gray>Dein gestohlener Spell " + spell.getId() + " ist ausgelaufen.");
     }

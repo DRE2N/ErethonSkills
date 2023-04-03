@@ -53,7 +53,7 @@ public class Assassination extends SpellbookSpell {
     }
 
     @Override
-    protected void onTickFinish() {
+    protected void cleanup() {
         caster.getAttribute(Attribute.STAT_CRIT_DMG).removeModifier(critModifier);
         caster.getAttribute(Attribute.STAT_CRIT_CHANCE).removeModifier(critChanceModifier);
         caster.getAttribute(Attribute.RES_AIR).removeModifier(resistanceModifier);

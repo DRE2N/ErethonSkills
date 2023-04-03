@@ -150,7 +150,9 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        event.getPlayer().setInvisible(false); // Fix for spell effect after server crash
+        // Fixes for spell effects after server crash
+        event.getPlayer().setInvisible(false);
+        event.getPlayer().setWalkSpeed(0.2f);
     }
 
 

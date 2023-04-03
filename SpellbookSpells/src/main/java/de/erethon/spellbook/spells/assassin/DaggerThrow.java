@@ -76,7 +76,7 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
     }
 
     @Override
-    protected void onTickFinish() {
+    protected void cleanup() {
         HandlerList.unregisterAll(this);
     }
 }

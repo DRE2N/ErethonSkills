@@ -72,8 +72,12 @@ public class DustCloud extends AoEBaseSpell {
     }
 
     @Override
+    protected void cleanup() {
+        caster.setInvisible(false);
+    }
+
+    @Override
     protected void onTickFinish() {
         super.onTickFinish();
-        caster.setInvisible(false);
     }
 }
