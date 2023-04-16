@@ -2,6 +2,7 @@ package de.erethon.hecate.commands;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,6 +28,13 @@ public class AttributeCommand extends ECommand {
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
         Attribute attribute;
+        if (args.length < 2) {
+            MessageUtil.sendMessage(commandSender, "BuiltInRegistries.ATTRIBUTE");
+            BuiltInRegistries.ATTRIBUTE.registryKeySet().forEach(key -> {
+                MessageUtil.sendMessage(commandSender, "- " + key.toString());
+            });
+            return;
+        }
         try {
             attribute = Attribute.valueOf(args[1].toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -36,5 +44,9 @@ public class AttributeCommand extends ECommand {
         }
         player.getAttribute(attribute).setBaseValue(Double.parseDouble(args[2]));
         MessageUtil.sendMessage(commandSender, "Set " + attribute.name() + " to " + args[2]);
+    }
+
+    public void test() {
+        return;
     }
 }
