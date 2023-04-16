@@ -1,4 +1,4 @@
-class: warrior.WarriorPull
+class: warrior.ShoutPull
 name: "<red>Kommt her!"
 description:
   - "<#757575>Schlachtruf"

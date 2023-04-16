@@ -1,21 +1,22 @@
 package de.erethon.spellbook.spells.warrior;
 
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class WarriorPull extends SpellbookSpell {
+public class ShoutPull extends AbstractWarriorShout {
 
     Entity target = null;
 
-    public WarriorPull(LivingEntity caster, SpellData spellData) {
+    public int range = data.getInt("range", 10);
+
+    public ShoutPull(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 
     @Override
     protected boolean onPrecast() {
-        target = caster.getTargetEntity(data.getInt("range", 10));
+        target = caster.getTargetEntity(range);
         if (target == null) {
             caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
