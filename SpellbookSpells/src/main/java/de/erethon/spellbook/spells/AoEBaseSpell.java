@@ -9,6 +9,8 @@ import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Display;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -145,23 +147,18 @@ public class AoEBaseSpell extends SpellbookSpell {
     private void sendPackets(Player player, int id, BlockPos pos) {
         ServerPlayer nmsplayer = ((CraftPlayer) player).getHandle();
         Level level = ((CraftWorld) caster.getWorld()).getHandle();
-        ItemFrame frame = new ItemFrame(level, pos, Direction.DOWN);
-        frame.setInvisible(true);
+        Display.ItemDisplay display = new Display.ItemDisplay(EntityType.ITEM_DISPLAY, level);
         ItemStack item = new ItemStack(Items.WHITE_DYE);
         org.bukkit.inventory.ItemStack enemyItem = CraftItemStack.asBukkitCopy(item);
         ItemMeta meta = enemyItem.getItemMeta();
         meta.setCustomModelData(id);
         enemyItem.setItemMeta(meta);
-        frame.setItem(CraftItemStack.asNMSCopy(enemyItem), true, false);
-        frame.fixed = true;
-        frame.setInvulnerable(true);
-        entityIDs.add(frame.getId());
-        ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(frame);
-        ClientboundSetEntityDataPacket dataPacket = new ClientboundSetEntityDataPacket(frame.getId(), frame.getEntityData().packDirty());
-        ClientboundMoveEntityPacket moveEntityPacket = new ClientboundMoveEntityPacket.Rot(frame.getId(), (byte) 0, (byte) -64, false);
+        display.setItemStack(CraftItemStack.asNMSCopy(enemyItem));
+        entityIDs.add(display.getId());
+        ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(display);
+        ClientboundSetEntityDataPacket dataPacket = new ClientboundSetEntityDataPacket(display.getId(), display.getEntityData().packDirty());
         nmsplayer.connection.send(addEntityPacket);
         nmsplayer.connection.send(dataPacket);
-        nmsplayer.connection.send(moveEntityPacket);
     }
 
     public Set<LivingEntity> getEntities() {
