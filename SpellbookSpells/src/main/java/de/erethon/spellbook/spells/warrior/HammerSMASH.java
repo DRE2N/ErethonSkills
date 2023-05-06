@@ -1,9 +1,14 @@
 package de.erethon.spellbook.spells.warrior;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.animation.Animation;
+import de.erethon.spellbook.animation.AnimationPart;
+import de.erethon.spellbook.animation.AnimationStage;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.TransformationUtil;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.CircleEffect;
@@ -13,15 +18,21 @@ import net.kyori.adventure.sound.Sound;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
@@ -66,6 +77,9 @@ public class HammerSMASH extends SpellbookSpell implements Listener {
         }
         if (animationTicks >= 5 && animationTicks <= 10) {
             caster.playSound(sound);
+        }
+        if (animationTicks == 10) {
+            new Animation(new AnimationStage(new AnimationPart(0, 20))).run(caster);
         }
         if (animationTicks == smashAfterTicks) {
             caster.sendParsedActionBar("<red><bold>SMASH!");

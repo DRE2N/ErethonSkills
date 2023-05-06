@@ -2,6 +2,7 @@ package de.erethon.spellbook.animation;
 
 import de.erethon.spellbook.Spellbook;
 import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -11,14 +12,29 @@ import java.util.List;
 public class Animation extends BukkitRunnable {
 
     private List<AnimationStage> stages = new ArrayList<>();
-    private final Location location;
+    private Location location;
+    private LivingEntity living;
 
     private int passedTicks;
     private int delay;
     private int currentStage = 0;
     private AnimationStage activeStage;
 
-    public Animation(Location location) {
+    public Animation(AnimationStage... s) {
+        stages.addAll(List.of(s));
+    }
+
+    public Animation stages(AnimationStage... s) {
+        stages.addAll(List.of(s));
+        return this;
+    }
+
+    public void run(LivingEntity living) {
+        this.living = living;
+        runTaskTimer(Spellbook.getInstance().getImplementer(), 0, 1);
+    }
+
+    public void run(Location location) {
         this.location = location;
         runTaskTimer(Spellbook.getInstance().getImplementer(), 0, 1);
     }
@@ -29,7 +45,11 @@ public class Animation extends BukkitRunnable {
         }
         AnimationStage stage = stages.get(currentStage);
         activeStage = stage;
-        stage.run(location);
+        if (location != null) {
+            stage.run(location);
+        } else {
+            stage.run(living);
+        }
         delay = stage.getStageDelay();
         passedTicks = 0;
         currentStage++;
@@ -41,6 +61,12 @@ public class Animation extends BukkitRunnable {
             continueAnimation();
         }
         passedTicks++;
+    }
+
+    public void cancel() {
+        for (AnimationStage stage : stages) {
+            stage.cancel();
+        }
     }
 
     public AnimationStage getActiveStage() {
