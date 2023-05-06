@@ -1,17 +1,12 @@
 package de.erethon.hecate.listeners;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.utils.NMSUtils;
-import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Display;
@@ -29,22 +24,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
-import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PlayerCastListener implements Listener {
 
@@ -54,7 +41,7 @@ public class PlayerCastListener implements Listener {
         @Override
         public void run() {
             for (Map.Entry<TextDisplay, Long> entry : displays.entrySet()) {
-                if (entry.getValue() + 3000 < System.currentTimeMillis()) {
+                if (entry.getValue() + 1500 < System.currentTimeMillis()) {
                     TextDisplay display = entry.getKey();
                     Entity vehicle = display.getVehicle();
                     display.remove();
@@ -83,14 +70,18 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player && event.getEntity() instanceof LivingEntity entity) {
-            addDisplayDamage(entity, event.getDamage());
+        if (event.getDamager() instanceof Player player && event.getEntity() instanceof LivingEntity entity) {
+            addDisplayDamage(player, entity, event.getDamage());
         }
     }
 
-    private void addDisplayDamage(LivingEntity entity, double damage) {
+    private void addDisplayDamage(Player player, LivingEntity entity, double damage) {
         double rounded = Math.round(damage * 100.0) / 100.0;
         TextDisplay display = entity.getWorld().spawn(entity.getLocation().add(0, 0,0), TextDisplay.class, textDisplay -> {
+            for (Player p : textDisplay.getTrackedPlayers()) { // TODO: Dmg numbers for party member would be cool
+                p.hideEntity(Hecate.getInstance(), textDisplay);
+            }
+            player.showEntity(Hecate.getInstance(), textDisplay);
             entity.addPassenger(textDisplay);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
@@ -154,7 +145,5 @@ public class PlayerCastListener implements Listener {
         event.getPlayer().setInvisible(false);
         event.getPlayer().setWalkSpeed(0.2f);
     }
-
-
 
 }

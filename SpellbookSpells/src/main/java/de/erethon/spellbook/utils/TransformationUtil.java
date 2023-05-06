@@ -6,6 +6,8 @@ import org.joml.Vector3f;
 
 public class TransformationUtil {
 
+    // Transformation are immutable so let's do this I guess
+
     public static Transformation scale(Transformation transformation, float x, float y, float z) {
         return new Transformation(new Vector3f(x, y, z), transformation.getLeftRotation(), transformation.getTranslation(), transformation.getRightRotation());
     }
