@@ -1,0 +1,9 @@
+class: warrior.HealingBanner
+keepAliveTicks: 20
+tickInterval: 10
+radius: 5
+coefficients:
+  players:
+    stat_healingpower: 2
+  entities:
+    stat_healingpower: 0.2
