@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells.warrior;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -17,7 +18,7 @@ public class ShoutPull extends AbstractWarriorShout {
     @Override
     protected boolean onPrecast() {
         target = caster.getTargetEntity(range);
-        if (target == null) {
+        if (target == null || !(target instanceof LivingEntity living) || !Spellbook.canAttack(caster, living)) {
             caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
         }

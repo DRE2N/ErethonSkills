@@ -54,7 +54,7 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
     private void onHit(ItemProjectileHitEvent event) {
         if (event.getSpell() == this) {
            if (event.getHitEntity() instanceof LivingEntity entity) {
-                if (entity == caster) {
+                if (entity == caster || !Spellbook.canAttack(caster, entity)) {
                     return;
                 }
                 entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);

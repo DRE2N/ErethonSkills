@@ -98,7 +98,7 @@ public class HammerSMASH extends SpellbookSpell implements Listener {
             caster.playSound(impactSound);
             Set<LivingEntity> affectedForTrait = new HashSet<>();
             caster.getLocation().getNearbyEntitiesByType(LivingEntity.class, 6).forEach(entity -> {
-                if (entity == caster) {
+                if (entity == caster || !Spellbook.canAttack(caster, entity)) {
                     return;
                 }
                 entity.damage(Spellbook.getVariedAttributeBasedDamage(getData(), caster, entity, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);

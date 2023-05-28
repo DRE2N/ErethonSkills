@@ -23,6 +23,10 @@ public class StackingAttack extends SpellbookSpell {
     protected boolean onPrecast() {
         Entity selected = caster.getTargetEntity(data.getInt("range", 10));
         if (selected instanceof LivingEntity entity) {
+            if (!Spellbook.canAttack(caster, entity)) {
+                caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
+                return false;
+            }
             target = entity;
             return AssassinUtils.hasEnergy(caster, data);
         } else {

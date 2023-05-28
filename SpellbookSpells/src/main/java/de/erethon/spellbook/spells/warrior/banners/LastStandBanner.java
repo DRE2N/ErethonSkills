@@ -34,6 +34,7 @@ public class LastStandBanner extends WarBanner {
     protected void onTick() {
         super.onTick();
         for (LivingEntity entity : bannerHolder.getLocation().getNearbyLivingEntities(radius)) {
+            if (Spellbook.canAttack(caster, entity)) continue;
             if (entity == caster) continue;
             if (alreadyHealed.contains(entity)) continue;
             if (entity.getHealth() <= entity.getMaxHealth() * healthPercentage) {

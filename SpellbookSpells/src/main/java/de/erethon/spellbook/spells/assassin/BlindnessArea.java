@@ -38,6 +38,7 @@ public class BlindnessArea extends AoEBaseSpell {
         super.onTick();
         int duration = data.getInt("effectDuration", 200);
         for (LivingEntity entity : getEntities()) {
+            if (!Spellbook.canAttack(caster, entity)) continue;
             entity.addEffect(caster, effectData, duration, (int) Spellbook.getScaledValue(data, caster, entity, Attribute.ADV_MAGIC));
         }
     }

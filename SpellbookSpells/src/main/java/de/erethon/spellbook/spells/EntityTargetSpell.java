@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.entity.Entity;
@@ -19,6 +20,10 @@ public abstract class EntityTargetSpell extends SpellbookSpell {
     public boolean onPrecast() {
         Entity target = caster.getTargetEntity(120);
         if (target instanceof LivingEntity livingEntity) {
+            if (!Spellbook.canAttack(caster, livingEntity)) {
+                caster.sendParsedActionBar("<color:#ff0000>Du kannst dieses Ziel nicht angreifen!");
+                return false;
+            }
             if (target.getLocation().distanceSquared(caster.getLocation()) > maxDistance * maxDistance) {
                 caster.sendParsedActionBar("<color:#ff0000>Ziel zu weit entfernt!");
                 return false;

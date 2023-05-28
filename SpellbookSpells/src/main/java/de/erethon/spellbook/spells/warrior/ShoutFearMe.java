@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells.warrior;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Bukkit;
@@ -20,6 +21,9 @@ public class ShoutFearMe extends AbstractWarriorShout {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         Location inFront = caster.getLocation().add(caster.getLocation().getDirection().multiply(2));
         for (LivingEntity entity : inFront.getWorld().getNearbyEntitiesByType(LivingEntity.class, inFront, range)) {
+            if (!Spellbook.canAttack(caster, entity)) {
+                continue;
+            }
             entity.addEffect(caster, fearEffect, duration, 1);
         }
         return true;

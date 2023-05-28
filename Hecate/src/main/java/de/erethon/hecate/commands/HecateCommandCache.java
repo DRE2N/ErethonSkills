@@ -19,6 +19,7 @@ public class HecateCommandCache extends ECommandCache {
         addCommand(new AttributeCommand());
         addCommand(new DebugModeCommand());
         addCommand(new TraitCommand());
+        addCommand(new TeamCommand());
         addCommand(new EffectCommand());
     }
 }

@@ -40,6 +40,9 @@ public class TrapPoison extends AoEBaseSpell {
     public void onTick() {
         super.onTick();
         for (LivingEntity entity : getEntities()) {
+            if (!Spellbook.canAttack(caster, entity)) {
+                continue;
+            }
             //if (!entity.hasEffect(effectData)) {
                 entity.addEffect(caster, effectData, effectDuration, effectStacks);
             //}

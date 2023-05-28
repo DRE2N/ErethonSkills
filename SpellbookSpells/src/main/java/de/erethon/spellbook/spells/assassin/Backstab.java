@@ -29,7 +29,7 @@ public class Backstab extends SpellbookSpell {
     @Override
     protected boolean onPrecast() {
         target = caster.getTargetEntity(data.getInt("range", 10));
-        if (target == null) {
+        if (target == null || !(target instanceof LivingEntity living) || !Spellbook.canAttack(caster, living)) {
             caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
         }

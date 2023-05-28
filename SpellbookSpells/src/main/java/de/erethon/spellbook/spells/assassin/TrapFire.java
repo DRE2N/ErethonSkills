@@ -41,6 +41,9 @@ public class TrapFire extends AoEBaseSpell {
     public void onTick() {
         super.onTick();
         for (LivingEntity entity : getEntities()) {
+            if (!Spellbook.canAttack(caster, entity)) {
+                continue;
+            }
             entity.addEffect(caster, effectData, effectDuration, effectStacks);
         }
     }

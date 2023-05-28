@@ -25,6 +25,9 @@ public class SwordCleave extends EntityTargetSpell {
         caster.attack(targetEntity);
         double attackDmg = Spellbook.getScaledValue(data, caster, targetEntity, Attribute.ADV_PHYSICAL);
         for (LivingEntity entity : targetEntity.getLocation().getNearbyLivingEntities(radius)) {
+            if (!Spellbook.canAttack(caster, entity)) {
+                continue;
+            }
             entity.damage(Spellbook.getVariedDamage(attackDmg, caster, true), caster, DamageType.PHYSICAL);
         }
         return true;

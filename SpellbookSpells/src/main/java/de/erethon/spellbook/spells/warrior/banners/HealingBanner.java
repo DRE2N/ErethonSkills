@@ -24,6 +24,9 @@ public class HealingBanner extends WarBanner {
     protected void onTick() {
         super.onTick();
         for (LivingEntity entity : bannerHolder.getLocation().getNearbyLivingEntities(radius)) {
+            if (Spellbook.canAttack(caster, entity)) {
+                continue;
+            }
             entity.setHealth(Math.min(entity.getHealth() + Spellbook.getScaledValue(data, caster, entity, Attribute.STAT_HEALINGPOWER), entity.getMaxHealth()));
         }
     }
