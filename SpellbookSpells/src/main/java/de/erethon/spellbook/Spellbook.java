@@ -2,11 +2,13 @@ package de.erethon.spellbook;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.api.SpellbookAPI;
+import de.erethon.spellbook.teams.TeamManager;
 import de.slikey.effectlib.EffectManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
@@ -21,8 +23,9 @@ public class Spellbook {
     private final SpellbookAPI api;
     private final Plugin implementer;
     private final EffectManager effectManager;
+    private final TeamManager teamManager = new TeamManager();
 
-    private boolean DEBUG = false;
+    private boolean DEBUG = true;
 
     private static final Random random = new Random();
 
@@ -53,6 +56,10 @@ public class Spellbook {
 
     public EffectManager getEffectManager() {
         return effectManager;
+    }
+
+    public TeamManager getTeamManager() {
+        return teamManager;
     }
 
     public void setDebug(boolean debug) {
@@ -171,6 +178,21 @@ public class Spellbook {
             return component.replaceText(phys).replaceText(magic).replaceText(fire).replaceText(water).replaceText(earth).replaceText(air).replaceText(health).replaceText(atkspd).replaceText(dmg).replaceText(armor).replaceText(cd).replaceText(range).replaceText(duration).replaceText(radius).replaceText(energy);
         }
         return component.replaceText(cd).replaceText(range).replaceText(duration).replaceText(radius).replaceText(energy);
+    }
+
+    public static boolean canAttack(LivingEntity attacker, LivingEntity target) {
+        if (target.isInvulnerable()) {
+            return false;
+        }
+        return !getInstance().getTeamManager().isInSameTeam(attacker, target);
+    }
+
+    public static Color parseColor(String input) {
+        if (input.startsWith("#")) {
+            return Color.fromRGB(Integer.parseInt(input.substring(1)));
+        } else {
+            return Color.fromRGB(Integer.parseInt(input));
+        }
     }
 }
 
