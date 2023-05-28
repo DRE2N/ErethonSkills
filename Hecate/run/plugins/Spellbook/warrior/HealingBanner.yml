@@ -1,4 +1,4 @@
-class: warrior.HealingBanner
+class: warrior.banners.HealingBanner
 keepAliveTicks: 20
 tickInterval: 10
 radius: 5

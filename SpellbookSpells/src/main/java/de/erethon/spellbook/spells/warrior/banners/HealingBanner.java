@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.warrior;
+package de.erethon.spellbook.spells.warrior.banners;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;

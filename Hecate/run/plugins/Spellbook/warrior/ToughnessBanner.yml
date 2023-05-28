@@ -1,0 +1,10 @@
+class: warrior.banners.ToughnessBanner
+keepAliveTicks: 60
+tickInterval: 10
+coefficients:
+    players:
+        res_physical: 0.3
+        res_magical: 0.3
+    entities:
+        res_physical: 0.4
+        res_magical: 0.4

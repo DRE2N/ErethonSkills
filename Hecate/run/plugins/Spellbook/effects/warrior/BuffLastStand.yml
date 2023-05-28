@@ -1,0 +1,11 @@
+class: warrior.BuffLastStand
+maxStacks: 1
+maxDuration: 60
+isPositive: true
+coefficients:
+  players:
+    res_physical: 0.3
+    res_magical: 0.3
+  entities:
+    res_physical: 0.3
+    res_magical: 0.3

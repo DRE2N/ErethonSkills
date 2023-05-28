@@ -1,11 +1,13 @@
-package de.erethon.spellbook.spells.warrior;
+package de.erethon.spellbook.spells.warrior.banners;
 
+import com.destroystokyo.paper.ParticleBuilder;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.slikey.effectlib.effect.CircleEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.ItemDisplay;
@@ -14,16 +16,15 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 
 public class WarBanner extends SpellbookSpell {
-
     private ItemStack itemStack;
     private ItemDisplay banner;
-    private int bannerHealth = 20;
     protected Wolf bannerHolder;
-    protected final int radius = data.getInt("radius", 5);
+    public int radius = data.getInt("radius", 5);
+    private final int bannerHealth = data.getInt("bannerHealth", 20);
+    private final Particle particle = new ParticleBuilder(Particle.REDSTONE).color(Spellbook.parseColor(data.getString("ringColor", "#00FF00"))).particle();
 
     public WarBanner(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        bannerHealth = spellData.getInt("bannerHealth", 20);
         itemStack = new ItemStack(Material.RED_BANNER);
     }
 
@@ -46,6 +47,7 @@ public class WarBanner extends SpellbookSpell {
     protected void onTick() {
         CircleEffect effect = new CircleEffect(Spellbook.getInstance().getEffectManager());
         effect.setEntity(bannerHolder);
+        effect.particle = particle;
         effect.duration = 50 * 10;
         effect.radius = radius;
         effect.wholeCircle = true;
