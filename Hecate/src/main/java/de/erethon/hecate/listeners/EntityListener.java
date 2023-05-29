@@ -54,11 +54,19 @@ public class EntityListener implements Listener {
 
     @EventHandler
     public void onEffectAdd(SpellEffectAddEvent event) {
-        displayManager.getStatusDisplay((LivingEntity) event.getTarget()).updateStatusDisplay();
+        LivingEntity entity = (LivingEntity) event.getTarget();
+        if (!displayManager.hasStatusDisplay(entity)) {
+            displayManager.addStatusDisplay(entity, new EntityStatusDisplay(entity));
+        }
+        displayManager.getStatusDisplay(entity).updateStatusDisplay();
     }
 
     @EventHandler
     public void onEffectRemove(SpellEffectRemoveEvent event) {
-        displayManager.getStatusDisplay((LivingEntity) event.getTarget()).updateStatusDisplay();
+        LivingEntity entity = (LivingEntity) event.getTarget();
+        if (!displayManager.hasStatusDisplay(entity)) {
+            displayManager.addStatusDisplay(entity, new EntityStatusDisplay(entity));
+        }
+        displayManager.getStatusDisplay(entity).updateStatusDisplay();
     }
 }
