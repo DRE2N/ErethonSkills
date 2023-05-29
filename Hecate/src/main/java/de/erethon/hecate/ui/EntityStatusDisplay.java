@@ -1,5 +1,6 @@
 package de.erethon.hecate.ui;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.api.SpellEffect;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -62,12 +63,22 @@ public class EntityStatusDisplay {
             negativeString.append(effect.data.getIcon()).append(" ");
         }
         Component positives = Component.text(positiveString.toString()).color(NamedTextColor.GREEN);
-        Component spacer = Component.text(" | ").color(NamedTextColor.DARK_GRAY);
+        if (positiveEffects.isEmpty()) {
+            positives = Component.empty();
+        }
         Component negatives = Component.text(negativeString.toString()).color(NamedTextColor.RED);
+        if (negativeEffects.isEmpty()) {
+            negatives = Component.empty();
+        }
+        Component spacer = Component.text(" | ").color(NamedTextColor.DARK_GRAY);
+        if (positiveEffects.isEmpty() && negativeEffects.isEmpty()) {
+            return;
+        }
         statusDisplay.text(positives.append(spacer).append(negatives));
     }
 
     public void remove() {
         statusDisplay.remove();
+        entityNameTag.remove();
     }
 }

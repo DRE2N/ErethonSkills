@@ -2,6 +2,7 @@ package de.erethon.hecate.listeners;
 
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.ui.EntityStatusDisplay;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
