@@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
@@ -95,7 +96,7 @@ public class PlayerCastListener implements Listener {
     private void updateTransforms(Entity entity) {
         Map<Display, Long> activeDisplays = new HashMap<>();
         for (org.bukkit.entity.Entity passenger : entity.getPassengers()) {
-            if (passenger instanceof TextDisplay display && !passenger.getPersistentDataContainer().has(EntityStatusDisplayManager.statusKey)) {
+            if (passenger instanceof TextDisplay display && !passenger.getPersistentDataContainer().has(EntityStatusDisplayManager.statusKey, PersistentDataType.BYTE)) {
                 activeDisplays.put(display, displays.get(display));
             }
         }
