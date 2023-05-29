@@ -148,6 +148,7 @@ public class AoEBaseSpell extends SpellbookSpell {
         ServerPlayer nmsplayer = ((CraftPlayer) player).getHandle();
         Level level = ((CraftWorld) caster.getWorld()).getHandle();
         Display.ItemDisplay display = new Display.ItemDisplay(EntityType.ITEM_DISPLAY, level);
+        display.setPos(pos.getX(), pos.getY(), pos.getZ());
         ItemStack item = new ItemStack(Items.WHITE_DYE);
         org.bukkit.inventory.ItemStack enemyItem = CraftItemStack.asBukkitCopy(item);
         ItemMeta meta = enemyItem.getItemMeta();
