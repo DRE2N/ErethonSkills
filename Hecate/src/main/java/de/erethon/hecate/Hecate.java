@@ -8,7 +8,9 @@ import de.erethon.hecate.casting.HPlayerCache;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.commands.HecateCommandCache;
+import de.erethon.hecate.listeners.EntityListener;
 import de.erethon.hecate.listeners.PlayerCastListener;
+import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellbookAPI;
 import org.bukkit.Bukkit;
@@ -29,6 +31,7 @@ public final class Hecate extends EPlugin {
     private Spellbook spellbook;
     private HPlayerCache hPlayerCache;
     private HecateCommandCache commands;
+    private EntityStatusDisplayManager statusDisplayManager;
     private final Set<Traitline> traitlines = new HashSet<>();
     private final Set<HClass> hClasses = new HashSet<>();
 
@@ -59,6 +62,7 @@ public final class Hecate extends EPlugin {
         loadTraitlines();
         registerCommands();
         getServer().getPluginManager().registerEvents(new PlayerCastListener(), this);
+        getServer().getPluginManager().registerEvents(new EntityListener(), this);
         Bukkit.getScheduler().runTaskLater(this, () -> { // Workaround for Spellbook not loading spells on load
             Bukkit.getServer().getSpellbookAPI().getLibrary().reload();
         }, 30);
@@ -111,6 +115,7 @@ public final class Hecate extends EPlugin {
 
     public void instantiate() {
         hPlayerCache = new HPlayerCache(this);
+        statusDisplayManager = new EntityStatusDisplayManager();
     }
 
     public void registerCommands() {
@@ -146,6 +151,10 @@ public final class Hecate extends EPlugin {
 
     public Set<HClass> getHClasses() {
         return hClasses;
+    }
+
+    public EntityStatusDisplayManager getStatusDisplayManager() {
+        return statusDisplayManager;
     }
 
     public Traitline getTraitline(String id) {

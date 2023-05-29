@@ -2,6 +2,7 @@ package de.erethon.hecate.listeners;
 
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
+import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -94,7 +95,7 @@ public class PlayerCastListener implements Listener {
     private void updateTransforms(Entity entity) {
         Map<Display, Long> activeDisplays = new HashMap<>();
         for (org.bukkit.entity.Entity passenger : entity.getPassengers()) {
-            if (passenger instanceof TextDisplay display) {
+            if (passenger instanceof TextDisplay display && !passenger.getPersistentDataContainer().has(EntityStatusDisplayManager.statusKey)) {
                 activeDisplays.put(display, displays.get(display));
             }
         }
