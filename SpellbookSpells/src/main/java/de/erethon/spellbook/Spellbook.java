@@ -181,6 +181,9 @@ public class Spellbook {
     }
 
     public static boolean canAttack(LivingEntity attacker, LivingEntity target) {
+        if (getInstance().DEBUG) {
+            return true;
+        }
         if (target.isInvulnerable()) {
             return false;
         }
