@@ -15,12 +15,24 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class EntityListener implements Listener {
 
     private final EntityStatusDisplayManager displayManager = Hecate.getInstance().getStatusDisplayManager();
     private final TeamManager teamManager = Hecate.getInstance().getSpellbook().getTeamManager();
+
+    @EventHandler
+    public void onDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof LivingEntity living)  {
+            if (!displayManager.hasStatusDisplay(event.getEntity())) {
+                displayManager.addStatusDisplay(living, new EntityStatusDisplay(living));
+            }
+            displayManager.getStatusDisplay(living).updateHealthDisplay();
+        }
+    }
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
@@ -49,6 +61,13 @@ public class EntityListener implements Listener {
     }
 
     @EventHandler
+    public void onDeath(EntityDeathEvent event) {
+        if (displayManager.hasStatusDisplay(event.getEntity())) {
+            displayManager.removeStatusDisplay(event.getEntity());
+        }
+    }
+
+    @EventHandler
     public void onLogout(PlayerQuitEvent event) {
         event.getPlayer().getEffects().forEach(SpellEffect::onRemove);
     }
@@ -68,6 +87,7 @@ public class EntityListener implements Listener {
         if (!displayManager.hasStatusDisplay(entity)) {
             displayManager.addStatusDisplay(entity, new EntityStatusDisplay(entity));
         }
+        MessageUtil.broadcastMessage("Removing effect " + event.getEffect().data + " from " + entity.getName());
         displayManager.getStatusDisplay(entity).updateStatusDisplay();
     }
 }

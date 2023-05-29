@@ -1,5 +1,6 @@
 package de.erethon.hecate.ui;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -29,11 +30,13 @@ public class EntityStatusDisplayManager {
 
     public void addStatusDisplay(Entity entity, EntityStatusDisplay display) {
         displays.put(entity, display);
+        MessageUtil.log("Added status display for " + entity.getName());
     }
 
     public void removeStatusDisplay(Entity entity) {
         displays.get(entity).remove();
         displays.remove(entity);
+        MessageUtil.log("Removed status display for " + entity.getName());
     }
 
     public EntityStatusDisplay getStatusDisplay(Entity entity) {
