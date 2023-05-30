@@ -1,0 +1,6 @@
+class: SilenceEffect
+maxStacks: 1
+maxDuration: 200
+isPositive: false
+stackMode: prolong
+icon: S
