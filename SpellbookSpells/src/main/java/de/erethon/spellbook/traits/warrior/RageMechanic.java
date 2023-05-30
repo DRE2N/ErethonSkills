@@ -1,15 +1,12 @@
-package de.erethon.spellbook.spells.warrior.classmechanic;
+package de.erethon.spellbook.traits.warrior;
 
 import de.erethon.papyrus.DamageType;
-import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.api.SpellCastEvent;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
-import de.erethon.spellbook.spells.ClassMechanic;
+import de.erethon.spellbook.traits.ClassMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.EventHandler;
 
 public class RageMechanic extends ClassMechanic {
 

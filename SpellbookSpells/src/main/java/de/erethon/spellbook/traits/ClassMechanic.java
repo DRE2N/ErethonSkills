@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells;
+package de.erethon.spellbook.traits;
 
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;

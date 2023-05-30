@@ -1,8 +1,8 @@
-package de.erethon.spellbook.spells.warrior.classmechanic;
+package de.erethon.spellbook.traits.warrior;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.TraitData;
-import de.erethon.spellbook.spells.ClassMechanic;
+import de.erethon.spellbook.traits.ClassMechanic;
 import org.bukkit.entity.LivingEntity;
 
 public class BruiserRageMechanic extends ClassMechanic {

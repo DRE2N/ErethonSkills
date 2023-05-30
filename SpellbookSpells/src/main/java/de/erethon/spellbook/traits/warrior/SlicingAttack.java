@@ -8,6 +8,7 @@ import de.erethon.spellbook.api.TraitData;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.CylinderEffect;
+import net.kyori.adventure.sound.Sound;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
@@ -34,6 +35,9 @@ public class SlicingAttack extends SpellTrait {
             lastTarget = target;
             attacks = 0;
         }
+        if (target != lastTarget) {
+            attacks = 0;
+        }
         if (target == lastTarget && System.currentTimeMillis() - lastAttackTime < maxTimeBetweenAttacks) {
             attacks++;
             lastAttackTime = System.currentTimeMillis();
@@ -46,6 +50,7 @@ public class SlicingAttack extends SpellTrait {
                         .receivers((Player) caster)
                         .location(target.getLocation())
                         .spawn();
+                caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_ATTACK_CRIT, Sound.Source.RECORD, 1, 0.5f));
             }
         }
         return super.onAttack(target, damage, type);

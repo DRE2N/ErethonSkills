@@ -1,0 +1,5 @@
+class: warrior.SlicingAttack
+name: "<red>Slicing Attack"
+requiredAttacks: 3
+maxTimeBetweenAttacks: 5000
+damageMultiplier: 1.2
