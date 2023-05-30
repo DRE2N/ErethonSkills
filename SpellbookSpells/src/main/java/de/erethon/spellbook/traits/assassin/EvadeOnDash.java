@@ -1,29 +1,31 @@
-package de.erethon.spellbook.spells.assassin.passive;
+package de.erethon.spellbook.traits.assassin;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.api.TraitData;
+import de.erethon.spellbook.api.TraitTrigger;
 import de.erethon.spellbook.spells.PassiveSpell;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
-public class EvadeOnDash extends PassiveSpell {
+public class EvadeOnDash extends SpellTrait {
 
     private final SpellData dashSpell = Bukkit.getServer().getSpellbookAPI().getLibrary().getSpellByID("Dash");
     private final int duration = data.getInt("duration", 20);
     private int counter = 0;
     private boolean isDashing = false;
 
-    public EvadeOnDash(LivingEntity caster, SpellData spellData) {
-        super(caster, spellData);
+    public EvadeOnDash(TraitData traitData, LivingEntity caster) {
+        super(traitData, caster);
     }
 
     @Override
-    public boolean onCast(SpellbookSpell spell) {
-        if (spell.getData() == dashSpell) {
+    protected void onTrigger(TraitTrigger trigger) {
+        if (trigger.getId() == 0) {
             isDashing = true;
         }
-        return true;
     }
 
     @Override

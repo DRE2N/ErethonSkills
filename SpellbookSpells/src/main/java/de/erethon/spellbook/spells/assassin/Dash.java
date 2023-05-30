@@ -5,6 +5,8 @@ import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.Collections;
+
 public class Dash extends SpellbookSpell {
 
     public Dash(LivingEntity caster, SpellData spellData) {
@@ -21,6 +23,7 @@ public class Dash extends SpellbookSpell {
         Location location = caster.getLocation();
         location.setPitch(-10);
         caster.setVelocity(location.getDirection().multiply(data.getDouble("dashMultiplier", 2.0)));
+        triggerTraits(0);
         return true;
     }
 

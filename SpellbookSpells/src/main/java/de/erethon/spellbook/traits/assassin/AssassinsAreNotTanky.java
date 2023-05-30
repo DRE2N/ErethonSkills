@@ -1,18 +1,20 @@
-package de.erethon.spellbook.spells.assassin.passive;
+package de.erethon.spellbook.traits.assassin;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellTrait;
+import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.spells.PassiveSpell;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
-public class AssassinsAreNotTanky extends PassiveSpell {
+public class AssassinsAreNotTanky extends SpellTrait {
 
     private final double bonusDamage = caster.getAttribute(Attribute.ADV_PHYSICAL).getValue() * data.getDouble("damageCoefficient", 0.7);
     private double threshold = data.getDouble("threshold", 0.8);
 
-    public AssassinsAreNotTanky(LivingEntity caster, SpellData spellData) {
-        super(caster, spellData);
+    public AssassinsAreNotTanky(TraitData traitData, LivingEntity caster) {
+        super(traitData, caster);
     }
 
     @Override
