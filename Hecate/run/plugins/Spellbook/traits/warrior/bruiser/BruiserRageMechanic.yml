@@ -1,0 +1,4 @@
+class: warrior.classmechanic.BruiserRageMechanic
+name: BruiserRageMechanic
+ragePerHit: 5
+
