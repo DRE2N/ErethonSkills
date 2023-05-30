@@ -1,3 +1,0 @@
-class: archer.passive.DistantShooter
-damagePerBlock: 0.5
-maxDistance: 40

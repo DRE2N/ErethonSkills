@@ -1,3 +1,3 @@
-class: archer.passive.HighGround
+class: ranger.passive.HighGround
 damageMultiplier: 1.05
 minDistance: 5

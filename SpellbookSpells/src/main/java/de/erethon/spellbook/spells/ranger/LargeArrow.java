@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.archer;
+package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.ChannelingSpell;
@@ -60,7 +60,7 @@ public class LargeArrow extends ChannelingSpell implements Listener {
 
     @Override
     protected boolean onPrecast() {
-        return ArcherUtils.hasMana(caster, data);
+        return RangerUtils.hasMana(caster, data);
     }
 
     @Override

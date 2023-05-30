@@ -1,9 +1,9 @@
-package de.erethon.spellbook.spells.archer;
+package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.entity.LivingEntity;
 
-public class ArcherUtils {
+public class RangerUtils {
 
     public static boolean hasMana(LivingEntity caster, SpellData data) {
         boolean canCast = data.getInt("manaCost", 0) <= caster.getEnergy();

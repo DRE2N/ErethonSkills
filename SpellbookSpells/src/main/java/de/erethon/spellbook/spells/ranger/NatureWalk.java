@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.archer;
+package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;

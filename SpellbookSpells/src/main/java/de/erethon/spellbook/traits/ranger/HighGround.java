@@ -1,4 +1,4 @@
-package de.erethon.spellbook.traits.archer;
+package de.erethon.spellbook.traits.ranger;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.SpellTrait;

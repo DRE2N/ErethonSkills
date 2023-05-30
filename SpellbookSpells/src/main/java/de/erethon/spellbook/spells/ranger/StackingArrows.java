@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.archer;
+package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.EffectData;
@@ -18,7 +18,7 @@ public class StackingArrows extends SpellbookSpell {
 
     @Override
     public double onAttack(LivingEntity target, double damage, DamageType type) {
-        if (ArcherUtils.hasMana(caster, getData())) {
+        if (RangerUtils.hasMana(caster, getData())) {
             target.addEffect(caster, effectData, 5, 1);
         }
         return super.onAttack(target, damage, type);

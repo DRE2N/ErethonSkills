@@ -1,15 +1,15 @@
-package de.erethon.spellbook.spells.archer;
+package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.entity.LivingEntity;
 
-public class ArcherBaseSpell extends SpellbookSpell {
+public class RangerBaseSpell extends SpellbookSpell {
 
     protected final int manaCost;
 
 
-    public ArcherBaseSpell(LivingEntity caster, SpellData spellData) {
+    public RangerBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         manaCost = spellData.getInt("manaCost", 10);
     }

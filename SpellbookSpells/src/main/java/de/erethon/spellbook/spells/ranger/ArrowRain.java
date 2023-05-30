@@ -1,7 +1,6 @@
-package de.erethon.spellbook.spells.archer;
+package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
@@ -9,7 +8,7 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.Random;
 
-public class ArrowRain extends ArcherBaseSpell {
+public class ArrowRain extends RangerBaseSpell {
 
     int radius;
     Block targetBlock;

@@ -1,4 +1,4 @@
-class: archer.LargeArrow
+class: ranger.LargeArrow
 modelData: 1
 damage: 2.0
 damageType: PHYSICAL

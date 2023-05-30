@@ -1,13 +1,12 @@
-package de.erethon.spellbook.spells.archer;
+package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 
-public class EvasiveRetreat extends ArcherBaseSpell {
+public class EvasiveRetreat extends RangerBaseSpell {
 
 
     public EvasiveRetreat(LivingEntity caster, SpellData spellData) {
