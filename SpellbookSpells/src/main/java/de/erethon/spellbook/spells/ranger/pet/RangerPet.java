@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.animal.Wolf;
 import net.minecraft.world.level.Level;
 import org.bukkit.World;
@@ -24,7 +25,7 @@ import java.util.function.Predicate;
 public class RangerPet extends Wolf {
 
     private EntityType<?> petDisplayType = EntityType.COW;
-    private LivingEntity owner;
+    private final LivingEntity owner;
 
     public RangerPet(org.bukkit.entity.LivingEntity bukkitOwner, World world, org.bukkit.entity.EntityType craftDisplayType) {
         super(EntityType.WOLF, ((CraftWorld) world).getHandle());
@@ -34,7 +35,8 @@ public class RangerPet extends Wolf {
         setTame(true);
         setOwnerUUID(owner.getUUID());
         goalSelector.removeAllGoals(Predicate.not((x -> false)));
-        goalSelector.addGoal(0, new FollowOwnerGoal(this, 1.0D, 3.0F, 12.0F, false));
+        goalSelector.addGoal(0, new FollowOwnerGoal(this, 1.0D, 2.0F, 10.0F, false));
+        goalSelector.addGoal(1, new MeleeAttackGoal(this, 2.0D, true));
     }
 
     @Override
@@ -44,10 +46,17 @@ public class RangerPet extends Wolf {
 
     public void setScaledAttributes(double attributeMultiplier) {
         for (Attribute attribute : BuiltInRegistries.ATTRIBUTE.stream().toList()) {
+            if (attribute == Attributes.MOVEMENT_SPEED) continue; // We don't want to make the pet extremely slow
             if (getAttribute(attribute) == null || owner.getAttribute(attribute) == null) continue;
             getAttribute(attribute).setBaseValue(owner.getAttribute(attribute).getBaseValue() * attributeMultiplier);
         }
         setHealth(getMaxHealth());
+    }
+
+    public void makeAttack(org.bukkit.entity.LivingEntity bukkitLiving) {
+        CraftLivingEntity craftLiving = (CraftLivingEntity) bukkitLiving;
+        LivingEntity living = craftLiving.getHandle();
+        setTarget(living);
     }
 
     public void setPetDisplayType(org.bukkit.entity.EntityType type) {
