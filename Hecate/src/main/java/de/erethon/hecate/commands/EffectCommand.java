@@ -4,9 +4,13 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
+import de.erethon.spellbook.api.SpellTrait;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EffectCommand extends ECommand {
 
@@ -62,5 +66,35 @@ public class EffectCommand extends ECommand {
             }
             MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /effect add|remove|list [<effect>]");
         }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            List<String> completes = new ArrayList<>();
+            completes.add("add");
+            completes.add("remove");
+            completes.add("list");
+            return completes;
+        }
+        if (args.length == 3 && args[2].equalsIgnoreCase("add")) {
+            List<String> completes = new ArrayList<>();
+            for (String effect : Bukkit.getServer().getSpellbookAPI().getLibrary().getLoadedEffects().keySet()) {
+                if (effect.toLowerCase().startsWith(args[2].toLowerCase())) {
+                    completes.add(effect);
+                }
+            }
+            return completes;
+        }
+        if (args.length == 3 && args[2].equalsIgnoreCase("remove")) {
+            List<String> completes = new ArrayList<>();
+            /*for (SpellEffect effect : ((Player) sender).getEffects()) {
+                if (effect.data.getId().startsWith(args[2].toLowerCase())) {
+                    completes.add(effect.data.getId());
+                }
+            }*/ // TODO: Make ID not private, lol
+            return completes;
+        }
+        return null;
+    }
 
 }
