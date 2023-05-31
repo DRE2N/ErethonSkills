@@ -1,14 +1,15 @@
 package de.erethon.hecate.listeners;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
+import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -65,7 +66,7 @@ public class PlayerCastListener implements Listener {
         // The OffHandItem is the item that WOULD BE in the offhand if the event is not cancelled. Thanks Spigot for great method naming!
         if ((event.getOffHandItem() != null && event.getOffHandItem().getType() == Material.STICK || hPlayer.isInCastmode())) {
             event.setCancelled(true);
-            hPlayer.switchMode();
+            hPlayer.switchMode(CombatModeReason.HOTKEY);
         }
     }
 
@@ -74,6 +75,7 @@ public class PlayerCastListener implements Listener {
         if (event.getDamager() instanceof Player player && event.getEntity() instanceof LivingEntity entity) {
             addDisplayDamage(player, entity, event.getDamage());
         }
+        // TODO: Move event in Papyrus, currently showing damage without penetration
     }
 
     private void addDisplayDamage(Player player, LivingEntity entity, double damage) {

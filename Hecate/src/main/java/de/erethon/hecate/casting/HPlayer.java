@@ -4,6 +4,9 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.config.EConfig;
 import de.erethon.bedrock.user.LoadableUser;
 import de.erethon.hecate.classes.HClass;
+import de.erethon.hecate.events.CombatModeEnterEvent;
+import de.erethon.hecate.events.CombatModeLeaveEvent;
+import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellbookAPI;
@@ -81,8 +84,7 @@ public class HPlayer extends EConfig implements LoadableUser {
         // Do something about spells getting replaced due to levelups
     }
 
-    public void switchMode() {
-        MessageUtil.sendMessage(player, "Castmode: " + isInCastmode);
+    public void switchMode(CombatModeReason reason) {
         if (!isInCastmode) {
             hotbarItems.clear();
             PlayerInventory inventory = player.getInventory();
@@ -102,6 +104,8 @@ public class HPlayer extends EConfig implements LoadableUser {
             inventory.setItem(7, new ItemStack(Material.LIGHT_GRAY_DYE));
             isInCastmode = true;
             updateDescriptions();
+            CombatModeEnterEvent event = new CombatModeEnterEvent(player, this, reason);
+            Bukkit.getPluginManager().callEvent(event);
         } else {
             PlayerInventory inventory = player.getInventory();
             inventory.setHeldItemSlot(hotbarSlot);
@@ -109,8 +113,9 @@ public class HPlayer extends EConfig implements LoadableUser {
                 inventory.setItem(slot, hotbarItems.get(slot));
             }
             isInCastmode = false;
+            CombatModeLeaveEvent event = new CombatModeLeaveEvent(player, this, reason);
+            Bukkit.getPluginManager().callEvent(event);
         }
-        MessageUtil.sendMessage(player, "Switched to castmode: " + isInCastmode);
     }
 
     public void update() {
