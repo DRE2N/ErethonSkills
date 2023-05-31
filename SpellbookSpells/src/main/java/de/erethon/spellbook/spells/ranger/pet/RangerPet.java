@@ -7,6 +7,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -48,6 +49,7 @@ public class RangerPet extends Wolf {
         setOwnerUUID(owner.getUUID());
         setCustomName(owner.getName());
         setSilent(true);
+        persist = false;
         goalSelector.removeAllGoals(goal -> true);
         goalSelector.addGoal(9, followOwnerGoal);
         goalSelector.addGoal(0, new MeleeAttackGoal(this, 2.0D, true));
@@ -101,6 +103,11 @@ public class RangerPet extends Wolf {
         bukkitMob.addPassenger(statusDisplay);
     }
 
+    public void remove() {
+        statusDisplay.remove();
+        remove(RemovalReason.DISCARDED);
+    }
+
     public boolean isShouldAttackAutomatically() {
         return shouldAttackAutomatically;
     }
@@ -116,4 +123,18 @@ public class RangerPet extends Wolf {
     public void setCurrentlyGoingToLocation(boolean currentlyGoingToLocation) {
         isCurrentlyGoingToLocation = currentlyGoingToLocation;
     }
+
+    // Overrides
+    @Override
+    public void die(DamageSource damageSource) {
+        statusDisplay.remove();
+        super.die(damageSource);
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        statusDisplay.remove();
+        super.remove(reason);
+    }
+
 }
