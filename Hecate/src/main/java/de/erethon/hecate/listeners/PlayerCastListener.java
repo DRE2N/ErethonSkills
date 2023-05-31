@@ -2,6 +2,7 @@ package de.erethon.hecate.listeners;
 
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
+import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.spellbook.api.SpellData;
@@ -17,9 +18,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
@@ -69,6 +73,7 @@ public class PlayerCastListener implements Listener {
             hPlayer.switchMode(CombatModeReason.HOTKEY);
         }
     }
+
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
@@ -139,7 +144,22 @@ public class PlayerCastListener implements Listener {
         HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(event.getPlayer());
         if (hPlayer.isInCastmode()) {
             event.setCancelled(true);
+            if (hPlayer.gethClass() != null && hPlayer.gethClass().getSpecialAction(SpecialActionKey.Q) != null) {
+                hPlayer.gethClass().getSpecialAction(SpecialActionKey.Q).queue(event.getPlayer());
+            }
         }
+    }
+
+    @EventHandler
+    public void onRightclick(PlayerInteractEvent event) {
+        if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            castRightclickAction(event.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void onRightClickOnEntity(PlayerInteractEntityEvent event) {
+        castRightclickAction(event.getPlayer());
     }
 
     @EventHandler
@@ -147,6 +167,14 @@ public class PlayerCastListener implements Listener {
         // Fixes for spell effects after server crash
         event.getPlayer().setInvisible(false);
         event.getPlayer().setWalkSpeed(0.2f);
+    }
+
+    private void castRightclickAction(Player player) {
+        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(player);
+        if (!hPlayer.isInCastmode()) return;
+        if (hPlayer.gethClass() != null && hPlayer.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
+            hPlayer.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK).queue(player);
+        }
     }
 
 }

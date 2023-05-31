@@ -252,6 +252,10 @@ public class HPlayer extends EConfig implements LoadableUser {
         return xp;
     }
 
+    public HClass gethClass() {
+        return hClass;
+    }
+
     public void learnSpell(SpellData spellData) {
         player.addSpell(spellData);
         MessageUtil.log(player.getName() + " learned spell " + spellData.getId());

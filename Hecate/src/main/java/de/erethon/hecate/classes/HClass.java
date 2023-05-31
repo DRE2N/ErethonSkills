@@ -2,6 +2,7 @@ package de.erethon.hecate.classes;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
+import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class HClass extends YamlConfiguration {
@@ -28,6 +30,8 @@ public class HClass extends YamlConfiguration {
     private int maxLevel;
     private final HashMap<Integer, HashMap<Attribute, Double>> baseAttributesPerLevel = new HashMap<>();
     private final HashMap<Integer, Double> xpPerLevel = new HashMap<>();
+
+    private final Map<SpecialActionKey, SpellData> specialActionMap = new HashMap<>();
 
     public HClass(File file) {
         try {
@@ -57,6 +61,10 @@ public class HClass extends YamlConfiguration {
         return id;
     }
 
+    public SpellData getSpecialAction(SpecialActionKey key) {
+        return specialActionMap.get(key);
+    }
+
     @Override
     public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
         super.load(file);
@@ -65,6 +73,28 @@ public class HClass extends YamlConfiguration {
         if (spellLevelSection == null) {
             MessageUtil.log("Class " + getName() + " has no spell levels configured!");
             return;
+        }
+        ConfigurationSection specialActionSection = getConfigurationSection("specialActionKeys");
+        if (specialActionSection != null) {
+            for (String key : specialActionSection.getKeys(false)) {
+                ConfigurationSection actionSection = specialActionSection.getConfigurationSection(key);
+                if (actionSection == null) {
+                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getName());
+                    continue;
+                }
+                SpecialActionKey actionKey = SpecialActionKey.valueOf(key.toUpperCase());
+                String spellId = actionSection.getString("spell");
+                if (spellId == null) {
+                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getName());
+                    continue;
+                }
+                SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
+                if (spellData == null) {
+                    MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getName());
+                    continue;
+                }
+                specialActionMap.put(actionKey, spellData);
+            }
         }
         for (String key : spellLevelSection.getKeys(false)) {
             ConfigurationSection levelEntry = spellLevelSection.getConfigurationSection(key);
