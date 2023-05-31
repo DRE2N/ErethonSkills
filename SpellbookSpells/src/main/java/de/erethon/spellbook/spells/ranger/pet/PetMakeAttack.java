@@ -29,7 +29,7 @@ public class PetMakeAttack extends SpellbookSpell {
 
     @Override
     protected boolean onCast() {
-        Spellbook.getInstance().getPetLookup().get(caster).makeAttack(target);
-        return true;
+       RangerUtils.getPet(caster).makeAttack(target);
+       return true;
     }
 }

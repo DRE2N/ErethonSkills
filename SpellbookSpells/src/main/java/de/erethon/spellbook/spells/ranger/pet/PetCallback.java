@@ -20,7 +20,7 @@ public class PetCallback extends SpellbookSpell {
 
     @Override
     protected boolean onCast() {
-        Spellbook.getInstance().getPetLookup().get(caster).callback();
+        RangerUtils.getPet(caster).callback();
         return true;
     }
 }

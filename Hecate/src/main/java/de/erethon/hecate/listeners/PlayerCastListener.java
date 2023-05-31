@@ -6,6 +6,7 @@ import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.spells.ranger.pet.RangerPet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Color;
@@ -102,7 +103,9 @@ public class PlayerCastListener implements Listener {
     private void updateTransforms(Entity entity) {
         Map<Display, Long> activeDisplays = new HashMap<>();
         for (org.bukkit.entity.Entity passenger : entity.getPassengers()) {
-            if (passenger instanceof TextDisplay display && !passenger.getPersistentDataContainer().has(EntityStatusDisplayManager.statusKey, PersistentDataType.BYTE)) {
+            if (passenger instanceof TextDisplay display
+                    && !(passenger.getPersistentDataContainer().has(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE)
+                    || passenger.getPersistentDataContainer().has(RangerPet.PET_STATUS_KEY, PersistentDataType.BYTE))) {
                 activeDisplays.put(display, displays.get(display));
             }
         }

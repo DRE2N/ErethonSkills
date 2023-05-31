@@ -30,4 +30,8 @@ public class RangerUtils {
         caster.sendParsedActionBar("<color:#ff0000>Kein Pet aktiv!");
         return false;
     }
+
+    public static RangerPet getPet(LivingEntity caster) {
+        return Spellbook.getInstance().getPetLookup().get(caster);
+    }
 }

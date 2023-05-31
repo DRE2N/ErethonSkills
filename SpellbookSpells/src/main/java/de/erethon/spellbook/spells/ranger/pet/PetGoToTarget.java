@@ -31,7 +31,7 @@ public class PetGoToTarget extends SpellbookSpell {
 
     @Override
     protected boolean onCast() {
-        Spellbook.getInstance().getPetLookup().get(caster).goToLocation(target.getBlockX(), target.getBlockY(), target.getBlockZ());
+        RangerUtils.getPet(caster).goToLocation(target.getBlockX(), target.getBlockY(), target.getBlockZ());
         return true;
     }
 }

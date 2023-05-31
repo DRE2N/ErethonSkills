@@ -1,10 +1,8 @@
 package de.erethon.hecate.ui;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.api.SpellEffect;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Color;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.LivingEntity;
@@ -15,7 +13,6 @@ import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 import java.util.List;
-import java.util.Set;
 
 public class EntityStatusDisplay {
 
@@ -33,7 +30,7 @@ public class EntityStatusDisplay {
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
             textDisplay.text(holder.teamDisplayName());
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
-            textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.statusKey, PersistentDataType.BYTE, (byte) 0);
+            textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 0);
             holder.addPassenger(textDisplay);
             entityNameTag = textDisplay;
         });
@@ -44,7 +41,7 @@ public class EntityStatusDisplay {
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
             textDisplay.text(getHealth(holder.getHealth(), holder.getMaxHealth()));
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
-            textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.statusKey, PersistentDataType.BYTE, (byte) 1);
+            textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 1);
             holder.addPassenger(textDisplay);
             healthDisplay = textDisplay;
         });
@@ -55,7 +52,7 @@ public class EntityStatusDisplay {
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
             textDisplay.text(Component.empty());
-            textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.statusKey, PersistentDataType.BYTE, (byte) 1);
+            textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 1);
             holder.addPassenger(textDisplay);
             statusDisplay = textDisplay;
         });

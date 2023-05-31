@@ -2,7 +2,6 @@ package de.erethon.hecate.ui;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,7 +11,7 @@ import java.util.HashMap;
 public class EntityStatusDisplayManager {
 
     private final HashMap<Entity, EntityStatusDisplay> displays = new HashMap<>();
-    public static NamespacedKey statusKey = new NamespacedKey("spellbook", "status");
+    public static NamespacedKey ENTITY_STATUS_KEY = new NamespacedKey("spellbook", "status");
 
     public EntityStatusDisplayManager() {
         BukkitRunnable updateNames = new BukkitRunnable() {

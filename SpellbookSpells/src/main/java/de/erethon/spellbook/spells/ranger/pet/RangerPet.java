@@ -1,6 +1,8 @@
 package de.erethon.spellbook.spells.ranger.pet;
 
-import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.papyrus.CraftDamageType;
+import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.events.PetDeathEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -9,6 +11,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -16,17 +19,21 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal;
-import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.animal.Wolf;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftLivingEntity;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
 import org.joml.AxisAngle4f;
@@ -34,11 +41,16 @@ import org.joml.Vector3f;
 
 public class RangerPet extends Wolf {
 
+    public static final NamespacedKey PET_STATUS_KEY = new NamespacedKey("spellbook", "pet_status");
+
     private final FollowOwnerGoal followOwnerGoal = new FollowOwnerGoal(this, 1.0D, 2.0F, 10.0F, false);
     private final RandomStrollGoal randomStrollGoal = new RandomStrollGoal(this, 1.0D, 500, false);
     private final MoveTowardsRestrictionGoal moveTowardsRestrictionGoal = new MoveTowardsRestrictionGoal(this, 1.0D);
-    private final Transformation petStatusTextTransformation = new Transformation(new Vector3f(0, 1.1f, 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.5f, 0.5f, 0.5f), new AxisAngle4f(0, 0, 0, 0));
-
+    private final Transformation petStatusTextTransformation = new Transformation(
+            new Vector3f(0, 1.1f, 0),
+            new AxisAngle4f(0, 0, 0, 0),
+            new Vector3f(0.5f, 0.5f, 0.5f),
+            new AxisAngle4f(0, 0, 0, 0));
     private EntityType<?> petDisplayType = EntityType.COW;
     private final LivingEntity owner;
     private final org.bukkit.entity.Mob bukkitMob = getBukkitMob();
@@ -67,6 +79,7 @@ public class RangerPet extends Wolf {
             display.text(Component.empty());
             display.setAlignment(TextDisplay.TextAligment.CENTER);
             display.setBillboard(Display.Billboard.VERTICAL);
+            display.getPersistentDataContainer().set(PET_STATUS_KEY, PersistentDataType.BYTE, (byte) 1);
             display.setBackgroundColor(Color.fromARGB(0, 1, 1, 1));
         });
     }
@@ -154,15 +167,36 @@ public class RangerPet extends Wolf {
     }
 
     // Overrides
+
+
+    @Override
+    public boolean doHurtTarget(Entity target) {
+        bukkitMob.getWorld().spawnParticle(Particle.REDSTONE, new Location(bukkitMob.getWorld(), target.getX(), target.getY() + 0.5, target.getZ()), 4,
+                new Particle.DustOptions(Color.fromRGB(40, 180, 60), 1));
+        return super.doHurtTarget(target);
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount, CraftDamageType type) {
+        if (source.getEntity() == owner) {
+            return false;
+        }
+        return super.hurt(source, amount, type);
+    }
+
     @Override
     public void die(DamageSource damageSource) {
         statusDisplay.remove();
+        Spellbook.getInstance().getPetLookup().remove(bukkitMob);
+        PetDeathEvent event = new PetDeathEvent(this);
+        Bukkit.getPluginManager().callEvent(event);
         super.die(damageSource);
     }
 
     @Override
     public void remove(RemovalReason reason) {
         statusDisplay.remove();
+        Spellbook.getInstance().getPetLookup().remove(bukkitMob);
         super.remove(reason);
     }
 
