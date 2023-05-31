@@ -3,6 +3,7 @@ package de.erethon.spellbook;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.teams.TeamManager;
+import de.erethon.spellbook.utils.PetLookup;
 import de.slikey.effectlib.EffectManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -23,7 +24,9 @@ public class Spellbook {
     private final SpellbookAPI api;
     private final Plugin implementer;
     private final EffectManager effectManager;
-    private final TeamManager teamManager = new TeamManager();
+    private final TeamManager teamManager;
+
+    private final PetLookup petLookup;
 
     private boolean DEBUG = true;
 
@@ -40,6 +43,8 @@ public class Spellbook {
         this.implementer = implementer;
         this.api = Bukkit.getServer().getSpellbookAPI();
         effectManager = new EffectManager(implementer);
+        teamManager = new TeamManager();
+        petLookup = new PetLookup();
     }
 
     public Plugin getImplementer() {
@@ -60,6 +65,10 @@ public class Spellbook {
 
     public TeamManager getTeamManager() {
         return teamManager;
+    }
+
+    public PetLookup getPetLookup() {
+        return petLookup;
     }
 
     public void setDebug(boolean debug) {

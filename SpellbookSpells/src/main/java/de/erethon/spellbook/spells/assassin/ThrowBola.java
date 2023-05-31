@@ -2,6 +2,7 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.EntityTargetSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import de.erethon.spellbook.utils.NMSUtils;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;

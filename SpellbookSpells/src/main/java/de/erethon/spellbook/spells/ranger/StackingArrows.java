@@ -4,6 +4,7 @@ import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.RangerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 

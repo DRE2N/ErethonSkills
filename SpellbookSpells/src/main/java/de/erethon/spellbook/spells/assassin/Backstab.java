@@ -3,6 +3,7 @@ package de.erethon.spellbook.spells.assassin;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
 import org.bukkit.Color;

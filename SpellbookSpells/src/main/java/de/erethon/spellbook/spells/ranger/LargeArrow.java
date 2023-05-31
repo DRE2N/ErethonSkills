@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.events.ItemProjectileHitEvent;
 import de.erethon.spellbook.utils.ItemProjectile;
 import de.erethon.spellbook.utils.NMSUtils;
+import de.erethon.spellbook.utils.RangerUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;

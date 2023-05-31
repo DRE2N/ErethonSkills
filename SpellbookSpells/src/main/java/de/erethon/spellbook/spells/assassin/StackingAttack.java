@@ -2,9 +2,9 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

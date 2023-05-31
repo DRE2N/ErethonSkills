@@ -3,6 +3,7 @@ package de.erethon.spellbook.spells.assassin;
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.EntityTargetSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import org.bukkit.Particle;

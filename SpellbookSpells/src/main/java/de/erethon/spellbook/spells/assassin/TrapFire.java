@@ -1,12 +1,11 @@
 package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.AoEBaseSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
 public class TrapFire extends AoEBaseSpell {
@@ -27,7 +26,7 @@ public class TrapFire extends AoEBaseSpell {
 
     @Override
     protected boolean onCast() {
-        keepAliveTicks = data.getInt("duration", 10);
+        keepAliveTicks = data.getInt("duration", 200);
         tickInterval = 20;
         return super.onCast();
     }
@@ -41,10 +40,11 @@ public class TrapFire extends AoEBaseSpell {
     public void onTick() {
         super.onTick();
         for (LivingEntity entity : getEntities()) {
-            if (!Spellbook.canAttack(caster, entity)) {
+            /*if (!Spellbook.canAttack(caster, entity)) {
                 continue;
-            }
-            entity.addEffect(caster, effectData, effectDuration, effectStacks);
+            }*/
+            MessageUtil.log("TrapFire: " + entity.getName() + " is burning");
+            entity.addEffect(caster, effectData, effectDuration, effectStacks); // TODO: Nothing happening here?
         }
     }
 

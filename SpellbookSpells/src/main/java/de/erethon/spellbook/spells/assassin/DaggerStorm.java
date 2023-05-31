@@ -5,6 +5,7 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.events.ItemProjectileHitEvent;
+import de.erethon.spellbook.utils.AssassinUtils;
 import de.erethon.spellbook.utils.ItemProjectile;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.events.ItemProjectileHitEvent;
+import de.erethon.spellbook.utils.AssassinUtils;
 import de.erethon.spellbook.utils.ItemProjectile;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;

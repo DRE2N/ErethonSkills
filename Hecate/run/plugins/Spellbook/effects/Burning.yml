@@ -1,8 +1,9 @@
 class: BurningEffect
 maxStacks: 16
 maxDuration: 50
-isPositive: false
+positive: false
 stackMode: intensify
 damage: 3
+icon: F
 coefficients:
   adv_physical: 0.5

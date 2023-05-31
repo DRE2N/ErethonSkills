@@ -4,8 +4,8 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.AoEBaseSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
 public class TrapPoison extends AoEBaseSpell {

@@ -3,6 +3,7 @@ package de.erethon.spellbook.spells.assassin;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 

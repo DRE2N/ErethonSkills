@@ -4,6 +4,7 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.EntityTargetSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;

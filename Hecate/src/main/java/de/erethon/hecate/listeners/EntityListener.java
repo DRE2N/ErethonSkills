@@ -9,6 +9,7 @@ import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellEffectAddEvent;
 import de.erethon.spellbook.api.SpellEffectRemoveEvent;
+import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.teams.TeamManager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -49,11 +50,14 @@ public class EntityListener implements Listener {
         }
     }
 
-    // We need to clear effects in case someone logs out or is despawned while having a buff active
+    // We need to clear things in case someone logs out or is despawned while having a buff active
     @EventHandler
     public void onEntityRemove(EntityRemoveFromWorldEvent event) {
         if (event.getEntity() instanceof LivingEntity living) {
             living.getEffects().forEach(SpellEffect::onRemove);
+            for (SpellTrait trait : living.getActiveTraits()) {
+                living.removeTrait(trait.getData());
+            }
             if (displayManager.hasStatusDisplay(living)) {
                 displayManager.removeStatusDisplay(living);
             }
@@ -70,6 +74,9 @@ public class EntityListener implements Listener {
     @EventHandler
     public void onLogout(PlayerQuitEvent event) {
         event.getPlayer().getEffects().forEach(SpellEffect::onRemove);
+        for (SpellTrait trait : event.getPlayer().getActiveTraits()) {
+            event.getPlayer().removeTrait(trait.getData());
+        }
     }
 
     @EventHandler

@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.assassin;
+package de.erethon.spellbook.utils;
 
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellbookSpell;

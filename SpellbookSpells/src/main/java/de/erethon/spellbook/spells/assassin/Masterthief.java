@@ -2,6 +2,7 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.EntityTargetSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;

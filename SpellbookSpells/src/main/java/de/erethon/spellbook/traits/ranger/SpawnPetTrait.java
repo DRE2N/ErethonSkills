@@ -1,5 +1,7 @@
 package de.erethon.spellbook.traits.ranger;
 
+import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.spells.ranger.pet.RangerPet;
@@ -22,10 +24,21 @@ public class SpawnPetTrait extends SpellTrait {
         pet = new RangerPet(caster, caster.getWorld(), EntityType.PIG);
         pet.teleport(caster.getLocation().getBlockX(), caster.getLocation().getBlockY(), caster.getLocation().getBlockZ());
         pet.setScaledAttributes(attributeModifier);
+        pet.addToWorld();
     }
 
     @Override
     protected void onRemove() {
-        pet.remove(Entity.RemovalReason.DISCARDED);
+        pet.remove();
     }
+
+    @Override
+    public double onAttack(LivingEntity target, double damage, DamageType type) {
+        if (pet.isShouldAttackAutomatically()) {
+            pet.makeAttack(target);
+        }
+        return super.onAttack(target, damage, type);
+    }
+
+
 }

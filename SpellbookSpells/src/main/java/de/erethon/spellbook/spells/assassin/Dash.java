@@ -2,10 +2,9 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
-
-import java.util.Collections;
 
 public class Dash extends SpellbookSpell {
 

@@ -3,6 +3,7 @@ package de.erethon.spellbook.spells.assassin;
 import com.destroystokyo.paper.ParticleBuilder;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
