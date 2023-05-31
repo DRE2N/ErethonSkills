@@ -79,7 +79,8 @@ public class Traitline extends YamlConfiguration {
                 }
                 int levelRequirement = traitSection.getInt("levelRequirement", 0);
                 int cost = traitSection.getInt("cost", 0);
-                TraitLineEntry traitLineEntry = new TraitLineEntry(traitData, levelRequirement, cost);
+                boolean combatOnly = traitSection.getBoolean("combatOnly", false);
+                TraitLineEntry traitLineEntry = new TraitLineEntry(traitData, levelRequirement, cost, combatOnly);
                 traits.add(traitLineEntry);
             }
             traitMap.put(level, traits);

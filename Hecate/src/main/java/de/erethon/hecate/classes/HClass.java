@@ -20,14 +20,14 @@ import java.util.Set;
 public class HClass extends YamlConfiguration {
 
     private final HashMap<Integer, Set<SpellData>> spellLevelMap = new HashMap<>();
-    private List<Traitline> traitlines = new ArrayList<>();
+    private final List<Traitline> traitlines = new ArrayList<>();
 
     private String id;
     private String displayName;
     private String description;
     private int maxLevel;
-    private HashMap<Integer, HashMap<Attribute, Double>> baseAttributesPerLevel = new HashMap<>();
-    private HashMap<Integer, Double> xpPerLevel = new HashMap<>();
+    private final HashMap<Integer, HashMap<Attribute, Double>> baseAttributesPerLevel = new HashMap<>();
+    private final HashMap<Integer, Double> xpPerLevel = new HashMap<>();
 
     public HClass(File file) {
         try {
