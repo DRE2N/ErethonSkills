@@ -69,7 +69,7 @@ public class TraitCommand extends ECommand {
             completes.add("list");
             return completes;
         }
-        if (args.length == 3 && args[2].equalsIgnoreCase("add")) {
+        if (args.length == 3 && args[1].equalsIgnoreCase("add")) {
             List<String> completes = new ArrayList<>();
             for (String trait : Bukkit.getServer().getSpellbookAPI().getLibrary().getLoadedTraits().keySet()) {
                 if (trait.toLowerCase().startsWith(args[2].toLowerCase())) {
@@ -78,7 +78,7 @@ public class TraitCommand extends ECommand {
             }
             return completes;
         }
-        if (args.length == 3 && args[2].equalsIgnoreCase("remove")) {
+        if (args.length == 3 && args[1].equalsIgnoreCase("remove")) {
             List<String> completes = new ArrayList<>();
             for (SpellTrait trait : ((Player) sender).getActiveTraits()) {
                 if (trait.getData().getId().startsWith(args[2].toLowerCase())) {

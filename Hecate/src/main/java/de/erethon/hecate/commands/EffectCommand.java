@@ -76,7 +76,7 @@ public class EffectCommand extends ECommand {
             completes.add("list");
             return completes;
         }
-        if (args.length == 3 && args[2].equalsIgnoreCase("add")) {
+        if (args.length == 3 && args[1].equalsIgnoreCase("add")) {
             List<String> completes = new ArrayList<>();
             for (String effect : Bukkit.getServer().getSpellbookAPI().getLibrary().getLoadedEffects().keySet()) {
                 if (effect.toLowerCase().startsWith(args[2].toLowerCase())) {
@@ -85,7 +85,7 @@ public class EffectCommand extends ECommand {
             }
             return completes;
         }
-        if (args.length == 3 && args[2].equalsIgnoreCase("remove")) {
+        if (args.length == 3 && args[1].equalsIgnoreCase("remove")) {
             List<String> completes = new ArrayList<>();
             /*for (SpellEffect effect : ((Player) sender).getEffects()) {
                 if (effect.data.getId().startsWith(args[2].toLowerCase())) {
