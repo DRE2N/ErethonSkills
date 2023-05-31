@@ -1,5 +1,6 @@
 package de.erethon.spellbook.utils;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.pet.RangerPet;
@@ -23,6 +24,10 @@ public class RangerUtils {
     }
 
     public static boolean hasPet(LivingEntity caster) {
-        return Spellbook.getInstance().getPetLookup().get(caster) != null;
+        if (Spellbook.getInstance().getPetLookup().get(caster) != null) {
+            return true;
+        }
+        caster.sendParsedActionBar("<color:#ff0000>Kein Pet aktiv!");
+        return false;
     }
 }

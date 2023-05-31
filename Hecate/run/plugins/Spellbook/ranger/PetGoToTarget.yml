@@ -1,0 +1,2 @@
+class: ranger.pet.PetGoToTarget
+range: 32

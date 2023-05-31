@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells.ranger.pet;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,6 +15,10 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsRestrictionGoal;
+import net.minecraft.world.entity.ai.goal.MoveTowardsTargetGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.animal.Wolf;
 import org.bukkit.Color;
 import org.bukkit.World;
@@ -30,6 +35,8 @@ import org.joml.Vector3f;
 public class RangerPet extends Wolf {
 
     private final FollowOwnerGoal followOwnerGoal = new FollowOwnerGoal(this, 1.0D, 2.0F, 10.0F, false);
+    private final RandomStrollGoal randomStrollGoal = new RandomStrollGoal(this, 1.0D, 500, false);
+    private final MoveTowardsRestrictionGoal moveTowardsRestrictionGoal = new MoveTowardsRestrictionGoal(this, 1.0D);
     private final Transformation petStatusTextTransformation = new Transformation(new Vector3f(0, 1.1f, 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.5f, 0.5f, 0.5f), new AxisAngle4f(0, 0, 0, 0));
 
     private EntityType<?> petDisplayType = EntityType.COW;
@@ -39,6 +46,7 @@ public class RangerPet extends Wolf {
 
     private boolean shouldAttackAutomatically = true;
     private boolean isCurrentlyGoingToLocation = false;
+    private boolean isIdleMoving = false;
 
     public RangerPet(org.bukkit.entity.LivingEntity bukkitOwner, World world, org.bukkit.entity.EntityType craftDisplayType) {
         super(EntityType.WOLF, ((CraftWorld) world).getHandle());
@@ -52,7 +60,8 @@ public class RangerPet extends Wolf {
         persist = false;
         goalSelector.removeAllGoals(goal -> true);
         goalSelector.addGoal(9, followOwnerGoal);
-        goalSelector.addGoal(0, new MeleeAttackGoal(this, 2.0D, true));
+        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.5D, true));
         statusDisplay = world.spawn(bukkitOwner.getLocation(), TextDisplay.class, display -> {
             display.setTransformation(petStatusTextTransformation);
             display.text(Component.empty());
@@ -84,9 +93,29 @@ public class RangerPet extends Wolf {
         statusDisplay.text(Component.text("ATTACKING").color(NamedTextColor.RED));
     }
 
+    public void stopAttack() {
+        stopBeingAngry();
+        statusDisplay.text(Component.empty());
+    }
+
     public void goToLocation(int x, int y, int z) {
         goalSelector.removeGoal(followOwnerGoal);
-        moveControl.setWantedPosition(x, y, z, 1.0D);
+        navigation.moveTo(x, y, z, 1.0D);
+        isCurrentlyGoingToLocation = true;
+    }
+
+    public void callback() {
+        stopAttack();
+        goalSelector.addGoal(9, followOwnerGoal);
+        isCurrentlyGoingToLocation = false;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (isCurrentlyGoingToLocation && navigation.isDone()) {
+            isCurrentlyGoingToLocation = false;
+        }
     }
 
     public void setPetDisplayType(org.bukkit.entity.EntityType type) {

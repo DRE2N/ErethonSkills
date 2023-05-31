@@ -4,32 +4,34 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.utils.RangerUtils;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class PetMakeAttack extends SpellbookSpell {
+public class PetGoToTarget extends SpellbookSpell {
 
     private final int range = data.getInt("range", 32);
-    private LivingEntity target;
+    private Location target;
 
-    public PetMakeAttack(LivingEntity caster, SpellData spellData) {
+    public PetGoToTarget(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 
     @Override
     protected boolean onPrecast() {
         if (!RangerUtils.hasPet(caster)) return false;
-        Entity targetEntity = caster.getTargetEntity(range);
-        if (!(targetEntity instanceof LivingEntity living)) {
+        Block targetBlockExact = caster.getTargetBlockExact(range);
+        if (targetBlockExact == null) {
             return false;
         }
-        target = living;
+        target = targetBlockExact.getLocation().add(0,1,0);
         return true;
     }
 
     @Override
     protected boolean onCast() {
-        Spellbook.getInstance().getPetLookup().get(caster).makeAttack(target);
+        Spellbook.getInstance().getPetLookup().get(caster).goToLocation(target.getBlockX(), target.getBlockY(), target.getBlockZ());
         return true;
     }
 }
