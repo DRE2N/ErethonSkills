@@ -58,8 +58,8 @@ public final class Hecate extends EPlugin {
         }
         initFolders();
         instantiate();
-        loadClasses();
         loadTraitlines();
+        loadClasses();
         registerCommands();
         getServer().getPluginManager().registerEvents(new PlayerCastListener(), this);
         getServer().getPluginManager().registerEvents(new EntityListener(), this);

@@ -11,6 +11,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.api.TraitData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -254,6 +255,14 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     public HClass gethClass() {
         return hClass;
+    }
+
+    public void sethClass(HClass hClass) {
+        this.hClass = hClass;
+    }
+
+    public boolean hasTrait(TraitData data) {
+        return player.hasTrait(data);
     }
 
     public void learnSpell(SpellData spellData) {

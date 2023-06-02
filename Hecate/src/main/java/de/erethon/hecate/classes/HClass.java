@@ -65,15 +65,15 @@ public class HClass extends YamlConfiguration {
         return specialActionMap.get(key);
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
     @Override
     public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
         super.load(file);
         id = file.getName().replace(".yml", "");
-        ConfigurationSection spellLevelSection = getConfigurationSection("spellLevels");
-        if (spellLevelSection == null) {
-            MessageUtil.log("Class " + getName() + " has no spell levels configured!");
-            return;
-        }
+        displayName = getString("displayName");
         ConfigurationSection specialActionSection = getConfigurationSection("specialActionKeys");
         if (specialActionSection != null) {
             for (String key : specialActionSection.getKeys(false)) {
@@ -96,19 +96,24 @@ public class HClass extends YamlConfiguration {
                 specialActionMap.put(actionKey, spellData);
             }
         }
-        for (String key : spellLevelSection.getKeys(false)) {
-            ConfigurationSection levelEntry = spellLevelSection.getConfigurationSection(key);
-            int level = Integer.parseInt(key);
-            if (levelEntry != null) {
-                HashSet<SpellData> spells = new HashSet<>();
-                for (String spellId : levelEntry.getStringList("spells")) {
-                    SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
-                    if (spellData == null) {
-                        MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getName());
-                        continue;
+        ConfigurationSection spellLevelSection = getConfigurationSection("spellLevels");
+        if (spellLevelSection == null) {
+            MessageUtil.log("Class " + getName() + " has no spell levels configured!");
+        } else {
+            for (String key : spellLevelSection.getKeys(false)) {
+                ConfigurationSection levelEntry = spellLevelSection.getConfigurationSection(key);
+                int level = Integer.parseInt(key);
+                if (levelEntry != null) {
+                    HashSet<SpellData> spells = new HashSet<>();
+                    for (String spellId : levelEntry.getStringList("spells")) {
+                        SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
+                        if (spellData == null) {
+                            MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getName());
+                            continue;
+                        }
+                        spells.add(spellData);
+                        spellLevelMap.put(level, spells);
                     }
-                    spells.add(spellData);
-                    spellLevelMap.put(level, spells);
                 }
             }
         }
@@ -123,34 +128,34 @@ public class HClass extends YamlConfiguration {
         ConfigurationSection attributesSection = getConfigurationSection("attributeLevels");
         if (attributesSection == null) {
             MessageUtil.log("Class " + getName() + " has no attributes configured!");
-            return;
-        }
-        for (String key : attributesSection.getKeys(false)) {
-            ConfigurationSection levelEntry = attributesSection.getConfigurationSection(key);
-            int level = Integer.parseInt(key);
-            if (levelEntry != null) {
-                HashMap<Attribute, Double> attributes = new HashMap<>();
-                for (String attributeName : levelEntry.getStringList("attributes")) {
-                    try {
-                        Attribute attribute = Attribute.valueOf(attributeName);
-                        attributes.put(attribute, levelEntry.getDouble(attributeName));
-                    } catch (IllegalArgumentException e) {
-                        MessageUtil.log("Unknown attribute '" + attributeName + "' found under 'attributes' in class file " + getName());
+        } else {
+            for (String key : attributesSection.getKeys(false)) {
+                ConfigurationSection levelEntry = attributesSection.getConfigurationSection(key);
+                int level = Integer.parseInt(key);
+                if (levelEntry != null) {
+                    HashMap<Attribute, Double> attributes = new HashMap<>();
+                    for (String attributeName : levelEntry.getStringList("attributes")) {
+                        try {
+                            Attribute attribute = Attribute.valueOf(attributeName);
+                            attributes.put(attribute, levelEntry.getDouble(attributeName));
+                        } catch (IllegalArgumentException e) {
+                            MessageUtil.log("Unknown attribute '" + attributeName + "' found under 'attributes' in class file " + getName());
+                        }
                     }
+                    baseAttributesPerLevel.put(level, attributes);
                 }
-                baseAttributesPerLevel.put(level, attributes);
             }
         }
         ConfigurationSection levelSection = getConfigurationSection("xpLevels");
         if (levelSection == null) {
             MessageUtil.log("Class " + getName() + " has no levels configured!");
-            return;
-        }
-        for (String key : levelSection.getKeys(false)) {
-            ConfigurationSection levelEntry = levelSection.getConfigurationSection(key);
-            int level = Integer.parseInt(key);
-            if (levelEntry != null) {
-                xpPerLevel.put(level, levelEntry.getDouble("xp"));
+        } else {
+            for (String key : levelSection.getKeys(false)) {
+                ConfigurationSection levelEntry = levelSection.getConfigurationSection(key);
+                int level = Integer.parseInt(key);
+                if (levelEntry != null) {
+                    xpPerLevel.put(level, levelEntry.getDouble("xp"));
+                }
             }
         }
     }
