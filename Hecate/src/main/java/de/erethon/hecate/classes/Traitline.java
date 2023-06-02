@@ -9,6 +9,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,8 +24,9 @@ public class Traitline extends YamlConfiguration {
     private String id;
     private Component displayName;
     private final List<Component> description = new ArrayList<>();
+    private int inactiveModelData = 0;
+    private int activeModelData = 0;
     private int initialLevelRequirement = 0;
-    private HClass hClass;
     private final HashMap<Integer, List<TraitLineEntry>> traitMap = new HashMap<>();
 
     public Traitline(File file) throws IOException, InvalidConfigurationException {
@@ -47,25 +49,22 @@ public class Traitline extends YamlConfiguration {
         return initialLevelRequirement;
     }
 
-    public HClass gethClass() {
-        return hClass;
-    }
-
     public HashMap<Integer, List<TraitLineEntry>> getTraitMap() {
         return traitMap;
+    }
+
+    public List<TraitLineEntry> getTraitLineEntries(int level) {
+        return traitMap.get(level);
     }
 
     @Override
     public void load(File file) throws IOException, InvalidConfigurationException {
         super.load(file);
         id = file.getName().replace(".yml", "");
-        hClass = Hecate.getInstance().getHClass(getString("class"));
-        if (id == null) {
-            MessageUtil.log("Traitline " + id + " has no valid class assigned. Skipping.");
-            return;
-        }
         displayName = mm.deserialize(getString("displayName", "<red>ERROR"));
         description.add(mm.deserialize(getString("description", "")));
+        inactiveModelData = getInt("inactiveModelData", 0);
+        activeModelData = getInt("activeModelData", 0);
         initialLevelRequirement = getInt("initialLevelRequirement", 0);
         for (String key : getConfigurationSection("traitLine").getKeys(false)) {
             int level = Integer.parseInt(key);
@@ -80,11 +79,13 @@ public class Traitline extends YamlConfiguration {
                 int levelRequirement = traitSection.getInt("levelRequirement", 0);
                 int cost = traitSection.getInt("cost", 0);
                 boolean combatOnly = traitSection.getBoolean("combatOnly", false);
-                TraitLineEntry traitLineEntry = new TraitLineEntry(traitData, levelRequirement, cost, combatOnly);
+                int activeModelData = traitSection.getInt("activeModelData", 0);
+                int inactiveModelData = traitSection.getInt("inactiveModelData", 0);
+                TraitLineEntry traitLineEntry = new TraitLineEntry(traitData, levelRequirement, cost, combatOnly, activeModelData, inactiveModelData);
                 traits.add(traitLineEntry);
             }
             traitMap.put(level, traits);
         }
-        MessageUtil.log("Loaded traitline " + id + " for class " + hClass.getName());
+        MessageUtil.log("Loaded traitline " + id + " from " + file.getName() + " with " + traitMap.size() + " levels and " + traitMap.values().stream().mapToInt(List::size).sum() + " traits.");
     }
 }
