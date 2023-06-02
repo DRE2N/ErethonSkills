@@ -24,8 +24,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class HPlayer extends EConfig implements LoadableUser {
@@ -39,6 +41,7 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     private HClass hClass;
     private final SpellData[] assignedSlots = new SpellData[8];
+    private final Set<TraitData> combatOnlyTraits = new HashSet<>();
 
     private boolean isInCastmode = false;
 
@@ -105,6 +108,9 @@ public class HPlayer extends EConfig implements LoadableUser {
             inventory.setItem(7, new ItemStack(Material.LIGHT_GRAY_DYE));
             isInCastmode = true;
             updateDescriptions();
+            for (TraitData trait : combatOnlyTraits) {
+                player.addTrait(trait);
+            }
             CombatModeEnterEvent event = new CombatModeEnterEvent(player, this, reason);
             Bukkit.getPluginManager().callEvent(event);
         } else {
@@ -114,6 +120,9 @@ public class HPlayer extends EConfig implements LoadableUser {
                 inventory.setItem(slot, hotbarItems.get(slot));
             }
             isInCastmode = false;
+            for (TraitData trait : combatOnlyTraits) {
+                player.removeTrait(trait);
+            }
             CombatModeLeaveEvent event = new CombatModeLeaveEvent(player, this, reason);
             Bukkit.getPluginManager().callEvent(event);
         }
@@ -263,6 +272,14 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     public boolean hasTrait(TraitData data) {
         return player.hasTrait(data);
+    }
+
+    public void addCombatOnlyTrait(TraitData data) {
+        combatOnlyTraits.add(data);
+    }
+
+    public void removeCombatOnlyTraits(TraitData data) {
+        combatOnlyTraits.remove(data);
     }
 
     public void learnSpell(SpellData spellData) {

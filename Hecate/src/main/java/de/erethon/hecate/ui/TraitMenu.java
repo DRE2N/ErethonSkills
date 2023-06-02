@@ -18,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventory;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -53,23 +54,21 @@ public class TraitMenu implements Listener, InventoryHolder {
             return;
         }
         Bukkit.getPluginManager().registerEvents(this, plugin);
+        inventory = player.getPlayer().getServer().createInventory(this, 54, displayName);
         prepareInventory();
         player.getPlayer().openInventory(inventory);
     }
 
     public void prepareInventory() {
-        inventory = player.getPlayer().getServer().createInventory(this, 54, displayName);
         if (selectedTraitline != null) {
-            MessageUtil.sendMessage(player.getPlayer(), "<green>Selected traitline: " + selectedTraitline.getName());
-            int verticalBar = 0;
-            while (verticalBar <= 4) {
-                setHorizontalBar(FIRST_TRAITLINE_START + (verticalBar * SPACE_BETWEEN_TRAITLINES), verticalBar);
-                verticalBar++;
+            int horizontalBar = 0;
+            while (horizontalBar <= 3) {
+                setVerticalBar(FIRST_TRAITLINE_START + (horizontalBar * SPACE_BETWEEN_TRAITLINES), horizontalBar);
+                horizontalBar++;
             }
         }
 
         int traitLineCount = hClass.getTraitlines().size();
-        MessageUtil.sendMessage(player.getPlayer(), "<green>Found " + traitLineCount + " traitlines.");
         int traitLineIndex = 0;
         while (traitLineIndex < traitLineCount) {
             Traitline traitline = hClass.getTraitlines().get(traitLineIndex);
@@ -101,16 +100,16 @@ public class TraitMenu implements Listener, InventoryHolder {
         return item;
     }
 
-    private void setHorizontalBar(int start, int level) {
+    private void setVerticalBar(int start, int level) {
         int slot = start;
         int row = 0;
-        MessageUtil.log("LeveL: " + level + " Start: " + start);
         while (row < 3) {
-            MessageUtil.log(selectedTraitline.getId());
-            for (TraitLineEntry entry : selectedTraitline.getTraitLineEntries(level)) {
-                MessageUtil.log(entry.data().getId());
+            if (selectedTraitline.getTraitLineEntries(level) == null) {
+                continue;
             }
-            inventory.setItem(slot, getItemAt(selectedTraitline, level, row, player.hasTrait(selectedTraitline.getTraitLineEntries(level).get(row).data())));
+            TraitLineEntry entry = selectedTraitline.getTraitLineEntries(level).get(row);
+            inventory.setItem(slot, getItemAt(selectedTraitline, level, row, player.hasTrait(entry.data())));
+            entries[slot] = entry;
             slot+= SPACE_BETWEEN_TRAITLINE_ENTRIES;
             row++;
         }
@@ -129,7 +128,21 @@ public class TraitMenu implements Listener, InventoryHolder {
             displayName = selectedTraitline.getDisplayName();
             updateTitle();
             prepareInventory();
-            MessageUtil.sendMessage(player.getPlayer(), "<green>Selected traitline: " + selectedTraitline.getName());
+        }
+        if (entries[slot] != null) {
+            TraitLineEntry entry = entries[slot];
+            Player bukkitPlayer = player.getPlayer();
+            if (bukkitPlayer.hasTrait(entry.data())) {
+                bukkitPlayer.removeTrait(entry.data());
+                MessageUtil.sendMessage(bukkitPlayer, "<red>Unselected trait: " + entry.data().getId());
+            } else if (entry.combatOnly()) {
+                player.addCombatOnlyTrait(entry.data());
+                MessageUtil.sendMessage(bukkitPlayer, "<green>Selected trait: " + entry.data().getId() + "*");
+            } else {
+                bukkitPlayer.addTrait(entry.data());
+                MessageUtil.sendMessage(bukkitPlayer, "<green>Selected trait: " + entry.data().getId());
+            }
+            prepareInventory();
         }
     }
 

@@ -1,6 +1,6 @@
 class: Assassin
-displayName: <gray>Stealth
-description: "Shhhhhh"
+displayName: <green>Traps
+description: "Traps"
 traitLine:
   0:
     TestTrait:
