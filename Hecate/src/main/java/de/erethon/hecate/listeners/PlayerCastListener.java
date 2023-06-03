@@ -13,6 +13,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -35,6 +36,7 @@ import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
+import java.io.File;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -185,8 +187,24 @@ public class PlayerCastListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         // Fixes for spell effects after server crash
-        event.getPlayer().setInvisible(false);
-        event.getPlayer().setWalkSpeed(0.2f);
+        Player player = event.getPlayer();
+        player.setInvisible(false);
+        player.setWalkSpeed(0.2f);
+        File file = new File(Hecate.getInstance().getDataFolder(), "inventories/" + player.getUniqueId() + ".yml");
+        if (!file.exists()) {
+            return;
+        }
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        if (config.getBoolean("active")) {
+            HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(player);
+            hPlayer.loadInventory().thenAccept(bool -> {
+                if (bool) {
+                    // Nothing to do here
+                } else {
+                    MessageUtil.sendMessage(player, "&cThere was an error while loading your inventory. Please report this issue.");
+                }
+            });
+        }
     }
 
     private void castRightclickAction(Player player) {
