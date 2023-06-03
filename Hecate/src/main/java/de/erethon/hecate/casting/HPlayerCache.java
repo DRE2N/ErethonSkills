@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -25,7 +26,8 @@ public class HPlayerCache extends UserCache<HPlayer> {
             @Override
             public void run() {
                 for (HPlayer player : getCachedUsers()) {
-                    player.update();
+                    if (player.getSelectedCharacter() == null) continue;
+                    player.getSelectedCharacter().update();
                 }
             }
         };
@@ -45,5 +47,13 @@ public class HPlayerCache extends UserCache<HPlayer> {
     @Contract("_ -> new")
     public static @NotNull File getPlayerFile(@NotNull Player player) {
         return new File(Hecate.PLAYERS, player.getUniqueId() + ".yml");
+    }
+
+    public @Nullable HCharacter getCharacter(@NotNull OfflinePlayer player) {
+        return getByPlayer(player).getSelectedCharacter();
+    }
+
+    public @Nullable HCharacter getCharacter(@NotNull String player) {
+        return getByName(player).getSelectedCharacter();
     }
 }

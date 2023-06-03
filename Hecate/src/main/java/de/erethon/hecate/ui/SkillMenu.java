@@ -2,11 +2,10 @@ package de.erethon.hecate.ui;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HPlayer;
+import de.erethon.hecate.casting.HCharacter;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,11 +27,11 @@ import java.util.List;
 public class SkillMenu implements Listener, InventoryHolder {
 
     private Inventory inventory;
-    private HPlayer player;
+    private HCharacter player;
     private List<SpellData> spells = new ArrayList<>();
     private int currentIndex = 0;
 
-    public SkillMenu(HPlayer player) {
+    public SkillMenu(HCharacter player) {
         Bukkit.getServer().getSpellbookAPI().getLibrary().getLoaded().forEach((key, value) -> spells.add(value));
         this.player = player;
         inventory = Bukkit.createInventory(this, 54, ChatColor.DARK_RED + "Skills");

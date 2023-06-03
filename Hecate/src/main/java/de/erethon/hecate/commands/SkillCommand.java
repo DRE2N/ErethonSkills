@@ -3,7 +3,7 @@ package de.erethon.hecate.commands;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HPlayer;
+import de.erethon.hecate.casting.HCharacter;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -30,7 +30,7 @@ public class SkillCommand extends ECommand {
 
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
-        HPlayer player = Hecate.getInstance().getHPlayerCache().getByPlayer((Player) commandSender);
+        HCharacter player = Hecate.getInstance().getHPlayerCache().getCharacter((Player) commandSender);
         SpellData spellData = spellbook.getLibrary().getSpellByID(args[1]);
 
         if (spellData == null) {

@@ -2,7 +2,7 @@ package de.erethon.hecate.ui;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HPlayer;
+import de.erethon.hecate.casting.HCharacter;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.TraitLineEntry;
 import de.erethon.hecate.classes.Traitline;
@@ -38,14 +38,14 @@ public class TraitMenu implements Listener, InventoryHolder {
 
     private Inventory topInventory;
     private Inventory bottomInventory;
-    private HPlayer player;
+    private HCharacter player;
     private HClass hClass;
     private Traitline selectedTraitline;
     private final Traitline[] traitlines = new Traitline[54];
     private final TraitLineEntry[] entries = new TraitLineEntry[54];
     private Component displayName = Component.text("Trait Menu");
 
-    public TraitMenu(HPlayer player) {
+    public TraitMenu(HCharacter player) {
         this.player = player;
         this.hClass = player.gethClass();
         if (hClass == null) {

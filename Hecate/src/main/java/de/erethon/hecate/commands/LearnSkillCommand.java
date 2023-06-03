@@ -3,9 +3,8 @@ package de.erethon.hecate.commands;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HPlayer;
+import de.erethon.hecate.casting.HCharacter;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.PassiveSpell;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,7 +30,7 @@ public class LearnSkillCommand extends ECommand {
     @Override
     public void onExecute(String[] args, CommandSender sender) {
         Player player = (Player) sender;
-        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(player);
+        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(player);
         SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(args[1]);
         if (spellData == null) {
             MessageUtil.sendMessage(sender, "SpellData '" + args[1] + "' not found");
@@ -44,7 +43,7 @@ public class LearnSkillCommand extends ECommand {
             MessageUtil.sendMessage(sender, "Active spells require a slot number");
             return;
         }*/
-        hPlayer.learnSpell(spellData, Integer.parseInt(args[2]));
+        hCharacter.learnSpell(spellData, Integer.parseInt(args[2]));
         MessageUtil.sendMessage(sender, "Learned spell " + spellData.getId() + " in slot " + args[2]);
     }
 

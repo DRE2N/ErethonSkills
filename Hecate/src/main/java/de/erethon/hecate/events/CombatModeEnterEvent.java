@@ -1,6 +1,6 @@
 package de.erethon.hecate.events;
 
-import de.erethon.hecate.casting.HPlayer;
+import de.erethon.hecate.casting.HCharacter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -10,12 +10,12 @@ public class CombatModeEnterEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
-    private final HPlayer hPlayer;
+    private final HCharacter hCharacter;
     private final CombatModeReason reason;
 
-    public CombatModeEnterEvent(Player player, HPlayer hPlayer, CombatModeReason reason) {
+    public CombatModeEnterEvent(Player player, HCharacter hCharacter, CombatModeReason reason) {
         this.player = player;
-        this.hPlayer = hPlayer;
+        this.hCharacter = hCharacter;
         this.reason = reason;
 
     }
@@ -24,8 +24,8 @@ public class CombatModeEnterEvent extends Event {
         return player;
     }
 
-    public HPlayer getHPlayer() {
-        return hPlayer;
+    public HCharacter getHPlayer() {
+        return hCharacter;
     }
 
     public CombatModeReason getReason() {

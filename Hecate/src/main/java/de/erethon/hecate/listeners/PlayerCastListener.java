@@ -2,18 +2,23 @@ package de.erethon.hecate.listeners;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
+import de.erethon.hecate.casting.HCharacter;
 import de.erethon.hecate.casting.HPlayer;
 import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.hecate.events.CombatModeReason;
+import de.erethon.hecate.ui.CharacterSelection;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
+import de.erethon.papyrus.PlayerSwitchProfileEvent;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.pet.RangerPet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -24,6 +29,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -70,17 +76,17 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onModeSwitch(PlayerSwapHandItemsEvent event) {
-        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(event.getPlayer());
+        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(event.getPlayer());
         // The OffHandItem is the item that WOULD BE in the offhand if the event is not cancelled. Thanks Spigot for great method naming!
-        if ((event.getOffHandItem() != null && event.getOffHandItem().getType() == Material.STICK || hPlayer.isInCastmode())) {
+        if ((event.getOffHandItem() != null && event.getOffHandItem().getType() == Material.STICK || hCharacter.isInCastmode())) {
             event.setCancelled(true);
-            if (!hPlayer.isInCastmode()) {
-                hPlayer.saveInventory().thenAccept(bool -> {
+            if (!hCharacter.isInCastmode()) {
+                hCharacter.saveInventory().thenAccept(bool -> {
                     if (bool) {
                         BukkitRunnable runnable = new BukkitRunnable() {
                             @Override
                             public void run() {
-                                hPlayer.switchMode(CombatModeReason.HOTKEY);
+                                hCharacter.switchMode(CombatModeReason.HOTKEY);
                             }
                         };
                         runnable.runTask(Hecate.getInstance());
@@ -90,12 +96,12 @@ public class PlayerCastListener implements Listener {
                 });
                 return;
             }
-            hPlayer.loadInventory().thenAccept(bool -> {
+            hCharacter.loadInventory().thenAccept(bool -> {
                 if (bool) {
                     BukkitRunnable runnable = new BukkitRunnable() {
                         @Override
                         public void run() {
-                            hPlayer.switchMode(CombatModeReason.HOTKEY);
+                            hCharacter.switchMode(CombatModeReason.HOTKEY);
                         }
                     };
                     runnable.runTask(Hecate.getInstance());
@@ -153,33 +159,33 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onItemSwitch(PlayerItemHeldEvent event) {
-        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(event.getPlayer());
-        if (!hPlayer.isInCastmode()) {
+        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(event.getPlayer());
+        if (!hCharacter.isInCastmode()) {
             return;
         }
         event.setCancelled(true);
-        SpellData spell = hPlayer.getSpellAt(event.getNewSlot());
+        SpellData spell = hCharacter.getSpellAt(event.getNewSlot());
         if (spell != null && event.getPlayer().canCast(spell)) {
             spell.queue(event.getPlayer());
-            hPlayer.update();
+            hCharacter.update();
         }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer((OfflinePlayer) event.getWhoClicked());
-        if (hPlayer.isInCastmode()) {
+        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter((OfflinePlayer) event.getWhoClicked());
+        if (hCharacter.isInCastmode()) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
-        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(event.getPlayer());
-        if (hPlayer.isInCastmode()) {
+        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(event.getPlayer());
+        if (hCharacter.isInCastmode()) {
             event.setCancelled(true);
-            if (hPlayer.gethClass() != null && hPlayer.gethClass().getSpecialAction(SpecialActionKey.Q) != null) {
-                hPlayer.gethClass().getSpecialAction(SpecialActionKey.Q).queue(event.getPlayer());
+            if (hCharacter.gethClass() != null && hCharacter.gethClass().getSpecialAction(SpecialActionKey.Q) != null) {
+                hCharacter.gethClass().getSpecialAction(SpecialActionKey.Q).queue(event.getPlayer());
             }
         }
     }
@@ -202,14 +208,34 @@ public class PlayerCastListener implements Listener {
         Player player = event.getPlayer();
         player.setInvisible(false);
         player.setWalkSpeed(0.2f);
-        File file = new File(Hecate.getInstance().getDataFolder(), "inventories/" + player.getUniqueId() + ".yml");
+        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(player);
+        if (hPlayer.isAutoJoinWithLastCharacter() && hPlayer.getSelectedCharacterID() != 0) {
+            CraftPlayer craftPlayer = (CraftPlayer) player;
+            ServerPlayer serverPlayer = craftPlayer.getHandle();
+            serverPlayer.server.getPlayerList().switchProfile(serverPlayer, hPlayer.getSelectedCharacterID());
+            return;
+        }
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                new CharacterSelection(hPlayer);
+            }
+        };
+        runnable.runTaskLater(Hecate.getInstance(), 5);
+    }
+
+    @EventHandler
+    public void onSwitch(PlayerSwitchProfileEvent event) {
+        Player player = event.getPlayer();
+        int id = event.getNewProfileID();
+        File file = new File(Hecate.getInstance().getDataFolder(), "inventories/" + player.getUniqueId() + "_" + id + ".yml");
         if (!file.exists()) {
             return;
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         if (config.getBoolean("active")) {
-            HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(player);
-            hPlayer.loadInventory().thenAccept(bool -> {
+            HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(player);
+            hCharacter.loadInventory().thenAccept(bool -> {
                 if (!bool) {
                     MessageUtil.sendMessage(player, "&cThere was an error while loading your inventory. Please report this issue.");
                 }
@@ -217,11 +243,21 @@ public class PlayerCastListener implements Listener {
         }
     }
 
-    private void castRightclickAction(Player player) {
+    @EventHandler
+    public void preCommand(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
         HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(player);
-        if (!hPlayer.isInCastmode()) return;
-        if (hPlayer.gethClass() != null && hPlayer.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
-            hPlayer.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK).queue(player);
+        if (hPlayer.getSelectedCharacter() == null) {
+            MessageUtil.sendMessage(player, "&cYou need to select a character first.");
+            event.setCancelled(true);
+        }
+    }
+
+    private void castRightclickAction(Player player) {
+        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(player);
+        if (!hCharacter.isInCastmode()) return;
+        if (hCharacter.gethClass() != null && hCharacter.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
+            hCharacter.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK).queue(player);
         }
     }
 
