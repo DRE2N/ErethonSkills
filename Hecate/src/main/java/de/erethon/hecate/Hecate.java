@@ -25,6 +25,7 @@ public final class Hecate extends EPlugin {
     private static Hecate instance;
 
     public static File PLAYERS;
+    public static File INVENTORIES;
     public static File CLASSES;
     public static File TRAITLINES;
 
@@ -103,6 +104,7 @@ public final class Hecate extends EPlugin {
     public void initFolders() {
         initFolder(getDataFolder());
         initFolder(PLAYERS = new File(getDataFolder(), "players"));
+        initFolder(INVENTORIES = new File(getDataFolder(), "inventories"));
         initFolder(CLASSES = new File(getDataFolder(), "classes"));
         initFolder(TRAITLINES = new File(getDataFolder(), "traitlines"));
     }

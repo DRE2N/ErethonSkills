@@ -3,6 +3,7 @@ package de.erethon.hecate.casting;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.config.EConfig;
 import de.erethon.bedrock.user.LoadableUser;
+import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.events.CombatModeEnterEvent;
 import de.erethon.hecate.events.CombatModeLeaveEvent;
@@ -12,22 +13,28 @@ import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
+import io.netty.util.concurrent.CompleteFuture;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class HPlayer extends EConfig implements LoadableUser {
@@ -44,8 +51,6 @@ public class HPlayer extends EConfig implements LoadableUser {
     private final Set<TraitData> combatOnlyTraits = new HashSet<>();
 
     private boolean isInCastmode = false;
-
-    private final List<ItemStack> hotbarItems = new ArrayList<>();
     private int hotbarSlot = 0;
 
 
@@ -90,13 +95,9 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     public void switchMode(CombatModeReason reason) {
         if (!isInCastmode) {
-            hotbarItems.clear();
             PlayerInventory inventory = player.getInventory();
             hotbarSlot = inventory.getHeldItemSlot();
             inventory.setHeldItemSlot(0);
-            for (int slot = 0; slot < 8; slot++) {
-                hotbarItems.add(slot, inventory.getItem(slot)); // TODO: Put this into PDC or something so it never gets lost, ever.
-            }
             // Cooldowns are per material for some reason.
             inventory.setItem(0, new ItemStack(Material.BLACK_DYE));
             inventory.setItem(1, new ItemStack(Material.BLUE_DYE));
@@ -116,9 +117,6 @@ public class HPlayer extends EConfig implements LoadableUser {
         } else {
             PlayerInventory inventory = player.getInventory();
             inventory.setHeldItemSlot(hotbarSlot);
-            for (int slot = 0; slot < 8; slot++) {
-                inventory.setItem(slot, hotbarItems.get(slot));
-            }
             isInCastmode = false;
             for (TraitData trait : combatOnlyTraits) {
                 player.removeTrait(trait);
@@ -176,6 +174,82 @@ public class HPlayer extends EConfig implements LoadableUser {
 
     public boolean isInCastmode() {
         return isInCastmode;
+    }
+
+    public CompletableFuture<Boolean> saveInventory() {
+        Base64.Encoder encoder = Base64.getEncoder();
+        return CompletableFuture.supplyAsync(() -> {
+            try { // Futures swallow exceptions, we don't want that
+                File file = new File(Hecate.getInstance().getDataFolder(), "inventories/" + player.getUniqueId() + ".yml");
+                if (!file.exists()) {
+                    try {
+                        file.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                PlayerInventory inventory = player.getInventory();
+                List<String> inventoryContents = new ArrayList<>();
+                for (ItemStack item : inventory.getContents()) {
+                    if (item == null) {
+                        inventoryContents.add("empty");
+                        continue;
+                    }
+                    byte[] bytes = item.serializeAsBytes();
+                    inventoryContents.add(encoder.encodeToString(bytes));
+                }
+                config.set("active", true);
+                config.set("inventory", inventoryContents);
+                try {
+                    config.save(file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                inventory.clear();
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        });
+    }
+
+    public CompletableFuture<Boolean> loadInventory() {
+        ItemStack[] newInventory = new ItemStack[player.getInventory().getSize()];
+        Base64.Decoder decoder = Base64.getDecoder();
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                File file = new File(Hecate.getInstance().getDataFolder(), "inventories/" + player.getUniqueId() + ".yml");
+                if (!file.exists()) {
+                    return false;
+                }
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+                if (!config.getBoolean("active")) {
+                    return false;
+                }
+                List<String> inventoryContents = config.getStringList("inventory");
+                int i = 0;
+                for (String string : inventoryContents) {
+                    if (string.equals("empty")) {
+                        newInventory[i] = new ItemStack(Material.AIR);
+                        i++;
+                        continue;
+                    }
+                    byte[] bytes = decoder.decode(string);
+                    newInventory[i] = ItemStack.deserializeBytes(bytes);
+                    i++;
+                }
+                player.getInventory().setContents(newInventory);
+                config.set("active", false);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        });
     }
 
     /* EConfig methods */

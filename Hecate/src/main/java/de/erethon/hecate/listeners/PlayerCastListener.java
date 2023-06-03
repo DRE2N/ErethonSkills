@@ -1,5 +1,6 @@
 package de.erethon.hecate.listeners;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HPlayer;
 import de.erethon.hecate.casting.SpecialActionKey;
@@ -71,7 +72,23 @@ public class PlayerCastListener implements Listener {
         // The OffHandItem is the item that WOULD BE in the offhand if the event is not cancelled. Thanks Spigot for great method naming!
         if ((event.getOffHandItem() != null && event.getOffHandItem().getType() == Material.STICK || hPlayer.isInCastmode())) {
             event.setCancelled(true);
-            hPlayer.switchMode(CombatModeReason.HOTKEY);
+            if (!hPlayer.isInCastmode()) {
+                hPlayer.saveInventory().thenAccept(bool -> {
+                    if (bool) {
+                        hPlayer.switchMode(CombatModeReason.HOTKEY);
+                    } else {
+                        MessageUtil.sendMessage(event.getPlayer(), "&cThere was an error while saving your inventory. Please report this issue.");
+                    }
+                });
+                return;
+            }
+            hPlayer.loadInventory().thenAccept(bool -> {
+                if (bool) {
+                    hPlayer.switchMode(CombatModeReason.HOTKEY);
+                } else {
+                    MessageUtil.sendMessage(event.getPlayer(), "&cThere was an error while loading your inventory. Please report this issue.");
+                }
+            });
         }
     }
 
