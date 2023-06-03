@@ -8,37 +8,36 @@ import de.erethon.hecate.classes.TraitLineEntry;
 import de.erethon.hecate.classes.Traitline;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
-import net.minecraft.world.Containers;
 import net.minecraft.world.inventory.MenuType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 public class TraitMenu implements Listener, InventoryHolder {
 
     private static final Hecate plugin = Hecate.getInstance();
 
-    private static final int LOWER_BAR_START = 45;
+    private static final int LOWER_BAR_START = 0;
     private static final int FIRST_TRAITLINE_START = 11;
     private static final int SPACE_BETWEEN_TRAITLINE_ENTRIES = 9;
     private static final int SPACE_BETWEEN_TRAITLINES = 2;
     private static final Material ICON_MATERIAL = Material.BLUE_DYE;
 
-    private Inventory inventory;
+    private Inventory topInventory;
+    private Inventory bottomInventory;
     private HPlayer player;
     private HClass hClass;
     private Traitline selectedTraitline;
@@ -53,13 +52,36 @@ public class TraitMenu implements Listener, InventoryHolder {
             MessageUtil.sendMessage(player.getPlayer(), "<red>You have no class selected.");
             return;
         }
+        if (player.isInCastmode()) {
+            MessageUtil.sendMessage(player.getPlayer(), "<red>You can't open the trait menu while in combat.");
+            return;
+        }
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        inventory = player.getPlayer().getServer().createInventory(this, 54, displayName);
-        prepareInventory();
-        player.getPlayer().openInventory(inventory);
+        topInventory = player.getPlayer().getServer().createInventory(this, 9, displayName);
+        bottomInventory = player.getPlayer().getInventory();
+        player.saveInventory().thenAccept(bool -> {
+            if (bool) {
+                try {
+                    prepareInventory();
+                    // Let's go back to the main thread
+                    BukkitRunnable runnable = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            player.getPlayer().openInventory(topInventory);
+                        }
+                    };
+                    runnable.runTask(plugin);
+                } catch (Exception e) {
+                    MessageUtil.sendMessage(player.getPlayer(), "&cThere was an error while opening the trait menu. Please report this issue.");
+                    e.printStackTrace();
+                }
+            } else {
+                MessageUtil.sendMessage(player.getPlayer(), "&cThere was an error while saving your inventory. Please report this issue.");
+            }
+        });
     }
 
-    public void prepareInventory() {
+    public void prepareInventory()  {
         if (selectedTraitline != null) {
             int horizontalBar = 0;
             while (horizontalBar <= 3) {
@@ -79,7 +101,7 @@ public class TraitMenu implements Listener, InventoryHolder {
             meta.lore(traitline.getDescription());
             item.setItemMeta(meta);
             int slot = LOWER_BAR_START + (traitLineIndex * SPACE_BETWEEN_TRAITLINES);
-            inventory.setItem(slot, item);
+            topInventory.setItem(slot, item);
             traitlines[slot] = traitline;
             traitLineIndex++;
         }
@@ -108,7 +130,7 @@ public class TraitMenu implements Listener, InventoryHolder {
                 continue;
             }
             TraitLineEntry entry = selectedTraitline.getTraitLineEntries(level).get(row);
-            inventory.setItem(slot, getItemAt(selectedTraitline, level, row, player.hasTrait(entry.data())));
+            bottomInventory.setItem(slot, getItemAt(selectedTraitline, level, row, player.hasTrait(entry.data())));
             entries[slot] = entry;
             slot+= SPACE_BETWEEN_TRAITLINE_ENTRIES;
             row++;
@@ -117,12 +139,15 @@ public class TraitMenu implements Listener, InventoryHolder {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getInventory().getHolder() != this) {
+        if (event.getInventory().getHolder() != this || event.getView() != player.getPlayer().getOpenInventory()) {
             return;
         }
         event.setCancelled(true);
         event.setCursor(null);
         int slot = event.getSlot();
+        if (slot < 0 || slot > 54) {
+            return;
+        }
         if (traitlines[slot] != null) {
             selectedTraitline = traitlines[slot];
             displayName = selectedTraitline.getDisplayName();
@@ -146,15 +171,28 @@ public class TraitMenu implements Listener, InventoryHolder {
         }
     }
 
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (event.getInventory().getHolder() != this) {
+            return;
+        }
+        player.loadInventory().thenAccept(bool -> {
+            if (!bool) {
+                // At least tell the player that we fucked up
+                MessageUtil.sendMessage(player.getPlayer(), "<red>There was an error while loading your inventory. Please report this issue.");
+            }
+        });
+    }
+
     private void updateTitle() {
         CraftPlayer craftPlayer = (CraftPlayer) player.getPlayer();
         ServerPlayer serverPlayer = craftPlayer.getHandle();
-        ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(serverPlayer.containerMenu.containerId, MenuType.GENERIC_9x6, PaperAdventure.asVanilla(displayName));
+        ClientboundOpenScreenPacket packet = new ClientboundOpenScreenPacket(serverPlayer.containerMenu.containerId, MenuType.GENERIC_9x1, PaperAdventure.asVanilla(displayName));
         serverPlayer.connection.send(packet);
     }
 
     @Override
     public @NotNull Inventory getInventory() {
-        return inventory;
+        return topInventory;
     }
 }

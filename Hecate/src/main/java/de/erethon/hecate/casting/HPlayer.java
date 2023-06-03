@@ -94,8 +94,8 @@ public class HPlayer extends EConfig implements LoadableUser {
     }
 
     public void switchMode(CombatModeReason reason) {
+        PlayerInventory inventory = player.getInventory();
         if (!isInCastmode) {
-            PlayerInventory inventory = player.getInventory();
             hotbarSlot = inventory.getHeldItemSlot();
             inventory.setHeldItemSlot(0);
             // Cooldowns are per material for some reason.
@@ -115,7 +115,6 @@ public class HPlayer extends EConfig implements LoadableUser {
             CombatModeEnterEvent event = new CombatModeEnterEvent(player, this, reason);
             Bukkit.getPluginManager().callEvent(event);
         } else {
-            PlayerInventory inventory = player.getInventory();
             inventory.setHeldItemSlot(hotbarSlot);
             isInCastmode = false;
             for (TraitData trait : combatOnlyTraits) {

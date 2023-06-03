@@ -77,7 +77,13 @@ public class PlayerCastListener implements Listener {
             if (!hPlayer.isInCastmode()) {
                 hPlayer.saveInventory().thenAccept(bool -> {
                     if (bool) {
-                        hPlayer.switchMode(CombatModeReason.HOTKEY);
+                        BukkitRunnable runnable = new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                hPlayer.switchMode(CombatModeReason.HOTKEY);
+                            }
+                        };
+                        runnable.runTask(Hecate.getInstance());
                     } else {
                         MessageUtil.sendMessage(event.getPlayer(), "&cThere was an error while saving your inventory. Please report this issue.");
                     }
@@ -86,7 +92,13 @@ public class PlayerCastListener implements Listener {
             }
             hPlayer.loadInventory().thenAccept(bool -> {
                 if (bool) {
-                    hPlayer.switchMode(CombatModeReason.HOTKEY);
+                    BukkitRunnable runnable = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            hPlayer.switchMode(CombatModeReason.HOTKEY);
+                        }
+                    };
+                    runnable.runTask(Hecate.getInstance());
                 } else {
                     MessageUtil.sendMessage(event.getPlayer(), "&cThere was an error while loading your inventory. Please report this issue.");
                 }
@@ -198,9 +210,7 @@ public class PlayerCastListener implements Listener {
         if (config.getBoolean("active")) {
             HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(player);
             hPlayer.loadInventory().thenAccept(bool -> {
-                if (bool) {
-                    // Nothing to do here
-                } else {
+                if (!bool) {
                     MessageUtil.sendMessage(player, "&cThere was an error while loading your inventory. Please report this issue.");
                 }
             });
