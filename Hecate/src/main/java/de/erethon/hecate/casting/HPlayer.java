@@ -244,6 +244,7 @@ public class HPlayer extends EConfig implements LoadableUser {
                 }
                 player.getInventory().setContents(newInventory);
                 config.set("active", false);
+                config.save(file);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
