@@ -1,0 +1,4 @@
+class: warrior.HeavyWarrior
+damageReduction: 0.9
+radius: 2
+damage: 10

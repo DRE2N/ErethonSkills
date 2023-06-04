@@ -1,0 +1,5 @@
+class: warrior.MightyBlow
+cooldown: 60
+rangeMultiplier: 2
+radius: 3
+pushStrength: 2

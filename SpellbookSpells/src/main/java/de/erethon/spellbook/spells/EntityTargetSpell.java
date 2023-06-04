@@ -18,7 +18,7 @@ public abstract class EntityTargetSpell extends SpellbookSpell {
 
     @Override
     public boolean onPrecast() {
-        Entity target = caster.getTargetEntity(120);
+        Entity target = caster.getTargetEntity(maxDistance + 1);
         if (target instanceof LivingEntity livingEntity) {
             if (!Spellbook.canAttack(caster, livingEntity)) {
                 caster.sendParsedActionBar("<color:#ff0000>Du kannst dieses Ziel nicht angreifen!");

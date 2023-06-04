@@ -1,0 +1,10 @@
+class: warrior.Headbutt
+cooldown: 30
+maxDistance: 16
+stunDuration: 60
+distanceToTarget: 1.5
+coefficients:
+  players:
+    adv_physical: 2
+  entities:
+    adv_physical: 2
