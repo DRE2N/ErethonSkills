@@ -1,6 +1,7 @@
 package de.erethon.spellbook;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.teams.TeamManager;
 import de.erethon.spellbook.utils.PetLookup;
@@ -16,7 +17,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class Spellbook {
 
@@ -32,6 +36,8 @@ public class Spellbook {
 
     private static final Random random = new Random();
 
+    private final Set<EffectData> ccEffects = new HashSet<>();
+
     /**
      * Damage is divided by this value, and the result is the maximum variance.
      * Used to make damage values slightly less predictable.
@@ -45,6 +51,9 @@ public class Spellbook {
         effectManager = new EffectManager(implementer);
         teamManager = new TeamManager();
         petLookup = new PetLookup();
+        ccEffects.add(api.getLibrary().getEffectByID("Stun"));
+        ccEffects.add(api.getLibrary().getEffectByID("Fear"));
+        ccEffects.add(api.getLibrary().getEffectByID("Slow"));
     }
 
     public Plugin getImplementer() {
@@ -69,6 +78,10 @@ public class Spellbook {
 
     public PetLookup getPetLookup() {
         return petLookup;
+    }
+
+    public Set<EffectData> getCCEffects() {
+        return ccEffects;
     }
 
     public void setDebug(boolean debug) {
@@ -148,6 +161,7 @@ public class Spellbook {
      */
     public static double getVariedDamage(double damage, LivingEntity entity, boolean canCrit) {
         double maxVariance = damage / VARIANCE;
+        MessageUtil.log("Max variance: " + maxVariance + " | Damage: " + damage);
         double variance = -maxVariance + random.nextDouble(maxVariance * 2);
         damage += variance;
         if (canCrit) {

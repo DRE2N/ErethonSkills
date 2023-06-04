@@ -59,6 +59,8 @@ public class HCharacter {
         this.hPlayer = hPlayer;
         this.player = hPlayer.getPlayer();
         this.characterID = characterID;
+        player.setMaxEnergy(maxEnergy);
+        player.setEnergy(energy);
     }
 
     public void levelUp(double overflowXp) {
