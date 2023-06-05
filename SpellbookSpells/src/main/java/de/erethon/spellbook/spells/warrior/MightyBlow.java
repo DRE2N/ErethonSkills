@@ -27,7 +27,6 @@ public class MightyBlow extends SpellbookSpell {
         inFront.setY(location.getY());
         caster.playSound(Sound.sound(org.bukkit.Sound.ITEM_FIRECHARGE_USE, Sound.Source.RECORD, 1, 1));
         inFront.toLocation(caster.getWorld()).getNearbyLivingEntities(radius).forEach(entity -> {
-            caster.sendParsedMessage("Entity: " + entity.getName());
             if (entity == caster) return;
             if (!Spellbook.canAttack(caster, entity)) return;
             entity.setVelocity(location.getDirection().multiply(pushStrength));
