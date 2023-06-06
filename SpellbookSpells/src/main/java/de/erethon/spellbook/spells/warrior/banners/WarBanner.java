@@ -16,7 +16,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 
 public class WarBanner extends SpellbookSpell {
-    private ItemStack itemStack;
+    private final ItemStack itemStack;
     private ItemDisplay banner;
     protected Wolf bannerHolder;
     public int radius = data.getInt("radius", 5);

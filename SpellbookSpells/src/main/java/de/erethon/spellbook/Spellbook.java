@@ -17,7 +17,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -80,10 +79,16 @@ public class Spellbook {
         return petLookup;
     }
 
+    /**
+     * @return a Set of all EffectData for effects that are considered crowd control effects
+     */
     public Set<EffectData> getCCEffects() {
         return ccEffects;
     }
 
+    /** Toggles debug mode. In debug mode, teams are ignored and additional debug messages are printed to the console.
+     * @param debug whether to enable debug mode
+     */
     public void setDebug(boolean debug) {
         this.DEBUG = debug;
     }
