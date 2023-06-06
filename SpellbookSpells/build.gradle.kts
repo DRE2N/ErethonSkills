@@ -24,7 +24,7 @@ repositories {
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", "1.19.4-R0.1-SNAPSHOT") { isChanging = true }
     implementation("com.elmakers.mine.bukkit:EffectLib:9.4")
-    compileOnly("de.erethon:bedrock:1.2.4")
+    compileOnly("de.erethon:bedrock:1.2.5")
 }
 
 tasks {

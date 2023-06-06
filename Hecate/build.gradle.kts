@@ -35,7 +35,7 @@ val papyrusVersion = "1.19.4-R0.1-SNAPSHOT"
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true}
     //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
-    implementation("de.erethon:bedrock:1.2.4") { isTransitive = false }
+    implementation("de.erethon:bedrock:1.2.5") { isTransitive = false }
     implementation(project(":SpellbookSpells"))
     //compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
 }
@@ -64,7 +64,7 @@ tasks {
 
     shadowJar {
         dependencies {
-            include(dependency("de.erethon:bedrock:1.2.4"))
+            include(dependency("de.erethon:bedrock:1.2.5"))
             include(project(":SpellbookSpells"))
             include(dependency("com.elmakers.mine.bukkit:EffectLib:9.4"))
         }
