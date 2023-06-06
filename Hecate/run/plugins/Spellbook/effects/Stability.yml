@@ -1,0 +1,6 @@
+class: StabilityEffect
+icon: S
+maxStacks: 15
+maxDuration: 120
+positive: true
+stackMode: intensify
