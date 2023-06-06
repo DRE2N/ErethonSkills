@@ -1,0 +1,6 @@
+class: BreakEffect
+icon: B
+maxStacks: 1
+maxDuration: 120
+positive: false
+stackMode: prolong
