@@ -158,6 +158,10 @@ public class RangerPet extends Wolf {
         return isCurrentlyGoingToLocation;
     }
 
+    public Location getLocation() {
+        return bukkitMob.getLocation();
+    }
+
     public void setShouldAttackAutomatically(boolean shouldAttackAutomatically) {
         this.shouldAttackAutomatically = shouldAttackAutomatically;
     }

@@ -1,0 +1,3 @@
+class: ranger.ExplosiveArrow
+manaCost: 0
+explosionPower: 2.0
