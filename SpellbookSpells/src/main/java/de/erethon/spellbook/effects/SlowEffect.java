@@ -4,6 +4,7 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 
 /**
@@ -12,6 +13,7 @@ import org.bukkit.entity.LivingEntity;
 public class SlowEffect extends SpellEffect {
 
     AttributeInstance instance;
+    AttributeModifier modifier;
     double strength;
 
     public SlowEffect(EffectData data, LivingEntity caster, LivingEntity target, int duration, int stacks) {
@@ -22,11 +24,12 @@ public class SlowEffect extends SpellEffect {
 
     @Override
     public void onApply() {
-        instance.setBaseValue(instance.getBaseValue() * (1 - strength));
+        modifier = new org.bukkit.attribute.AttributeModifier("slow", -strength, org.bukkit.attribute.AttributeModifier.Operation.MULTIPLY_SCALAR_1);
+        instance.addTransientModifier(modifier);
     }
 
     @Override
     public void onRemove() {
-        instance.setBaseValue(instance.getBaseValue() * (1 + strength));
+        instance.removeModifier(modifier);
     }
 }
