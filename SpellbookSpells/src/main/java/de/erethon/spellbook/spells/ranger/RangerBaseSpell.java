@@ -26,4 +26,10 @@ public class RangerBaseSpell extends SpellbookSpell {
         }
         return canCast;
     }
+
+    @Override
+    protected boolean onCast() {
+        caster.getUsedSpells().put(data, System.currentTimeMillis());
+        return super.onCast();
+    }
 }
