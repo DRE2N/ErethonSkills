@@ -45,6 +45,8 @@ public class ProjectileRelatedSkill extends RangerBaseSpell implements Listener 
     @EventHandler
     public void onHitEvent(ProjectileHitEvent event) {
         if (event.getEntity().getShooter() != caster) return;
+        if (!(event.getEntity() instanceof LivingEntity living)) return;
+        if (!Spellbook.canAttack(living, caster)) return;
         onHit(event);
         if (shouldEndWhenProjectileHits && (arrowsHit >= affectedArrows)) cleanup();
         arrowsHit++;
@@ -56,7 +58,9 @@ public class ProjectileRelatedSkill extends RangerBaseSpell implements Listener 
     @EventHandler
     public void onDamageEvent(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Projectile projectile)) return;
+        if (!(event.getEntity() instanceof LivingEntity living)) return;
         if (projectile.getShooter() != caster) return;
+        if (!Spellbook.canAttack(living, caster)) return;
         onDamage(event, projectile);
     }
 
