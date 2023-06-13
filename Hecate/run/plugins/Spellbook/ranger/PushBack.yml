@@ -1,0 +1,3 @@
+class: ranger.PushBack
+pushMultiplier: 2.0
+radius: 2

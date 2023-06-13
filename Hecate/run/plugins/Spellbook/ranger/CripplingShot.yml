@@ -1,0 +1,4 @@
+class: ranger.CripplingShot
+effectDuration: 20
+effectStacks: 1
+projectileSpeed: 2
