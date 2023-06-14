@@ -18,8 +18,6 @@ public class CripplingShot extends ProjectileRelatedSkill {
     private final int projectileSpeed = data.getInt("projectileSpeed", 2);
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
 
-    private LivingEntity target;
-
     public CripplingShot(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         trailColor = Color.BLACK;

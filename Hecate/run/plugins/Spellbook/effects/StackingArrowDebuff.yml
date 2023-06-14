@@ -1,4 +1,4 @@
-class: archer.StackingArrowDebuff
+class: ranger.StackingArrowDebuff
 maxStacks: 10
 maxDuration: 600
 isPositive: false

@@ -1,4 +1,4 @@
-package de.erethon.spellbook.effects.archer;
+package de.erethon.spellbook.effects.ranger;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.EffectData;

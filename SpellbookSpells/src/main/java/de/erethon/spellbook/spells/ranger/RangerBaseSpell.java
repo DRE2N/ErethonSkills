@@ -37,11 +37,11 @@ public class RangerBaseSpell extends SpellbookSpell {
     protected boolean lookForTarget() {
         Entity target = caster.getTargetEntity(32);
         if (target == null) {
-            caster.sendParsedMessage("<color:#ff0000>Kein gültiges Ziel!");
+            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
         }
         if (!(target instanceof LivingEntity)) {
-            caster.sendParsedMessage("<color:#ff0000>Kein gültiges Ziel!");
+            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
         }
         this.target = (LivingEntity) target;

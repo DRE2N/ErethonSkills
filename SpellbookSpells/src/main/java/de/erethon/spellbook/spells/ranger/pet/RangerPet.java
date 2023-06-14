@@ -28,8 +28,8 @@ import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_19_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R1.entity.CraftLivingEntity;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -77,7 +77,7 @@ public class RangerPet extends Wolf {
         statusDisplay = world.spawn(bukkitOwner.getLocation(), TextDisplay.class, display -> {
             display.setTransformation(petStatusTextTransformation);
             display.text(Component.empty());
-            display.setAlignment(TextDisplay.TextAligment.CENTER);
+            display.setAlignment(TextDisplay.TextAlignment.CENTER);
             display.setBillboard(Display.Billboard.VERTICAL);
             display.getPersistentDataContainer().set(PET_STATUS_KEY, PersistentDataType.BYTE, (byte) 1);
             display.setBackgroundColor(Color.fromARGB(0, 1, 1, 1));
@@ -141,7 +141,7 @@ public class RangerPet extends Wolf {
     }
 
     public void addToWorld() {
-        level.addFreshEntity(this);
+        level().addFreshEntity(this);
         bukkitMob.addPassenger(statusDisplay);
     }
 
