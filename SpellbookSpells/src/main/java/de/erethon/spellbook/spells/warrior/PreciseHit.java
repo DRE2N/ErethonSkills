@@ -2,14 +2,12 @@ package de.erethon.spellbook.spells.warrior;
 
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.entity.LivingEntity;
 
 public class PreciseHit extends SpellbookSpell {
-
-    private int duration = 400;
-    private int BonusDamage = 10;
+    protected int duration = 400;
+    protected int BonusDamage = 10;
 
     public PreciseHit(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -25,6 +23,7 @@ public class PreciseHit extends SpellbookSpell {
         super.onTickFinish();
     }
 }
+
 
 
 
