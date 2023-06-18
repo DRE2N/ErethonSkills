@@ -1,0 +1,10 @@
+class: ranger.RicochetArrow
+ricochetRange: 7
+maxRicochets: 8
+damageReductionPerRicochet: 1
+projectileSpeed: 1.5
+coefficients:
+  players:
+    adv_magic: 1
+  entities:
+    adv_magic: 1
