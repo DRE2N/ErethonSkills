@@ -1,0 +1,3 @@
+class: ranger.CripplingHit
+radius: 3
+nauseaDuration: 20

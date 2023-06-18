@@ -1,5 +1,5 @@
 class: warrior.StunOnSmash
-name: StunOnSmash
-description: "StunOnSmash"
 affectedSpells:
   - HammerSMASH
+name: StunOnSmash
+description: "StunOnSmash"

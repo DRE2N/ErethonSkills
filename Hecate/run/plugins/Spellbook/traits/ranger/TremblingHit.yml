@@ -1,0 +1,5 @@
+class: ranger.TremblingHit
+affectedSpells:
+  - CripplingHit
+radius: 3
+stunDuration: 20
