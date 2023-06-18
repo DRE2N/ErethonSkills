@@ -33,7 +33,7 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
 
     @Override
     protected boolean onPrecast() {
-        return lookForTarget();
+        return lookForTarget(true);
     }
 
     @Override

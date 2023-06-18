@@ -35,12 +35,20 @@ public class RangerBaseSpell extends SpellbookSpell {
     }
 
     protected boolean lookForTarget() {
+        return lookForTarget(false);
+    }
+
+    protected boolean lookForTarget(boolean enemyOnly) {
         Entity target = caster.getTargetEntity(32);
         if (target == null) {
             caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
         }
         if (!(target instanceof LivingEntity)) {
+            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
+            return false;
+        }
+        if (!Spellbook.canAttack(caster, (LivingEntity) target) && enemyOnly) {
             caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
         }

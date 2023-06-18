@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -19,7 +20,11 @@ public class PushBack extends RangerBaseSpell {
         Vector inFront = caster.getLocation().getDirection().multiply(2);
         Vector pushVector = inFront.multiply(pushMultiplier);
         Location target = caster.getLocation().add(inFront);
-        target.getNearbyLivingEntities(radius).forEach(entity -> entity.setVelocity(pushVector));
+        for (LivingEntity entity : target.getNearbyLivingEntities(radius)) {
+            if (entity == caster) continue;
+            if (!Spellbook.canAttack(caster, entity)) continue;
+            entity.setVelocity(pushVector);
+        }
         return super.onCast();
     }
 }

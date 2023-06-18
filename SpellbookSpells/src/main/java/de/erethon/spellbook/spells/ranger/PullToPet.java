@@ -28,6 +28,7 @@ public class PullToPet extends RangerPetBaseSpell {
         effect.setLocation(loc);
         for (LivingEntity entity : loc.getNearbyLivingEntities(range)) {
             if (entity == caster) continue;
+            if (!Spellbook.canAttack(caster, entity)) continue;
             entity.setVelocity(loc.toVector().subtract(entity.getLocation().toVector()).multiply(pullStrength));
             entity.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, Sound.Source.PLAYER, 1, 1));
         }

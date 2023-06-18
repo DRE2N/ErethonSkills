@@ -25,7 +25,7 @@ public class CripplingShot extends ProjectileRelatedSkill {
 
     @Override
     protected boolean onPrecast() {
-        if (!lookForTarget()) {
+        if (!lookForTarget(true)) {
             return false;
         }
         return super.onPrecast();

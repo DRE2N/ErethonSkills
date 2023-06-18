@@ -16,7 +16,7 @@ public class MarkOfTheHunted extends RangerBaseSpell {
 
     @Override
     protected boolean onPrecast() {
-        if (!lookForTarget()) {
+        if (!lookForTarget(true)) {
             return false;
         }
         return super.onPrecast();

@@ -3,11 +3,12 @@ package de.erethon.spellbook.spells.ranger.pet;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.spells.ranger.RangerBaseSpell;
 import de.erethon.spellbook.utils.RangerUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class PetMakeAttack extends SpellbookSpell {
+public class PetMakeAttack extends RangerBaseSpell {
 
     private final int range = data.getInt("range", 32);
     private LivingEntity target;
@@ -19,12 +20,7 @@ public class PetMakeAttack extends SpellbookSpell {
     @Override
     protected boolean onPrecast() {
         if (!RangerUtils.hasPet(caster)) return false;
-        Entity targetEntity = caster.getTargetEntity(range);
-        if (!(targetEntity instanceof LivingEntity living)) {
-            return false;
-        }
-        target = living;
-        return true;
+        return lookForTarget(true);
     }
 
     @Override
