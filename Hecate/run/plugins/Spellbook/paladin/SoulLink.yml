@@ -1,0 +1,3 @@
+class: paladin.SoulLink
+duration: 600
+damagePercentage: 0.25
