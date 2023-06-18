@@ -1,0 +1,6 @@
+class: ranger.FarShot
+coefficients:
+  players:
+    adv_magic: 0.1
+  entities:
+    adv_magic: 0.1
