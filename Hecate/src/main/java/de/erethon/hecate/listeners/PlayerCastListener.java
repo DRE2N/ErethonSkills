@@ -7,7 +7,9 @@ import de.erethon.hecate.casting.HPlayer;
 import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.CharacterSelection;
+import de.erethon.hecate.ui.DamageColor;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
+import de.erethon.papyrus.DamageType;
 import de.erethon.papyrus.PlayerSwitchProfileEvent;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.pet.RangerPet;
@@ -116,12 +118,11 @@ public class PlayerCastListener implements Listener {
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player player && event.getEntity() instanceof LivingEntity entity) {
-            addDisplayDamage(player, entity, event.getDamage());
+            addDisplayDamage(player, entity, event.getDamage(), event.getDamageType());
         }
-        // TODO: Move event in Papyrus, currently showing damage without penetration
     }
 
-    private void addDisplayDamage(Player player, LivingEntity entity, double damage) {
+    private void addDisplayDamage(Player player, LivingEntity entity, double damage, DamageType type) {
         double rounded = Math.round(damage * 100.0) / 100.0;
         TextDisplay display = entity.getWorld().spawn(entity.getLocation().add(0, 0,0), TextDisplay.class, textDisplay -> {
             for (Player p : textDisplay.getTrackedPlayers()) { // TODO: Dmg numbers for party member would be cool
@@ -131,7 +132,7 @@ public class PlayerCastListener implements Listener {
             entity.addPassenger(textDisplay);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
-            textDisplay.text(Component.text("-" + rounded + "❤").color(NamedTextColor.RED));
+            textDisplay.text(Component.text("-" + rounded + "❤").color(DamageColor.getColorForDamageType(type)));
         });
         displays.put(display, System.currentTimeMillis());
         updateTransforms(entity);
