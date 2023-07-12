@@ -1,0 +1,6 @@
+class: ranger.BetterBasicHeal
+affectedSpells:
+  - BasicSelfHeal
+range: 3
+allieBaseHeal: 25
+selfHealPerAlly: 5

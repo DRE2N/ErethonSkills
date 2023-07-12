@@ -1,0 +1,4 @@
+class: ranger.GlowingRevelation
+affectedSpells:
+  - RevealEnemies
+glowingDuration: 100

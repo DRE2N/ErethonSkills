@@ -1,0 +1,4 @@
+class: ranger.DamagingRevelation
+affectedSpells:
+  - RevealEnemies
+effectDuration: 100

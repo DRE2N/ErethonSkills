@@ -1,0 +1,6 @@
+class: ranger.ArrowExpert
+affectedSpells:
+  - FireArrow
+  - PoisonArrow
+bonusDuration: 40
+bonusStacks: 0

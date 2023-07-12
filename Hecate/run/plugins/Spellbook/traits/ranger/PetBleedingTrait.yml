@@ -1,0 +1,4 @@
+class: ranger.PetBleedingTrait
+attacksToBleed: 3
+duration: 100
+stacks: 1

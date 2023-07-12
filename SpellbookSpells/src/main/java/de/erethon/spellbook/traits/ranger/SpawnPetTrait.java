@@ -5,6 +5,7 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.events.PetDeathEvent;
+import de.erethon.spellbook.events.PetSpawnEvent;
 import de.erethon.spellbook.spells.ranger.pet.RangerPet;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
@@ -36,6 +37,8 @@ public class SpawnPetTrait extends SpellTrait implements Listener {
         pet.setScaledAttributes(attributeModifier);
         pet.addToWorld();
         Spellbook.getInstance().getPetLookup().add(caster, pet);
+        PetSpawnEvent event = new PetSpawnEvent(pet);
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     @Override

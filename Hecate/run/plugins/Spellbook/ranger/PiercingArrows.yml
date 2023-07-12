@@ -1,0 +1,8 @@
+class: ranger.PiercingArrows
+duration: 100
+range: 3
+coefficients:
+  players:
+    adv_physical: 0.6
+  entities:
+    adv_physical: 0.6

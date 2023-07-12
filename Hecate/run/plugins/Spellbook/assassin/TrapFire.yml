@@ -1,9 +1,9 @@
 class: assassin.TrapFire
-energyCost: 30
+energyCost: 0
 size: 2
 maxDistance: 16
 customItemDataFriendly: 16
 customItemDataEnemy: 17
-duration: 20
+duration: 200
 effectDuration: 5
 effectStacks: 1

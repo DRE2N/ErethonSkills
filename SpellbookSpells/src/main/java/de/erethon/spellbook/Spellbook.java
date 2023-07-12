@@ -225,6 +225,10 @@ public class Spellbook {
             return Color.fromRGB(Integer.parseInt(input));
         }
     }
+
+    public static EffectData getEffectData(String id) {
+        return getInstance().getAPI().getLibrary().getEffectByID(id);
+    }
 }
 
 

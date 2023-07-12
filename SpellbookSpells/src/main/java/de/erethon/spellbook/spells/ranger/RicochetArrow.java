@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.papyrus.DamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.utils.RangerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.AbstractArrow;
@@ -39,7 +40,7 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
     @Override
     protected boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
-        initialProjectile = sendProjectile(caster, target);
+        initialProjectile = RangerUtils.sendProjectile(caster, target, caster,  projectileSpeed, Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC), DamageType.MAGIC);
         return true;
     }
 
@@ -55,7 +56,8 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
             if (ricochets >= maxRicochets) {
                 return;
             }
-            sendProjectile((LivingEntity) event.getHitEntity(), living);
+            RangerUtils.sendProjectile((LivingEntity) event.getHitEntity(), living, caster,  projectileSpeed,
+                    Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC) - (ricochets * damageReductionPerRicochet) , DamageType.MAGIC);
             ricochets++;
         }
     }
@@ -65,17 +67,4 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
         HandlerList.unregisterAll(this);
     }
 
-    private AbstractArrow sendProjectile(LivingEntity start, LivingEntity target) {
-        Vector from = start.getLocation().toVector();
-        Vector to = target.getLocation().toVector();
-        Vector direction = to.subtract(from);
-        direction = direction.normalize();
-        direction.multiply(projectileSpeed);
-        AbstractArrow proj = start.launchProjectile(Arrow.class, direction);
-        //proj.setGravity(false);
-        proj.setShooter(caster);
-        proj.setDamageType(DamageType.MAGIC);
-        proj.setDamage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC) - (ricochets * damageReductionPerRicochet));
-        return proj;
-    }
 }

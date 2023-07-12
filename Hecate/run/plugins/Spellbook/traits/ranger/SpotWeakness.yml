@@ -1,0 +1,5 @@
+class: ranger.SpotWeakness
+affectedSpells:
+  - MarkOfTheHunted
+duration: 100
+stacks: 1

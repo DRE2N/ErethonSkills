@@ -2,6 +2,7 @@ package de.erethon.spellbook.spells.ranger.pet;
 
 import de.erethon.papyrus.CraftDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.events.PetAttackEvent;
 import de.erethon.spellbook.events.PetDeathEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -170,6 +171,10 @@ public class RangerPet extends Wolf {
         isCurrentlyGoingToLocation = currentlyGoingToLocation;
     }
 
+    public org.bukkit.entity.LivingEntity getBukkitOwner() {
+        return (org.bukkit.entity.LivingEntity) owner.getBukkitEntity();
+    }
+
     // Overrides
 
 
@@ -177,6 +182,8 @@ public class RangerPet extends Wolf {
     public boolean doHurtTarget(Entity target) {
         bukkitMob.getWorld().spawnParticle(Particle.REDSTONE, new Location(bukkitMob.getWorld(), target.getX(), target.getY() + 0.5, target.getZ()), 4,
                 new Particle.DustOptions(Color.fromRGB(40, 180, 60), 1));
+        PetAttackEvent event = new PetAttackEvent(this, (org.bukkit.entity.LivingEntity) target.getBukkitEntity());
+        Bukkit.getPluginManager().callEvent(event);
         return super.doHurtTarget(target);
     }
 

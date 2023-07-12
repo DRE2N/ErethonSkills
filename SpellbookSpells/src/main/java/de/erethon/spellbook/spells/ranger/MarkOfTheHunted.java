@@ -5,6 +5,8 @@ import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.Collections;
+
 public class MarkOfTheHunted extends RangerBaseSpell {
 
     private final int effectDuration = data.getInt("effectDuration", 300);
@@ -25,6 +27,7 @@ public class MarkOfTheHunted extends RangerBaseSpell {
     @Override
     protected boolean onCast() {
         target.addEffect(caster, effectData, effectDuration, 1);
+        triggerTraits(Collections.singleton(target));
         return super.onCast();
     }
 }

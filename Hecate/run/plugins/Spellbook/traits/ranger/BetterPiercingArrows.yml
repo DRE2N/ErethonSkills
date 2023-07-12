@@ -1,0 +1,7 @@
+class: ranger.BetterPiercingArrows
+affectedSpells:
+  - PiercingArrows
+bonusDamage: 5
+bleedingDuration: 40
+bleedingStacks: 1
+bonusCooldown: 5

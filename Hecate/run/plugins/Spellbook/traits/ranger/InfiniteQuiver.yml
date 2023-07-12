@@ -1,0 +1,3 @@
+class: ranger.InfiniteQuiver
+cooldownReduction: 5
+reductionChance: 0.2

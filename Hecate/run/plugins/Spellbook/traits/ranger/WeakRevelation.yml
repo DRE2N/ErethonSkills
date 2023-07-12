@@ -1,0 +1,5 @@
+class: ranger.WeakRevelation
+affectedSpells:
+  - RevealEnemies
+weaknessDuration: 100
+weaknessStacks: 1

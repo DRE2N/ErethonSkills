@@ -22,7 +22,7 @@ public class ExplosiveArrow extends ProjectileRelatedSkill {
     }
 
     @Override
-    protected void onHit(ProjectileHitEvent event) {
+    protected void onHit(ProjectileHitEvent event, LivingEntity living) {
         if (event.getHitEntity() != null) {
             event.getHitEntity().getLocation().createExplosion(explosionPower, false, false);
             return;

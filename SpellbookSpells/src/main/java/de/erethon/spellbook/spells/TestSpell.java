@@ -1,23 +1,25 @@
 package de.erethon.spellbook.spells;
 
+import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.utils.NMSUtils;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.minecraft.network.chat.Component;
-import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 
-public class TestSpell extends SpellbookSpell {
+public class TestSpell extends SpellbookSpell implements Listener {
 
     public TestSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
+        keepAliveTicks = 2000;
+        Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
+
     }
 
     @Override
@@ -27,15 +29,17 @@ public class TestSpell extends SpellbookSpell {
 
     @Override
     protected boolean onCast() {
-        ArmorStand armorstand = caster.getWorld().spawn(caster.getLocation(), ArmorStand.class);
-        armorstand.customName(MiniMessage.miniMessage().deserialize("<lang:block.minecraft.diamond_block>"));
-        armorstand.setCustomNameVisible(true);
         return true;
     }
 
     @Override
     protected void onAfterCast() {
         caster.setCooldown(data);
+    }
+
+    @EventHandler
+    public void onJump(PlayerJumpEvent event) {
+        event.getPlayer().showTitle(Title.title(net.kyori.adventure.text.Component.empty(), Component.text("JUMP", NamedTextColor.GREEN)));
     }
 
 

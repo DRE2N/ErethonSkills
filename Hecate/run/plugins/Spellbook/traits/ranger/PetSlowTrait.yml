@@ -1,0 +1,4 @@
+class: ranger.PetSlowTrait
+attacksToSlow: 3
+duration: 100
+stacks: 1

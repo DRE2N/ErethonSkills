@@ -1,0 +1,8 @@
+class: ranger.BasicSelfHeal
+duration: 40
+baseHeal: 100
+coefficients:
+  players:
+    stat_healingpower: 1.2
+  entities:
+    stat_healingpower: 1.2

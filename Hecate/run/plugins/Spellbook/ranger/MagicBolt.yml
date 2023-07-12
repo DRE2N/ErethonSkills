@@ -1,0 +1,8 @@
+class: ranger.MagicBolt
+range: 32
+maxTargets: 3
+coefficients:
+  players:
+    adv_magic: 2.0
+  entities:
+    adv_magic: 2.0

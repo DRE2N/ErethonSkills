@@ -15,6 +15,7 @@ public class PreciseHit extends SpellbookSpell {
     }
     @Override
     public double onAttack(LivingEntity target, double damage, DamageType type) {
+        keepAliveTicks = 0;
         interrupt();
         return damage + BonusDamage;
     }

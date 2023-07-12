@@ -1,5 +1,5 @@
 class: assassin.TrapPoison
-energyCost: 30
+energyCost: 10
 size: 2
 maxDistance: 16
 customItemDataFriendly: 20
