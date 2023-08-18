@@ -1,5 +1,7 @@
 package de.erethon.hecate.ui;
 
+import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.hecate.Hecate;
 import de.erethon.spellbook.api.SpellEffect;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -8,6 +10,7 @@ import org.bukkit.entity.Display;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
@@ -67,6 +70,13 @@ public class EntityStatusDisplay {
     }
 
     public void updateStatusDisplay() {
+        if (holder.getEffects().isEmpty()) {
+            statusDisplay.text(Component.empty());
+            return;
+        }
+        if (holder.isChanneling()) {
+            return;
+        }
         List<SpellEffect> positiveEffects = holder.getEffects().stream().filter(effect -> effect.data.isPositive()).toList();
         List<SpellEffect> negativeEffects = holder.getEffects().stream().filter(effect -> !effect.data.isPositive()).toList();
         StringBuilder positiveString = new StringBuilder();
@@ -93,9 +103,27 @@ public class EntityStatusDisplay {
         statusDisplay.text(positives.append(spacer).append(negatives));
     }
 
+    public void showText(Component component, int duration) {
+        statusDisplay.text(component);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                updateStatusDisplay();
+            }
+        }.runTaskLater(Hecate.getInstance(), duration);
+    }
+
     public Component getHealth(double currentHealth, double maxHealth) {
         double healthPercentage = currentHealth / maxHealth;
         return PrecomputedHealthDisplay.getComponentAt(healthPercentage);
+    }
+
+    public void updateChannelProgress(int current, int max) {
+        if (!holder.isChanneling()) {
+            return;
+        }
+        Component channelText = PrecomputedChannelDisplay.getComponentAt(current, max);
+        statusDisplay.text(channelText);
     }
 
     public void remove() {
