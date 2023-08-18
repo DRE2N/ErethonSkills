@@ -2,6 +2,7 @@ package de.erethon.spellbook.spells;
 
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.slikey.effectlib.effect.CircleEffect;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -16,7 +17,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
@@ -37,21 +40,27 @@ import java.util.Set;
 public class AoEBaseSpell extends SpellbookSpell {
 
     protected Location target = null;
+    protected boolean packet = false;
+    protected Color circleColor = Color.WHITE;
     CraftServer server = (CraftServer) caster.getServer();
     private final int maxDistance;
     private final boolean self;
-    private final double size;
-    private final int customItemDataFriendly;
-    private final int customItemDataEnemy;
+    protected final double size;
+    private int customItemDataFriendly;
+    private int customItemDataEnemy;
 
     private List<Integer> entityIDs = new ArrayList<>();
 
     protected Set<LivingEntity> entities = new HashSet<>();
 
+    private CircleEffect circleEffect;
+
     public AoEBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        customItemDataFriendly = spellData.getInt("customItemDataFriendly", 2);
-        customItemDataEnemy = spellData.getInt("customItemDataEnemy", 1);
+        if (packet) {
+            customItemDataFriendly = spellData.getInt("customItemDataFriendly", 2);
+            customItemDataEnemy = spellData.getInt("customItemDataEnemy", 1);
+        }
         maxDistance = spellData.getInt("maxDistance", 32);
         size = spellData.getDouble("size", 2);
         this.self = false;
@@ -59,8 +68,10 @@ public class AoEBaseSpell extends SpellbookSpell {
 
     public AoEBaseSpell(LivingEntity caster, SpellData spellData, boolean self) {
         super(caster, spellData);
-        customItemDataFriendly = spellData.getInt("customItemDataFriendly", 2);
-        customItemDataEnemy = spellData.getInt("customItemDataEnemy", 1);
+        if (packet) {
+            customItemDataFriendly = spellData.getInt("customItemDataFriendly", 2);
+            customItemDataEnemy = spellData.getInt("customItemDataEnemy", 1);
+        }
         maxDistance = 120;
         this.self = self;
         size = spellData.getDouble("size", 2);
@@ -88,16 +99,22 @@ public class AoEBaseSpell extends SpellbookSpell {
 
     @Override
     protected boolean onCast() {
-        Scoreboard scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         BlockPos pos = new BlockPos((int) target.getX(), (int) target.getY(), (int) target.getZ());
-
+        if (packet) {
            /* for (OfflinePlayer player : team.getPlayers()) {
                 sendPackets((Player) player, customItemDataFriendly, pos);
             }*/
             for (Player player : Bukkit.getOnlinePlayers()) {
                 sendPackets(player, customItemDataEnemy, pos);
             }
-
+        }
+        circleEffect.particle = Particle.REDSTONE;
+        circleEffect.color = circleColor;
+        circleEffect.radius = (float) size;
+        circleEffect.iterations = 1;
+        circleEffect.setLocation(target);
+        circleEffect.duration = keepAliveTicks * 50;
+        circleEffect.start();
         return true;
     }
 
@@ -134,14 +151,17 @@ public class AoEBaseSpell extends SpellbookSpell {
 
     @Override
     protected void cleanup() {
-        for (ServerPlayer player : server.getServer().getPlayerList().players) {
-            for (int entityID : entityIDs) {
-                player.connection.send(new ClientboundRemoveEntitiesPacket(entityID));
+        if (packet) {
+            for (ServerPlayer player : server.getServer().getPlayerList().players) {
+                for (int entityID : entityIDs) {
+                    player.connection.send(new ClientboundRemoveEntitiesPacket(entityID));
+                }
             }
         }
         for (LivingEntity nearbyEntity : entities) {
             onLeave(nearbyEntity);
         }
+        circleEffect.cancel();
     }
 
     private void sendPackets(Player player, int id, BlockPos pos) {
