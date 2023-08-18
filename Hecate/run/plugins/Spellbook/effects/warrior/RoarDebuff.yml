@@ -1,0 +1,4 @@
+class: warrior.RoarDebuff
+maxStacks: 1
+maxDuration: 40
+isPositive: false
