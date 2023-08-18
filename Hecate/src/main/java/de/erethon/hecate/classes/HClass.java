@@ -79,18 +79,18 @@ public class HClass extends YamlConfiguration {
             for (String key : specialActionSection.getKeys(false)) {
                 ConfigurationSection actionSection = specialActionSection.getConfigurationSection(key);
                 if (actionSection == null) {
-                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getName());
+                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getId());
                     continue;
                 }
                 SpecialActionKey actionKey = SpecialActionKey.valueOf(key.toUpperCase());
                 String spellId = actionSection.getString("spell");
                 if (spellId == null) {
-                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getName());
+                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getId());
                     continue;
                 }
                 SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
                 if (spellData == null) {
-                    MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getName());
+                    MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getId());
                     continue;
                 }
                 specialActionMap.put(actionKey, spellData);
@@ -98,7 +98,7 @@ public class HClass extends YamlConfiguration {
         }
         ConfigurationSection spellLevelSection = getConfigurationSection("spellLevels");
         if (spellLevelSection == null) {
-            MessageUtil.log("Class " + getName() + " has no spell levels configured!");
+            MessageUtil.log("Class " + getId()+ " has no spell levels configured!");
         } else {
             for (String key : spellLevelSection.getKeys(false)) {
                 ConfigurationSection levelEntry = spellLevelSection.getConfigurationSection(key);
@@ -108,7 +108,7 @@ public class HClass extends YamlConfiguration {
                     for (String spellId : levelEntry.getStringList("spells")) {
                         SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
                         if (spellData == null) {
-                            MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getName());
+                            MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getId());
                             continue;
                         }
                         spells.add(spellData);
@@ -127,7 +127,7 @@ public class HClass extends YamlConfiguration {
         }
         ConfigurationSection attributesSection = getConfigurationSection("attributeLevels");
         if (attributesSection == null) {
-            MessageUtil.log("Class " + getName() + " has no attributes configured!");
+            MessageUtil.log("Class " + getId() + " has no attributes configured!");
         } else {
             for (String key : attributesSection.getKeys(false)) {
                 ConfigurationSection levelEntry = attributesSection.getConfigurationSection(key);
@@ -139,7 +139,7 @@ public class HClass extends YamlConfiguration {
                             Attribute attribute = Attribute.valueOf(attributeName);
                             attributes.put(attribute, levelEntry.getDouble(attributeName));
                         } catch (IllegalArgumentException e) {
-                            MessageUtil.log("Unknown attribute '" + attributeName + "' found under 'attributes' in class file " + getName());
+                            MessageUtil.log("Unknown attribute '" + attributeName + "' found under 'attributes' in class file " + getId());
                         }
                     }
                     baseAttributesPerLevel.put(level, attributes);
@@ -148,7 +148,7 @@ public class HClass extends YamlConfiguration {
         }
         ConfigurationSection levelSection = getConfigurationSection("xpLevels");
         if (levelSection == null) {
-            MessageUtil.log("Class " + getName() + " has no levels configured!");
+            MessageUtil.log("Class " + getId() + " has no levels configured!");
         } else {
             for (String key : levelSection.getKeys(false)) {
                 ConfigurationSection levelEntry = levelSection.getConfigurationSection(key);
