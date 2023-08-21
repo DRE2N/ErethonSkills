@@ -27,10 +27,7 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
 
     @Override
     protected boolean onPrecast() {
-        if (!lookForTarget()) {
-            return false;
-        }
-        return super.onPrecast();
+        return lookForTarget(true);
     }
 
     @Override

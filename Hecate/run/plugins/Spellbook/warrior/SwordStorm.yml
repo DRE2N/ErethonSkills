@@ -1,0 +1,10 @@
+class: warrior.SwordStorm
+keepAliveTicks: 30
+startRadius: 1
+radiusPerTick: 0.1
+attackModifier: -20
+coefficients:
+  players:
+    adv_physical: 0.5
+  entities:
+    adv_physical: 0.66

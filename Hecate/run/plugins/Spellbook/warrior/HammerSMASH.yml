@@ -1,7 +1,7 @@
 class: warrior.HammerSMASH
 name: Hammer SMASH!
 description: "SMASH!"
-cooldown: 45
+cooldown: 120
 pushVector: 0.9
 inFrontVector: 1.5
 smashAfterTicks: 18

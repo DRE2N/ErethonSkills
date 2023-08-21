@@ -37,6 +37,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -226,6 +227,11 @@ public class PlayerCastListener implements Listener {
     }
 
     @EventHandler
+    public void onDisconnect(PlayerQuitEvent event) {
+        event.getPlayer().saveData();
+    }
+
+    @EventHandler
     public void onSwitch(PlayerSwitchProfileEvent event) {
         Player player = event.getPlayer();
         int id = event.getNewProfileID();
@@ -261,5 +267,4 @@ public class PlayerCastListener implements Listener {
             hCharacter.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK).queue(player);
         }
     }
-
 }

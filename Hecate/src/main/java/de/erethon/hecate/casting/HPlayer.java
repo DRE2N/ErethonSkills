@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.config.EConfig;
 import de.erethon.bedrock.user.LoadableUser;
 import de.erethon.hecate.Hecate;
+import de.erethon.hecate.arenas.ArenaPlayer;
 import de.erethon.papyrus.PlayerSwitchProfileEvent;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
@@ -26,6 +27,7 @@ public class HPlayer  extends EConfig implements LoadableUser, Listener {
     public static final int CONFIG_VERSION = 1;
 
     private Player player;
+    private ArenaPlayer arenaPlayer;
     private HCharacter selectedCharacter;
     private final HashMap<Integer, HCharacter> characters = new HashMap<>();
     private int profileID;
@@ -98,6 +100,7 @@ public class HPlayer  extends EConfig implements LoadableUser, Listener {
                 selectedCharacter = loadCharacter(i);
             }
         }
+        arenaPlayer = new ArenaPlayer(this, player, config.getConfigurationSection("arenas"));
         MessageUtil.log("Loaded " + characterList.size() + " characters for " + player.getName() + "! Last selected: " + profileID);
     }
 
@@ -116,6 +119,7 @@ public class HPlayer  extends EConfig implements LoadableUser, Listener {
         }
         config.set("autoJoinWithLastCharacter", autoJoinWithLastCharacter);
         config.set("profileID", profileID);
+        config.set("arenas", arenaPlayer.save());
         save();
     }
 

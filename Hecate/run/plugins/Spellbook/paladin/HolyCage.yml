@@ -1,0 +1,4 @@
+class: paladin.HolyCage
+maxDistance: 32
+size: 3
+slow: -0.5

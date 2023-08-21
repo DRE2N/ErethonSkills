@@ -1,0 +1,5 @@
+class: paladin.HolyFire
+keepAliveTicks: 100
+damagePerTick: 0.5
+range: 0.8
+baseFinishHeal: 15

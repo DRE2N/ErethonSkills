@@ -13,6 +13,7 @@ public class PerformanceTestSpell extends SpellbookSpell {
     public PerformanceTestSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         iterations = spellData.getInt("iterations", 100);
+
     }
 
     @Override
@@ -20,6 +21,8 @@ public class PerformanceTestSpell extends SpellbookSpell {
         keepAliveTicks = 10;
         return true;
     }
+
+
 
 
     @Override

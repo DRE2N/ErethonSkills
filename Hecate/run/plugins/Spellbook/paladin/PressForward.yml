@@ -1,0 +1,5 @@
+class: paladin.PressForward
+size: 4
+keepAliveTicks: 200
+duration: 200
+stacks: 1
