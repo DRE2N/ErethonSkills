@@ -34,14 +34,13 @@ public class StanceLastStand extends AbstractWarriorStance {
 
     @Override
     public boolean onCast(SpellbookSpell spell) {
-        caster.getUsedSpells().put(data, System.currentTimeMillis());
         display = caster.getWorld().spawn(caster.getLocation(), ItemDisplay.class, itemDisplay -> {
             itemDisplay.setItemStack(new ItemStack(Material.SHIELD));
             itemDisplay.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.FIRSTPERSON_RIGHTHAND);
             itemDisplay.setTransformation(transformation);
         });
         caster.addPassenger(display);
-        return true;
+        return super.onCast();
     }
 
     @Override

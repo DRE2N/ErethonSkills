@@ -1,0 +1,4 @@
+class: paladin.ShieldStorm
+stormSpeed: 1.5
+throwbackSpeed: 2
+delay: 40

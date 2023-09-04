@@ -1,0 +1,9 @@
+class: ranger.PetRoar
+radius: 5
+stacks: 5
+baseDuration: 40
+coefficients:
+  players:
+    adv_magic: 0.4
+  entities:
+    adv_magic: 0.66

@@ -39,7 +39,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public class HammerSMASH extends SpellbookSpell implements Listener {
+public class HammerSMASH extends WarriorBaseSpell implements Listener {
 
     private final EffectManager manager = Spellbook.getInstance().getEffectManager();
 
@@ -61,7 +61,6 @@ public class HammerSMASH extends SpellbookSpell implements Listener {
 
     @Override
     protected boolean onCast() {
-        caster.getUsedSpells().put(data, System.currentTimeMillis());
         return super.onCast();
     }
 

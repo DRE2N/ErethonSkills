@@ -16,7 +16,7 @@ import org.joml.Vector3f;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ShieldWall extends SpellbookSpell {
+public class ShieldWall extends WarriorBaseSpell {
 
     private int duration = data.getInt("duration", 600);
     private int shields = data.getInt("shields", 8);

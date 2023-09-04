@@ -36,7 +36,7 @@ public class HolyFire extends PaladinBaseSpell {
         circleEffect.enableRotation = false;
         circleEffect.setLocation(caster.getLocation().clone().add(0, 1, 0));
         circleEffect.start();
-        return true;
+        return super.onCast();
     }
 
     @Override

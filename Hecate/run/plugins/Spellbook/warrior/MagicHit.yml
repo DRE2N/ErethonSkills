@@ -1,0 +1,7 @@
+class: warrior.MagicHit
+keepAliveTicks: 100
+coefficients:
+  players:
+    adv_magic: 5
+  entities:
+    adv_magic: 5

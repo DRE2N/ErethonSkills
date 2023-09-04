@@ -23,6 +23,13 @@ public class PressForward extends AoEBaseSpell {
         keepAliveTicks = data.getInt("keepAliveTicks", 100);
     }
 
+
+    @Override
+    protected boolean onCast() {
+        caster.getUsedSpells().put(data, System.currentTimeMillis());
+        return super.onCast();
+    }
+
     @Override
     protected void onEnter(LivingEntity entity) {
         if (!affected.contains(entity) && !Spellbook.canAttack(caster, entity)) {

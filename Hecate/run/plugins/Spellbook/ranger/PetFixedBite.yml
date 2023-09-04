@@ -1,0 +1,2 @@
+class: ranger.PetFixedBite
+keepAliveTicks: 80

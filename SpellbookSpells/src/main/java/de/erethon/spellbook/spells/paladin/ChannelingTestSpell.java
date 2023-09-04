@@ -21,7 +21,7 @@ public class ChannelingTestSpell extends SpellbookSpell {
     @Override
     protected boolean onCast() {
         MessageUtil.broadcastMessage("Test spell cast!");
-        return true;
+        return super.onCast();
     }
 
     @Override

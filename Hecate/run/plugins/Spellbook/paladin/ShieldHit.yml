@@ -1,0 +1,7 @@
+class: paladin.ShieldHit
+baseDuration: 40
+coefficients:
+  players:
+    adv_physical: 1.0
+  entities:
+    adv_physical: 1.0

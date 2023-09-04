@@ -11,7 +11,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 
-public class SwordStorm extends SpellbookSpell {
+public class SwordStorm extends WarriorBaseSpell {
 
     private double radius = data.getDouble("startRadius", 2);
     private final double radiusPerTick = data.getDouble("radiusPerTick", 0.2);
@@ -56,7 +56,7 @@ public class SwordStorm extends SpellbookSpell {
         attackMarker.maxAngle = Math.PI;
         attackMarker.start();
         caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(attackBaseMod);
-        return true;
+        return super.onCast();
     }
 
     @Override

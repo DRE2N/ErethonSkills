@@ -27,8 +27,7 @@ public class ShoutPull extends AbstractWarriorShout {
 
     @Override
     protected boolean onCast() {
-        caster.getUsedSpells().put(data, System.currentTimeMillis());
         target.setVelocity(caster.getLocation().getDirection().multiply(-1).multiply(data.getDouble("strength", 1)));
-        return true;
+        return super.onCast();
     }
 }

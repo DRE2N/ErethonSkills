@@ -1,0 +1,3 @@
+class: warrior.BreakingHit
+keepAliveTicks: 100
+reduction: 0.5

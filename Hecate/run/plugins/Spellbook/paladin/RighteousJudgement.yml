@@ -1,0 +1,8 @@
+class: paladin.RighteousJudgement
+baseDuration: 100
+stacks: 5
+coefficients:
+  players:
+    adv_magic: 0.4
+  entities:
+    adv_magic: 0.66

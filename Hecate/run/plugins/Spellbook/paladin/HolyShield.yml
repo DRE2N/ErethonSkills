@@ -1,0 +1,3 @@
+class: paladin.HolyShield
+keepAliveTicks: 1000
+shieldPercent: 0.2

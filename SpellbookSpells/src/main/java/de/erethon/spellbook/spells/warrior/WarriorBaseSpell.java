@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.paladin;
+package de.erethon.spellbook.spells.warrior;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
@@ -6,11 +6,11 @@ import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class PaladinBaseSpell extends SpellbookSpell {
+public class WarriorBaseSpell extends SpellbookSpell {
 
     LivingEntity target;
 
-    public PaladinBaseSpell(LivingEntity caster, SpellData spellData) {
+    public WarriorBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 

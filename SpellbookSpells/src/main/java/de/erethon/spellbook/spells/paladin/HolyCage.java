@@ -16,6 +16,12 @@ public class HolyCage extends AoEBaseSpell {
     }
 
     @Override
+    protected boolean onCast() {
+        caster.getUsedSpells().put(data, System.currentTimeMillis());
+        return super.onCast();
+    }
+
+    @Override
     protected void onEnter(LivingEntity entity) {
         entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(slowModifier);
     }

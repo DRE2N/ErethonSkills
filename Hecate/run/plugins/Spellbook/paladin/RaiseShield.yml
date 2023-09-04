@@ -1,0 +1,5 @@
+class: paladin.RaiseShield
+keepAliveTicks: 200
+coefficients:
+  entities: # Self-cast uses entities
+    adv_magic: 2

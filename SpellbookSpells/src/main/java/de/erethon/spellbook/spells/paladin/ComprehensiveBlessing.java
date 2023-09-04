@@ -53,6 +53,6 @@ public class ComprehensiveBlessing extends PaladinBaseSpell {
             }
         };
         moveCircles.runTaskTimer(Spellbook.getInstance().getImplementer(), 0, 1);
-        return true;
+        return super.onCast();
     }
 }

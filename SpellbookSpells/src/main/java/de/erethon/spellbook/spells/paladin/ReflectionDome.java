@@ -32,7 +32,7 @@ public class ReflectionDome extends PaladinBaseSpell {
         sphereEffect.setEntity(caster);
         sphereEffect.duration = keepAliveTicks * 50;
         sphereEffect.start();
-        return true;
+        return super.onCast();
     }
 
     @Override

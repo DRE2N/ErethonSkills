@@ -16,7 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
-public class Headbutt extends EntityTargetSpell implements Listener {
+public class Headbutt extends WarriorBaseSpell implements Listener {
 
     private final int stunDuration = data.getInt("stunDuration", 60);
     private final EffectData stun = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Stun");
@@ -32,8 +32,7 @@ public class Headbutt extends EntityTargetSpell implements Listener {
 
     @Override
     protected boolean onCast() {
-        caster.getUsedSpells().put(data, System.currentTimeMillis());
-        Vector move = targetEntity.getLocation().toVector().subtract(caster.getLocation().toVector()).normalize().multiply(2).setY(0.5);
+        Vector move = target.getLocation().toVector().subtract(caster.getLocation().toVector()).normalize().multiply(2).setY(0.5);
         caster.setVelocity(move);
         waitingForImpact = true;
         return super.onCast();
@@ -43,12 +42,12 @@ public class Headbutt extends EntityTargetSpell implements Listener {
     private void onMove(PlayerMoveEvent event) {
         if (event.getPlayer() != caster) return;
         if (!waitingForImpact) return;
-        if (event.getTo().distanceSquared(targetEntity.getLocation()) < distanceToTarget * distanceToTarget) {
+        if (event.getTo().distanceSquared(target.getLocation()) < distanceToTarget * distanceToTarget) {
             caster.setVelocity(new Vector(0, 0, 0));
-            targetEntity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, targetEntity, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
-            targetEntity.addEffect(caster, stun, stunDuration, 1);
+            target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
+            target.addEffect(caster, stun, stunDuration, 1);
             caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_LAND, Sound.Source.RECORD, 0.5f, 1));
-            targetEntity.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_LAND, Sound.Source.RECORD, 0.5f, 1));
+            target.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_LAND, Sound.Source.RECORD, 0.5f, 1));
             onTickFinish();
         }
     }

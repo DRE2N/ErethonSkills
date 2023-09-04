@@ -1,0 +1,8 @@
+class: paladin.CaptivatingBlow
+baseDuration: 60
+stacks: 2
+coefficients:
+  players:
+    adv_physical: 0.3
+  entities:
+    adv_physical: 0.8

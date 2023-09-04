@@ -1,0 +1,7 @@
+class: warrior.SlashingHit
+baseDuration: 40
+coefficients:
+  players:
+    adv_physical: 2
+  entities:
+    adv_physical: 2

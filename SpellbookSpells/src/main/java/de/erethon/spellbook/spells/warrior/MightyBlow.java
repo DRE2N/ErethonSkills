@@ -10,7 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
-public class MightyBlow extends SpellbookSpell {
+public class MightyBlow extends WarriorBaseSpell {
 
     private final double rangeMultiplier = data.getInt("rangeMultiplier", 2);
     private final int radius = data.getInt("radius", 3);
@@ -32,6 +32,6 @@ public class MightyBlow extends SpellbookSpell {
             entity.setVelocity(location.getDirection().multiply(pushStrength));
             entity.playSound(Sound.sound(org.bukkit.Sound.ITEM_FIRECHARGE_USE, Sound.Source.RECORD, 1, 1));
         });
-        return true;
+        return super.onCast();
     }
 }

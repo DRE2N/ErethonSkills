@@ -1,0 +1,6 @@
+class: warrior.SkullCrusher
+coefficients:
+  players:
+    adv_physical: 2
+  entities:
+    adv_physical: 5

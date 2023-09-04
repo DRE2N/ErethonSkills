@@ -24,6 +24,6 @@ public class ShoutRoar extends AbstractWarriorShout {
             if (!Spellbook.canAttack(caster, living)) continue;
             living.addEffect(caster, effect, duration, 1);
         }
-        return true;
+        return super.onCast();
     }
 }

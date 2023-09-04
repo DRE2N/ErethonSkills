@@ -7,7 +7,7 @@ import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 
-public class FireSword extends SpellbookSpell {
+public class FireSword extends WarriorBaseSpell {
 
     private final int bonusDamage = data.getInt("bonusDamage", 10);
 

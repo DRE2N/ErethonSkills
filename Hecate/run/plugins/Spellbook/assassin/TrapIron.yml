@@ -1,0 +1,4 @@
+class: assassin.TrapIron
+duration: 10
+energyCost: 25
+damagePerTick: 2

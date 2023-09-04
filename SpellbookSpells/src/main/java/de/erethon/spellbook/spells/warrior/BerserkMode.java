@@ -15,7 +15,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-public class BerserkMode extends SpellbookSpell {
+public class BerserkMode extends WarriorBaseSpell {
 
     private final int duration = data.getInt("duration", 5);
     private final int baseDamagePerTick = data.getInt("damagePerTick", 10);
