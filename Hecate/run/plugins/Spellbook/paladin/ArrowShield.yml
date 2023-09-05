@@ -1,4 +1,6 @@
 class: paladin.HolyCage
+name: Pfeilschild
+dscription: "Ein Schutzbereich der das Eintreten und Austreten von Projektilen verhindert. Betrifft auch Verbündete."
 maxDistance: 32
 size: 3
 keepAliveTicks: 200
