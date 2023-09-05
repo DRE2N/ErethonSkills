@@ -1,0 +1,44 @@
+class: Ranger
+displayName: <white><lang:space.-32:''>Ä
+description: "Der Pfadsucher erkundet das Gelände und deckt mögliche Feinde auf."
+traitLine:
+  0:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  1:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  2:
+    GlowingRevelation:
+      cost: 2
+      levelRequirement: 0
+    WeakRevelation:
+      cost: 2
+      levelRequirement: 0
+    UseWeakness:
+      cost: 2
+      levelRequirement: 0
+  3:
+    TremblingHit:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
