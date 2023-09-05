@@ -1,0 +1,44 @@
+class: Warrior
+displayName: <white><lang:space.-32:''>Ä
+description: "Der Kolosss beschreitet seine Kämpfe mit der Kontrolle über den Kampf und einer hohen Verteidigung"
+traitLine:
+  0:
+    LargerBanners:
+      cost: 2
+      levelRequirement: 0
+    HeavyWarrior:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  1:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  2:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    StunOnSmash:
+      cost: 2
+      levelRequirement: 0
+  3:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
