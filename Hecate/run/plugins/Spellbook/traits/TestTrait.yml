@@ -1,5 +1,12 @@
 class: TestTrait
+name: TestTesting
+description:
+- "<!i><#757575>Kategorie"
+- ""
+- "<!i><#94958B>Testet einen Gegner"
+- "<!i><#94958>und verursacht <#f02607>%attribute_adv_physical%</#f02607> Schaden"
+- ""
+- "<!i><yellow>⌚</yellow> <#94958B>Cooldown: <#027DCA>%skill_cooldown% </#027DCA> Sekunden"
+- "<#027DCA>→</#027DCA> <#94958B>Reichweite: <#027DCA>%skill_range% </#027DCA> Blöcke"
 affectedSpells:
   - Backstab
-description: "blah blah blah"
-name: TestTrait
