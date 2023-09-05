@@ -1,6 +1,6 @@
 class: Assassin
 displayName: <green><lang:space.-100>Traps
-description: "Traps"
+description: "Der Saboteur schleicht hinter die feindlichen Linien, um dort ein Netz aus fallen zu spannen"
 traitLine:
   0:
     TestTrait:
