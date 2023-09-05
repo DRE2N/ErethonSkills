@@ -1,0 +1,44 @@
+class: Assassin
+displayName: <green><lang:space.-100>Traps
+description: "Der Attentäter ist darauf spezialisiert seine Ziele schnell und präzise zu töten"
+traitLine:
+  0:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  1:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  2:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  3:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
