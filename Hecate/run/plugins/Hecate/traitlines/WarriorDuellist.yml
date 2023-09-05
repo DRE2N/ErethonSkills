@@ -1,0 +1,44 @@
+class: Warrior
+displayName: <white><lang:space.-32:''>Ä
+description: "Der Duellist bekämpft seine Feinde im direkten Duell."
+traitLine:
+  0:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    ‎Empty:
+      cost: 2
+      levelRequirement: 0
+  1:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  2:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  3:
+    SlicingAttack:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
