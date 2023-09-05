@@ -1,0 +1,44 @@
+class: Ranger
+displayName: <white><lang:space.-32:''>Ä
+description: "Das Todesauge erledigt seine Ziele mit viel Kraft und hoher Präzision."
+traitLine:
+  0:
+    InfiniteQuiver:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    ‎Empty:
+      cost: 2
+      levelRequirement: 0
+  1:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  2:
+    HighGround:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    SpotWeakness:
+      cost: 2
+      levelRequirement: 0
+  3:
+    UseWeakness:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    BetterPiercingArrows:
+      cost: 2
+      levelRequirement: 0
