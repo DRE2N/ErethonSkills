@@ -1,44 +1,44 @@
 class: Assassin
 displayName: <white><lang:space.-32:''>Ä
-description: "Shhhhhh"
+description: "Der Schatten wandert im dunklem, um seine Feinde schnell und leise von hinten zu töten."
 traitLine:
   0:
-    TestTrait:
+    PassiveEnergyRegen:
       cost: 2
       levelRequirement: 0
-    StunOnSmash:
+    DeathFromTheShadow:
       cost: 2
       levelRequirement: 0
-    BonusDamage:
+    DaggerThrust:
       cost: 2
       levelRequirement: 0
   1:
-    TestTrait:
+    Empty:
       cost: 2
       levelRequirement: 0
-    StunOnSmash:
+    Empty:
       cost: 2
       levelRequirement: 0
-    BonusDamage:
+    Empty:
       cost: 2
       levelRequirement: 0
   2:
-    TestTrait:
+    Empty:
       cost: 2
       levelRequirement: 0
-    StunOnSmash:
+    Empty:
       cost: 2
       levelRequirement: 0
-    BonusDamage:
+    Empty:
       cost: 2
       levelRequirement: 0
   3:
-    TestTrait:
+    Empty:
       cost: 2
       levelRequirement: 0
-    StunOnSmash:
+    Empty:
       cost: 2
       levelRequirement: 0
-    BonusDamage:
+    Empty:
       cost: 2
       levelRequirement: 0
