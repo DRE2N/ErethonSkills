@@ -1,0 +1,44 @@
+class: Warrior
+displayName: <white><lang:space.-32:''>Ä
+description: "Der Schlächter schlägt sich mit seinen brachialen Schlägen durch die Reihen der Feinde."
+traitLine:
+  0:
+    LouderShouts:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    ‎BruiserRageMechanic:
+      cost: 2
+      levelRequirement: 0
+  1:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  2:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  3:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
