@@ -26,7 +26,7 @@ traitLine:
     HighGround:
       cost: 2
       levelRequirement: 0
-    Empty:
+    DistantShooter:
       cost: 2
       levelRequirement: 0
     SpotWeakness:
