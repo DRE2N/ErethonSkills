@@ -24,6 +24,7 @@ public class RaiseShield extends PaladinBaseSpell {
     protected boolean onCast() {
         caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);
         caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
+        triggerTraits(0);
         caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, Sound.Source.RECORD, 1, 2));
         circle = new CircleEffect(Spellbook.getInstance().getEffectManager());
         circle.radius = 1.2f;
@@ -40,6 +41,7 @@ public class RaiseShield extends PaladinBaseSpell {
     protected void cleanup() {
         caster.getAttribute(Attribute.RES_MAGIC).removeModifier(modifier);
         caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
+        triggerTraits(1);
         caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_BEACON_DEACTIVATE, Sound.Source.RECORD, 1, 2));
         circle.cancel();
     }

@@ -1,12 +1,13 @@
 class: warrior.ShoutPull
 name: "<red>Kommt her!"
+cooldown: 20
 description:
   - "<#757575>Schlachtruf"
   - ""
   - "<#94958B>Zieht einen Gegner heran und"
-  - "<#94958B>verursacht<#f02607> %attribute_adv_physical% <white>+ <#0fdcfa>%attribute_adv_air% <#94958B>Schaden." # Demo. Der Skill macht was anderes.
+  - "<#94958B>verursacht %attribute_adv_physical% <white>+ %attribute_adv_air% Schaden." # Demo. Der Skill macht was anderes.
   - ""
-  - "<yellow>→ <#94958B>Reichweite: <#027DCA>%skill_range% <#94958B>Blöcke"
-  - "<yellow>⌚ <#94958B>Cooldown: <#027DCA>%skill_cooldown% <#94958B>Sekunden"
+  - "<yellow>→ <#94958B>Reichweite: %skill_range% Blöcke"
+  - "<yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
 range: 10
 strength: 2

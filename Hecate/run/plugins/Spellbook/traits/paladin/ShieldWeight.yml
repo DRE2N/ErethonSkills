@@ -1,0 +1,5 @@
+class: paladin.ShieldWeight
+affectedSpells:
+  - ShieldStorm
+range: 3
+power: 2

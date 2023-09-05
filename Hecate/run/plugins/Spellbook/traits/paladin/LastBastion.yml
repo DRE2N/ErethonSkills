@@ -1,0 +1,3 @@
+class: paladin.LastBastion
+range: 5
+resistancePercentagePerEnemy: 0.05

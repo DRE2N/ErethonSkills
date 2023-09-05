@@ -192,6 +192,7 @@ public class Spellbook {
         TextReplacementConfig duration = TextReplacementConfig.builder().matchLiteral("%skill_duration%").replacement(Component.text(data.getInt("duration", 0)).color(TextColor.color(2, 125,202))).build();
         TextReplacementConfig radius = TextReplacementConfig.builder().matchLiteral("%skill_radius%").replacement(Component.text(data.getInt("radius", 0)).color(TextColor.color(2, 125,202))).build();
         TextReplacementConfig energy = TextReplacementConfig.builder().matchLiteral("%skill_energy%").replacement(Component.text(data.getInt("energyCost", 0)).color(TextColor.color(2, 125,202))).build();
+        TextReplacementConfig size = TextReplacementConfig.builder().matchLiteral("%skill_size%").replacement(Component.text(data.getInt("size", 0)).color(TextColor.color(2, 125,202))).build();
         if (data.contains("coefficients")) {
             TextReplacementConfig phys = TextReplacementConfig.builder().matchLiteral("%attribute_adv_physical%").replacement(Component.text(getScaledValue(data, caster, pvp, Attribute.ADV_PHYSICAL, multiplier)).color(TextColor.color(255, 0, 0))).build();
             TextReplacementConfig magic = TextReplacementConfig.builder().matchLiteral("%attribute_adv_magic%").replacement(Component.text(getScaledValue(data, caster, pvp, Attribute.ADV_PHYSICAL, multiplier)).color(TextColor.color(92, 14, 176))).build();
@@ -205,7 +206,7 @@ public class Spellbook {
             TextReplacementConfig armor = TextReplacementConfig.builder().matchLiteral("%attribute_armor%").replacement(Component.text(getScaledValue(data, caster, pvp, Attribute.GENERIC_ARMOR, multiplier)).color(TextColor.color(122, 122, 122))).build();
             return component.replaceText(phys).replaceText(magic).replaceText(fire).replaceText(water).replaceText(earth).replaceText(air).replaceText(health).replaceText(atkspd).replaceText(dmg).replaceText(armor).replaceText(cd).replaceText(range).replaceText(duration).replaceText(radius).replaceText(energy);
         }
-        return component.replaceText(cd).replaceText(range).replaceText(duration).replaceText(radius).replaceText(energy);
+        return component.replaceText(cd).replaceText(range).replaceText(duration).replaceText(radius).replaceText(energy).replaceText(size);
     }
 
     public static boolean canAttack(LivingEntity attacker, LivingEntity target) {

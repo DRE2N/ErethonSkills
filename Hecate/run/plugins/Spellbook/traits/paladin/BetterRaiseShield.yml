@@ -1,0 +1,4 @@
+class: paladin.BetterRaiseShield
+affectedSpells:
+  - RaiseShield
+bonus: 20
