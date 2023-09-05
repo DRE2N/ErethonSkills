@@ -29,7 +29,7 @@ traitLine:
     WeakRevelation:
       cost: 2
       levelRequirement: 0
-    UseWeakness:
+    Emnpty:
       cost: 2
       levelRequirement: 0
   3:
