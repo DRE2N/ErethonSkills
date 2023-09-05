@@ -1,0 +1,44 @@
+class: Ranger
+displayName: <white><lang:space.-32:''>Ä
+description: "Der Waldläufer ist ein Spezialist im Wald und kämpft gemeinsam mit einem Tier der Natur."
+traitLine:
+  0:
+    ForestKnowledge:
+      cost: 2
+      levelRequirement: 0
+    SurvivalExpert:
+      cost: 2
+      levelRequirement: 0
+    ‎ThickFur:
+      cost: 2
+      levelRequirement: 0
+  1:
+    PetBleedingTrait:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    PetSlowTrait:
+      cost: 2
+      levelRequirement: 0
+  2:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    PetFangs:
+      cost: 2
+      levelRequirement: 0
+    BetterBasicHeal:
+      cost: 2
+      levelRequirement: 0
+  3:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Arrowexpert:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
