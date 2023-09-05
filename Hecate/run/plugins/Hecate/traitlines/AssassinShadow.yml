@@ -23,7 +23,7 @@ traitLine:
       cost: 2
       levelRequirement: 0
   2:
-    Empty:
+    EvadeOnDash:
       cost: 2
       levelRequirement: 0
     Empty:
