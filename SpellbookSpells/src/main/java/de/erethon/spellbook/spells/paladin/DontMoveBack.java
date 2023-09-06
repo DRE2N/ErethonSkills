@@ -6,6 +6,9 @@ import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class DontMoveBack extends PaladinBaseSpell {
 
     private final EffectData dontmoveback = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("DontMoveBackEffect");
@@ -16,12 +19,15 @@ public class DontMoveBack extends PaladinBaseSpell {
 
     @Override
     protected boolean onCast() {
+        Set<LivingEntity> targets = new HashSet<>();
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(data.getDouble("range", 10))) {
             if (Spellbook.canAttack(caster, living)) {
                 continue;
             }
             living.addEffect(caster, dontmoveback, data.getInt("duration", 100), 1);
+            targets.add(living);
         }
+        triggerTraits(targets);
         return super.onCast();
     }
 }

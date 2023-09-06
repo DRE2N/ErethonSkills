@@ -1,0 +1,5 @@
+class: ResistenceEffect
+maxStacks: 1
+maxDuration: 200
+isPositive: true
+stackMode: prolong

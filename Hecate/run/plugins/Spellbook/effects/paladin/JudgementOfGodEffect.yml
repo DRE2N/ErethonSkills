@@ -1,0 +1,5 @@
+class: paladin.JudgementOfGodEffect
+maxStacks: 1
+maxDuration: 100
+isPositive: false
+stackMode: prolong

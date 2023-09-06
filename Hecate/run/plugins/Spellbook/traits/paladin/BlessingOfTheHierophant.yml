@@ -1,0 +1,7 @@
+class: paladin.BlessingOfTheHierophant
+fury:
+  duration: 100
+  stacks: 1
+power:
+  duration: 120
+  stacks: 3
