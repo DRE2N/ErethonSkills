@@ -12,7 +12,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
-public class JavelinThrow extends PaladinBaseSpell implements Listener {
+public class JavelinThrow extends PaladinSpearSpell implements Listener {
 
     private final double throwSpeed = data.getDouble("throwSpeed", 1);
 
@@ -38,7 +38,8 @@ public class JavelinThrow extends PaladinBaseSpell implements Listener {
         if (event.getEntity() != trident) return;
         if (event.getHitEntity() != null && event.getHitEntity() instanceof LivingEntity living) {
             if (!Spellbook.canAttack(caster, living)) return;
-            living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_PHYSICAL));
+            living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, damageAttribute), caster, damageType);
+            triggerTraits(target);
             caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ARROW_HIT_PLAYER, Sound.Source.RECORD, 1, 1));
         }
         trident.remove();

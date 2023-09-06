@@ -1,0 +1,4 @@
+class: paladin.PaladinBlocking
+energyPerDamage: 0.5 # How much energy is consumed per 1 damage blocked
+energyRegenRate: 2.0 # Value the energy regen attribute is set to
+damageMultiplier: 0.33 # How much damage the paladin takes

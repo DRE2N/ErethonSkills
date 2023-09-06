@@ -12,6 +12,7 @@ public class ThickShield extends SpellTrait {
     private final double behindMultiplier = data.getDouble("behindMultiplier", -2);
     private final int duration = data.getInt("duration", 40);
     private final EffectData effectData = Spellbook.getEffectData("ThickShieldEffect");
+
     public ThickShield(TraitData data, LivingEntity caster) {
         super(data, caster);
     }
@@ -19,7 +20,7 @@ public class ThickShield extends SpellTrait {
     @Override
     protected void onTrigger(TraitTrigger trigger) {
         for (LivingEntity living : caster.getLocation().getDirection().multiply(behindMultiplier).toLocation(caster.getWorld()).getNearbyLivingEntities(range)) {
-            if (Spellbook.canAttack(caster, living)) continue;
+            if (living == caster || Spellbook.canAttack(caster, living)) continue;
             living.addEffect(caster, effectData, duration, 1);
         }
     }

@@ -1,0 +1,6 @@
+class: paladin.ThickShield
+affectedTraits:
+  - PaladinBlocking
+range: 5
+behindMultiplier: -1 # Paladin direction vector is multiplied by this value
+duration: 40 # How long the block effects lasts after the paladin took damage

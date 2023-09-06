@@ -24,8 +24,10 @@ public class ComprehensiveBlessing extends PaladinBaseSpell {
 
     @Override
     protected boolean onCast() {
+        Set<LivingEntity> entities = new HashSet<>();
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
             if (Spellbook.canAttack(caster, living)) continue;
+            entities.add(living);
             living.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ELDER_GUARDIAN_CURSE, Sound.Source.RECORD, 1, 1));
             living.getEffects().forEach(e -> {
                 if (!e.data.isPositive()) {
@@ -44,6 +46,7 @@ public class ComprehensiveBlessing extends PaladinBaseSpell {
             circle.start();
             circleEffects.add(circle);
         }
+        triggerTraits(entities);
         BukkitRunnable moveCircles = new BukkitRunnable() {
             @Override
             public void run() {

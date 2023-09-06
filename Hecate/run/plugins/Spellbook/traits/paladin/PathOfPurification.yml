@@ -1,0 +1,4 @@
+class: paladin.PathOfPurification
+range: 5
+duration: 120
+stacks: 5

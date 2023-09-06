@@ -2,7 +2,9 @@ package de.erethon.spellbook;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
+import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.teams.TeamManager;
 import de.erethon.spellbook.utils.PetLookup;
 import de.slikey.effectlib.EffectManager;
@@ -225,6 +227,14 @@ public class Spellbook {
         } else {
             return Color.fromRGB(Integer.parseInt(input));
         }
+    }
+
+    public static SpellData getSpellData(String id) {
+        return getInstance().getAPI().getLibrary().getSpellByID(id);
+    }
+
+    public static TraitData getTraitData(String id) {
+        return getInstance().getAPI().getLibrary().getTraitByID(id);
     }
 
     public static EffectData getEffectData(String id) {

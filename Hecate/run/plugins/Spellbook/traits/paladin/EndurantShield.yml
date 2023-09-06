@@ -1,0 +1,4 @@
+class: paladin.EndurantShield
+affectedTraits:
+  - PaladinBlocking
+energyPerDamage: 0.2

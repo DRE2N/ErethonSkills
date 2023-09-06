@@ -1,0 +1,10 @@
+class: paladin.PathOfBlood
+affectedSpells:
+  - HolyFire
+  - JavelinThrow
+singleTarget:
+  duration: 120
+  stacks: 3
+aoe:
+  duration: 60
+  stacks: 2

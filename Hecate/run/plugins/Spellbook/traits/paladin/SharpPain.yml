@@ -1,0 +1,5 @@
+class: paladin.SharpPain
+affectedSpells:
+  - SpearThrust
+stacks: 3
+duration: 120

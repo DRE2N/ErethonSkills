@@ -1,0 +1,3 @@
+class: paladin.Judgement
+offenseMultiplier: 1.2
+defenseMultiplier: 0.8

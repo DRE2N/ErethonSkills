@@ -1,0 +1,6 @@
+class: paladin.ThickShieldEffect
+maxStacks: 1
+maxDuration: 40
+isPositive: true
+stackMode: prolong
+damageMultiplier: 0.5 

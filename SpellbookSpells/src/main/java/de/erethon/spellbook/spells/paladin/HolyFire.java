@@ -10,6 +10,9 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class HolyFire extends PaladinBaseSpell {
 
     private final float range = (float) data.getDouble("range", 0.8);
@@ -41,11 +44,14 @@ public class HolyFire extends PaladinBaseSpell {
 
     @Override
     protected void onTick() {
+        Set<LivingEntity> entities = new HashSet<>();
         caster.getNearbyEntities(range, 2, range).forEach(e -> {
             if (e instanceof LivingEntity living && Spellbook.canAttack(caster, living)) {
                 living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, false, Attribute.ADV_MAGIC));
+                entities.add(living);
             }
         });
+        triggerTraits(entities);
         Location loc = caster.getLocation().clone();
         loc.setPitch(0);
         loc.add(0, 1, 0);
@@ -67,6 +73,7 @@ public class HolyFire extends PaladinBaseSpell {
         loc.add(0, 1, 0);
         explode.setLocation(loc);
         explode.start();
+        Set<LivingEntity> enemies = new HashSet<>();
         loc.getWorld().playSound(Sound.sound(org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, Sound.Source.RECORD, 1, 1), loc.getX(), loc.getY(), loc.getZ());
         BukkitRunnable explodeTask = new BukkitRunnable() {
             @Override
@@ -76,12 +83,15 @@ public class HolyFire extends PaladinBaseSpell {
                     loc.getNearbyLivingEntities(explode.radius).forEach(e -> {
                         if (!Spellbook.canAttack(caster, e)) {
                             e.setHealth(e.getHealth() + healAmount + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER));
+                        } else {
+                            enemies.add(e);
                         }
                     });
                     cancel();
                 }
             }
         };
+        triggerTraits(enemies, 1);
         explodeTask.runTaskTimer(Spellbook.getInstance().getImplementer(), 0, 1);
 
     }

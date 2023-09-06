@@ -13,9 +13,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
-public class IceSpear extends PaladinBaseSpell implements Listener {
+public class IceSpear extends PaladinSpearSpell implements Listener {
 
     private final EffectData slowness = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
+    public boolean shouldSlow = true;
 
     public IceSpear(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -40,7 +41,10 @@ public class IceSpear extends PaladinBaseSpell implements Listener {
         Player player = event.getPlayer();
         if (player != target) return;
         int duration = (int) (data.getInt("baseDuration", 20) + Math.round(Spellbook.getScaledValue(data, caster, target, Attribute.ADV_PHYSICAL)));
-        player.addEffect(caster, slowness, duration, data.getInt("stacks", 1));
+        triggerTraits(target);
+        if (shouldSlow) {
+            player.addEffect(caster, slowness, duration, data.getInt("stacks", 1));
+        }
         player.setFreezeTicks(duration);
     }
 

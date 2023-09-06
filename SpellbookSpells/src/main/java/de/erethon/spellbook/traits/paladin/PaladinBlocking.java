@@ -1,6 +1,7 @@
 package de.erethon.spellbook.traits.paladin;
 
 import de.erethon.papyrus.DamageType;
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.traits.ClassMechanic;
 import net.minecraft.world.entity.player.Player;
@@ -12,9 +13,11 @@ import org.bukkit.entity.LivingEntity;
 public class PaladinBlocking extends ClassMechanic {
 
     private final Player nmsPlayer;
-    private final double energyPerDamage = data.getDouble("energyPerDamage", 0.1);
+    private double energyPerDamage = data.getDouble("energyPerDamage", 0.1);
     private final double damageMultiplier = data.getDouble("damageMultiplier", 0.33);
     private final AttributeModifier energyRegen = new AttributeModifier("PaladinBlocking", data.getDouble("energyRegenRate", 0.1), AttributeModifier.Operation.ADD_NUMBER);
+    private final TraitData endurantTrait = Spellbook.getTraitData("EndurantShield");
+    private final double endurantEnergyPerDamage = endurantTrait.getDouble("energyPerDamage", 0.1);
 
     public PaladinBlocking(TraitData data, LivingEntity caster) {
         super(data, caster);
@@ -24,6 +27,9 @@ public class PaladinBlocking extends ClassMechanic {
 
     @Override
     public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+        if (caster.hasTrait(endurantTrait)) { // Can't do this in onAdd because there is no load order
+            energyPerDamage = endurantEnergyPerDamage;
+        }
         if (nmsPlayer.isBlocking() && caster.getEnergy() > 0) {// The Bukkit method is delayed by 5 ticks for whatever reason
             caster.setEnergy((int) Math.round(caster.getEnergy() - damage * energyPerDamage));
             triggerTraits();
