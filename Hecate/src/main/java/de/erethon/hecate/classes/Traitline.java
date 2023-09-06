@@ -73,7 +73,7 @@ public class Traitline extends YamlConfiguration {
                 ConfigurationSection traitSection = getConfigurationSection("traitLine." + level + "." + traitId);
                 TraitData traitData = spellbookAPI.getLibrary().getTraitByID(traitId);
                 if (traitData == null) {
-                    System.out.println("Unknown trait '" + traitId + "' found in traitline file " + getName());
+                    MessageUtil.log("Unknown trait '" + traitId + "' found in traitline file " + id);
                     continue;
                 }
                 int levelRequirement = traitSection.getInt("levelRequirement", 0);
