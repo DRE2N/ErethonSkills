@@ -16,7 +16,7 @@ traitLine:
     PetBleedingTrait:
       cost: 2
       levelRequirement: 0
-    Empty:
+    PetFighter:
       cost: 2
       levelRequirement: 0
     PetSlowTrait:
