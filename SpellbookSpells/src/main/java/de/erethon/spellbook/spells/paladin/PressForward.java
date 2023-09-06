@@ -34,6 +34,7 @@ public class PressForward extends AoEBaseSpell {
     protected void onEnter(LivingEntity entity) {
         if (!affected.contains(entity) && !Spellbook.canAttack(caster, entity)) {
             entity.addEffect(caster, speed, duration, stacks);
+            triggerTraits(affected);
             affected.add(entity);
         }
     }

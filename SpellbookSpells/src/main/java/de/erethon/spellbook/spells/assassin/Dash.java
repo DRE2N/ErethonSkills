@@ -13,17 +13,12 @@ public class Dash extends SpellbookSpell {
     }
 
     @Override
-    protected boolean onPrecast() {
-        return AssassinUtils.hasEnergy(caster, data);
-    }
-
-    @Override
     protected boolean onCast() {
         Location location = caster.getLocation();
         location.setPitch(-10);
         caster.setVelocity(location.getDirection().multiply(data.getDouble("dashMultiplier", 2.0)));
         triggerTraits(0);
-        return true;
+        return super.onCast();
     }
 
     @Override

@@ -10,7 +10,6 @@ import org.bukkit.entity.LivingEntity;
 
 public class ArrowExpert extends SpellTrait {
 
-    private final EffectData bleeding = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("bleeding");
     private final int bonusDuration = data.getInt("bonusDuration", 40);
     private final int bonusStacks = data.getInt("bonusStacks", 1);
 
@@ -22,9 +21,7 @@ public class ArrowExpert extends SpellTrait {
     protected void onTrigger(TraitTrigger trigger) {
         for (LivingEntity living : trigger.getTargets()) {
             for (SpellEffect effect : living.getEffects()) {
-                if (effect.data == bleeding) {
-                    effect.add(bonusDuration, bonusStacks);
-                }
+                effect.add(bonusDuration, bonusStacks);
             }
         }
     }

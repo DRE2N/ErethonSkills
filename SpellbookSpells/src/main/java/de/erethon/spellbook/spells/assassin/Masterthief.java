@@ -8,7 +8,7 @@ import org.bukkit.entity.LivingEntity;
 import java.util.List;
 import java.util.Random;
 
-public class Masterthief extends EntityTargetSpell {
+public class Masterthief extends AssassinBaseSpell {
 
     Random random = new Random();
     SpellData spell;
@@ -20,12 +20,12 @@ public class Masterthief extends EntityTargetSpell {
 
     @Override
     public boolean onPrecast() {
-        return super.onPrecast() && AssassinUtils.hasEnergy(caster, data);
+        return super.onPrecast() && lookForTarget();
     }
 
     @Override
     protected boolean onCast() {
-        List<SpellData> datas = targetEntity.getUsedSpells().keySet().stream().toList();
+        List<SpellData> datas = target.getUsedSpells().keySet().stream().toList();
         if (datas.isEmpty()) {
             caster.sendParsedActionBar("<#ff0000>Das Ziel hat keine Spells eingesetzt.");
             return false;
@@ -34,11 +34,6 @@ public class Masterthief extends EntityTargetSpell {
         caster.addSpell(spell);
         caster.sendParsedActionBar("<green>Du hast " + spell.getId() + " gestohlen!");
         return true;
-    }
-
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
     }
 
     @Override

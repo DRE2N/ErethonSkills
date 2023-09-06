@@ -23,7 +23,7 @@ import org.bukkit.util.Vector;
 /**
  * @author Fyreum
  */
-public class DaggerThrow extends SpellbookSpell implements Listener {
+public class DaggerThrow extends AssassinBaseSpell implements Listener {
 
     Vector direction;
     ItemProjectile arrow;
@@ -39,16 +39,11 @@ public class DaggerThrow extends SpellbookSpell implements Listener {
     }
 
     @Override
-    protected boolean onPrecast() {
-        return AssassinUtils.hasEnergy(caster, data);
-    }
-
-    @Override
     protected boolean onCast() {
         direction = caster.getEyeLocation().getDirection();
         arrow = new ItemProjectile(new ItemStack(Material.IRON_SWORD), caster.getEyeLocation().getX(), caster.getEyeLocation().getY(), caster.getEyeLocation().getZ(), caster.getWorld(), this);
         arrow.shoot(direction.getX(), direction.getY(), direction.getZ(), speed, divergence);
-        return true;
+        return super.onCast();
     }
 
     @EventHandler

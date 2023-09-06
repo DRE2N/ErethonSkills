@@ -7,15 +7,10 @@ import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
-public class SpeedBurst extends SpellbookSpell {
+public class SpeedBurst extends AssassinBaseSpell {
 
     public SpeedBurst(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-    }
-
-    @Override
-    protected boolean onPrecast() {
-        return  AssassinUtils.hasEnergy(caster, data);
     }
 
     @Override
@@ -25,9 +20,5 @@ public class SpeedBurst extends SpellbookSpell {
         return super.onCast();
     }
 
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
-    }
 }
 

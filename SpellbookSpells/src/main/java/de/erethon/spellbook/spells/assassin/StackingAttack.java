@@ -9,9 +9,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class StackingAttack extends SpellbookSpell {
+public class StackingAttack extends AssassinBaseSpell {
 
-    LivingEntity target;
     int stacks;
 
     public StackingAttack(LivingEntity caster, SpellData spellData) {
@@ -21,18 +20,7 @@ public class StackingAttack extends SpellbookSpell {
 
     @Override
     protected boolean onPrecast() {
-        Entity selected = caster.getTargetEntity(data.getInt("range", 10));
-        if (selected instanceof LivingEntity entity) {
-            if (!Spellbook.canAttack(caster, entity)) {
-                caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
-                return false;
-            }
-            target = entity;
-            return AssassinUtils.hasEnergy(caster, data);
-        } else {
-            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
-            return false;
-        }
+        return super.onPrecast() && lookForTarget();
     }
 
     @Override

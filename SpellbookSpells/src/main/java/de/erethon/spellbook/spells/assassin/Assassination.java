@@ -9,7 +9,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 
-public class Assassination extends SpellbookSpell {
+public class Assassination extends AssassinBaseSpell {
 
     AttributeModifier critModifier;
     AttributeModifier critChanceModifier;
@@ -21,29 +21,13 @@ public class Assassination extends SpellbookSpell {
     }
 
     @Override
-    protected boolean onPrecast() {
-        return AssassinUtils.hasEnergy(caster, data);
-    }
-
-    @Override
     protected boolean onCast() {
         critModifier = new AttributeModifier("assasinationCrit-" + caster.getUniqueId(), data.getInt("critAmount", 20), AttributeModifier.Operation.ADD_NUMBER);
         critChanceModifier = new AttributeModifier("assasinationChance-" + caster.getUniqueId(), data.getInt("critChance", 50), AttributeModifier.Operation.ADD_NUMBER);
         resistanceModifier = new AttributeModifier("assasinationRes-" + caster.getUniqueId(), data.getInt("resistances", -20), AttributeModifier.Operation.ADD_NUMBER);
         caster.getAttribute(Attribute.STAT_CRIT_DMG).addModifier(critModifier);
         caster.getAttribute(Attribute.STAT_CRIT_CHANCE).addModifier(critChanceModifier);
-        caster.getAttribute(Attribute.RES_AIR).addModifier(resistanceModifier);
-        caster.getAttribute(Attribute.RES_EARTH).addModifier(resistanceModifier);
-        caster.getAttribute(Attribute.RES_FIRE).addModifier(resistanceModifier);
-        caster.getAttribute(Attribute.RES_WATER).addModifier(resistanceModifier);
-        caster.getAttribute(Attribute.RES_FIRE).addModifier(resistanceModifier);
-        caster.getAttribute(Attribute.RES_PHYSICAL).addModifier(resistanceModifier);
-        return true;
-    }
-
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 30));
+        return super.onCast();
     }
 
     @Override
@@ -57,12 +41,6 @@ public class Assassination extends SpellbookSpell {
     protected void cleanup() {
         caster.getAttribute(Attribute.STAT_CRIT_DMG).removeModifier(critModifier);
         caster.getAttribute(Attribute.STAT_CRIT_CHANCE).removeModifier(critChanceModifier);
-        caster.getAttribute(Attribute.RES_AIR).removeModifier(resistanceModifier);
-        caster.getAttribute(Attribute.RES_EARTH).removeModifier(resistanceModifier);
-        caster.getAttribute(Attribute.RES_FIRE).removeModifier(resistanceModifier);
-        caster.getAttribute(Attribute.RES_WATER).removeModifier(resistanceModifier);
-        caster.getAttribute(Attribute.RES_FIRE).removeModifier(resistanceModifier);
-        caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(resistanceModifier);
     }
 }
 

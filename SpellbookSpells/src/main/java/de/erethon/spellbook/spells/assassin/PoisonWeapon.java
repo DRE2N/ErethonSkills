@@ -9,7 +9,7 @@ import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
-public class PoisonWeapon extends SpellbookSpell {
+public class PoisonWeapon extends AssassinBaseSpell {
 
     int count = data.getInt("count", 3);
     EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Poison");

@@ -11,7 +11,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
-public class ThrowBola extends EntityTargetSpell {
+public class ThrowBola extends AssassinBaseSpell {
 
     AttributeModifier modifier;
     ArmorStand armorStand;
@@ -23,29 +23,25 @@ public class ThrowBola extends EntityTargetSpell {
 
     @Override
     public boolean onPrecast() {
-        return super.onPrecast() && AssassinUtils.hasEnergy(caster, data);
+        return super.onPrecast() && lookForTarget();
     }
 
     @Override
     protected boolean onCast() {
         modifier = new AttributeModifier("throwBola-" + caster.getUniqueId(), -100.0, AttributeModifier.Operation.ADD_NUMBER);
-        targetEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addModifier(modifier);
-        armorStand = targetEntity.getWorld().spawn(targetEntity.getLocation(), ArmorStand.class);
+        target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addModifier(modifier);
+        armorStand = target.getWorld().spawn(target.getLocation(), ArmorStand.class);
         armorStand.setInvisible(true);
         armorStand.setMarker(true);
         armorStand.getEquipment().setHelmet(new ItemStack(Material.BROWN_CARPET)); // TODO: Model
-        NMSUtils.addAttachment(targetEntity, armorStand, -2);
+        NMSUtils.addAttachment(target, armorStand, -2);
         return true;
     }
 
     @Override
     protected void cleanup() {
-        targetEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
+        target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
         armorStand.remove();
     }
 
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 50));
-    }
 }

@@ -10,7 +10,7 @@ import org.bukkit.entity.LivingEntity;
 import java.util.List;
 import java.util.Random;
 
-public class Thief extends EntityTargetSpell {
+public class Thief extends AssassinBaseSpell {
 
     Random random = new Random();
     EffectData effectData;
@@ -21,26 +21,21 @@ public class Thief extends EntityTargetSpell {
 
     @Override
     public boolean onPrecast() {
-        return super.onPrecast() && AssassinUtils.hasEnergy(caster, data);
+        return super.onPrecast() && lookForTarget();
     }
 
     @Override
     protected boolean onCast() {
-        List<SpellEffect> datas = targetEntity.getEffects().stream().toList();
+        List<SpellEffect> datas = target.getEffects().stream().toList();
         if (datas.isEmpty()) {
             caster.sendParsedActionBar("<#ff0000>Das Ziel hat keine Effekte");
             return false;
         }
         effectData = datas.get(random.nextInt(datas.size())).data;
         caster.addEffect(caster, effectData, data.getInt("duration", 5) * 20, 1);
-        targetEntity.removeEffect(effectData);
+        target.removeEffect(effectData);
         caster.sendParsedActionBar("<green>Du hast " + effectData.getName() + " gestohlen!");
         return true;
-    }
-
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
     }
 
 }

@@ -17,9 +17,8 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Collections;
 
-public class Backstab extends SpellbookSpell {
+public class Backstab extends AssassinBaseSpell {
 
-    Entity target;
     Location location = null;
 
     public Backstab(LivingEntity caster, SpellData spellData) {
@@ -29,9 +28,7 @@ public class Backstab extends SpellbookSpell {
 
     @Override
     protected boolean onPrecast() {
-        target = caster.getTargetEntity(data.getInt("range", 10));
-        if (target == null || !(target instanceof LivingEntity living) || !Spellbook.canAttack(caster, living)) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
+        if (!lookForTarget()) {
             return false;
         }
         location = target.getLocation().clone().add(0, 1, 0).toVector().subtract(target.getLocation().getDirection().multiply(1.5)).toLocation(target.getWorld());
@@ -67,7 +64,7 @@ public class Backstab extends SpellbookSpell {
         effectCaster.height = 1.0f;
         effectCaster.start();
         keepAliveTicks = 5;
-        return true;
+        return super.onCast();
     }
 
     @Override

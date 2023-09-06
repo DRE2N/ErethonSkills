@@ -16,7 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class DaggerStorm extends SpellbookSpell implements Listener {
+public class DaggerStorm extends AssassinBaseSpell implements Listener {
 
     private final int daggers = data.getInt("daggers", 5);
     private final int divergence = data.getInt("divergence", 5);
@@ -29,16 +29,6 @@ public class DaggerStorm extends SpellbookSpell implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
     }
 
-
-    @Override
-    protected boolean onPrecast() {
-        return AssassinUtils.hasEnergy(caster, data);
-    }
-
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 80));
-    }
 
     @Override
     protected void onTick() {

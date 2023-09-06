@@ -14,16 +14,6 @@ public class DoubleAttack extends SpellbookSpell {
     }
 
     @Override
-    protected boolean onPrecast() {
-        return AssassinUtils.hasEnergy(caster, data);
-    }
-
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 30));
-    }
-
-    @Override
     public double onAttack(LivingEntity target, double damage, DamageType type) {
         //caster.attack(target); TODO
         return super.onAttack(target, damage, type);

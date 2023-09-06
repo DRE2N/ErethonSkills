@@ -8,7 +8,7 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.Random;
 
-public class Evasion extends SpellbookSpell {
+public class Evasion extends AssassinBaseSpell {
 
     Random random = new Random();
     double chance = data.getDouble("chance", 0.7);
@@ -16,16 +16,6 @@ public class Evasion extends SpellbookSpell {
     public Evasion(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         keepAliveTicks = data.getInt("duration", 3) * 20;
-    }
-
-    @Override
-    protected boolean onPrecast() {
-        return AssassinUtils.hasEnergy(caster, data);
-    }
-
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 50));
     }
 
     @Override

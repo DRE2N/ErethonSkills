@@ -8,7 +8,7 @@ import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
-public class SwordCleave extends EntityTargetSpell {
+public class SwordCleave extends AssassinBaseSpell {
 
     private final double radius = data.getDouble("radius", 1.5);
 
@@ -18,14 +18,14 @@ public class SwordCleave extends EntityTargetSpell {
 
     @Override
     public boolean onPrecast() {
-        return AssassinUtils.hasEnergy(caster, data) && super.onPrecast();
+        return super.onPrecast() && lookForTarget();
     }
 
     @Override
     protected boolean onCast() {
-        caster.attack(targetEntity);
-        double attackDmg = Spellbook.getScaledValue(data, caster, targetEntity, Attribute.ADV_PHYSICAL);
-        for (LivingEntity entity : targetEntity.getLocation().getNearbyLivingEntities(radius)) {
+        caster.attack(target);
+        double attackDmg = Spellbook.getScaledValue(data, caster, target, Attribute.ADV_PHYSICAL);
+        for (LivingEntity entity : target.getLocation().getNearbyLivingEntities(radius)) {
             if (!Spellbook.canAttack(caster, entity)) {
                 continue;
             }
@@ -34,8 +34,4 @@ public class SwordCleave extends EntityTargetSpell {
         return true;
     }
 
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 10));
-    }
 }
