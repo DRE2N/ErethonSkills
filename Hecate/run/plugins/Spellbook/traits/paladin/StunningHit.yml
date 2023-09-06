@@ -1,0 +1,4 @@
+class: paladin.StunningHit
+affectedSpells:
+  - ShieldHit
+stunDuration: 40

@@ -38,6 +38,7 @@ public class ShieldHit extends PaladinBaseSpell {
         circle.iterations = -1;
         circle.setEntity(target);
         circle.start();
+        triggerTraits(target);
         return super.onCast();
     }
 }
