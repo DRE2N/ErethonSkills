@@ -3,42 +3,42 @@ displayName: <green><lang:space.-100>Traps
 description: "Der Saboteur schleicht hinter die feindlichen Linien, um dort ein Netz aus fallen zu spannen"
 traitLine:
   0:
-    TestTrait:
+    Criminal:
       cost: 2
       levelRequirement: 0
-    StunOnSmash:
+    Empty:
       cost: 2
       levelRequirement: 0
-    BonusDamage:
+    Weakling:
       cost: 2
       levelRequirement: 0
   1:
-    TestTrait:
+    DemolitionExpert:
       cost: 2
       levelRequirement: 0
-    StunOnSmash:
+    Flexible:
       cost: 2
       levelRequirement: 0
-    BonusDamage:
+    Empty:
       cost: 2
       levelRequirement: 0
   2:
-    TestTrait:
+    Fighter:
       cost: 2
       levelRequirement: 0
-    StunOnSmash:
+    MasterMasterThief:
       cost: 2
       levelRequirement: 0
-    BonusDamage:
+    BearTrap:
       cost: 2
       levelRequirement: 0
   3:
-    TestTrait:
+    BombasticAtmosphere:
       cost: 2
       levelRequirement: 0
-    StunOnSmash:
+    BombSpecialist:
       cost: 2
       levelRequirement: 0
-    BonusDamage:
+    BombTinkerer:
       cost: 2
       levelRequirement: 0
