@@ -1,44 +1,44 @@
-class: Assassin
-displayName: <green><lang:space.-100>Traps
-description: "Der Attentäter ist darauf spezialisiert seine Ziele schnell und präzise zu töten"
+class: Paladin
+displayName: <white><lang:space.-32:''>Ä
+description: "Der Hierophant verleiht seinen Verbündeten die nötige Stärke, um ihre Kämpfe zu gewinnen."
 traitLine:
   0:
     Empty:
       cost: 2
       levelRequirement: 0
-    ForTheGoal:
+    PurifyingFlame:
       cost: 2
       levelRequirement: 0
-    PassiveEnergyGain:
+    ‎MeatShield:
       cost: 2
       levelRequirement: 0
   1:
-    HardTraining:
+    HolyBlessing:
       cost: 2
       levelRequirement: 0
-    Empty:
+    PureBody:
       cost: 2
       levelRequirement: 0
-    ClearHead:
+    ArmorOfTheHierophant:
       cost: 2
       levelRequirement: 0
   2:
-    BrutalHits:
+    Unstoppable:
       cost: 2
       levelRequirement: 0
-    LightBlade:
+    Empty:
       cost: 2
       levelRequirement: 0
-    TwoStepsAhead:
+    Breakout:
       cost: 2
       levelRequirement: 0
   3:
-    Empty:
+    LearningThroughPain:
       cost: 2
       levelRequirement: 0
-    Empty:
+    BlessingOfTheHierophant:
       cost: 2
       levelRequirement: 0
-    HeartFlicker:
+    HierophantTraining:
       cost: 2
       levelRequirement: 0

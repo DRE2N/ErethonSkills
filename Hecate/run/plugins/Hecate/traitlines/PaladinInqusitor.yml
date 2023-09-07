@@ -1,44 +1,44 @@
-class: Assassin
-displayName: <green><lang:space.-100>Traps
-description: "Der Attentäter ist darauf spezialisiert seine Ziele schnell und präzise zu töten"
+class: Paladin
+displayName: <white><lang:space.-32:''>Ä
+description: "Der Inquisitor bestraft die Sünder mit seinem Speer"
 traitLine:
   0:
-    Empty:
+    InstrumentOfFaith:
       cost: 2
       levelRequirement: 0
-    ForTheGoal:
+    PathOfGod:
       cost: 2
       levelRequirement: 0
-    PassiveEnergyGain:
+    CaptivatingStab:
       cost: 2
       levelRequirement: 0
   1:
-    HardTraining:
+    SharpPain:
       cost: 2
       levelRequirement: 0
-    Empty:
+    ScarredBody:
       cost: 2
       levelRequirement: 0
-    ClearHead:
+    LargeBlade:
       cost: 2
       levelRequirement: 0
   2:
-    BrutalHits:
+    HolyPath:
       cost: 2
       levelRequirement: 0
-    LightBlade:
+    PathOfPurification:
       cost: 2
       levelRequirement: 0
-    TwoStepsAhead:
+    Empty:
       cost: 2
       levelRequirement: 0
   3:
-    Empty:
+    PathOfBlood:
       cost: 2
       levelRequirement: 0
-    Empty:
+    Judgement:
       cost: 2
       levelRequirement: 0
-    HeartFlicker:
+    Atonement:
       cost: 2
       levelRequirement: 0
