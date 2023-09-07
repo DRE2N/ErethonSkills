@@ -1,0 +1,44 @@
+class: Paladin
+displayName: <white><lang:space.-32:''>Ä
+description: "Der Inquisitor bestraft die Sünder mit seinem Speer"
+traitLine:
+  0:
+    InstrumentOfFaith:
+      cost: 2
+      levelRequirement: 0
+    PathOfGod:
+      cost: 2
+      levelRequirement: 0
+    CaptivatingStab:
+      cost: 2
+      levelRequirement: 0
+  1:
+    SharpPain:
+      cost: 2
+      levelRequirement: 0
+    ScarredBody:
+      cost: 2
+      levelRequirement: 0
+    LargeBlade:
+      cost: 2
+      levelRequirement: 0
+  2:
+    HolyPath:
+      cost: 2
+      levelRequirement: 0
+    PathOfPurification:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+  3:
+    PathOfBlood:
+      cost: 2
+      levelRequirement: 0
+    Judgement:
+      cost: 2
+      levelRequirement: 0
+    Atonement:
+      cost: 2
+      levelRequirement: 0
