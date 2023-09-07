@@ -1,0 +1,44 @@
+class: Paladin
+displayName: <white><lang:space.-32:''>Ä
+description: "Der Wächter schützt seine Verbündeten mit seinem eisernem Schild und seiner mächtigen Rüstung"
+traitLine:
+  0:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    EndurantShield:
+      cost: 2
+      levelRequirement: 0
+    IronSkin:
+      cost: 2
+      levelRequirement: 0
+  1:
+    IncreasedRegeneration:
+      cost: 2
+      levelRequirement: 0
+    BloodOfSteel:
+      cost: 2
+      levelRequirement: 0
+    BetterRaiseShield:
+      cost: 2
+      levelRequirement: 0
+  2:
+    ThickShield:
+      cost: 2
+      levelRequirement: 0
+    StunningHit:
+      cost: 2
+      levelRequirement: 0
+    IceArmor:
+      cost: 2
+      levelRequirement: 0
+  3:
+    IronArmor:
+      cost: 2
+      levelRequirement: 0
+    ShieldWeight:
+      cost: 2
+      levelRequirement: 0
+    LastBastion:
+      cost: 2
+      levelRequirement: 0
