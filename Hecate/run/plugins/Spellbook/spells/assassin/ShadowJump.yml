@@ -1,3 +1,3 @@
-class: paladin.ShadowJump
+class: assassin.ShadowJump
 invisDuration: 15
 dashMultiplier: 1.5
