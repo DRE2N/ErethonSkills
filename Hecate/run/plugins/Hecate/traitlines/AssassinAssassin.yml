@@ -6,30 +6,30 @@ traitLine:
     Empty:
       cost: 2
       levelRequirement: 0
-    Empty:
+    ForTheGoal:
       cost: 2
       levelRequirement: 0
-    Empty:
+    PassiveEnergyGain:
       cost: 2
       levelRequirement: 0
   1:
-    Empty:
+    HardTraining:
       cost: 2
       levelRequirement: 0
     Empty:
       cost: 2
       levelRequirement: 0
-    Empty:
+    ClearHead:
       cost: 2
       levelRequirement: 0
   2:
-    Empty:
+    BrutalHits:
       cost: 2
       levelRequirement: 0
-    Empty:
+    LightBlade:
       cost: 2
       levelRequirement: 0
-    Empty:
+    TwoStepsAhead:
       cost: 2
       levelRequirement: 0
   3:
@@ -39,6 +39,6 @@ traitLine:
     Empty:
       cost: 2
       levelRequirement: 0
-    Empty:
+    HeartFlicker:
       cost: 2
       levelRequirement: 0
