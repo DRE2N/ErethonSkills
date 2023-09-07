@@ -3,7 +3,7 @@ displayName: <white><lang:space.-32:''>Ä
 description: "Der Schatten wandert im dunklem, um seine Feinde schnell und leise von hinten zu töten."
 traitLine:
   0:
-    PassiveEnergyRegen:
+    LuckyHit:
       cost: 2
       levelRequirement: 0
     DeathFromTheShadow:
@@ -16,29 +16,29 @@ traitLine:
     Empty:
       cost: 2
       levelRequirement: 0
-    Empty:
+    PowerfulJump:
       cost: 2
       levelRequirement: 0
-    Empty:
+    LightLuggage:
       cost: 2
       levelRequirement: 0
   2:
     EvadeOnDash:
       cost: 2
       levelRequirement: 0
-    Empty:
+    LightShoes:
       cost: 2
       levelRequirement: 0
-    Empty:
+    StealingTheShow:
       cost: 2
       levelRequirement: 0
   3:
     Empty:
       cost: 2
       levelRequirement: 0
-    Empty:
+    UnstableInfusion:
       cost: 2
       levelRequirement: 0
-    Empty:
+    PiercingBlade:
       cost: 2
       levelRequirement: 0
