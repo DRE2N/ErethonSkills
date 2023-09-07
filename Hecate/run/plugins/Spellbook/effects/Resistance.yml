@@ -1,4 +1,4 @@
-class: ResistenceEffect
+class: ResistanceEffect
 maxStacks: 1
 maxDuration: 200
 isPositive: true

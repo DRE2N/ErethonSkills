@@ -1,4 +1,4 @@
-package de.erethon.spellbook.traits.paladin;
+package de.erethon.spellbook.traits.assassin;
 
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
