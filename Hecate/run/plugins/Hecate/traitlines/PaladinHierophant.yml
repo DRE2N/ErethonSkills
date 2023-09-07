@@ -1,0 +1,44 @@
+class: Paladin
+displayName: <white><lang:space.-32:''>Ä
+description: "Der Hierophant verleiht seinen Verbündeten die nötige Stärke, um ihre Kämpfe zu gewinnen."
+traitLine:
+  0:
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    PurifyingFlame:
+      cost: 2
+      levelRequirement: 0
+    ‎MeatShield:
+      cost: 2
+      levelRequirement: 0
+  1:
+    HolyBlessing:
+      cost: 2
+      levelRequirement: 0
+    PureBody:
+      cost: 2
+      levelRequirement: 0
+    ArmorOfTheHierophant:
+      cost: 2
+      levelRequirement: 0
+  2:
+    Unstoppable:
+      cost: 2
+      levelRequirement: 0
+    Empty:
+      cost: 2
+      levelRequirement: 0
+    Breakout:
+      cost: 2
+      levelRequirement: 0
+  3:
+    LearningThroughPain:
+      cost: 2
+      levelRequirement: 0
+    BlessingOfTheHierophant:
+      cost: 2
+      levelRequirement: 0
+    HierophantTraining:
+      cost: 2
+      levelRequirement: 0
