@@ -5,13 +5,19 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.AoEBaseSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
-public class TrapIron extends AoEBaseSpell {
+import java.util.HashSet;
+import java.util.Set;
+
+public class TrapIron extends AssassinBaseTrap {
 
     public TrapIron(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
+
+    public boolean triggeredFirstTime = false;
 
     @Override
     public boolean onPrecast() {
@@ -33,11 +39,19 @@ public class TrapIron extends AoEBaseSpell {
     @Override
     public void onTick() {
         super.onTick();
+        Set<LivingEntity> targets = new HashSet<>();
         for (LivingEntity entity : getEntities()) {
             if (!Spellbook.canAttack(caster, entity)) {
                 continue;
             }
-            entity.damage(data.getInt("damagePerTick", 1), caster, DamageType.PHYSICAL);
+            targets.add(entity);
+            entity.damage(Spellbook.getScaledValue(data, caster, entity, Attribute.ADV_PHYSICAL, damageMultiplier), caster, DamageType.PHYSICAL);
+            triggerTraits(entity, 1);
+        }
+        if (!targets.isEmpty() && !triggeredFirstTime) {
+            triggeredFirstTime = true;
+            triggerTraits(targets);
+            triggerTraits(2);
         }
     }
 }

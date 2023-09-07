@@ -1,0 +1,13 @@
+class: assassin.BombTinkerer
+affectedSpells:
+  - TrapExplosion
+  - TrapFire
+  - TrapIce
+  - TrapIron
+  - TrapPoison
+fury:
+  duration: 120
+  stacks: 2
+power:
+  duration: 120
+  stacks: 2

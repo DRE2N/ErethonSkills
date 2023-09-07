@@ -30,6 +30,7 @@ public class ThrowBola extends AssassinBaseSpell {
     protected boolean onCast() {
         modifier = new AttributeModifier("throwBola-" + caster.getUniqueId(), -100.0, AttributeModifier.Operation.ADD_NUMBER);
         target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addModifier(modifier);
+        triggerTraits(target);
         armorStand = target.getWorld().spawn(target.getLocation(), ArmorStand.class);
         armorStand.setInvisible(true);
         armorStand.setMarker(true);

@@ -8,7 +8,7 @@ import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
-public class TrapIce extends AoEBaseSpell {
+public class TrapIce extends AssassinBaseTrap {
 
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
     private final int effectDuration = data.getInt("effectDuration", 5) * 20;
@@ -45,6 +45,8 @@ public class TrapIce extends AoEBaseSpell {
             }
             if (!entity.hasEffect(effectData)) {
                 entity.addEffect(caster, effectData, effectDuration, effectStacks);
+                triggerTraits(entity, 1);
+                triggerTraits(2);
             }
         }
     }

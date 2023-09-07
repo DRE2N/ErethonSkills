@@ -8,7 +8,7 @@ import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
-public class TrapFire extends AoEBaseSpell {
+public class TrapFire extends AssassinBaseTrap {
 
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Burning");
     private final int effectDuration = data.getInt("effectDuration", 5) * 20;
@@ -44,8 +44,14 @@ public class TrapFire extends AoEBaseSpell {
                 continue;
             }*/
             MessageUtil.log("TrapFire: " + entity.getName() + " is burning");
-            entity.addEffect(caster, effectData, effectDuration, effectStacks); // TODO: Nothing happening here?
+            entity.addEffect(caster, effectData, effectDuration, (int) Math.round(effectStacks * damageMultiplier)); // TODO: Nothing happening here?
+            triggerTraits(2);
         }
+    }
+
+    @Override
+    protected void onEnter(LivingEntity entity) {
+        triggerTraits(entity, 1);
     }
 
     @Override

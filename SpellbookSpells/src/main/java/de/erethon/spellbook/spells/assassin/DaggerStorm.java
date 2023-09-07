@@ -22,6 +22,8 @@ public class DaggerStorm extends AssassinBaseSpell implements Listener {
     private final int divergence = data.getInt("divergence", 5);
     private final float speed = (float) data.getDouble("speed", 3.0);
 
+    public double damageMultiplier = 1.0;
+
     public DaggerStorm(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         tickInterval = 2;
@@ -46,7 +48,8 @@ public class DaggerStorm extends AssassinBaseSpell implements Listener {
                 if (entity == caster || !Spellbook.canAttack(caster, entity)) {
                     return;
                 }
-                entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
+                entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADV_PHYSICAL) * damageMultiplier, caster, DamageType.PHYSICAL);
+                triggerTraits(entity);
             }
         }
     }

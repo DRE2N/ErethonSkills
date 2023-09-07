@@ -39,13 +39,13 @@ import java.util.Set;
 
 public class AoEBaseSpell extends SpellbookSpell {
 
-    protected Location target = null;
+    public Location target = null;
     protected boolean packet = false;
     protected Color circleColor = Color.WHITE;
     CraftServer server = (CraftServer) caster.getServer();
     private final int maxDistance;
     private final boolean self;
-    protected final double size;
+    public double size;
     private int customItemDataFriendly;
     private int customItemDataEnemy;
 

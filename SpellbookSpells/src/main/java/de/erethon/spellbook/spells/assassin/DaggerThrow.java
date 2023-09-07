@@ -54,6 +54,7 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
                     return;
                 }
                 entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
+                triggerTraits(target);
                 EffectData effect = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
                 if (effect != null) {
                     entity.addEffect(caster, effect, 1, 5);

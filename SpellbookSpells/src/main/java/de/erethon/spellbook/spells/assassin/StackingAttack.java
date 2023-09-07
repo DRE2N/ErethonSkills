@@ -32,6 +32,7 @@ public class StackingAttack extends AssassinBaseSpell {
         if (stacks <= data.getInt("maxStacks", 7)) {
             stacks++;
         }
+        triggerTraits(target);
         return super.onAttack(target, damage, type);
     }
 }

@@ -13,9 +13,11 @@ public class Masterthief extends AssassinBaseSpell {
     Random random = new Random();
     SpellData spell;
 
+    public int duration = data.getInt("duration", 30);
+
     public Masterthief(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = data.getInt("duration", 30) * 10;
+        keepAliveTicks = 1000;
     }
 
     @Override
@@ -25,6 +27,7 @@ public class Masterthief extends AssassinBaseSpell {
 
     @Override
     protected boolean onCast() {
+        keepAliveTicks = duration; // Do this here for trait access
         List<SpellData> datas = target.getUsedSpells().keySet().stream().toList();
         if (datas.isEmpty()) {
             caster.sendParsedActionBar("<#ff0000>Das Ziel hat keine Spells eingesetzt.");
@@ -32,6 +35,7 @@ public class Masterthief extends AssassinBaseSpell {
         }
         spell = datas.get(random.nextInt(datas.size()));
         caster.addSpell(spell);
+        triggerTraits(target);
         caster.sendParsedActionBar("<green>Du hast " + spell.getId() + " gestohlen!");
         return true;
     }

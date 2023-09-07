@@ -1,0 +1,15 @@
+class: assassin.BrutalHits
+affectedSpells:
+  - Backstab
+  - DaggerStorm
+  - DaggerThrow
+  - DoubleAttack
+  - Masterthief
+  - PoisonWeapon
+  - StackingAttack
+  - SwordCleave
+  - SwordStorm
+  - Thief
+  - ThrowBola
+duration: 120
+stacks: 2

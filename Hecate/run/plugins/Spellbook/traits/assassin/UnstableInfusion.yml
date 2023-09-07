@@ -1,0 +1,4 @@
+class: assassin.UnstableInfusion
+poisonChance: 0.1
+duration: 120
+stacks: 1

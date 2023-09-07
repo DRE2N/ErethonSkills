@@ -24,6 +24,7 @@ public class PoisonWeapon extends AssassinBaseSpell {
         if (count > 0) {
             count--;
             target.addEffect(caster, effectData, 1, 1);
+            triggerTraits(target);
         }
         return super.onAttack(target, damage, type);
     }

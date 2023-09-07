@@ -34,6 +34,7 @@ public class Thief extends AssassinBaseSpell {
         effectData = datas.get(random.nextInt(datas.size())).data;
         caster.addEffect(caster, effectData, data.getInt("duration", 5) * 20, 1);
         target.removeEffect(effectData);
+        triggerTraits(target);
         caster.sendParsedActionBar("<green>Du hast " + effectData.getName() + " gestohlen!");
         return true;
     }

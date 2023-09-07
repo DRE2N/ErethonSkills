@@ -64,6 +64,7 @@ public class Backstab extends AssassinBaseSpell {
         effectCaster.height = 1.0f;
         effectCaster.start();
         keepAliveTicks = 5;
+        triggerTraits(target);
         return super.onCast();
     }
 

@@ -1,0 +1,3 @@
+class: paladin.ShadowJump
+invisDuration: 15
+dashMultiplier: 1.5

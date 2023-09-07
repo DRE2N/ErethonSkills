@@ -8,8 +8,8 @@ import org.bukkit.entity.LivingEntity;
 
 public class AssassinBaseSpell extends SpellbookSpell {
 
-    private final int energyCost = data.getInt("energyCost", 0);
-    private final int range = data.getInt("range", 32);
+    public int energyCost = data.getInt("energyCost", 0);
+    public int range = data.getInt("range", 32);
     protected LivingEntity target;
 
     public AssassinBaseSpell(LivingEntity caster, SpellData spellData) {

@@ -11,6 +11,7 @@ import org.bukkit.entity.LivingEntity;
 public class SwordCleave extends AssassinBaseSpell {
 
     private final double radius = data.getDouble("radius", 1.5);
+    public double damageMultiplier = data.getDouble("damageMultiplier", 0.6);
 
     public SwordCleave(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -29,9 +30,10 @@ public class SwordCleave extends AssassinBaseSpell {
             if (!Spellbook.canAttack(caster, entity)) {
                 continue;
             }
-            entity.damage(Spellbook.getVariedDamage(attackDmg, caster, true), caster, DamageType.PHYSICAL);
+            entity.damage(Spellbook.getVariedDamage(attackDmg, caster, true) * damageMultiplier, caster, DamageType.PHYSICAL);
+            triggerTraits(target);
         }
-        return true;
+        return super.onCast();
     }
 
 }

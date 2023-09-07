@@ -6,7 +6,7 @@ import de.erethon.spellbook.spells.AoEBaseSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.entity.LivingEntity;
 
-public class TrapExplosion extends AoEBaseSpell {
+public class TrapExplosion extends AssassinBaseTrap {
 
     public TrapExplosion(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -34,7 +34,9 @@ public class TrapExplosion extends AoEBaseSpell {
         if (entity == caster || !Spellbook.canAttack(caster, entity)) {
             return;
         }
-        target.createExplosion((float) data.getDouble("power", 3.0), false, false);
+        target.createExplosion((float) ((float) data.getDouble("power", 3.0) * damageMultiplier), false, false);
+        triggerTraits(entity, 1);
+        triggerTraits(2);
         keepAliveTicks = 1;
     }
 

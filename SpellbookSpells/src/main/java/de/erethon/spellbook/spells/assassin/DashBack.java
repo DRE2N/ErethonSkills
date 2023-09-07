@@ -6,7 +6,8 @@ import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
-public class DashBack extends SpellbookSpell {
+public class DashBack extends AssassinBaseSpell {
+
 
     public DashBack(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -20,9 +21,5 @@ public class DashBack extends SpellbookSpell {
         return super.onCast();
     }
 
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
-    }
 }
 

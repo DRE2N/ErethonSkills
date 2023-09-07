@@ -8,7 +8,7 @@ import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
-public class TrapPoison extends AoEBaseSpell {
+public class TrapPoison extends AssassinBaseTrap {
 
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Poison");
     private final int effectDuration = data.getInt("effectDuration", 5) * 20;
@@ -44,8 +44,10 @@ public class TrapPoison extends AoEBaseSpell {
                 continue;
             }
             //if (!entity.hasEffect(effectData)) {
-                entity.addEffect(caster, effectData, effectDuration, effectStacks);
+                entity.addEffect(caster, effectData, effectDuration, (int) Math.round(effectStacks * damageMultiplier));
             //}
+            triggerTraits(entity, 1);
+            triggerTraits(2);
         }
     }
 
