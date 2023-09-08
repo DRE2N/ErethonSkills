@@ -1,0 +1,4 @@
+class: ranger.Knockdown
+affectedSpells:
+  - CripplingHit
+duration: 40

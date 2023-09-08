@@ -11,6 +11,9 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class AllAroundStrike extends SpellbookSpell {
     private double radius = data.getDouble("startRadius", 2);
     private final double radiusPerTick = data.getDouble("radiusPerTick", 0.2);
@@ -70,6 +73,7 @@ public class AllAroundStrike extends SpellbookSpell {
         caster.swingMainHand();
         radius += radiusPerTick;
         circle.radius = (float) radius;
+        Set<LivingEntity> entities = new HashSet<>();
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(radius)) {
             if (living == caster || !Spellbook.canAttack(caster, living)) {
                 continue;
@@ -79,7 +83,9 @@ public class AllAroundStrike extends SpellbookSpell {
             caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(attackBonus);
             caster.attack(living);
             caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(attackBonus);
+            entities.add(living);
         }
+        triggerTraits(entities);
     }
 
     @Override

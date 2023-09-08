@@ -1,0 +1,3 @@
+class: ranger.HeavyRebound
+damageReductionBonus: -0.5
+bonusMaxRicochets: 2

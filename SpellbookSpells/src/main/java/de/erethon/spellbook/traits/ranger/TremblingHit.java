@@ -20,12 +20,11 @@ public class TremblingHit extends SpellTrait {
 
     @Override
     protected void onTrigger(TraitTrigger trigger) {
-        for (LivingEntity targets : trigger.getTargets()) {
-            for (LivingEntity living : targets.getLocation().getNearbyLivingEntities(radius)) {
-                if (living == caster) continue;
-                if (!Spellbook.canAttack(caster, living)) continue;
-                living.addEffect(caster, stun, stunDuration, 1);
-            }
+        for (LivingEntity living : trigger.getTarget().getLocation().getNearbyLivingEntities(radius)) {
+            if (living == caster) continue;
+            if (!Spellbook.canAttack(caster, living)) continue;
+            living.addEffect(caster, stun, stunDuration, 1);
         }
+
     }
 }

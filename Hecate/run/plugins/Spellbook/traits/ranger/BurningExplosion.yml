@@ -1,0 +1,5 @@
+class: ranger.BurningExplosion
+affectedSpells:
+  - ExplosiveArrow
+duration: 120
+stacks: 3

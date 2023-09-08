@@ -11,7 +11,8 @@ import org.bukkit.entity.LivingEntity;
 public class BasicSelfHeal extends RangerBaseSpell {
 
     private final int baseHeal = data.getInt("baseHeal", 100);
-    private AttributeModifier modifier = new AttributeModifier("spellbook_selfheal", -0.5, AttributeModifier.Operation.ADD_NUMBER);
+    public double healingMultiplier = 1.0;
+    private AttributeModifier modifier = new AttributeModifier("BasicSelfHeal", -0.5, AttributeModifier.Operation.ADD_NUMBER);
 
     public BasicSelfHeal(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -32,7 +33,7 @@ public class BasicSelfHeal extends RangerBaseSpell {
     @Override
     protected void onTickFinish() {
         caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
-        caster.setHealth(Math.min((caster.getHealth() + Spellbook.getScaledValue(data, caster, caster, Attribute.STAT_HEALINGPOWER) * baseHeal), caster.getMaxHealth()));
+        caster.setHealth(Math.min((caster.getHealth() + Spellbook.getScaledValue(data, caster, caster, Attribute.STAT_HEALINGPOWER) * baseHeal * healingMultiplier), caster.getMaxHealth()));
         triggerTraits();
     }
 }

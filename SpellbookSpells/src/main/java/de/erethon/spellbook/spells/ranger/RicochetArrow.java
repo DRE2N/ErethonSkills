@@ -20,8 +20,8 @@ import org.bukkit.util.Vector;
 public class RicochetArrow extends RangerBaseSpell implements Listener {
 
     private final int ricochetRange = data.getInt("ricochetRange", 7);
-    private final int maxRicochets = data.getInt("maxRicochets", 8);
-    private final double damageReductionPerRicochet = data.getDouble("damageReductionPerRicochet", 1);
+    public int maxRicochets = data.getInt("maxRicochets", 8);
+    public double damageReductionPerRicochet = data.getDouble("damageReductionPerRicochet", 1);
     private final int projectileSpeed = data.getInt("projectileSpeed", 2);
 
     private Projectile initialProjectile;

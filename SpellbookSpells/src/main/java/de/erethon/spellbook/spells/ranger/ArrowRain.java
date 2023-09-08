@@ -1,14 +1,19 @@
 package de.erethon.spellbook.spells.ranger;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.Random;
 
-public class ArrowRain extends RangerBaseSpell {
+public class ArrowRain extends RangerBaseSpell implements Listener {
 
     int radius;
     Block targetBlock;
@@ -34,7 +39,14 @@ public class ArrowRain extends RangerBaseSpell {
         random = new Random();
         tickInterval = 5;
         keepAliveTicks = 100;
+        Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
         return true;
+    }
+
+    @EventHandler
+    public void onArrowHit(ProjectileHitEvent event) {
+        if (event.getEntity().getShooter() != caster || event.getHitEntity() == null || !(event.getHitEntity() instanceof LivingEntity)) return;
+        triggerTraits((LivingEntity) event.getHitEntity());
     }
 
     @Override

@@ -1,0 +1,4 @@
+class: ranger.ArrestingGale
+affectedSpells:
+  - ArrowRain
+duration: 120

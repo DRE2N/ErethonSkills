@@ -1,0 +1,3 @@
+class: ranger.Explorer
+damagePerBlockDistance: 0.8
+maxDamage: 50
