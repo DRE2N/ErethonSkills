@@ -13,7 +13,7 @@ traitLine:
       cost: 2
       levelRequirement: 0
   1:
-    Empty:
+    PointedBlades:
       cost: 2
       levelRequirement: 0
     PowerfulJump:
@@ -33,7 +33,7 @@ traitLine:
       cost: 2
       levelRequirement: 0
   3:
-    Empty:
+    FeelTheRush:
       cost: 2
       levelRequirement: 0
     UnstableInfusion:
