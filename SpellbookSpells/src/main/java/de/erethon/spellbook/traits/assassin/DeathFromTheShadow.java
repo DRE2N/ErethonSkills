@@ -19,14 +19,8 @@ public class DeathFromTheShadow extends SpellTrait {
 
     @Override
     public double onAttack(LivingEntity target, double damage, DamageType type) {
-        if (target.hasLineOfSight(caster)) {
-            return super.onAttack(target, damage, type);
-        }
-        for (Player tracked : caster.getTrackedPlayers()) {
-            // todo: Look at faction state/hostility
-            if (tracked.hasLineOfSight(caster)) {
-                return super.onAttack(target, damage, type);
-            }
+        if (!caster.isInvisible()) {
+            return damage;
         }
         return super.onAttack(target, damage * data.getDouble("multiplier", 0.3), type);
     }
