@@ -9,7 +9,7 @@ traitLine:
     ForTheGoal:
       cost: 2
       levelRequirement: 0
-    PassiveEnergyGain:
+    ImprovedEnergyGain:
       cost: 2
       levelRequirement: 0
   1:
@@ -33,10 +33,10 @@ traitLine:
       cost: 2
       levelRequirement: 0
   3:
-    Empty:
+    NimbleHands:
       cost: 2
       levelRequirement: 0
-    Empty:
+    DeathBlow:
       cost: 2
       levelRequirement: 0
     HeartFlicker:
