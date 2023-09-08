@@ -1,0 +1,6 @@
+class: paladin.SuppressionOfTheHeretics
+affectedSpells:
+  - JudgementOfGod
+durationMultiplier: 2.0
+weaknessDuration: 200
+weaknessStacks: 3
