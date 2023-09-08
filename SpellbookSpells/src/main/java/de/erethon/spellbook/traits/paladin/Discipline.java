@@ -1,5 +1,6 @@
 package de.erethon.spellbook.traits.paladin;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
@@ -15,7 +16,9 @@ public class Discipline extends SpellTrait {
 
     @Override
     protected boolean onAddEffect(SpellEffect effect, boolean isNew) {
-        effect.
+        if (Spellbook.getInstance().getCCEffects().contains(effect.data)) {
+            effect.setTicksLeft((int) (effect.getTicksLeft() * ccMultiplier));
+        }
         return super.onAddEffect(effect, isNew);
     }
 }
