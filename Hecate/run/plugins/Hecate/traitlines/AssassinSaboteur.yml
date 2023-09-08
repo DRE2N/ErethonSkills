@@ -6,7 +6,7 @@ traitLine:
     Criminal:
       cost: 2
       levelRequirement: 0
-    Empty:
+    ScarredBody:
       cost: 2
       levelRequirement: 0
     Weakling:
@@ -19,7 +19,7 @@ traitLine:
     Flexible:
       cost: 2
       levelRequirement: 0
-    Empty:
+    Relentless:
       cost: 2
       levelRequirement: 0
   2:
