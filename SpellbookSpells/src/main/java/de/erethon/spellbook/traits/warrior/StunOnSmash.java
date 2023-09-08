@@ -19,6 +19,7 @@ public class StunOnSmash extends SpellTrait {
     protected void onTrigger(TraitTrigger trigger) {
         for (LivingEntity entity : trigger.getTargets()) {
             entity.addEffect(caster, stun, 30, 1);
+            triggerTraits(entity);
         }
     }
 }

@@ -1,0 +1,4 @@
+class: warrior.FrenzyBuff
+maxStacks: 3
+maxDuration: 1000
+isPositive: true

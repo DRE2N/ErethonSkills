@@ -1,0 +1,4 @@
+class: warrior.BarbedHook
+affectedSpells:
+  - ShoutPull
+duration: 120

@@ -1,0 +1,2 @@
+class: warrior.Untiring
+healthRegenPerMissingHealthPercent: 0.08

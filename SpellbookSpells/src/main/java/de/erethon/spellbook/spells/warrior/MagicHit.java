@@ -17,6 +17,7 @@ public class MagicHit extends PaladinBaseSpell {
     public double onAttack(LivingEntity target, double damage, DamageType type) {
         if (type == DamageType.PHYSICAL) {
             currentTicks = keepAliveTicks;
+            triggerTraits(target);
             return damage + Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, org.bukkit.attribute.Attribute.ADV_MAGIC);
         }
         return super.onAttack(target, damage, type);

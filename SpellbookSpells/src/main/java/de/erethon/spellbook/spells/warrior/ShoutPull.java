@@ -7,8 +7,6 @@ import org.bukkit.entity.LivingEntity;
 
 public class ShoutPull extends AbstractWarriorShout {
 
-    Entity target = null;
-
     public int range = data.getInt("range", 10);
 
     public ShoutPull(LivingEntity caster, SpellData spellData) {
@@ -17,17 +15,13 @@ public class ShoutPull extends AbstractWarriorShout {
 
     @Override
     protected boolean onPrecast() {
-        target = caster.getTargetEntity(range);
-        if (target == null || !(target instanceof LivingEntity living) || !Spellbook.canAttack(caster, living)) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
-            return false;
-        }
-        return super.onPrecast();
+        return lookForTarget(range);
     }
 
     @Override
     protected boolean onCast() {
         target.setVelocity(caster.getLocation().getDirection().multiply(-1).multiply(data.getDouble("strength", 1)));
+        triggerTraits(target);
         return super.onCast();
     }
 }

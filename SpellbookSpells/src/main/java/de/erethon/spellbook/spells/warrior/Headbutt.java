@@ -48,6 +48,7 @@ public class Headbutt extends WarriorBaseSpell implements Listener {
             target.addEffect(caster, stun, stunDuration, 1);
             caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_LAND, Sound.Source.RECORD, 0.5f, 1));
             target.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_LAND, Sound.Source.RECORD, 0.5f, 1));
+            triggerTraits(target);
             onTickFinish();
         }
     }

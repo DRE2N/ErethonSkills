@@ -1,0 +1,3 @@
+class: warrior.Assault
+bonusSpeed: 0.1
+bonusPhysical: 20

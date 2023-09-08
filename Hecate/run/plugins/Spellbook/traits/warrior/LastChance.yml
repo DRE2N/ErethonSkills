@@ -1,0 +1,4 @@
+class: warrior.LastChance
+healthTriggerPercentage: 0.5
+bonus: 50
+duration: 500

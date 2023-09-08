@@ -1,0 +1,3 @@
+class: warrior.HammerQuake
+stunChance: 0.01
+stunDuration: 20

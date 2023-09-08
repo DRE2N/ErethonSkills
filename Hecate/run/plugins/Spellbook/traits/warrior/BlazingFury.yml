@@ -1,0 +1,5 @@
+class: warrior.BlazingFury
+affectedSpells:
+  - FireSword
+duration: 60
+stacks: 3

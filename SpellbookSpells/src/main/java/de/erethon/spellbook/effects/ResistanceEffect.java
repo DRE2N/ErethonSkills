@@ -1,5 +1,6 @@
 package de.erethon.spellbook.effects;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
@@ -13,7 +14,7 @@ public class ResistanceEffect extends SpellTrait {
 
     @Override
     protected boolean onAddEffect(SpellEffect effect, boolean isNew) {
-        if (!effect.data.isPositive()) {
+        if (!effect.data.isPositive() && !Spellbook.getInstance().getCCEffects().contains(effect.data)) {
             return false;
         }
         return super.onAddEffect(effect, isNew);

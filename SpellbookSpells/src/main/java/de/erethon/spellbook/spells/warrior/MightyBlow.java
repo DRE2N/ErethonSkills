@@ -12,7 +12,7 @@ import org.bukkit.util.Vector;
 
 public class MightyBlow extends WarriorBaseSpell {
 
-    private final double rangeMultiplier = data.getInt("rangeMultiplier", 2);
+    public double rangeMultiplier = data.getInt("rangeMultiplier", 2);
     private final int radius = data.getInt("radius", 3);
     private final double pushStrength = data.getDouble("pushStrength", 2);
 

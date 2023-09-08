@@ -1,0 +1,7 @@
+class: warrior.Outlast
+healthOnKill: 50
+coefficients:
+  players:
+    stat_healingpower: 2.0
+  entities:
+    stat_healingpower: 0.5

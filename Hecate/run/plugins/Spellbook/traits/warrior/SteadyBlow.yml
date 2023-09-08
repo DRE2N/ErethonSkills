@@ -1,0 +1,7 @@
+class: warrior.SteadyBlow
+affectedSpells:
+  - Headbutt
+affectedTraits:
+  - StunOnSmash
+bonus: 20
+duration: 200

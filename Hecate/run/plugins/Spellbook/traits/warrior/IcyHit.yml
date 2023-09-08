@@ -1,0 +1,4 @@
+class: warrior.IcyHit
+affectedSpells:
+  - MagicHit
+duration: 100

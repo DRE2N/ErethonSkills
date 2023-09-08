@@ -1,0 +1,3 @@
+class: warrior.QuickStrokes
+attackSpeedMultiplier: 1.1
+healthMultiplier: 0.8
