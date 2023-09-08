@@ -26,7 +26,7 @@ traitLine:
     Unstoppable:
       cost: 2
       levelRequirement: 0
-    Empty:
+    Disicpline:
       cost: 2
       levelRequirement: 0
     Breakout:
