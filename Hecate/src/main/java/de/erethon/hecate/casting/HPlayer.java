@@ -1,56 +1,72 @@
 package de.erethon.hecate.casting;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.bedrock.config.EConfig;
-import de.erethon.bedrock.user.LoadableUser;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.arenas.ArenaPlayer;
+import de.erethon.hecate.classes.HClass;
+import de.erethon.hecate.classes.Traitline;
 import de.erethon.papyrus.PlayerSwitchProfileEvent;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class HPlayer  extends EConfig implements LoadableUser, Listener {
+public class HPlayer extends YamlConfiguration implements Listener {
 
-    public static final int CONFIG_VERSION = 1;
+    private static final HClass DEFAULT_CLASS = Hecate.getInstance().getHClass("Assassin");
 
-    private Player player;
-    private ArenaPlayer arenaPlayer;
-    private HCharacter selectedCharacter;
-    private final HashMap<Integer, HCharacter> characters = new HashMap<>();
-    private int profileID;
+    private final File file;
+    private final Player player;
+    private ArenaPlayer arenaPlayer = null;
+    private HCharacter selectedCharacter = null;
+    private final List<HCharacter> characters = new ArrayList<>();
+    private int profileID = 0;
 
-    private boolean autoJoinWithLastCharacter = false;
+    private boolean autoJoinWithLastCharacter = true;
 
     public HPlayer(Player player) {
-        super(HPlayerCache.getPlayerFile(player), CONFIG_VERSION);
-        this.player = player;
-        load();
-        if (characters.isEmpty()) {
-            characters.put(0, new HCharacter(this, 0));
+        super();
+        MessageUtil.log("Creating new HPlayer for " + player.getName() + "...");
+        this.file = new File(Hecate.getInstance().getDataFolder() + "/players/" + player.getUniqueId() + ".yml");
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        selectedCharacter = characters.get(0);
+        this.player = player;
+        try {
+            load(file);
+        } catch (IOException | InvalidConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+        loadUser();
+        if (characters.isEmpty()) {
+            MessageUtil.log("No characters found for " + player.getName() + ". Creating new default character...");
+            characters.add(new HCharacter(this, 0));
+        }
         Bukkit.getPluginManager().registerEvents(this, Hecate.getInstance());
     }
 
     public void switchCharacterTo(int id) {
-        saveCharacter(profileID);
+        if (selectedCharacter != null) {
+            saveCharacter(profileID);
+        }
         profileID = id;
-        if (characters.get(id) == null) {
-            characters.put(id, new HCharacter(this, id));
-            return;
+        if (characters.size() <= id) {
+            characters.add(new HCharacter(this, id));
         }
         selectedCharacter = characters.get(id);
     }
@@ -58,7 +74,7 @@ public class HPlayer  extends EConfig implements LoadableUser, Listener {
     public HCharacter loadCharacter(int id) {
         HCharacter character = new HCharacter(this, id);
         SpellbookAPI spellbook = Bukkit.getServer().getSpellbookAPI();
-        for (String spellId : config.getStringList("characters." + id + ".unlockedSpells")) {
+        for (String spellId : getStringList("characters." + id + ".unlockedSpells")) {
             SpellData spellData = spellbook.getLibrary().getSpellByID(spellId);
             if (spellData == null) {
                 if (!spellId.equals("empty")) MessageUtil.log("Unknown spell '" + spellId + "' found under 'unlockedSlots'");
@@ -66,10 +82,9 @@ public class HPlayer  extends EConfig implements LoadableUser, Listener {
             }
             character.addSpell(spellData);
         }
-        List<String> slotList = config.getStringList("characters." + id + ".assignedSlots");
+        List<String> slotList = getStringList("characters." + id + ".assignedSlots");
         if (slotList.size() > 8) {
             MessageUtil.log("Illegal amount of slots assigned");
-            return null;
         }
         for (int i = 0; i < slotList.size(); i++) {
             String spellId = slotList.get(i);
@@ -80,61 +95,72 @@ public class HPlayer  extends EConfig implements LoadableUser, Listener {
             }
             character.setSpellAt(i, spellData);
         }
-        character.setLevel(config.getInt("characters." + id + ".level", 1));
-        character.setXp(config.getInt("characters." + id + ".xp", 0));
-        character.setMaxEnergy(config.getInt("characters." + id + ".maxEnergy", 100));
-        character.setEnergy(config.getInt("characters." + id + ".energy", 50));
-        character.sethClass(Hecate.getInstance().getHClass(config.getString("characters" + id + ".class", "assassin")));
+        character.setLevel(getInt("characters." + id + ".level", 1));
+        character.setXp(getInt("characters." + id + ".xp", 0));
+        character.setMaxEnergy(getInt("characters." + id + ".maxEnergy", 100));
+        character.setEnergy(getInt("characters." + id + ".energy", 50));
+        character.sethClass(Hecate.getInstance().getHClass(getString("characters" + id + ".class", DEFAULT_CLASS.getId())));
+        Traitline traitline = Hecate.getInstance().getTraitline(getString("characters." + id + ".traitline", character.gethClass().getDefaultTraitline().getId()));
+        character.setSelectedTraitline(traitline);
         return character;
     }
 
-    @Override
-    public void load() {
-        autoJoinWithLastCharacter = config.getBoolean("autoJoinWithLastCharacter", false);
-        profileID = config.getInt("profileID", 0);
-        Set<String> characterList = config.getConfigurationSection("characters").getKeys(false);
+    public void loadUser() {
+        autoJoinWithLastCharacter = getBoolean("autoJoinWithLastCharacter", false);
+        profileID = getInt("profileID", 0);
+        ConfigurationSection charSection = getConfigurationSection("characters");
+        if (charSection == null) {
+            MessageUtil.log("No characters found for " + player.getName() + ". New player?");
+            return;
+        }
+        Set<String> characterList = charSection.getKeys(false);
         for (String id : characterList) {
             int i = Integer.parseInt(id);
-            characters.put(i, loadCharacter(i));
+            characters.add(loadCharacter(i));
             if (i == profileID) {
-                selectedCharacter = loadCharacter(i);
+                selectedCharacter = characters.get(i);
             }
         }
-        arenaPlayer = new ArenaPlayer(this, player, config.getConfigurationSection("arenas"));
+        arenaPlayer = new ArenaPlayer(this, player,getConfigurationSection("arenas"));
         MessageUtil.log("Loaded " + characterList.size() + " characters for " + player.getName() + "! Last selected: " + profileID);
     }
 
-    /* LoadableUser methods */
-
-    @Override
-    public void updatePlayer(Player player) {
-        this.player = player;
-    }
-
-    @Override
     public void saveUser() {
         MessageUtil.log("User " + player.getName() + " saved!");
-        for (HCharacter character : characters.values()) {
-            saveCharacter(character.getCharacterID());
+        for (HCharacter character : characters) {
+            try { // Let's not completely fail just because one character fails
+                saveCharacter(character.getCharacterID());
+            } catch (Exception e) {
+                MessageUtil.log("Failed to save character for " + player.getName());
+                e.printStackTrace();
+            }
         }
-        config.set("autoJoinWithLastCharacter", autoJoinWithLastCharacter);
-        config.set("profileID", profileID);
-        config.set("arenas", arenaPlayer.save());
-        save();
+       set("autoJoinWithLastCharacter", autoJoinWithLastCharacter);
+       set("profileID", profileID);
+        if (arenaPlayer != null) {
+            set("arenas", arenaPlayer.save());
+        }
+        try {
+            save(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        MessageUtil.log("Saved " + characters.size() + " characters for " + player.getName() + "! Last selected: " + profileID);
     }
 
     public void saveCharacter(int id) {
-        config.set("characters." + id + ".unlockedSpells", selectedCharacter.getUnlockedSpells().stream().map(SpellData::getId).collect(Collectors.toList()));
-        config.set("characters." + id + ".assignedSlots", Arrays.stream(selectedCharacter.getAssignedSlots()).map(s -> s == null ? "empty" : s.getId()).collect(Collectors.toList()));
-        config.set("characters." + id + ".level", selectedCharacter.getLevel());
-        config.set("characters." + id + ".xp", selectedCharacter.getXp());
-        config.set("characters." + id + ".maxEnergy", selectedCharacter.getMaxEnergy());
-        config.set("characters." + id + ".energy", selectedCharacter.getEnergy());
+        set("characters." + id + ".unlockedSpells", selectedCharacter.getUnlockedSpells().stream().map(SpellData::getId).collect(Collectors.toList()));
+        set("characters." + id + ".assignedSlots", Arrays.stream(selectedCharacter.getAssignedSlots()).map(s -> s == null ? "empty" : s.getId()).collect(Collectors.toList()));
+        set("characters." + id + ".level", selectedCharacter.getLevel());
+        set("characters." + id + ".xp", selectedCharacter.getXp());
+        set("characters." + id + ".maxEnergy", selectedCharacter.getMaxEnergy());
+        set("characters." + id + ".energy", selectedCharacter.getEnergy());
         if (selectedCharacter.gethClass() == null) {
-            config.set("characters." + id + ".class", "assassin");
+            set("characters." + id + ".class", "assassin");
             return;
         }
-        config.set("characters." + id + ".class", selectedCharacter.gethClass().getId());
+        set("characters." + id + ".class", selectedCharacter.gethClass().getId());
+        set("characters." + id + ".traitline", selectedCharacter.getSelectedTraitline().getId());
     }
 
     public Player getPlayer() {
@@ -143,6 +169,9 @@ public class HPlayer  extends EConfig implements LoadableUser, Listener {
 
     public HCharacter getSelectedCharacter() {
         if (selectedCharacter == null) {
+            if (characters.get(0) == null) {
+                characters.add(new HCharacter(this, 0));
+            }
             selectedCharacter = characters.get(0);
             return selectedCharacter;
         }
@@ -155,15 +184,14 @@ public class HPlayer  extends EConfig implements LoadableUser, Listener {
 
     @EventHandler
     public void onSwitch(PlayerSwitchProfileEvent event) {
-        MessageUtil.log("aaaa");
         if (event.getPlayer().getUniqueId() != player.getUniqueId()) return;
         MessageUtil.sendMessage(player,"Switching profile to " + event.getNewProfileID() + "...");
         switchCharacterTo(event.getNewProfileID());
         saveUser();
     }
 
-    public Collection<HCharacter> getCharacters() {
-        return characters.values();
+    public List<HCharacter> getCharacters() {
+        return characters;
     }
 
     public boolean isAutoJoinWithLastCharacter() {

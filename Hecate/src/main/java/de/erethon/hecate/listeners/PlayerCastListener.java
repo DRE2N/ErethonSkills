@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HCharacter;
 import de.erethon.hecate.casting.HPlayer;
+import de.erethon.hecate.casting.HPlayerCache;
 import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.CharacterSelection;
@@ -31,20 +32,24 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
+import org.jetbrains.annotations.NotNull;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
+import javax.naming.Name;
 import java.io.File;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -55,6 +60,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerCastListener implements Listener {
 
     private ConcurrentHashMap<TextDisplay, Long> displays = new ConcurrentHashMap<>();
+    private final HPlayerCache cache =  Hecate.getInstance().getHPlayerCache();
 
     BukkitRunnable remover = new BukkitRunnable() {
         @Override
@@ -79,7 +85,7 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onModeSwitch(PlayerSwapHandItemsEvent event) {
-        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(event.getPlayer());
+        HCharacter hCharacter = cache.getCharacter(event.getPlayer());
         // The OffHandItem is the item that WOULD BE in the offhand if the event is not cancelled. Thanks Spigot for great method naming!
         if ((event.getOffHandItem() != null && event.getOffHandItem().getType() == Material.STICK || hCharacter.isInCastmode())) {
             event.setCancelled(true);
@@ -161,7 +167,7 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onItemSwitch(PlayerItemHeldEvent event) {
-        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(event.getPlayer());
+        HCharacter hCharacter = cache.getCharacter(event.getPlayer());
         if (!hCharacter.isInCastmode()) {
             return;
         }
@@ -175,7 +181,10 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter((OfflinePlayer) event.getWhoClicked());
+        HCharacter hCharacter = cache.getCharacter((Player) event.getWhoClicked());
+        if (hCharacter == null) {
+            return;
+        }
         if (hCharacter.isInCastmode()) {
             event.setCancelled(true);
         }
@@ -183,7 +192,7 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
-        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(event.getPlayer());
+        HCharacter hCharacter = cache .getCharacter(event.getPlayer());
         if (hCharacter.isInCastmode()) {
             event.setCancelled(true);
             if (hCharacter.gethClass() != null && hCharacter.gethClass().getSpecialAction(SpecialActionKey.Q) != null) {
@@ -205,12 +214,23 @@ public class PlayerCastListener implements Listener {
     }
 
     @EventHandler
+    public void onConnect(AsyncPlayerPreLoginEvent event) {
+        if (!Hecate.getInstance().ready) { // Don't allow players to join while Spellbook is still loading
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("Server startet...", NamedTextColor.DARK_RED)
+                    .append(Component.newline())
+                    .append(Component.newline())
+                    .append(Component.text("Bitte warte noch einen Moment.", NamedTextColor.GRAY)));
+        }
+    }
+
+    @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        MessageUtil.log("Joined " + event.getPlayer().getName() + " (" + event.getPlayer().getUniqueId() + ")");
         // Fixes for spell effects after server crash
         Player player = event.getPlayer();
         player.setInvisible(false);
         player.setWalkSpeed(0.2f);
-        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(player);
+        HPlayer hPlayer = cache.getByPlayer(player);
         if (hPlayer.isAutoJoinWithLastCharacter() && hPlayer.getSelectedCharacterID() != 0) {
             CraftPlayer craftPlayer = (CraftPlayer) player;
             ServerPlayer serverPlayer = craftPlayer.getHandle();
@@ -228,7 +248,13 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
+        if (cache.getCharacter(event.getPlayer()).isInCastmode()) {
+            cache.getCharacter(event.getPlayer()).switchMode(CombatModeReason.PLUGIN);
+        }
+        cache.getByPlayer(event.getPlayer()).saveUser();
         event.getPlayer().saveData();
+        cache.remove(cache.getByPlayer(event.getPlayer()));
+        MessageUtil.log("Disconnected " + event.getPlayer().getName() + " (" + event.getPlayer().getUniqueId() + ")");
     }
 
     @EventHandler
@@ -241,7 +267,7 @@ public class PlayerCastListener implements Listener {
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         if (config.getBoolean("active")) {
-            HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(player);
+            HCharacter hCharacter = cache.getCharacter(player);
             hCharacter.loadInventory().thenAccept(bool -> {
                 if (!bool) {
                     MessageUtil.sendMessage(player, "&cThere was an error while loading your inventory. Please report this issue.");
@@ -253,15 +279,15 @@ public class PlayerCastListener implements Listener {
     @EventHandler
     public void preCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        HPlayer hPlayer = Hecate.getInstance().getHPlayerCache().getByPlayer(player);
-        if (hPlayer.getSelectedCharacter() == null) {
+        HPlayer hPlayer = cache.getByPlayer(player);
+        if (hPlayer.getSelectedCharacter() == null && !event.getMessage().equals("/h character")) {
             MessageUtil.sendMessage(player, "&cYou need to select a character first.");
             event.setCancelled(true);
         }
     }
 
     private void castRightclickAction(Player player) {
-        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(player);
+        HCharacter hCharacter = cache.getCharacter(player);
         if (!hCharacter.isInCastmode()) return;
         if (hCharacter.gethClass() != null && hCharacter.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
             hCharacter.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK).queue(player);

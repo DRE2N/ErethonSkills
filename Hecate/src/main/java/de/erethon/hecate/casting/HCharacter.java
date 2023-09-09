@@ -3,6 +3,7 @@ package de.erethon.hecate.casting;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.HClass;
+import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.events.CombatModeEnterEvent;
 import de.erethon.hecate.events.CombatModeLeaveEvent;
 import de.erethon.hecate.events.CombatModeReason;
@@ -47,15 +48,13 @@ public class HCharacter {
     private int maxEnergy;
     private final Set<SpellData> unlockedSpells = new HashSet<>();
 
-    private HClass hClass;
+    private HClass hClass = Hecate.getInstance().getHClass("Assassin");
+    private Traitline selectedTraitline;
     private SpellData[] assignedSlots = new SpellData[8];
     private final Set<TraitData> combatOnlyTraits = new HashSet<>();
 
     private boolean isInCastmode = false;
     private int hotbarSlot = 0;
-
-    public boolean hasSpellMenuOpen = false;
-
 
     MiniMessage miniMessage = MiniMessage.miniMessage();
 
@@ -63,6 +62,7 @@ public class HCharacter {
         this.hPlayer = hPlayer;
         this.player = hPlayer.getPlayer();
         this.characterID = characterID;
+        this.selectedTraitline = hClass.getDefaultTraitline();
         player.setMaxEnergy(maxEnergy);
         player.setEnergy(energy);
     }
@@ -339,6 +339,13 @@ public class HCharacter {
         unlockedSpells.add(spellData);
     }
 
+    public Traitline getSelectedTraitline() {
+        return selectedTraitline;
+    }
+
+    public void setSelectedTraitline(Traitline selectedTraitline) {
+        this.selectedTraitline = selectedTraitline;
+    }
 
     public void setMaxEnergy(int i) {
         maxEnergy = i;

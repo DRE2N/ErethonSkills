@@ -4,10 +4,12 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
+import de.erethon.hecate.casting.HPlayer;
 import de.erethon.hecate.casting.HPlayerCache;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.commands.HecateCommandCache;
+import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.listeners.EntityListener;
 import de.erethon.hecate.listeners.PlayerCastListener;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
@@ -35,6 +37,8 @@ public final class Hecate extends EPlugin {
     private EntityStatusDisplayManager statusDisplayManager;
     private final Set<Traitline> traitlines = new HashSet<>();
     private final Set<HClass> hClasses = new HashSet<>();
+
+    public boolean ready = false;
 
     public Hecate() {
         settings = EPluginSettings.builder()
@@ -66,11 +70,17 @@ public final class Hecate extends EPlugin {
             Bukkit.getServer().getSpellbookAPI().getLibrary().reload();
             loadTraitlines();
             loadClasses();
+            ready = true;
         }, 30);
     }
 
     @Override
     public void onDisable() {
+        for (HPlayer hPlayer : hPlayerCache.getPlayers()) { // TODO: This does not seem to include all players?
+            if (hPlayer.getSelectedCharacter().isInCastmode()) {
+                hPlayer.getSelectedCharacter().switchMode(CombatModeReason.PLUGIN);
+            }
+        }
         Bukkit.getScheduler().cancelTasks(this);
         HandlerList.unregisterAll(this);
     }

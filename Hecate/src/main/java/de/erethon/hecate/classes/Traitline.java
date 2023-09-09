@@ -2,6 +2,7 @@ package de.erethon.hecate.classes;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
+import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.TraitData;
 import net.kyori.adventure.text.Component;
@@ -15,7 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Traitline extends YamlConfiguration {
 
@@ -28,6 +31,7 @@ public class Traitline extends YamlConfiguration {
     private int activeModelData = 0;
     private int initialLevelRequirement = 0;
     private final HashMap<Integer, List<TraitLineEntry>> traitMap = new HashMap<>();
+    private final Set<SpellData> spells = new HashSet<>();
 
     public Traitline(File file) throws IOException, InvalidConfigurationException {
         load(file);
@@ -57,6 +61,10 @@ public class Traitline extends YamlConfiguration {
         return traitMap.get(level);
     }
 
+    public Set<SpellData> getSpells() {
+        return spells;
+    }
+
     @Override
     public void load(File file) throws IOException, InvalidConfigurationException {
         super.load(file);
@@ -66,6 +74,14 @@ public class Traitline extends YamlConfiguration {
         inactiveModelData = getInt("inactiveModelData", 0);
         activeModelData = getInt("activeModelData", 0);
         initialLevelRequirement = getInt("initialLevelRequirement", 0);
+        for (String id : getStringList("spells")) {
+            SpellData spell = spellbookAPI.getLibrary().getSpellByID(id);
+            if (spell == null) {
+                MessageUtil.log("Unknown spell '" + id + "' found in traitline file " + id);
+                continue;
+            }
+            spells.add(spell);
+        }
         for (String key : getConfigurationSection("traitLine").getKeys(false)) {
             int level = Integer.parseInt(key);
             List<TraitLineEntry> traits = new ArrayList<>();

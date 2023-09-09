@@ -24,6 +24,8 @@ public class HClass extends YamlConfiguration {
     private final HashMap<Integer, Set<SpellData>> spellLevelMap = new HashMap<>();
     private final List<Traitline> traitlines = new ArrayList<>();
 
+    private Traitline defaultTraitline = null;
+
     private String id;
     private String displayName;
     private String description;
@@ -57,6 +59,10 @@ public class HClass extends YamlConfiguration {
         return traitlines;
     }
 
+    public Traitline getDefaultTraitline() {
+        return defaultTraitline;
+    }
+
     public String getId() {
         return id;
     }
@@ -74,6 +80,7 @@ public class HClass extends YamlConfiguration {
         super.load(file);
         id = file.getName().replace(".yml", "");
         displayName = getString("displayName");
+        defaultTraitline = Hecate.getInstance().getTraitline(getString("defaultTraitline"));
         ConfigurationSection specialActionSection = getConfigurationSection("specialActionKeys");
         if (specialActionSection != null) {
             for (String key : specialActionSection.getKeys(false)) {

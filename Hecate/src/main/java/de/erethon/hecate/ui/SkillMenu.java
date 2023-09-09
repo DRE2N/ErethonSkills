@@ -5,7 +5,6 @@ import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.HCharacter;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
-import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -16,10 +15,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +24,6 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SkillMenu implements Listener, InventoryHolder {
@@ -37,21 +32,22 @@ public class SkillMenu implements Listener, InventoryHolder {
     private final Inventory inventory;
     private final HCharacter player;
     private final List<SpellData> spells = new ArrayList<>();
-    private List<SpellData> selectedSpells = new ArrayList<>();
     private int currentIndex = 0;
 
     public SkillMenu(HCharacter player) {
-        Bukkit.getServer().getSpellbookAPI().getLibrary().getLoaded().forEach((key, value) -> spells.add(value));
         this.player = player;
         inventory = Bukkit.createInventory(this, 54, ChatColor.DARK_RED + "Skills");
+        if (player.gethClass() == null || player.getSelectedTraitline() == null) {
+            MessageUtil.sendMessage(player.getPlayer(), "<red>You have no class/traitline selected.");
+            return;
+        }
+        this.spells.addAll(player.getSelectedTraitline().getSpells());
         Bukkit.getPluginManager().registerEvents(this, Hecate.getInstance());
         prepareInventory();
         player.getPlayer().openInventory(inventory);
-        player.hasSpellMenuOpen = true;
     }
 
     public void prepareInventory() {
-        selectedSpells = Arrays.asList(player.getAssignedSlots());
         inventory.setItem(45, new ItemStack(Material.BLUE_STAINED_GLASS_PANE)); // Prev
         for (int i = 46; i < 53; i++) {
             inventory.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE)); // Divider
@@ -146,14 +142,6 @@ public class SkillMenu implements Listener, InventoryHolder {
         } else if (slot > 44 && slot < 54) {
             event.setCancelled(true);
         }
-    }
-
-    @EventHandler
-    public void onInvClose(InventoryCloseEvent event) {
-        if (event.getInventory().getHolder() != this) {
-            return;
-        }
-        player.hasSpellMenuOpen = false;
     }
 
     private ItemStack itemFromSpellData(SpellData data) {

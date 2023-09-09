@@ -52,6 +52,10 @@ public class TraitMenu implements Listener, InventoryHolder {
             MessageUtil.sendMessage(player.getPlayer(), "<red>You have no class selected.");
             return;
         }
+        if (player.getSelectedTraitline() != null) {
+            selectedTraitline = player.getSelectedTraitline();
+            displayName = selectedTraitline.getDisplayName();
+        }
         if (player.isInCastmode()) {
             MessageUtil.sendMessage(player.getPlayer(), "<red>You can't open the trait menu while in combat.");
             return;
@@ -97,7 +101,7 @@ public class TraitMenu implements Listener, InventoryHolder {
             traitlines[traitLineIndex] = traitline;
             ItemStack item = new ItemStack(ICON_MATERIAL);
             ItemMeta meta = item.getItemMeta();
-            meta.displayName(traitline.getDisplayName());
+            meta.displayName(Component.text(traitline.getId()));
             meta.lore(traitline.getDescription());
             item.setItemMeta(meta);
             int slot = LOWER_BAR_START + (traitLineIndex * SPACE_BETWEEN_TRAITLINES);
@@ -111,7 +115,7 @@ public class TraitMenu implements Listener, InventoryHolder {
         TraitLineEntry entry = traitline.getTraitLineEntries(level).get(index);
         ItemStack item = new ItemStack(ICON_MATERIAL);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(entry.data().getDisplayName());
+        meta.displayName(Component.text(entry.data().getId()));
         meta.lore(entry.data().getDescription());
         if (active) {
             meta.setCustomModelData(entry.activeModelData());
@@ -150,6 +154,7 @@ public class TraitMenu implements Listener, InventoryHolder {
         }
         if (traitlines[slot] != null) {
             selectedTraitline = traitlines[slot];
+            player.setSelectedTraitline(selectedTraitline);
             displayName = selectedTraitline.getDisplayName();
             updateTitle();
             prepareInventory();
