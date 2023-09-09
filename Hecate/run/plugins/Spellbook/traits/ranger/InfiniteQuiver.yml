@@ -1,3 +1,28 @@
 class: ranger.InfiniteQuiver
+affectedSpells: # All except pet control innate spells
+  - AllAroundStrike
+  - ArrowRain
+  - BasicSelfHeal
+  - BeastMode
+  - CripplingHit
+  - CripplingShot
+  - EvasiveRetreat
+  - ExplosiveArrow
+  - FarShot
+  - IceArrows
+  - KnockbackArrow
+  - LargeArrow
+  - MagicBolt
+  - MarkOfTheHunted
+  - OvergrownShield
+  - PetFixedBite
+  - PetHealAround
+  - PetRoar
+  - PiercingArrows
+  - PullToPet
+  - PushBack
+  - RevealEnemies
+  - RicochetArrow
+  - StackingArrows
 cooldownReduction: 5
 reductionChance: 0.2

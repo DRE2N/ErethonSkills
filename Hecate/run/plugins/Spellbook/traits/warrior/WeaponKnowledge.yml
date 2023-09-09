@@ -1,2 +1,4 @@
 class: warrior.WeaponKnowledge
+affectedSpells:
+  - PreciseHit
 bonusDamage: 25

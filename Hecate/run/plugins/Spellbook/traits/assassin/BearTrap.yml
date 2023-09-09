@@ -1,2 +1,8 @@
 class: assassin.BearTrap
+affectedSpells:
+  - TrapExplosion
+  - TrapFire
+  - TrapIce
+  - TrapIron
+  - TrapPoison
 damageMultiplier: 1.5

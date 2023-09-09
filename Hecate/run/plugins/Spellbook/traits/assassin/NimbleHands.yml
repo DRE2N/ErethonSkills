@@ -1,2 +1,4 @@
 class: assassin.NimbleHands
+affectedSpells:
+  - SwordCleave
 damageReductionBonus: 0.3

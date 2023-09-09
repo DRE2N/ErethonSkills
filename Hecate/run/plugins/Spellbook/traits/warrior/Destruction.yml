@@ -1,2 +1,4 @@
 class: warrior.Destruction
+affectedSpells:
+  - BreakingHit
 durationMultiplier: 2.0

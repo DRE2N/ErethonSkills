@@ -1,2 +1,8 @@
 class: assassin.BombSpecialist
+affectedSpells:
+  - TrapExplosion
+  - TrapFire
+  - TrapIce
+  - TrapIron
+  - TrapPoison
 bonusRadius: 2

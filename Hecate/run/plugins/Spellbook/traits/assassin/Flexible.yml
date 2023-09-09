@@ -1,2 +1,4 @@
 class: assassin.Flexible
+affectedSpells:
+  - DashBack
 cost: 5

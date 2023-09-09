@@ -1,2 +1,4 @@
 class: ranger.HealingBandages
+affectedSpells:
+  - BasicSelfHeal
 healingMultiplier: 1.5

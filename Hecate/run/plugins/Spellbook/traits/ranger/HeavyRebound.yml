@@ -1,3 +1,5 @@
 class: ranger.HeavyRebound
+affectedSpells:
+  - RicochetArrows
 damageReductionBonus: -0.5
 bonusMaxRicochets: 2

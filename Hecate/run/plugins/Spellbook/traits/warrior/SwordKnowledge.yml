@@ -1,3 +1,5 @@
 class: warrior.SwordKnowledge
+affectedSpells:
+  - SlashingHit
 bleedingStackMultiplier: 4.0
 damageMultiplier: 1.5

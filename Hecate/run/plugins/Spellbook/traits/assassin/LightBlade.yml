@@ -1,2 +1,4 @@
 class: assassin.LightBlade
+affectedSpells:
+  - SwordStorm
 bonusAttacks: 5

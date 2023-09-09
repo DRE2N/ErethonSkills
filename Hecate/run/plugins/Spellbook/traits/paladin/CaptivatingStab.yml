@@ -1,2 +1,4 @@
 class: paladin.CaptivatingStab
+affectedSpells:
+  - IceSpear
 duration: 20

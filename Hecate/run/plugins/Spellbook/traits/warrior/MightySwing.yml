@@ -1,2 +1,4 @@
 class: warrior.MightySwing
+affectedSpells:
+  - MightyBlow
 rangeMultiplierMultiplier: 1.2

@@ -1,2 +1,4 @@
 class: assassin.MasterMasterThief
+affectedSpells:
+  - Masterthief
 bonusDuration: 300
