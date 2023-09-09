@@ -1,3 +1,6 @@
 displayName: Assassine
+defaultTraitline: AssassinShadow
 traitlines:
-  - AssassinStealth
+  - AssassinAssassin
+  - AssassinSaboteur
+  - AssassinShadow

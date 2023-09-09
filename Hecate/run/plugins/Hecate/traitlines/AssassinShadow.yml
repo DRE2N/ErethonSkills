@@ -1,6 +1,6 @@
 class: Assassin
 displayName: <white><lang:space.-32:''>Ä
-description: "Der Schatten wandert im dunklem, um seine Feinde schnell und leise von hinten zu töten."
+description: "<!i>Der Schatten wandert im dunklem, um seine Feinde schnell und leise von hinten zu töten."
 traitLine:
   0:
     LuckyHit:

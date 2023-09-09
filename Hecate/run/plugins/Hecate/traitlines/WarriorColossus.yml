@@ -1,6 +1,6 @@
 class: Warrior
 displayName: <white><lang:space.-32:''>Ä
-description: "Der Kolosss beschreitet seine Kämpfe mit der Kontrolle über den Kampf und einer hohen Verteidigung"
+description: "<!i>Der Kolosss beschreitet seine Kämpfe mit der Kontrolle über den Kampf und einer hohen Verteidigung"
 traitLine:
   0:
     LargerBanners:
@@ -9,36 +9,36 @@ traitLine:
     HeavyWarrior:
       cost: 2
       levelRequirement: 0
-    Empty:
+    IcyHit:
       cost: 2
       levelRequirement: 0
   1:
-    Empty:
+    Painless:
       cost: 2
       levelRequirement: 0
-    Empty:
+    SteadyBlow:
       cost: 2
       levelRequirement: 0
-    Empty:
+    GoodCondition:
       cost: 2
       levelRequirement: 0
   2:
-    Empty:
+    MightySwing:
       cost: 2
       levelRequirement: 0
-    Empty:
+    Warmonger:
       cost: 2
       levelRequirement: 0
     StunOnSmash:
       cost: 2
       levelRequirement: 0
   3:
-    Empty:
+    Relentless:
       cost: 2
       levelRequirement: 0
-    Empty:
+    HammerQuake:
       cost: 2
       levelRequirement: 0
-    Empty:
+    Untiring:
       cost: 2
       levelRequirement: 0

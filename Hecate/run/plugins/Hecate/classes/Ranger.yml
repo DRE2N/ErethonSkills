@@ -1,2 +1,7 @@
 displayName: Ranger
+defaultTraitline: RangerBeast
+traitlines:
+  - RangerBeast
+  - RangerDeathEye
+  - RangerPathfinder
 

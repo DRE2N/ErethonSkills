@@ -1,44 +1,44 @@
 class: Warrior
 displayName: <white><lang:space.-32:''>Ä
-description: "Der Duellist bekämpft seine Feinde im direkten Duell."
+description: "<!i>Der Duellist bekämpft seine Feinde im direkten Duell."
 traitLine:
   0:
-    Empty:
+    Steadfast:
       cost: 2
       levelRequirement: 0
-    Empty:
+    WeaponKnowledge:
       cost: 2
       levelRequirement: 0
-    ‎Empty:
+    Challenger:
       cost: 2
       levelRequirement: 0
   1:
-    Empty:
+    BlazingFury:
       cost: 2
       levelRequirement: 0
-    Empty:
+    Outlast:
       cost: 2
       levelRequirement: 0
-    Empty:
+    QuickStrokes:
       cost: 2
       levelRequirement: 0
   2:
-    Empty:
+    SwordKnowledge:
       cost: 2
       levelRequirement: 0
-    Empty:
+    Champion:
       cost: 2
       levelRequirement: 0
-    Empty:
-      cost: 2
-      levelRequirement: 0
-  3:
     SlicingAttack:
       cost: 2
       levelRequirement: 0
-    Empty:
+  3:
+    ExtendedRange:
       cost: 2
       levelRequirement: 0
-    Empty:
+    LastChance:
+      cost: 2
+      levelRequirement: 0
+    Outperform:
       cost: 2
       levelRequirement: 0

@@ -1,9 +1,9 @@
 class: Assassin
 displayName: <green><lang:space.-100>Traps
-description: "Der Attentäter ist darauf spezialisiert seine Ziele schnell und präzise zu töten"
+description: "<!i>Der Attentäter ist darauf spezialisiert seine Ziele schnell und präzise zu töten"
 traitLine:
   0:
-    Empty:
+    SwiftAssassin:
       cost: 2
       levelRequirement: 0
     ForTheGoal:
@@ -16,7 +16,7 @@ traitLine:
     HardTraining:
       cost: 2
       levelRequirement: 0
-    Empty:
+    SwiftAssassin:
       cost: 2
       levelRequirement: 0
     ClearHead:

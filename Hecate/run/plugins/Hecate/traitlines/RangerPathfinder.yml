@@ -1,25 +1,25 @@
 class: Ranger
 displayName: <white><lang:space.-32:''>Ä
-description: "Der Pfadsucher erkundet das Gelände und deckt mögliche Feinde auf."
+description: "<!i>Der Pfadsucher erkundet das Gelände und deckt mögliche Feinde auf."
 traitLine:
   0:
-    Empty:
+    StrongGrip:
       cost: 2
       levelRequirement: 0
-    Empty:
+    ClimbingExpertise:
       cost: 2
       levelRequirement: 0
-    Empty:
+    LightningSpeed:
       cost: 2
       levelRequirement: 0
   1:
-    Empty:
+    WhirlingBlow:
       cost: 2
       levelRequirement: 0
-    Empty:
+    SturdyPhysique:
       cost: 2
       levelRequirement: 0
-    Empty:
+    HealingBandages:
       cost: 2
       levelRequirement: 0
   2:
@@ -29,16 +29,16 @@ traitLine:
     WeakRevelation:
       cost: 2
       levelRequirement: 0
-    Emnpty:
+    DamagingRevelation:
       cost: 2
       levelRequirement: 0
   3:
-    TremblingHit:
+    Knockdown:
       cost: 2
       levelRequirement: 0
-    Empty:
+    Explorer:
       cost: 2
       levelRequirement: 0
-    Empty:
+    HeavyHitting:
       cost: 2
       levelRequirement: 0

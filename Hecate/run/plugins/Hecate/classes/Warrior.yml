@@ -1,1 +1,6 @@
 displayName: Krieger
+defaultTraitline: WarriorBruiser
+traitlines:
+  - WarriorBruiser
+  - WarriorColossus
+  - WarriorDuellist

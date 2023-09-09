@@ -1,15 +1,15 @@
 class: Paladin
 displayName: <white><lang:space.-32:''>Ä
-description: "Der Hierophant verleiht seinen Verbündeten die nötige Stärke, um ihre Kämpfe zu gewinnen."
+description: "<!i>Der Hierophant verleiht seinen Verbündeten die nötige Stärke, um ihre Kämpfe zu gewinnen."
 traitLine:
   0:
-    Empty:
+    BlessingOfStrength:
       cost: 2
       levelRequirement: 0
     PurifyingFlame:
       cost: 2
       levelRequirement: 0
-    ‎MeatShield:
+    MeatShield:
       cost: 2
       levelRequirement: 0
   1:
@@ -26,7 +26,7 @@ traitLine:
     Unstoppable:
       cost: 2
       levelRequirement: 0
-    Disicpline:
+    Discipline:
       cost: 2
       levelRequirement: 0
     Breakout:

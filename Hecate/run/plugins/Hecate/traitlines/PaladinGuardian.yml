@@ -1,9 +1,9 @@
 class: Paladin
 displayName: <white><lang:space.-32:''>Ä
-description: "Der Wächter schützt seine Verbündeten mit seinem eisernem Schild und seiner mächtigen Rüstung"
+description: "<!i>Der Wächter schützt seine Verbündeten mit seinem eisernem Schild und seiner mächtigen Rüstung"
 traitLine:
   0:
-    Empty:
+    SuppressionOfTheHeretics:
       cost: 2
       levelRequirement: 0
     EndurantShield:

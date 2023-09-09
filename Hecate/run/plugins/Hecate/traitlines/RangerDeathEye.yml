@@ -1,44 +1,44 @@
-class: Paladin
+class: Ranger
 displayName: <white><lang:space.-32:''>Ä
-description: "Der Inquisitor bestraft die Sünder mit seinem Speer"
+description: "<!i>Das Todesauge erledigt seine Ziele mit viel Kraft und hoher Präzision."
 traitLine:
   0:
-    InstrumentOfFaith:
+    InfiniteQuiver:
       cost: 2
       levelRequirement: 0
-    PathOfGod:
+    ArrestingGale:
       cost: 2
       levelRequirement: 0
-    CaptivatingStab:
+    LightFeet:
       cost: 2
       levelRequirement: 0
   1:
-    SharpPain:
+    HeavyRebound:
       cost: 2
       levelRequirement: 0
-    ScarredBody:
+    HailOfArrows:
       cost: 2
       levelRequirement: 0
-    LargeBlade:
+    BurningExplosion:
       cost: 2
       levelRequirement: 0
   2:
-    HolyPath:
+    HighGround:
       cost: 2
       levelRequirement: 0
-    PathOfPurification:
+    DistantShooter:
       cost: 2
       levelRequirement: 0
-    Empty:
+    SpotWeakness:
       cost: 2
       levelRequirement: 0
   3:
-    PathOfBlood:
+    UseWeakness:
       cost: 2
       levelRequirement: 0
-    Judgement:
+    ExperimentalArrows:
       cost: 2
       levelRequirement: 0
-    Atonement:
+    BetterPiercingArrows:
       cost: 2
       levelRequirement: 0
