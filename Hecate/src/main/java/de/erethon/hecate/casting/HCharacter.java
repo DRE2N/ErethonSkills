@@ -35,6 +35,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class HCharacter {
 
+    private final static int WEAPON_SLOT = 8;
+
     private final HPlayer hPlayer;
     private final Player player;
     private final int characterID;
@@ -51,6 +53,8 @@ public class HCharacter {
 
     private boolean isInCastmode = false;
     private int hotbarSlot = 0;
+
+    public boolean hasSpellMenuOpen = false;
 
 
     MiniMessage miniMessage = MiniMessage.miniMessage();
@@ -98,7 +102,7 @@ public class HCharacter {
         PlayerInventory inventory = player.getInventory();
         if (!isInCastmode) {
             hotbarSlot = inventory.getHeldItemSlot();
-            inventory.setHeldItemSlot(0);
+            inventory.setHeldItemSlot(WEAPON_SLOT);
             // Cooldowns are per material for some reason.
             inventory.setItem(0, new ItemStack(Material.BLACK_DYE));
             inventory.setItem(1, new ItemStack(Material.BLUE_DYE));
@@ -131,7 +135,7 @@ public class HCharacter {
             return;
         }
         PlayerInventory inventory = player.getInventory();
-        for (int slot = 1; slot < 8; slot++) { // Start at 1, 0 is weapon
+        for (int slot = 0; slot < WEAPON_SLOT; slot++) {
             if (inventory.getItem(slot) == null || getSpellAt(slot) == null) {
                 continue;
             }
@@ -159,7 +163,7 @@ public class HCharacter {
 
     public void updateDescriptions() {
         PlayerInventory inventory = player.getInventory();
-        for (int slot = 1; slot < 8; slot++) { // Start at 1, 0 is weapon
+        for (int slot = 0; slot < WEAPON_SLOT; slot++) {
             if (inventory.getItem(slot) == null || getSpellAt(slot) == null) {
                 continue;
             }

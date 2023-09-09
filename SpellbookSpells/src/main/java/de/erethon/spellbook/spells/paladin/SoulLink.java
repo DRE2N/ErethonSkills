@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class SoulLink extends PaladinBaseSpell implements Listener {
 
     private final double damagePercentage = data.getDouble("damagePercentage", 0.5);
+    private final double maxDistance = data.getDouble("maxDistance", 4);
     private boolean linkActive = false;
     private LineEffect effect;
 
@@ -38,7 +39,7 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
 
     @Override
     protected void onTick() {
-        if (caster.getLocation().distanceSquared(target.getLocation()) > 4 * 4) {
+        if (caster.getLocation().distanceSquared(target.getLocation()) > maxDistance * maxDistance) {
             linkActive = false;
             interrupt();
             return;
@@ -71,6 +72,7 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
     @Override
     protected void cleanup() {
         HandlerList.unregisterAll(this);
+        if (effect == null) return;
         effect.cancel();
     }
 }

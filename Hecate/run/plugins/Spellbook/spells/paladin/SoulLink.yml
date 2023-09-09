@@ -1,3 +1,4 @@
 class: paladin.SoulLink
 duration: 600
+maxDistance: 16
 damagePercentage: 0.25
