@@ -1,6 +1,13 @@
 class: Warrior
 displayName: <white><lang:space.-32:''>Ä
 description: "<!i>Der Duellist bekämpft seine Feinde im direkten Duell."
+spells:
+  - FireSword
+  - Headbutt
+  - PreciseHit
+  - SlashingHit
+  - SwordStorm
+  - StanceLastStand
 traitLine:
   0:
     Steadfast:

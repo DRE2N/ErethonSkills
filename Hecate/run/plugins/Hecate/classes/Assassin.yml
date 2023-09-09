@@ -4,3 +4,19 @@ traitlines:
   - AssassinAssassin
   - AssassinSaboteur
   - AssassinShadow
+attributeLevels:
+  1:
+    generic_max_health: 4000
+    generic_attack_speed: 5
+    adv_physical: 100
+    adv_magical: 20
+    pen_physical: 0
+    pen_magical: 0
+    stat_crit_chance: 20
+    stat_crit_dmg: 150
+    stat_cdr: 0
+    stat_healthregen: 3
+    stat_energyregen: 0
+    stat_energy: 100
+    stat_healingpower: 0
+    stat_tenacity: 0

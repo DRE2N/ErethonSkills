@@ -1,6 +1,13 @@
 class: Ranger
 displayName: <white><lang:space.-32:''>Ä
 description: "<!i>Der Pfadsucher erkundet das Gelände und deckt mögliche Feinde auf."
+spells:
+  - AllAroundStrike
+  - CripplingHit
+  - EvasiveRetreat
+  - OvergrownShield
+  - PushBack
+  - RevealEnemies
 traitLine:
   0:
     StrongGrip:

@@ -1,6 +1,14 @@
 class: Paladin
 displayName: <white><lang:space.-32:''>Ä
 description: "<!i>Der Hierophant verleiht seinen Verbündeten die nötige Stärke, um ihre Kämpfe zu gewinnen."
+spells:
+  - Freeze
+  - HolyFire
+  - ReflectionDome
+  - ComprehensiveBlessing
+  - PressForward
+  - DontMoveBack
+  - SoulLink
 traitLine:
   0:
     BlessingOfStrength:

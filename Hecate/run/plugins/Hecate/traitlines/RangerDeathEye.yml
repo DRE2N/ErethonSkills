@@ -1,6 +1,18 @@
 class: Ranger
 displayName: <white><lang:space.-32:''>Ä
 description: "<!i>Das Todesauge erledigt seine Ziele mit viel Kraft und hoher Präzision."
+spells:
+  - PiercingArrows
+  - IceArrows
+  - ExplosiveArrow
+  - FarShot
+  - RicochetArrow
+  - StackingArrows
+  - MarkOfTheHunted
+  - KnockbackArrow
+  - MagicBolt
+  - LargeArrow
+  - ArrowRain
 traitLine:
   0:
     InfiniteQuiver:

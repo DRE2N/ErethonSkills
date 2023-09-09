@@ -1,6 +1,13 @@
 class: Ranger
 displayName: <white><lang:space.-32:''>Ä
 description: "<!i>Der Waldläufer ist ein Spezialist im Wald und kämpft gemeinsam mit einem Tier der Natur."
+spells:
+  - PetFixedBite
+  - PetHealAround
+  - FirstAid
+  - PullToPet
+  - BeastMode
+  - PetRoar
 traitLine:
   0:
     ForestKnowledge:

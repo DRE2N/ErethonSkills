@@ -1,6 +1,14 @@
 class: Assassin
 displayName: <white><lang:space.-32:''>Ä
 description: "<!i>Der Schatten wandert im dunklem, um seine Feinde schnell und leise von hinten zu töten."
+spells:
+  - DaggerThrow
+  - Backstab
+  - ShadowJump
+  - PoisonedWeapon
+  - DaggerStorm
+  - Thief
+  - BlindnessArea
 traitLine:
   0:
     LuckyHit:

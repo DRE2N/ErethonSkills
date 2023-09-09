@@ -4,3 +4,19 @@ traitlines:
   - PaladinGuardian
   - PaladinHierophant
   - PaladinInquisitor
+attributeLevels:
+  1:
+    generic_max_health: 12000
+    adv_physical: 50
+    adv_magical: 75
+    pen_physical: 0
+    pen_magical: 0
+    generic_attack_speed: 5
+    stat_crit_chance: 10
+    stat_crit_dmg: 120
+    stat_cdr: 0
+    stat_healthregen: 2
+    stat_energyregen: 1
+    stat_energy: 100
+    stat_healingpower: 10
+    stat_tenacity: 0

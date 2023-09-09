@@ -1,6 +1,12 @@
 class: Warrior
 displayName: <white><lang:space.-32:''>Ä
 description: "<!i>Der Schlächter schlägt sich mit seinen brachialen Schlägen durch die Reihen der Feinde."
+spells:
+  - BerserkMode
+  - ShoutRoar
+  - ShoutFearMe
+  - ShoutPull
+  - BreakingHit
 traitLine:
   0:
     LouderShouts:

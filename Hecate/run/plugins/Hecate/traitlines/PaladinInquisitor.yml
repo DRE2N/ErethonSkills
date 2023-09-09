@@ -1,6 +1,13 @@
 class: Paladin
 displayName: <white><lang:space.-32:''>Ä
 description: "<!i>Der Inquisitor bestraft die Sünder mit seinem Speer"
+spells:
+  - HolyCage
+  - IceSpear
+  - SpearThrust
+  - JavelinThrow
+  - CaptivatingBlow
+  - RighteousJudgement
 traitLine:
   0:
     InstrumentOfFaith:

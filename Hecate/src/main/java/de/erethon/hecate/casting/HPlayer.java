@@ -187,6 +187,7 @@ public class HPlayer extends YamlConfiguration implements Listener {
         if (event.getPlayer().getUniqueId() != player.getUniqueId()) return;
         MessageUtil.sendMessage(player,"Switching profile to " + event.getNewProfileID() + "...");
         switchCharacterTo(event.getNewProfileID());
+        selectedCharacter.setClassAttributes(selectedCharacter.gethClass());
         saveUser();
     }
 

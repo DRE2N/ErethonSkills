@@ -143,8 +143,9 @@ public class HClass extends YamlConfiguration {
                     HashMap<Attribute, Double> attributes = new HashMap<>();
                     for (String attributeName : levelEntry.getStringList("attributes")) {
                         try {
-                            Attribute attribute = Attribute.valueOf(attributeName);
+                            Attribute attribute = Attribute.valueOf(attributeName.toUpperCase());
                             attributes.put(attribute, levelEntry.getDouble(attributeName));
+                            MessageUtil.log("Added attribute " + attribute + " with value " + levelEntry.getDouble(attributeName) + " at level " + level + " to class " + getId());
                         } catch (IllegalArgumentException e) {
                             MessageUtil.log("Unknown attribute '" + attributeName + "' found under 'attributes' in class file " + getId());
                         }

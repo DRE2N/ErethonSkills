@@ -1,6 +1,13 @@
 class: Assassin
 displayName: <green><lang:space.-100>Traps
 description: "<!i>Der Attentäter ist darauf spezialisiert seine Ziele schnell und präzise zu töten"
+spells:
+  - SwordStorm
+  - StackAttack
+  - Dash
+  - DoubleAttack
+  - Target
+  - Assassination
 traitLine:
   0:
     SwiftAssassin:

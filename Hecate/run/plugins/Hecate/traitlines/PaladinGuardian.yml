@@ -1,6 +1,12 @@
 class: Paladin
 displayName: <white><lang:space.-32:''>Ä
 description: "<!i>Der Wächter schützt seine Verbündeten mit seinem eisernem Schild und seiner mächtigen Rüstung"
+spells:
+  - HolyShield
+  - ShieldHit
+  - RaiseShield
+  - ShieldStorm
+  - ArrowShield
 traitLine:
   0:
     SuppressionOfTheHeretics:

@@ -1,6 +1,14 @@
 class: Warrior
 displayName: <white><lang:space.-32:''>Ä
 description: "<!i>Der Kolosss beschreitet seine Kämpfe mit der Kontrolle über den Kampf und einer hohen Verteidigung"
+spells:
+  - HammerSMASH
+  - MagicHit
+  - HealingBanner
+  - LastStandBanner
+  - ToughnessBanner
+  - MightyBlow
+  - SkullCrusher
 traitLine:
   0:
     LargerBanners:

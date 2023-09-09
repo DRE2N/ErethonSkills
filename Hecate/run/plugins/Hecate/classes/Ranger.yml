@@ -4,4 +4,19 @@ traitlines:
   - RangerBeast
   - RangerDeathEye
   - RangerPathfinder
-
+attributeLevels:
+  1:
+    generic_max_health: 4800
+    adv_physical: 80
+    adv_magical: 40
+    pen_physical: 0
+    pen_magical: 0
+    generic_attack_speed: 10
+    stat_crit_chance: 10
+    stat_crit_dmg: 100
+    stat_cdr: 0
+    stat_healthregen: 5
+    stat_energyregen: 0
+    stat_energy: 0
+    stat_healingpower: 0
+    stat_tenacity: 0

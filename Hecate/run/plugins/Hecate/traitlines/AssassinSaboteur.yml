@@ -1,6 +1,16 @@
 class: Assassin
 displayName: <green><lang:space.-100>Traps
 description: "<!i>Der Saboteur schleicht hinter die feindlichen Linien, um dort ein Netz aus fallen zu spannen"
+spells:
+  - TrapExplosion
+  - TrapFire
+  - TrapIce
+  - TrapIron
+  - TrapPoison
+  - DustCloud
+  - Masterthief
+  - Bola
+  - DashBack
 traitLine:
   0:
     Criminal:

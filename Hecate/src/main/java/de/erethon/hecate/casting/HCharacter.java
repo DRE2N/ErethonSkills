@@ -257,6 +257,18 @@ public class HCharacter {
         });
     }
 
+    public void setClassAttributes(HClass hClass) {
+        if (hClass.getAttributesPerLevel(level) == null) { // We don't need to increase attributes every level
+            return;
+        }
+        for (Map.Entry<Attribute, Double> entry : hClass.getAttributesPerLevel(level).entrySet()) {
+            if (player.getAttribute(entry.getKey()) == null) {
+                player.registerAttribute(entry.getKey());
+            }
+            player.getAttribute(entry.getKey()).setBaseValue(entry.getValue());
+        }
+    }
+
     /* getter and setter */
 
     public Player getPlayer() {
