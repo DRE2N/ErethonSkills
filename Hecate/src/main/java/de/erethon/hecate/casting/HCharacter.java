@@ -101,6 +101,7 @@ public class HCharacter {
     public void switchMode(CombatModeReason reason) {
         PlayerInventory inventory = player.getInventory();
         if (!isInCastmode) {
+            setClassAttributes(hClass);
             hotbarSlot = inventory.getHeldItemSlot();
             inventory.setHeldItemSlot(WEAPON_SLOT);
             // Cooldowns are per material for some reason.
@@ -171,7 +172,7 @@ public class HCharacter {
             ItemMeta meta = item.getItemMeta();
             SpellData spellData = getSpellAt(slot);
             meta.lore(spellData.getDescription());
-            meta.displayName(spellData.getDisplayName());
+            meta.displayName(Component.text(spellData.getId()));
             item.setItemMeta(meta);
         }
     }
@@ -258,12 +259,13 @@ public class HCharacter {
     }
 
     public void setClassAttributes(HClass hClass) {
-        if (hClass.getAttributesPerLevel(level) == null) { // We don't need to increase attributes every level
+        if (hClass.getAttributesPerLevel(level) == null || hClass.getAttributesPerLevel(level).isEmpty()) { // We don't need to increase attributes every level
             return;
         }
         for (Map.Entry<Attribute, Double> entry : hClass.getAttributesPerLevel(level).entrySet()) {
             if (player.getAttribute(entry.getKey()) == null) {
-                player.registerAttribute(entry.getKey());
+                MessageUtil.log("Attribute " + entry.getKey().name() + " not found on Player class. Check Papyrus.");
+                continue;
             }
             player.getAttribute(entry.getKey()).setBaseValue(entry.getValue());
         }

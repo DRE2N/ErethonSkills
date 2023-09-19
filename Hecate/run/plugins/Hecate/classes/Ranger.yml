@@ -8,9 +8,9 @@ attributeLevels:
   1:
     generic_max_health: 4800
     adv_physical: 80
-    adv_magical: 40
+    adv_magic: 40
     pen_physical: 0
-    pen_magical: 0
+    pen_magic: 0
     generic_attack_speed: 10
     stat_crit_chance: 10
     stat_crit_dmg: 100

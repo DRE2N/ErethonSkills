@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.slikey.effectlib.effect.CircleEffect;
@@ -108,6 +109,7 @@ public class AoEBaseSpell extends SpellbookSpell {
                 sendPackets(player, customItemDataEnemy, pos);
             }
         }
+        circleEffect = new CircleEffect(Spellbook.getInstance().getEffectManager());
         circleEffect.particle = Particle.REDSTONE;
         circleEffect.color = circleColor;
         circleEffect.radius = (float) size;

@@ -16,7 +16,7 @@ public class PetSlowTrait extends SpellTrait implements Listener {
     private final int duration = data.getInt("duration", 100);
     private final int stacks = data.getInt("stacks", 1);
     private final int attacksToSlow = data.getInt("attacksToSlow", 3);
-    private final EffectData slow = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("slow");
+    private final EffectData slow = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
 
     private int currentAttacks = 0;
 

@@ -32,7 +32,7 @@ public class ShieldStorm extends PaladinBaseSpell {
                 if (caster.getLocation().distanceSquared(target.getLocation()) > 4) return; // Don't throw if the caster didn't get close enough because they hit something
                 target.setVelocity(caster.getLocation().getDirection().multiply(-throwbackSpeed));
                 target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_ATTACK_SWEEP, Sound.Source.RECORD, 1, 0));
-                triggerTraits();
+                triggerTraits(target);
             }
         };
         runLater.runTaskLater(Spellbook.getInstance().getImplementer(), delay);

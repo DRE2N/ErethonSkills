@@ -40,11 +40,14 @@ public class HolyShield extends PaladinBaseSpell {
     @Override
     public double onDamage(LivingEntity attacker, double damage, DamageType type) {
         shield -= damage;
-        double proportion = shield / shieldMax;
-        sphere.color = org.bukkit.Color.fromRGB((int) (255 * proportion), (int) (255 * proportion), (int) (255 * proportion)); // Make the shield darker as it gets weaker
         if (shield <= 0) {
             cleanup();
+            keepAliveTicks = 0;
+            sphere.cancel();
+            return damage;
         }
+        double proportion = shield / shieldMax;
+        sphere.color = org.bukkit.Color.fromRGB((int) (255 * proportion), (int) (255 * proportion), (int) (255 * proportion)); // Make the shield darker as it gets weaker
         return Math.max(0, shield - super.onDamage(attacker, damage, type));
     }
 
