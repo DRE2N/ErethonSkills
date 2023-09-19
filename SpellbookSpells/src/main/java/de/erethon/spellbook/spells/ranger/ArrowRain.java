@@ -56,7 +56,7 @@ public class ArrowRain extends RangerBaseSpell implements Listener {
         arrow.setShooter(caster);
         arrow.setSilent(true);
         arrow.getLocation().setDirection(getOffsetLocation(0).subtract(castLocation).toVector());
-        arrow.setVelocity(arrow.getLocation().getDirection().multiply(5));
+        arrow.setVelocity(arrow.getLocation().getDirection().multiply(2));
     }
 
     private Location getOffsetLocation(int yOffset) {

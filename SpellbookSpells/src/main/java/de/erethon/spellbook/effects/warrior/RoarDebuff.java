@@ -8,7 +8,7 @@ import org.bukkit.entity.LivingEntity;
 
 public class RoarDebuff extends SpellEffect {
 
-    private final AttributeModifier modifier = new AttributeModifier("RoarDebuff", data.getDouble("debuffAmount", 0.75f), AttributeModifier.Operation.MULTIPLY_SCALAR_1);
+    private final AttributeModifier modifier = new AttributeModifier("RoarDebuff", data.getDouble("debuffAmount", -0.25), AttributeModifier.Operation.MULTIPLY_SCALAR_1);
 
     public RoarDebuff(EffectData data, LivingEntity caster, LivingEntity target, int duration, int stacks) {
         super(data, caster, target, duration, stacks);

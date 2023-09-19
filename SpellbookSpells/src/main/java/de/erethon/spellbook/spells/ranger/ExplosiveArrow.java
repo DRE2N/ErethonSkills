@@ -21,7 +21,7 @@ public class ExplosiveArrow extends ProjectileRelatedSkill {
     @Override
     protected boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
-        return true;
+        return super.onCast();
     }
 
     @Override

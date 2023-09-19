@@ -10,7 +10,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class IceArrows extends ProjectileRelatedSkill {
 
-    private final int effectDuration = data.getInt("effectDuration", 20);
+    private final int effectDuration = data.getInt("effectDuration", 200);
     private final int stacks = data.getInt("effectStacks", 1);
 
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");

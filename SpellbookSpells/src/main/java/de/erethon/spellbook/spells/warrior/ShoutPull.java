@@ -20,7 +20,8 @@ public class ShoutPull extends AbstractWarriorShout {
 
     @Override
     protected boolean onCast() {
-        target.setVelocity(caster.getLocation().getDirection().multiply(-1).multiply(data.getDouble("strength", 1)));
+        double distance = caster.getLocation().distance(target.getLocation());
+        target.setVelocity(caster.getLocation().getDirection().multiply(-1).multiply(data.getDouble("strength", 1)).multiply(distance / 10));
         triggerTraits(target);
         return super.onCast();
     }

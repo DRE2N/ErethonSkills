@@ -3,4 +3,4 @@ maxStacks: 1
 maxDuration: 200
 isPositive: true
 stackMode: prolong
-defenseModifier: 1.25
+defenseModifier: 0.25

@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.util.Vector;
 
 public class SoulLink extends PaladinBaseSpell implements Listener {
 
@@ -46,6 +47,8 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
         }
         effect = new LineEffect(Spellbook.getInstance().getEffectManager());
         effect.setEntity(caster);
+        effect.offset = new Vector(0, -1, 0);
+        effect.targetOffset = new Vector(0, -1, 0);
         effect.setTargetEntity(target);
         effect.particle = Particle.REDSTONE;
         effect.color = Color.PURPLE;

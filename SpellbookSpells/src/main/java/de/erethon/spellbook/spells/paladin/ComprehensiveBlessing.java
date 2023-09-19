@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells.paladin;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.CircleEffect;
@@ -32,6 +33,7 @@ public class ComprehensiveBlessing extends PaladinBaseSpell {
             living.getEffects().forEach(e -> {
                 if (!e.data.isPositive()) {
                     living.removeEffect(e.data);
+                    MessageUtil.log("Removed negative " + e.data.getName() + " from " + living.getName());
                 }
             });
             Location livingLocation = living.getLocation().clone();

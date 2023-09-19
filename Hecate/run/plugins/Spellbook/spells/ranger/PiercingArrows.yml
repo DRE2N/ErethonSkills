@@ -1,6 +1,7 @@
 class: ranger.PiercingArrows
 duration: 100
 range: 3
+maxMinAngle: 70
 coefficients:
   players:
     adv_physical: 0.6

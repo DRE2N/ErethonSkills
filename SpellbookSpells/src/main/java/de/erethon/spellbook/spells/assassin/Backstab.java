@@ -36,12 +36,7 @@ public class Backstab extends AssassinBaseSpell {
             caster.sendParsedActionBar("<color:#ff0000>Nicht genug Platz!");
             return false;
         }
-        return AssassinUtils.hasEnergy(caster, data);
-    }
-
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
+        return super.onPrecast();
     }
 
     @Override
@@ -64,12 +59,12 @@ public class Backstab extends AssassinBaseSpell {
         effectCaster.height = 1.0f;
         effectCaster.start();
         keepAliveTicks = 5;
-        triggerTraits(target);
+        triggerTraits(target, 0);
         return super.onCast();
     }
 
     @Override
-    protected void cleanup() {
+    protected void onTickFinish() {
         float yaw = target.getLocation().getYaw();
         float pitch = caster.getLocation().getPitch();
         location.setYaw(yaw);
@@ -77,6 +72,6 @@ public class Backstab extends AssassinBaseSpell {
         caster.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1));
         caster.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
         caster.attack(target);
-        triggerTraits(Collections.singleton((LivingEntity) target));
+        triggerTraits(target, 1);
     }
 }

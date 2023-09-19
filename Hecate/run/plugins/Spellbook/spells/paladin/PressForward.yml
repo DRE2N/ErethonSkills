@@ -1,5 +1,5 @@
 class: paladin.PressForward
 size: 4
 keepAliveTicks: 200
-duration: 200
+duration: 1000
 stacks: 1

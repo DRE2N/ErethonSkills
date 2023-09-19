@@ -1,4 +1,4 @@
 class: ranger.IceArrows
 duration: 300
-effectDuration: 20
+effectDuration: 200
 effectStacks: 1

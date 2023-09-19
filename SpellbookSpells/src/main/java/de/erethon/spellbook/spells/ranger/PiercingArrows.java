@@ -17,6 +17,7 @@ import java.util.Set;
 public class PiercingArrows extends ProjectileRelatedSkill {
 
     private final int range = data.getInt("range", 3);
+    private final double maxMinAngle = data.getDouble("maxMinAngle", 70);
 
     public PiercingArrows(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -38,7 +39,7 @@ public class PiercingArrows extends ProjectileRelatedSkill {
             if (Spellbook.getInstance().isDebug()) {
                 caster.sendMessage("Degrees: " + degrees);
             }
-            if (degrees <= 30 && degrees >= -30) {
+            if (degrees <= maxMinAngle && degrees >= -maxMinAngle) {
                 RangerUtils.sendProjectile((LivingEntity) event.getEntity(), living, caster, 2, Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC), DamageType.MAGIC);
                 affected.add(living);
             }

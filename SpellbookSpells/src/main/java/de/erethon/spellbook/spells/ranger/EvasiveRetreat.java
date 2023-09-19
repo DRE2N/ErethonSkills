@@ -19,6 +19,7 @@ public class EvasiveRetreat extends RangerBaseSpell {
         Arrow arrow = caster.getWorld().spawn(caster.getLocation(), Arrow.class);
         arrow.setVelocity(caster.getLocation().getDirection().multiply(3));
         arrow.setDamageType(DamageType.PHYSICAL);
+        arrow.setGravity(false);
         Location location = caster.getLocation();
         location.setPitch(-10);
         caster.setVelocity(location.getDirection().multiply(data.getDouble("retreatMultiplier", 2.0) * -1));
