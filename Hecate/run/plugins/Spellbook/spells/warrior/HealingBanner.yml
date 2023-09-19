@@ -1,7 +1,8 @@
 class: warrior.banners.HealingBanner
-keepAliveTicks: 20
+keepAliveTicks: 1000
 tickInterval: 10
 radius: 5
+ringColor: 65280
 coefficients:
   players:
     stat_healingpower: 2

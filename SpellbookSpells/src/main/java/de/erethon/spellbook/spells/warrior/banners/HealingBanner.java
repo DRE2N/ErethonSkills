@@ -2,13 +2,16 @@ package de.erethon.spellbook.spells.warrior.banners;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
 
 public class HealingBanner extends WarBanner {
 
     public HealingBanner(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
+        itemStack = new ItemStack(Material.GREEN_BANNER);
         keepAliveTicks = data.getInt("keepAliveTicks", 20);
         tickInterval = data.getInt("tickInterval", 10);
     }

@@ -1,4 +1,4 @@
 class: warrior.banners.LastStandBanner
-keepAliveTicks: 120
+keepAliveTicks: 500
 radius: 5
 healthPercentage: 0.1

@@ -4,6 +4,7 @@ import com.destroystokyo.paper.ParticleBuilder;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.TransformationUtil;
 import de.slikey.effectlib.effect.CircleEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,12 +17,12 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 
 public class WarBanner extends SpellbookSpell {
-    private final ItemStack itemStack;
+    protected ItemStack itemStack;
     private ItemDisplay banner;
     protected Wolf bannerHolder;
     public int radius = data.getInt("radius", 5);
     private final int bannerHealth = data.getInt("bannerHealth", 20);
-    private final Particle particle = new ParticleBuilder(Particle.REDSTONE).color(Spellbook.parseColor(data.getString("ringColor", "#00FF00"))).particle();
+    private final Particle particle = new ParticleBuilder(Particle.REDSTONE).color(Spellbook.parseColor(data.getString("ringColor", "16777215"))).particle();
 
     public WarBanner(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -50,6 +51,9 @@ public class WarBanner extends SpellbookSpell {
         effect.particle = particle;
         effect.duration = 50 * 10;
         effect.radius = radius;
+        effect.enableRotation = false;
+        effect.orient = false;
+        effect.updateDirections = false;
         effect.wholeCircle = true;
         effect.start();
     }
