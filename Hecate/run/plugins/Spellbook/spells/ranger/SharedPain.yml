@@ -1,0 +1,3 @@
+class: ranger.SharedPain
+duration: 200
+petDamagePercentage: 0.5
