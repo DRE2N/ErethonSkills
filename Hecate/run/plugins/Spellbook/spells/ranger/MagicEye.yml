@@ -1,0 +1,11 @@
+class: ranger.MagicEye
+duration: 1000
+range: 32
+arrow:
+  xzRange: 1.33
+  yRange: 1.5
+coefficients:
+  players:
+    adv_physical: 1.0
+  entities:
+    adv_physical: 1.0
