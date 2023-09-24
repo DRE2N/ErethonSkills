@@ -64,6 +64,7 @@ public class Traitline extends YamlConfiguration {
     public Set<SpellData> getSpells() {
         return spells;
     }
+    public List<SpellData> defaultSpellSlots = new ArrayList<>();
 
     @Override
     public void load(File file) throws IOException, InvalidConfigurationException {
@@ -77,10 +78,18 @@ public class Traitline extends YamlConfiguration {
         for (String id : getStringList("spells")) {
             SpellData spell = spellbookAPI.getLibrary().getSpellByID(id);
             if (spell == null) {
-                MessageUtil.log("Unknown spell '" + id + "' found in traitline file " + id);
+                MessageUtil.log("Unknown spell '" + id + "' found for 'spells' in traitline file " + id);
                 continue;
             }
             spells.add(spell);
+        }
+        for (String id : getStringList("defaultSpellSlots")) {
+            SpellData spell = spellbookAPI.getLibrary().getSpellByID(id);
+            if (spell == null) {
+                MessageUtil.log("Unknown spell '" + id + "' found for 'defaultSpellSlots' in traitline file " + id);
+                continue;
+            }
+            defaultSpellSlots.add(spell);
         }
         for (String key : getConfigurationSection("traitLine").getKeys(false)) {
             int level = Integer.parseInt(key);

@@ -108,7 +108,7 @@ public class HPlayer extends YamlConfiguration implements Listener {
     }
 
     public void loadUser() {
-        autoJoinWithLastCharacter = getBoolean("autoJoinWithLastCharacter", false);
+        autoJoinWithLastCharacter = getBoolean("autoJoinWithLastCharacter", true);
         profileID = getInt("profileID", 0);
         ConfigurationSection charSection = getConfigurationSection("characters");
         if (charSection == null) {

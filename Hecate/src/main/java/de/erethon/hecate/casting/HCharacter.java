@@ -50,7 +50,7 @@ public class HCharacter {
 
     private HClass hClass = Hecate.getInstance().getHClass("Assassin");
     private Traitline selectedTraitline;
-    private SpellData[] assignedSlots = new SpellData[8];
+    private SpellData[] assignedSlots;
     private final Set<TraitData> combatOnlyTraits = new HashSet<>();
 
     private boolean isInCastmode = false;
@@ -63,6 +63,7 @@ public class HCharacter {
         this.player = hPlayer.getPlayer();
         this.characterID = characterID;
         this.selectedTraitline = hClass.getDefaultTraitline();
+        selectedTraitline.defaultSpellSlots.toArray(new SpellData[8]);
         player.setMaxEnergy(maxEnergy);
         player.setEnergy(energy);
     }
