@@ -25,7 +25,7 @@ public class ShieldHit extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         target.addEffect(caster, slowness, (int) (data.getInt("baseDuration", 20) + Math.round(Spellbook.getScaledValue(data, target, Attribute.ADV_PHYSICAL))), data.getInt("stacks", 2));
         target.playSound(Sound.sound(org.bukkit.Sound.ITEM_SHIELD_BLOCK, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.ITEM_SHIELD_BLOCK, Sound.Source.RECORD, 0.8f, 1));

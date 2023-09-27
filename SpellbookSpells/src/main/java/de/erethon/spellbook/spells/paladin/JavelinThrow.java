@@ -25,7 +25,7 @@ public class JavelinThrow extends PaladinSpearSpell implements Listener {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.launchProjectile(Trident.class, caster.getLocation().getDirection().multiply(throwSpeed), e -> {
             e.setDamage(0);
             trident = e;

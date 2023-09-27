@@ -27,7 +27,7 @@ public class ThrowBola extends AssassinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         modifier = new AttributeModifier("throwBola-" + caster.getUniqueId(), -100.0, AttributeModifier.Operation.ADD_NUMBER);
         target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addModifier(modifier);
         triggerTraits(target);

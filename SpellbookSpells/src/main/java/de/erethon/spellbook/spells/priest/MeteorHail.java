@@ -33,7 +33,7 @@ public class MeteorHail extends PriestBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         random = new Random();
         tickInterval = 5;
         keepAliveTicks = 100;

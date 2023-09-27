@@ -21,7 +21,7 @@ public class Assassination extends AssassinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         critModifier = new AttributeModifier("assasinationCrit-" + caster.getUniqueId(), data.getInt("critAmount", 20), AttributeModifier.Operation.ADD_NUMBER);
         critChanceModifier = new AttributeModifier("assasinationChance-" + caster.getUniqueId(), data.getInt("critChance", 50), AttributeModifier.Operation.ADD_NUMBER);
         resistanceModifier = new AttributeModifier("assasinationRes-" + caster.getUniqueId(), data.getInt("resistances", -20), AttributeModifier.Operation.ADD_NUMBER);

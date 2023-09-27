@@ -60,7 +60,7 @@ public class HammerSMASH extends WarriorBaseSpell implements Listener {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         return super.onCast();
     }
 

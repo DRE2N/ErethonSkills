@@ -15,7 +15,7 @@ public class EvasiveRetreat extends RangerBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Arrow arrow = caster.getWorld().spawn(caster.getLocation(), Arrow.class);
         arrow.setVelocity(caster.getLocation().getDirection().multiply(3));
         arrow.setDamageType(DamageType.PHYSICAL);

@@ -26,7 +26,7 @@ public class Masterthief extends AssassinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         keepAliveTicks = duration; // Do this here for trait access
         List<SpellData> datas = target.getUsedSpells().keySet().stream().toList();
         if (datas.isEmpty()) {

@@ -3,13 +3,15 @@ package de.erethon.spellbook.spells.ranger;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.SpellbookBaseSpell;
+import de.erethon.spellbook.utils.Targeted;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class RangerBaseSpell extends SpellbookSpell {
+public class RangerBaseSpell extends SpellbookBaseSpell implements Targeted {
 
     protected final int manaCost;
-    protected LivingEntity target;
+    public LivingEntity target;
 
     public RangerBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -29,7 +31,7 @@ public class RangerBaseSpell extends SpellbookSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         return super.onCast();
     }
@@ -54,5 +56,15 @@ public class RangerBaseSpell extends SpellbookSpell {
         }
         this.target = (LivingEntity) target;
         return true;
+    }
+
+    @Override
+    public LivingEntity getTarget() {
+        return target;
+    }
+
+    @Override
+    public void setTarget(LivingEntity target) {
+        this.target = target;
     }
 }

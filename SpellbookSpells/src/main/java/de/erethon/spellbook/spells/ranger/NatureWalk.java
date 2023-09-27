@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class NatureWalk extends SpellbookSpell implements Listener {
+public class NatureWalk extends RangerBaseSpell implements Listener {
 
     int duration = data.getInt("duration", 400);
     int interval = data.getInt("interval", 2);

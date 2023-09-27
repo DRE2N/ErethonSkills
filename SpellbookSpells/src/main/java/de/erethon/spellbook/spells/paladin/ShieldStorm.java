@@ -23,7 +23,7 @@ public class ShieldStorm extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.setVelocity(caster.getLocation().getDirection().multiply(stormSpeed));
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_ATTACK_SWEEP, Sound.Source.RECORD, 1, 0));
         BukkitRunnable runLater = new BukkitRunnable() {

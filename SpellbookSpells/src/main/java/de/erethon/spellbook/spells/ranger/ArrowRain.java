@@ -35,7 +35,7 @@ public class ArrowRain extends RangerBaseSpell implements Listener {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         random = new Random();
         tickInterval = 5;
         keepAliveTicks = 100;

@@ -24,7 +24,7 @@ public class BlindnessArea extends AoEBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         keepAliveTicks = 2;
         return super.onCast();
     }

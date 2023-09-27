@@ -8,14 +8,14 @@ import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class DoubleAttack extends SpellbookSpell {
+public class DoubleAttack extends AssassinBaseSpell {
 
     public DoubleAttack(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         keepAliveTicks = data.getInt("duration", 200);
         return super.onCast();
     }

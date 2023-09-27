@@ -18,7 +18,7 @@ public class DontMoveBack extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Set<LivingEntity> targets = new HashSet<>();
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(data.getDouble("range", 10))) {
             if (Spellbook.canAttack(caster, living)) {

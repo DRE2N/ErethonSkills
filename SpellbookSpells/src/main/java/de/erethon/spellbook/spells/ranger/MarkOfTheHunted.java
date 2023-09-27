@@ -25,7 +25,7 @@ public class MarkOfTheHunted extends RangerBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         target.addEffect(caster, effectData, effectDuration, 1);
         triggerTraits(Collections.singleton(target));
         return super.onCast();

@@ -25,7 +25,7 @@ public class HealingWave extends RangerBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Location base = caster.getLocation().add(caster.getLocation().getDirection().multiply(2));
         Vector direction = caster.getLocation().getDirection();
         for (int i = 0; i < 10; i++) {

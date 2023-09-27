@@ -27,7 +27,7 @@ public class HolyFire extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         circleEffect = new CircleEffect(Spellbook.getInstance().getEffectManager());
         circleEffect.particle = Particle.SOUL_FIRE_FLAME;
         circleEffect.duration = keepAliveTicks * 50;

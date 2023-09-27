@@ -21,7 +21,7 @@ public class SwordStorm extends AssassinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {

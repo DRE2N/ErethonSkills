@@ -14,7 +14,7 @@ public class DashBack extends AssassinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Location location = caster.getLocation();
         location.setPitch(-10);
         caster.setVelocity(location.getDirection().multiply(data.getDouble("dashMultiplier", 2.0) * -1));

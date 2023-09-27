@@ -3,19 +3,21 @@ package de.erethon.spellbook.spells.warrior;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.SpellbookBaseSpell;
+import de.erethon.spellbook.utils.Targeted;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class WarriorBaseSpell extends SpellbookSpell {
+public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
 
-    LivingEntity target;
+    public LivingEntity target;
 
     public WarriorBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         return super.onCast();
     }
@@ -48,5 +50,15 @@ public class WarriorBaseSpell extends SpellbookSpell {
         }
         this.target = (LivingEntity) target;
         return true;
+    }
+
+    @Override
+    public LivingEntity getTarget() {
+        return target;
+    }
+
+    @Override
+    public void setTarget(LivingEntity target) {
+        this.target = target;
     }
 }

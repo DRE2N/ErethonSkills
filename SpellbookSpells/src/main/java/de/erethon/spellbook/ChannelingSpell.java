@@ -2,6 +2,7 @@ package de.erethon.spellbook;
 
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.SpellbookBaseSpell;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -9,7 +10,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class ChannelingSpell extends SpellbookSpell implements Listener {
+public class ChannelingSpell extends SpellbookBaseSpell implements Listener {
 
     protected boolean interrupted = false;
     private int currentTicks = 0;

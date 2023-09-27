@@ -14,7 +14,7 @@ public class SpeedBurst extends AssassinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Speed");
         caster.addEffect(caster, effectData, data.getInt("duration", 10) * 20, 1);
         return super.onCast();

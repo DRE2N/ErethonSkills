@@ -24,7 +24,7 @@ public class ThrowSand extends RangerBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         target.addEffect(caster, blindness, data.getInt("duration", 200), 1);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PHANTOM_SWOOP, SoundCategory.RECORDS, 1, 1);
         LineEffect effect = new LineEffect(Spellbook.getInstance().getEffectManager());

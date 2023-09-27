@@ -23,7 +23,7 @@ public class SwordCleave extends AssassinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.attack(target);
         double attackDmg = Spellbook.getScaledValue(data, caster, target, Attribute.ADV_PHYSICAL);
         for (LivingEntity entity : target.getLocation().getNearbyLivingEntities(radius)) {

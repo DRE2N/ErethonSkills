@@ -16,7 +16,7 @@ public class SharedPain extends RangerPetBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         pet.getBukkitLivingEntity().getWorld().playSound(pet.getBukkitLivingEntity().getLocation(), Sound.ENTITY_WOLF_GROWL, SoundCategory.RECORDS, 1, 1);
         return super.onCast();
     }

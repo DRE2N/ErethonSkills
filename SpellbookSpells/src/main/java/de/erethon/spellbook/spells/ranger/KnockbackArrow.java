@@ -20,7 +20,7 @@ public class KnockbackArrow extends RangerBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         RangerUtils.sendProjectile(caster, target, caster, 2, 0, DamageType.PHYSICAL);
         double distance = target.getLocation().distance(caster.getLocation());
         distance = distance / 10;

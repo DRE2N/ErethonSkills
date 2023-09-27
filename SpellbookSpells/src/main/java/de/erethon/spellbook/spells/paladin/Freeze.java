@@ -28,7 +28,7 @@ public class Freeze extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(data.getDouble("radius", 8))) {
             if (!Spellbook.canAttack(caster, living)) continue;
             frozen.add(living);

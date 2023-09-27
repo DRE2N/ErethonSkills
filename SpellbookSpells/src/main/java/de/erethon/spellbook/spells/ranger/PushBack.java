@@ -16,7 +16,7 @@ public class PushBack extends RangerBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Vector inFront = caster.getLocation().getDirection().multiply(2);
         Vector pushVector = inFront.multiply(pushMultiplier);
         Location target = caster.getLocation().add(inFront);

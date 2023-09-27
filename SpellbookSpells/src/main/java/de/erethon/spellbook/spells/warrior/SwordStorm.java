@@ -26,7 +26,7 @@ public class SwordStorm extends WarriorBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Location casterLoc = caster.getLocation();
         Location location = new Location(caster.getWorld(), casterLoc.getX(), casterLoc.getY() + 1, casterLoc.getZ(), casterLoc.getYaw(), 0f);
         location.setPitch(0f);

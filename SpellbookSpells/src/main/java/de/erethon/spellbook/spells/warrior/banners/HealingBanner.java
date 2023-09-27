@@ -17,7 +17,7 @@ public class HealingBanner extends WarBanner {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         spawnBanner(caster.getLocation());
         return true;

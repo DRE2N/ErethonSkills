@@ -21,7 +21,7 @@ public class RaiseShield extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);
         caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
         triggerTraits(0);

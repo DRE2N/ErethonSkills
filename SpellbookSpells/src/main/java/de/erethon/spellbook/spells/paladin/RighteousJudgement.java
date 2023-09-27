@@ -24,7 +24,7 @@ public class RighteousJudgement extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         target.addEffect(caster, weakness, (int) (data.getInt("baseDuration", 20) + Math.round(Spellbook.getScaledValue(data, target, Attribute.ADV_MAGIC))), data.getInt("stacks", 1));
         target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_WITHER_SPAWN, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_WITHER_SPAWN, Sound.Source.RECORD, 0.8f, 1));

@@ -32,7 +32,7 @@ public class MagicEye extends ProjectileRelatedSkill {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
             if (living == caster || !Spellbook.canAttack(caster, living)) continue;
             living.setGlowing(true);

@@ -24,7 +24,7 @@ public class ComprehensiveBlessing extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Set<LivingEntity> entities = new HashSet<>();
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
             if (Spellbook.canAttack(caster, living)) continue;

@@ -18,7 +18,7 @@ public class PetHealAround extends RangerPetBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         for (LivingEntity living : pet.getBukkitLivingEntity().getLocation().getNearbyLivingEntities(range)) {
             if (living == caster) continue;
             if (living == pet.getBukkitLivingEntity()) continue;

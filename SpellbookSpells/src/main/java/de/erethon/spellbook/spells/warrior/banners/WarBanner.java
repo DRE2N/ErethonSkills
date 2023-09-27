@@ -4,6 +4,7 @@ import com.destroystokyo.paper.ParticleBuilder;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.spells.warrior.WarriorBaseSpell;
 import de.erethon.spellbook.utils.TransformationUtil;
 import de.slikey.effectlib.effect.CircleEffect;
 import org.bukkit.Location;
@@ -16,7 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 
-public class WarBanner extends SpellbookSpell {
+public class WarBanner extends WarriorBaseSpell {
     protected ItemStack itemStack;
     private ItemDisplay banner;
     protected Wolf bannerHolder;

@@ -17,7 +17,7 @@ public class ShoutRoar extends AbstractWarriorShout {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.getWorld().playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDER_DRAGON_GROWL, Sound.Source.RECORD, 0.8f, 1));
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
             if (living == caster) continue;

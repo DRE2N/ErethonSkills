@@ -32,7 +32,7 @@ public class ShieldWall extends WarriorBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         int currentSpacing = 0;
         Vector position = caster.getLocation().toVector();

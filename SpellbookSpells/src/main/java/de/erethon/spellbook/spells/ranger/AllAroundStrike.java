@@ -14,7 +14,7 @@ import org.bukkit.entity.LivingEntity;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AllAroundStrike extends SpellbookSpell {
+public class AllAroundStrike extends RangerBaseSpell {
     private double radius = data.getDouble("startRadius", 2);
     private final double radiusPerTick = data.getDouble("radiusPerTick", 0.2);
     private final AttributeModifier attackBaseMod = new AttributeModifier("attackBaseMod", data.getDouble("attackModifier", -5), AttributeModifier.Operation.ADD_NUMBER);
@@ -28,7 +28,7 @@ public class AllAroundStrike extends SpellbookSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Location casterLoc = caster.getLocation();
         Location location = new Location(caster.getWorld(), casterLoc.getX(), casterLoc.getY() + 1, casterLoc.getZ(), casterLoc.getYaw(), 0f);
         location.setPitch(0f);

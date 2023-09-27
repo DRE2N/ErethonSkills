@@ -40,7 +40,7 @@ public class Backstab extends AssassinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         EffectManager manager = Spellbook.getInstance().getEffectManager();
         CylinderEffect effectTarget = new CylinderEffect(manager);
         effectTarget.setLocation(location);

@@ -23,7 +23,7 @@ public class ReflectionDome extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         sphereEffect = new SphereEffect(Spellbook.getInstance().getEffectManager());
         sphereEffect.color = Color.BLUE;
         sphereEffect.radius = radius - 1;

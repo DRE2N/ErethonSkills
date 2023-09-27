@@ -39,7 +39,7 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         direction = caster.getEyeLocation().getDirection();
         arrow = new ItemProjectile(new ItemStack(Material.IRON_SWORD), caster.getEyeLocation().getX(), caster.getEyeLocation().getY(), caster.getEyeLocation().getZ(), caster.getWorld(), this);
         arrow.shoot(direction.getX(), direction.getY(), direction.getZ(), speed, divergence);

@@ -16,7 +16,7 @@ public class BeastMode extends RangerPetBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.teleport(pet.getLocation());
         caster.getWorld().playSound(caster.getLocation(), org.bukkit.Sound.ENTITY_WOLF_HOWL, 1, 1);
         pet.remove();

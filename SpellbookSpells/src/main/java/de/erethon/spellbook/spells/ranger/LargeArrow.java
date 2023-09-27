@@ -64,8 +64,4 @@ public class LargeArrow extends ChannelingSpell implements Listener {
         return RangerUtils.hasMana(caster, data);
     }
 
-    @Override
-    protected boolean onCast() {
-        return super.onCast();
-    }
 }

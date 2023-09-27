@@ -3,10 +3,12 @@ package de.erethon.spellbook.spells.paladin;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.SpellbookBaseSpell;
+import de.erethon.spellbook.utils.Targeted;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class PaladinBaseSpell extends SpellbookSpell {
+public class PaladinBaseSpell extends SpellbookBaseSpell implements Targeted {
 
     LivingEntity target;
 
@@ -15,7 +17,7 @@ public class PaladinBaseSpell extends SpellbookSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         return super.onCast();
     }
@@ -48,5 +50,15 @@ public class PaladinBaseSpell extends SpellbookSpell {
         }
         this.target = (LivingEntity) target;
         return true;
+    }
+
+    @Override
+    public LivingEntity getTarget() {
+        return target;
+    }
+
+    @Override
+    public void setTarget(LivingEntity target) {
+        this.target = target;
     }
 }

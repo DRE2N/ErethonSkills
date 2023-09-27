@@ -22,7 +22,7 @@ public class JudgementOfGod extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         target.addEffect(caster, effectData, duration, 1);
         target.playSound(Sound.sound(org.bukkit.Sound.BLOCK_BELL_USE, Sound.Source.RECORD, 1, 0));
         caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_BELL_USE, Sound.Source.RECORD, 1, 0));

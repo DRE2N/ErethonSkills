@@ -37,7 +37,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         effect = new CircleEffect(Spellbook.getInstance().getEffectManager());
         effect.radius = (float) range;
         effect.setLocation(caster.getLocation().add(0, 0.2,0));

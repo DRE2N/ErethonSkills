@@ -25,7 +25,7 @@ public class OvergrownShield extends ChannelingSpell {
 
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Location location = caster.getLocation();
         ItemStack item = NMSUtils.getItemStackWithModelData(Material.OAK_SAPLING, modelData);
         armorStand = NMSUtils.spawnItemArmorstand(item, caster.getLocation());

@@ -21,7 +21,7 @@ public class CripplingHit extends RangerBaseSpell{
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         target.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, nauseaDuration, 1, true, false));
         triggerTraits(Collections.singleton(target));

@@ -20,7 +20,7 @@ public class ArrowShield extends AoEBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         sphereEffect = new SphereEffect(Spellbook.getInstance().getEffectManager());
         sphereEffect.color = Color.ORANGE;
         sphereEffect.radius = size - 1;

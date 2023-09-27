@@ -21,7 +21,7 @@ public class MightyBlow extends WarriorBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Location location = caster.getLocation();
         Vector inFront = location.toVector().add(location.getDirection().multiply(rangeMultiplier));
         inFront.setY(location.getY());

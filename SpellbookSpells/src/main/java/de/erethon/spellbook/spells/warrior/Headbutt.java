@@ -36,7 +36,7 @@ public class Headbutt extends WarriorBaseSpell implements Listener {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Vector move = target.getLocation().toVector().subtract(caster.getLocation().toVector()).normalize().multiply(2).setY(0.5);
         caster.setVelocity(move);
         waitingForImpact = true;

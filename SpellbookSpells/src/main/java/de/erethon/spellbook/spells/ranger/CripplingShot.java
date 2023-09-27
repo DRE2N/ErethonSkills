@@ -32,7 +32,7 @@ public class CripplingShot extends ProjectileRelatedSkill {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Vector from = caster.getLocation().toVector();
         Vector to = target.getLocation().toVector();
         Vector direction = to.subtract(from);

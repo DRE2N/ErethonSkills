@@ -17,7 +17,7 @@ public class ShoutFearMe extends AbstractWarriorShout {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Location inFront = caster.getLocation().add(caster.getLocation().getDirection().multiply(2));
         for (LivingEntity entity : inFront.getWorld().getNearbyEntitiesByType(LivingEntity.class, inFront, range)) {
             if (!Spellbook.canAttack(caster, entity)) {

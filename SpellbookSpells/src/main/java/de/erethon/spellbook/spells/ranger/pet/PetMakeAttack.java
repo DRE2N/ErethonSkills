@@ -24,7 +24,7 @@ public class PetMakeAttack extends RangerBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
        RangerUtils.getPet(caster).makeAttack(target);
        return true;
     }

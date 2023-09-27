@@ -16,7 +16,7 @@ public class HolyCage extends AoEBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         return super.onCast();
     }

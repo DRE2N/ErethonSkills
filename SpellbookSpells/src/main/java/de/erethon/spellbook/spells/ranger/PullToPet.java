@@ -18,7 +18,7 @@ public class PullToPet extends RangerPetBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Location loc = pet.getLocation();
         CircleEffect effect = new CircleEffect(Spellbook.getInstance().getEffectManager());
         effect.radius = range;

@@ -35,7 +35,7 @@ public class BerserkMode extends WarriorBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         if (caster instanceof Player player) {
             player.setWorldBorder(fakeBorder);
         }

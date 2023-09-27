@@ -21,7 +21,7 @@ public class HolyShield extends PaladinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         shield = caster.getMaxHealth() * shieldPercent;
         shieldMax = shield;
         sphere = new SphereEffect(Spellbook.getInstance().getEffectManager());

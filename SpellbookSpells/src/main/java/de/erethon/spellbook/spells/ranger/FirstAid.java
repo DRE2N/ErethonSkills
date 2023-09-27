@@ -14,7 +14,7 @@ public class FirstAid extends RangerBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.setHealth(Math.min(caster.getHealth() + baseHeal + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER), caster.getMaxHealth()));
         return super.onCast();
     }

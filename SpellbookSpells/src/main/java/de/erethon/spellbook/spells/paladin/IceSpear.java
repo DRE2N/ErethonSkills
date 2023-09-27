@@ -29,7 +29,7 @@ public class IceSpear extends PaladinSpearSpell implements Listener {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         target.playSound(Sound.sound(org.bukkit.Sound.BLOCK_GLASS_BREAK, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_GLASS_BREAK, Sound.Source.RECORD, 0.8f, 1));
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());

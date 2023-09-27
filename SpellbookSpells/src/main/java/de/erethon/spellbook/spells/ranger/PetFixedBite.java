@@ -29,7 +29,7 @@ public class PetFixedBite extends RangerPetBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         target = pet.getTarget().getBukkitLivingEntity();
         pet.makeAttack(target);
         target.addPotionEffect(noJump);

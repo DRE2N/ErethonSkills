@@ -3,14 +3,16 @@ package de.erethon.spellbook.spells.assassin;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.SpellbookBaseSpell;
+import de.erethon.spellbook.utils.Targeted;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class AssassinBaseSpell extends SpellbookSpell {
+public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
 
     public int energyCost = data.getInt("energyCost", 0);
     public int range = data.getInt("range", 32);
-    protected LivingEntity target;
+    public LivingEntity target;
 
     public AssassinBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -22,7 +24,7 @@ public class AssassinBaseSpell extends SpellbookSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         caster.setEnergy(caster.getEnergy() - energyCost);
         return super.onCast();
     }
@@ -63,5 +65,15 @@ public class AssassinBaseSpell extends SpellbookSpell {
         }
         this.target = (LivingEntity) target;
         return true;
+    }
+
+    @Override
+    public LivingEntity getTarget() {
+        return target;
+    }
+
+    @Override
+    public void setTarget(LivingEntity target) {
+        this.target = target;
     }
 }

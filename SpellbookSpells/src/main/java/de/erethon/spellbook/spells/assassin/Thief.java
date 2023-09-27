@@ -25,7 +25,7 @@ public class Thief extends AssassinBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         List<SpellEffect> datas = target.getEffects().stream().toList();
         if (datas.isEmpty()) {
             caster.sendParsedActionBar("<#ff0000>Das Ziel hat keine Effekte");

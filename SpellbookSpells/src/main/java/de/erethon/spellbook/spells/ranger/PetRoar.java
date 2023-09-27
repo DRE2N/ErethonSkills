@@ -16,7 +16,7 @@ public class PetRoar extends RangerPetBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         for (LivingEntity living : pet.getLocation().getNearbyLivingEntities(data.getDouble("radius", 8))) {
             if (living == caster) continue;
             if (!Spellbook.canAttack(caster, living)) continue;

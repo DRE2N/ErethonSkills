@@ -16,7 +16,7 @@ public class RevealEnemies extends RangerBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         Set<LivingEntity> affected = new HashSet<>();
         caster.getNearbyEntities(range, range, range).forEach(entity -> {
             if (!(entity instanceof LivingEntity)) {
