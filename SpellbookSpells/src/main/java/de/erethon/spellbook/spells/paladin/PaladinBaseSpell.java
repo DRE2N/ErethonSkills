@@ -8,7 +8,7 @@ import de.erethon.spellbook.utils.Targeted;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-public class PaladinBaseSpell extends SpellbookBaseSpell implements Targeted {
+public class PaladinBaseSpell extends SpellbookBaseSpell {
 
     LivingEntity target;
 

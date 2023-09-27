@@ -10,7 +10,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class ChannelingSpell extends SpellbookBaseSpell implements Listener {
+public class ChannelingSpell extends SpellbookSpell implements Listener {
 
     protected boolean interrupted = false;
     private int currentTicks = 0;

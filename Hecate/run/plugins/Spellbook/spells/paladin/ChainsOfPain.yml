@@ -1,0 +1,6 @@
+class: paladin.ChainsOfPain
+range: 16
+keepAliveTicks: 600
+maxDistance: 10
+lookForSecondTargetRange: 8
+stunDuration: 100

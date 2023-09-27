@@ -135,7 +135,7 @@ public class Spellbook {
      */
     public static double getScaledValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, double multiplier) {
         if (getInstance().DEBUG) {
-            MessageUtil.log("Caster: " + caster.getName() + " Target: " + (target == null ? "null" : target.getName()) + " Attribute: " + attribute.name() + " Multiplier: " + multiplier);
+            MessageUtil.log("Caster: " + (caster == null ? "null" : caster.getName())  + " Target: " + (target == null ? "null" : target.getName()) + " Attribute: " + attribute.name() + " Multiplier: " + multiplier);
         }
         if (target instanceof Player) {
             return getScaledValue(data, caster, true, attribute, multiplier);
