@@ -140,6 +140,7 @@ public class PlayerCastListener implements Listener {
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
             textDisplay.text(Component.text("-" + rounded + "❤").color(DamageColor.getColorForDamageType(type)));
+            textDisplay.setPersistent(false);
         });
         displays.put(display, System.currentTimeMillis());
         updateTransforms(entity);

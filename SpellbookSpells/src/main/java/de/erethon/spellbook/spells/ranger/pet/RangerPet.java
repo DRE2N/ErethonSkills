@@ -82,6 +82,7 @@ public class RangerPet extends Wolf {
             display.setBillboard(Display.Billboard.VERTICAL);
             display.getPersistentDataContainer().set(PET_STATUS_KEY, PersistentDataType.BYTE, (byte) 1);
             display.setBackgroundColor(Color.fromARGB(0, 1, 1, 1));
+            display.setPersistent(false);
         });
     }
 

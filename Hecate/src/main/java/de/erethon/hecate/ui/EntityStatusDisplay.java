@@ -34,6 +34,7 @@ public class EntityStatusDisplay {
             textDisplay.text(holder.teamDisplayName());
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
             textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 0);
+            textDisplay.setPersistent(false);
             holder.addPassenger(textDisplay);
             entityNameTag = textDisplay;
         });
@@ -45,6 +46,7 @@ public class EntityStatusDisplay {
             textDisplay.text(getHealth(holder.getHealth(), holder.getMaxHealth()));
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
             textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 1);
+            textDisplay.setPersistent(false);
             holder.addPassenger(textDisplay);
             healthDisplay = textDisplay;
         });
@@ -56,6 +58,7 @@ public class EntityStatusDisplay {
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
             textDisplay.text(Component.empty());
             textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 1);
+            textDisplay.setPersistent(false);
             holder.addPassenger(textDisplay);
             statusDisplay = textDisplay;
         });
