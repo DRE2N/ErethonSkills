@@ -36,12 +36,17 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
     public boolean onCast() {
         linkActive = true;
         effect = new LineEffect(Spellbook.getInstance().getEffectManager());
-        effect.setLocation(caster.getLocation().add(0, -1.5, 0));
-        effect.setTargetLocation(target.getLocation().add(0, -1.5, 0));
+        effect.setLocation(caster.getLocation().add(0, 1.5, 0));
+        effect.setTargetLocation(target.getLocation().add(0, 1.5, 0));
         effect.particle = Particle.REDSTONE;
         effect.color = Color.PURPLE;
         effect.particleSize = 0.3f;
         effect.start();
+        if (caster.getLocation().distanceSquared(target.getLocation()) > maxDistance * maxDistance) {
+            // Push them together
+            Vector vector = target.getLocation().toVector().subtract(caster.getLocation().toVector()).normalize().multiply(-0.5);
+            caster.setVelocity(vector);
+        }
         return super.onCast();
     }
 
@@ -52,8 +57,8 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
             interrupt();
             return;
         }
-        effect.setLocation(caster.getLocation().add(0, -1.5, 0));
-        effect.setTargetLocation(target.getLocation().add(0, -1.5, 0));
+        effect.setLocation(caster.getLocation().add(0, 1.5, 0));
+        effect.setTargetLocation(target.getLocation().add(0, 1.5, 0));
     }
 
 
