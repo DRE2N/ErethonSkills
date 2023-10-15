@@ -1,0 +1,4 @@
+class: warrior.SideStep
+keepAliveTicks: 10 # Time after cast until velocity is applied based on player direction change input
+velocity: 2.4
+rotationAngle: 45

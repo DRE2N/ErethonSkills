@@ -1,0 +1,4 @@
+class: warrior.Duel
+keepAliveTicks: 200
+furyStacks: 3
+powerStacks: 3

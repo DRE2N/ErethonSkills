@@ -1,0 +1,7 @@
+class: warrior.TripleHit
+range: 6
+keepAliveTicks: 200
+hitInveral: 10
+thirdBonusDamage: 150
+powerStacks: 3
+powerDuration: 200

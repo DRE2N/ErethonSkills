@@ -23,7 +23,7 @@ public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
     }
 
     protected boolean lookForTarget() {
-        return lookForTarget(false, 32);
+        return lookForTarget(false, data.getInt("range", 32));
     }
 
     protected boolean lookForTarget(int range) {
