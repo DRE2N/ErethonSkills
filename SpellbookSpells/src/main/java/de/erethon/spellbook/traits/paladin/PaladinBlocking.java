@@ -7,7 +7,7 @@ import de.erethon.spellbook.traits.ClassMechanic;
 import net.minecraft.world.entity.player.Player;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 
 public class PaladinBlocking extends ClassMechanic {

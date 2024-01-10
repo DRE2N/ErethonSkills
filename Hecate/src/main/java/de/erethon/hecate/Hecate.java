@@ -15,7 +15,13 @@ import de.erethon.hecate.listeners.PlayerCastListener;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellbookAPI;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.Registry;
+import org.bukkit.Server;
+import org.bukkit.craftbukkit.v1_20_R3.CraftServer;
 import org.bukkit.event.HandlerList;
 
 import java.io.File;
@@ -52,6 +58,7 @@ public final class Hecate extends EPlugin {
     public void onEnable() {
         super.onEnable();
         instance = this;
+        MessageUtil.log("isItem: " + Material.BAMBOO_WALL_SIGN.isItem());
         loadCore();
     }
 
@@ -128,6 +135,10 @@ public final class Hecate extends EPlugin {
     public void instantiate() {
         hPlayerCache = new HPlayerCache(this);
         statusDisplayManager = new EntityStatusDisplayManager();
+        Server server = Bukkit.getServer();
+        CraftServer craftServer = (CraftServer) server;
+        MinecraftServer minecraftServer = craftServer.getServer();
+        minecraftServer.registryAccess().registryOrThrow(Registries.BIOME);
     }
 
     public void registerCommands() {

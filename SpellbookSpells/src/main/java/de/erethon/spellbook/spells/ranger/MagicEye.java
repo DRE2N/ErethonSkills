@@ -5,7 +5,7 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Color;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftArrow;
+import org.bukkit.craftbukkit.v1_20_R3.entity.CraftArrow;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

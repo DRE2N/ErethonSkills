@@ -15,8 +15,8 @@ import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_20_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.EulerAngle;
@@ -33,7 +33,7 @@ public class ItemProjectile extends Arrow {
     SpellbookSpell spell;
 
     public ItemProjectile(org.bukkit.inventory.ItemStack item, double x, double y, double z, World world, SpellbookSpell spell) {
-        super(((CraftWorld) world).getHandle(), x, y, z);
+        super(((CraftWorld) world).getHandle(), x, y, z, CraftItemStack.asNMSCopy(item));
         this.spell = spell;
         net.minecraft.world.entity.decoration.ArmorStand nms = NMSUtils.spawnInvisibleArmorstand(new Location(world, x, y, z), false, true, true, false);
         itemStack = CraftItemStack.asNMSCopy(item);
@@ -60,8 +60,8 @@ public class ItemProjectile extends Arrow {
     }
 
     @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-        super.lerpTo(x, y, z, yaw, pitch, interpolationSteps, interpolate);
+    public void lerpTo(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
+        super.lerpTo(x, y, z, yaw, pitch, interpolationSteps);
         updateArmorstand();
     }
 

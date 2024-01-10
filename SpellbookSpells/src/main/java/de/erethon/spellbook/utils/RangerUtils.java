@@ -47,7 +47,6 @@ public class RangerUtils {
         direction = direction.normalize();
         direction.multiply(speed);
         AbstractArrow proj = start.launchProjectile(Arrow.class, direction);
-        //proj.setGravity(false);
         proj.setShooter(shooter);
         proj.setDamageType(damageType);
         proj.setDamage(damage);
