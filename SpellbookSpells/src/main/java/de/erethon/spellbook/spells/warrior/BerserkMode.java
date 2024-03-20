@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -67,7 +67,7 @@ public class BerserkMode extends WarriorBaseSpell {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         damage =+Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_PHYSICAL);
         return super.onAttack(target, damage, type);
     }

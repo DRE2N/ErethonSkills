@@ -1,7 +1,7 @@
 package de.erethon.spellbook.utils;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.pet.RangerPet;
@@ -40,7 +40,7 @@ public class RangerUtils {
         return Spellbook.getInstance().getPetLookup().get(caster);
     }
 
-    public static AbstractArrow sendProjectile(LivingEntity start, LivingEntity target, LivingEntity shooter, double speed, double damage, DamageType damageType) {
+    public static AbstractArrow sendProjectile(LivingEntity start, LivingEntity target, LivingEntity shooter, double speed, double damage, PDamageType damageType) {
         Vector from = start.getLocation().toVector();
         Vector to = target.getLocation().toVector();
         Vector direction = to.subtract(from);

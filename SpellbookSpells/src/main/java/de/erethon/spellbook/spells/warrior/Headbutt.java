@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
@@ -49,7 +49,7 @@ public class Headbutt extends WarriorBaseSpell implements Listener {
         if (!waitingForImpact) return;
         if (event.getTo().distanceSquared(target.getLocation()) < distanceToTarget * distanceToTarget) {
             caster.setVelocity(new Vector(0, 0, 0));
-            target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
+            target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_PHYSICAL), caster, PDamageType.PHYSICAL);
             target.addEffect(caster, stun, stunDuration, 1);
             caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_LAND, Sound.Source.RECORD, 0.5f, 1));
             target.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_LAND, Sound.Source.RECORD, 0.5f, 1));

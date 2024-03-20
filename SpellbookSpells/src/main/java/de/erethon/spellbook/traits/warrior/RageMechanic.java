@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
@@ -28,7 +28,7 @@ public class RageMechanic extends ClassMechanic {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         caster.addEnergy(ragePerHit);
         return super.onAttack(target, damage, type);
     }

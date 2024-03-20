@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.utils.RangerUtils;
@@ -34,7 +34,7 @@ public class MagicBolt extends ProjectileRelatedSkill {
             if (targets > maxTargets) {
                 break;
             }
-            Projectile projectile = RangerUtils.sendProjectile(caster, living, caster, 2, Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_MAGIC), DamageType.MAGIC);
+            Projectile projectile = RangerUtils.sendProjectile(caster, living, caster, 2, Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_MAGIC), PDamageType.MAGIC);
             EntityShootBowEvent event = new EntityShootBowEvent(caster, caster.getEquipment().getItemInMainHand(), projectile, 2);
             Bukkit.getPluginManager().callEvent(event);
 

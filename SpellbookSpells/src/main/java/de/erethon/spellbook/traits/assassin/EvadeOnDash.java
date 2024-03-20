@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -29,7 +29,7 @@ public class EvadeOnDash extends SpellTrait {
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         return super.onDamage(attacker, (isDashing ? 0 : damage), type);
     }
 

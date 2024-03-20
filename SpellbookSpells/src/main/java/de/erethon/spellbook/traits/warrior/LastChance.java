@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import org.bukkit.attribute.Attribute;
@@ -19,7 +19,7 @@ public class LastChance extends SpellTrait {
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         if (caster.getHealth() / caster.getMaxHealth() <= healthTriggerPercentage) {
             caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
             caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);

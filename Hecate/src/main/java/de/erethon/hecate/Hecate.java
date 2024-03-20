@@ -13,9 +13,13 @@ import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.listeners.EntityListener;
 import de.erethon.hecate.listeners.PlayerCastListener;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
+import de.erethon.hephaestus.HItem;
+import de.erethon.hephaestus.ItemLibrary;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellbookAPI;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.Main;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -38,6 +42,7 @@ public final class Hecate extends EPlugin {
     public static File TRAITLINES;
 
     private Spellbook spellbook;
+    private ItemLibrary itemLibrary;
     private HPlayerCache hPlayerCache;
     private HecateCommandCache commands;
     private EntityStatusDisplayManager statusDisplayManager;
@@ -58,12 +63,12 @@ public final class Hecate extends EPlugin {
     public void onEnable() {
         super.onEnable();
         instance = this;
-        MessageUtil.log("isItem: " + Material.BAMBOO_WALL_SIGN.isItem());
         loadCore();
     }
 
     public void loadCore() {
         spellbook = new Spellbook(this);
+        itemLibrary = Main.itemLibrary;
         MessageUtil.log("Loading spells...");
         for (String spell : spellbook.getAPI().getLibrary().getLoaded().keySet()) {
             MessageUtil.log("- " + spell);

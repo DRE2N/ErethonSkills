@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.sound.Sound;
@@ -30,7 +30,7 @@ public class FarShot extends ProjectileRelatedSkill {
     protected void onDamage(EntityDamageByEntityEvent event, Projectile projectile) {
         double distance = projectile.getLocation().distance(startLocation);
         double damage = distance * (Spellbook.getScaledValue(data, caster, (LivingEntity) event.getEntity(), Attribute.ADV_MAGIC));
-        ((LivingEntity) event.getEntity()).damage(damage, DamageType.MAGIC);
+        ((LivingEntity) event.getEntity()).damage(damage, PDamageType.MAGIC);
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_ATTACK_STRONG, Sound.Source.RECORD, 1, 0));
     }
 }

@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.paladin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
@@ -16,7 +16,7 @@ public class BlessedWeapons extends SpellTrait {
     @Override
     protected SpellbookSpell onSpellCast(SpellbookSpell cast) {
         if (cast instanceof PaladinSpearSpell spear) {
-            spear.damageType = DamageType.MAGIC;
+            spear.damageType = PDamageType.MAGIC;
             spear.damageAttribute = Attribute.ADV_MAGIC;
         }
         return cast;

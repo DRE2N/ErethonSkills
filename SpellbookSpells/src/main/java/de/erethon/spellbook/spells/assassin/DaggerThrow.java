@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
@@ -53,7 +53,7 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
                 if (entity == caster || !Spellbook.canAttack(caster, entity)) {
                     return;
                 }
-                entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
+                entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADV_PHYSICAL), caster, PDamageType.PHYSICAL);
                 triggerTraits(target);
                 EffectData effect = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
                 if (effect != null) {

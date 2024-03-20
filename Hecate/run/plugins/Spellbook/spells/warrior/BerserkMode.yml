@@ -1,7 +1,7 @@
 class: warrior.BerserkMode
 name: Berserk Mode
 description: "You enter a berserk rage, increasing your damage and attack speed, but loosing health."
-cooldown: 30
+cooldown: 120
 damagePerTick: 1
 duration: 5
 coefficients:

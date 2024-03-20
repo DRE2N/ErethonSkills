@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -24,7 +24,7 @@ public class StackingAttack extends AssassinBaseSpell {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         if (target != this.target) {
             return damage;
         }

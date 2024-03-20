@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.attribute.Attribute;
@@ -20,7 +20,7 @@ public class LifeStealPassiveSpell extends PassiveSpell {
 
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         if (damage <= 0) {
             return damage;
         }

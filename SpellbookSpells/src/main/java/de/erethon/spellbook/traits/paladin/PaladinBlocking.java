@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.paladin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.traits.ClassMechanic;
@@ -26,7 +26,7 @@ public class PaladinBlocking extends ClassMechanic {
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         if (caster.hasTrait(endurantTrait)) { // Can't do this in onAdd because there is no load order
             energyPerDamage = endurantEnergyPerDamage;
         }

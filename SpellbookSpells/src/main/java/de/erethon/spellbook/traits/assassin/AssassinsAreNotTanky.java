@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
@@ -18,7 +18,7 @@ public class AssassinsAreNotTanky extends SpellTrait {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         double maxHealth = caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
         if (caster.getHealth() > (maxHealth * threshold)) {
             damage = damage + bonusDamage;

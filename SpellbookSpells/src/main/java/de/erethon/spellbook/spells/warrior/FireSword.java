@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.Color;
@@ -17,11 +17,11 @@ public class FireSword extends WarriorBaseSpell {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
-        if (type == DamageType.MAGIC) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
+        if (type == PDamageType.MAGIC) {
             return super.onDamage(target, damage, type);
         }
-        target.damage(damage + bonusDamage, caster, DamageType.MAGIC);
+        target.damage(damage + bonusDamage, caster, PDamageType.MAGIC);
         target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 1, 0), 1, new Particle.DustOptions(Color.ORANGE,3f));
         triggerTraits(target);
         return 0; // We can't deal damage twice in the same attack.

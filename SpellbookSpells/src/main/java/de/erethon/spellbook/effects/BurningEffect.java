@@ -1,6 +1,6 @@
 package de.erethon.spellbook.effects;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
@@ -33,7 +33,7 @@ public class BurningEffect extends SpellEffect {
         tick++;
         if (tick >= 20) {
             tick = 0;
-            target.damage(Spellbook.getScaledValue(data, caster, target, Attribute.ADV_PHYSICAL), DamageType.PHYSICAL);
+            target.damage(Spellbook.getScaledValue(data, caster, target, Attribute.ADV_PHYSICAL), PDamageType.PHYSICAL);
             target.playEffect(EntityEffect.HURT);
         }
     }

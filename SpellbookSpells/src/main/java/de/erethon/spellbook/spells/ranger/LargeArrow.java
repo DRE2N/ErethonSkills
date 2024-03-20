@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.ChannelingSpell;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.events.ItemProjectileHitEvent;
@@ -20,7 +20,7 @@ public class LargeArrow extends ChannelingSpell implements Listener {
 
     private double arrowBoxSize;
     private double damage;
-    private DamageType damageType;
+    private PDamageType damageType;
     private ItemStack itemStack;
 
     public LargeArrow(LivingEntity caster, SpellData spellData) {
@@ -28,7 +28,7 @@ public class LargeArrow extends ChannelingSpell implements Listener {
         arrowBoxSize = spellData.getDouble("arrowBoxSize", 3.0);
         itemStack = NMSUtils.getItemStackWithModelData(Material.ARROW, spellData.getInt("modelData", 1));
         damage = spellData.getDouble("damage", 1.0);
-        damageType = DamageType.valueOf(spellData.getString("damageType", "PHYSICAL").toUpperCase());
+        damageType = PDamageType.valueOf(spellData.getString("damageType", "PHYSICAL").toUpperCase());
     }
 
     @Override

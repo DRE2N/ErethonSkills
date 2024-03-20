@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import org.bukkit.Particle;
@@ -20,7 +20,7 @@ public class TwoStepsAhead extends SpellTrait {
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         if (System.currentTimeMillis() - lastHit < duration * 50L && random.nextDouble() < missChance) {
             caster.getWorld().spawnParticle(Particle.CRIT_MAGIC, caster.getLocation(), 3);
             return 0;
@@ -29,7 +29,7 @@ public class TwoStepsAhead extends SpellTrait {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         lastHit = System.currentTimeMillis();
         return super.onAttack(target, damage, type);
     }

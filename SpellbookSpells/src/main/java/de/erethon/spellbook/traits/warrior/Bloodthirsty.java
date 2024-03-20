@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import org.bukkit.entity.LivingEntity;
@@ -14,7 +14,7 @@ public class Bloodthirsty extends SpellTrait {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         double heal = damage * lifestealPercentage;
         caster.setHealth(Math.min(caster.getHealth() + heal, caster.getMaxHealth()));
         return super.onAttack(target, damage, type);

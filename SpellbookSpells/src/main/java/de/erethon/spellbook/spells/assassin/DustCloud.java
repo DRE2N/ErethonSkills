@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.AoEBaseSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
@@ -64,7 +64,7 @@ public class DustCloud extends AoEBaseSpell {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         caster.setInvisible(false);
         invisCooldown = data.getInt("invisCooldown", 20);
         return super.onAttack(target, damage, type);

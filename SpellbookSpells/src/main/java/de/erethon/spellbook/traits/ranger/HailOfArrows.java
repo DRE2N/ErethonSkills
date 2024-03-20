@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellTrait;
@@ -17,7 +17,7 @@ public class HailOfArrows extends SpellTrait {
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         caster.addEffect(caster, effectData, duration, 1);
         return super.onDamage(attacker, damage, type);
     }

@@ -1,6 +1,6 @@
 package de.erethon.spellbook.effects.paladin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
 import org.bukkit.entity.LivingEntity;
@@ -14,7 +14,7 @@ public class ThickShieldEffect extends SpellEffect {
     }
 
     @Override
-    public double onDamage(LivingEntity damager, double damage, DamageType type) {
+    public double onDamage(LivingEntity damager, double damage, PDamageType type) {
         return damage * damageMultiplier;
     }
 }

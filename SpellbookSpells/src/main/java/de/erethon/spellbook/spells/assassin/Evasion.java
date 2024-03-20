@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
@@ -19,7 +19,7 @@ public class Evasion extends AssassinBaseSpell {
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         if (random.nextDouble() < chance) {
             return 0;
         }

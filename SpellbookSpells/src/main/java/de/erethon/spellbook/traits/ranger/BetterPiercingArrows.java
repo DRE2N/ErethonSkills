@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -34,7 +34,7 @@ public class BetterPiercingArrows extends SpellTrait {
     protected void onTrigger(TraitTrigger trigger) {
         for (LivingEntity living : trigger.getTargets()) {
             living.addEffect(caster, bleeding, bleedingDuration, bleedingStacks);
-            living.damage(bonusDamage, caster, DamageType.PHYSICAL);
+            living.damage(bonusDamage, caster, PDamageType.PHYSICAL);
         }
     }
 }

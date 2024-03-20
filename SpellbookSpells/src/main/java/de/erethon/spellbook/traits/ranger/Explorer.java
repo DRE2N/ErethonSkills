@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
@@ -23,7 +23,7 @@ public class Explorer extends SpellTrait implements Listener {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         if (lastDamageLocation != null) {
             double distance = lastDamageLocation.distance(target.getLocation());
             double bonusDamage = distance * damagePerBlockDistance;

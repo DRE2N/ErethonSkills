@@ -1,7 +1,7 @@
 package de.erethon.spellbook.spells.warrior;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.animation.Animation;
 import de.erethon.spellbook.animation.AnimationPart;
@@ -100,7 +100,7 @@ public class HammerSMASH extends WarriorBaseSpell implements Listener {
                 if (entity == caster || !Spellbook.canAttack(caster, entity)) {
                     return;
                 }
-                entity.damage(Spellbook.getVariedAttributeBasedDamage(getData(), caster, entity, false, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
+                entity.damage(Spellbook.getVariedAttributeBasedDamage(getData(), caster, entity, false, Attribute.ADV_PHYSICAL), caster, PDamageType.PHYSICAL);
                 affectedForTrait.add(entity);
             });
             triggerTraits(affectedForTrait);

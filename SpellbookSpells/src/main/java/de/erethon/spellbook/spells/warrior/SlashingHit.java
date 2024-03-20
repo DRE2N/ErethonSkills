@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
@@ -26,7 +26,7 @@ public class SlashingHit extends WarriorBaseSpell {
     @Override
     public boolean onCast() {
         target.addEffect(caster, bleeding, (int) (data.getInt("baseDuration", 40) + Spellbook.getScaledValue(data, caster, target, Attribute.ADV_PHYSICAL)), (int) (data.getInt("stacks", 1) * bleedingStackMultiplier));
-        target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADV_PHYSICAL) * damageMultiplier, caster, DamageType.PHYSICAL);
+        target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADV_PHYSICAL) * damageMultiplier, caster, PDamageType.PHYSICAL);
         return super.onCast();
     }
 }

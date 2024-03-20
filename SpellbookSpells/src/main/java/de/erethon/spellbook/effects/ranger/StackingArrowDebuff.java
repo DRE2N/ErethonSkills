@@ -1,6 +1,6 @@
 package de.erethon.spellbook.effects.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
 import org.bukkit.entity.LivingEntity;
@@ -12,7 +12,7 @@ public class StackingArrowDebuff extends SpellEffect {
     }
 
     @Override
-    public double onDamage(LivingEntity damager, double damage, DamageType type) {
+    public double onDamage(LivingEntity damager, double damage, PDamageType type) {
         for (int i = 0; i <= stacks; i++) {
             damage = damage + data.getDouble("bonusDamage", 5.0);
             target.setFreezeTicks(target.getFreezeTicks() + 30);

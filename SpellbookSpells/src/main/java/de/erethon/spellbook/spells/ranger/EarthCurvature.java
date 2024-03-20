@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCastEvent;
 import de.erethon.spellbook.api.SpellData;
@@ -51,7 +51,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_TURTLE_EGG_CRACK, SoundCategory.RECORDS, 2, 0);
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
             living.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 1));
-            living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_PHYSICAL), caster, DamageType.MAGIC);
+            living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_PHYSICAL), caster, PDamageType.MAGIC);
         }
         return super.onCast();
     }
@@ -61,7 +61,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
         LivingEntity living = event.getCaster();
         if (!Spellbook.canAttack(caster, living)) return;
         if (living.getLocation().distance(caster.getLocation()) > range) return;
-        living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_MAGIC), caster, DamageType.MAGIC);
+        living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_MAGIC), caster, PDamageType.MAGIC);
         living.getWorld().playSound(living.getLocation(), Sound.ENTITY_BLAZE_HURT, SoundCategory.RECORDS, 1, 1);
     }
 

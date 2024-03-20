@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
@@ -16,7 +16,7 @@ public class ImprovedEnergyGain extends SpellTrait {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         caster.addEnergy((int) (damage / 2) + bonus);
         return damage;
     }

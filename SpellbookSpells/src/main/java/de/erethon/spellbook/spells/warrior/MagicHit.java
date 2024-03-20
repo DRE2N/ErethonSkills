@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
@@ -14,8 +14,8 @@ public class MagicHit extends PaladinBaseSpell {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
-        if (type == DamageType.PHYSICAL) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
+        if (type == PDamageType.PHYSICAL) {
             currentTicks = keepAliveTicks;
             triggerTraits(target);
             return damage + Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, org.bukkit.attribute.Attribute.ADV_MAGIC);

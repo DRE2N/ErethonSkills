@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Color;
@@ -60,7 +60,7 @@ public class MagicEye extends ProjectileRelatedSkill {
         for (AbstractArrow arrow : shotArrows) {
             arrow.getLocation().getNearbyLivingEntities(xzRange, yRange).forEach(living -> {
                 if (living == caster || !Spellbook.canAttack(caster, living)) return;
-                living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
+                living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_PHYSICAL), caster, PDamageType.PHYSICAL);
                 arrow.remove();
                 removal.add(arrow);
             });

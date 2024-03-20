@@ -50,7 +50,7 @@ public class HCharacter {
 
     private HClass hClass = Hecate.getInstance().getHClass("Assassin");
     private Traitline selectedTraitline;
-    private SpellData[] assignedSlots;
+    private SpellData[] assignedSlots = new SpellData[WEAPON_SLOT];
     private final Set<TraitData> combatOnlyTraits = new HashSet<>();
 
     private boolean isInCastmode = false;
@@ -264,6 +264,7 @@ public class HCharacter {
             return;
         }
         for (Map.Entry<Attribute, Double> entry : hClass.getAttributesPerLevel(level).entrySet()) {
+            MessageUtil.log("Setting " + entry.getKey().name() + " to " + entry.getValue() + " for " + player.getName());
             if (player.getAttribute(entry.getKey()) == null) {
                 MessageUtil.log("Attribute " + entry.getKey().name() + " not found on Player class. Check Papyrus.");
                 continue;

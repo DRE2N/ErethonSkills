@@ -1,6 +1,6 @@
 package de.erethon.spellbook.effects.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
 import org.bukkit.Particle;
@@ -34,7 +34,7 @@ public class MarkOfTheHuntedEffect extends SpellEffect {
     }
 
     @Override
-    public double onDamage(LivingEntity damager, double damage, DamageType type) {
+    public double onDamage(LivingEntity damager, double damage, PDamageType type) {
         if (damager == caster) {
             return damage * damageMultiplier;
         }

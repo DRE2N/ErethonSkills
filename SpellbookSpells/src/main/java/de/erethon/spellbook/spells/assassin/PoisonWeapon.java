@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
@@ -20,7 +20,7 @@ public class PoisonWeapon extends AssassinBaseSpell {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         if (count > 0) {
             count--;
             target.addEffect(caster, effectData, 1, 1);

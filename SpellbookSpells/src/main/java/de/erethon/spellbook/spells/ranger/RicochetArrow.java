@@ -1,7 +1,7 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.utils.RangerUtils;
@@ -40,7 +40,7 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
     @Override
     public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
-        initialProjectile = RangerUtils.sendProjectile(caster, target, caster,  projectileSpeed, Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC), DamageType.MAGIC);
+        initialProjectile = RangerUtils.sendProjectile(caster, target, caster,  projectileSpeed, Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC), PDamageType.MAGIC);
         return true;
     }
 
@@ -57,7 +57,7 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
                 return;
             }
             RangerUtils.sendProjectile((LivingEntity) event.getHitEntity(), living, caster,  projectileSpeed,
-                    Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC) - (ricochets * damageReductionPerRicochet) , DamageType.MAGIC);
+                    Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC) - (ricochets * damageReductionPerRicochet) , PDamageType.MAGIC);
             ricochets++;
         }
     }

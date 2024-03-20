@@ -1,12 +1,12 @@
 package de.erethon.hecate.ui;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 
 public class DamageColor {
 
-    public static TextColor getColorForDamageType(DamageType type) {
+    public static TextColor getColorForDamageType(PDamageType type) {
         switch (type) {
             case AIR -> {
                 return TextColor.color(0x00FFFF);

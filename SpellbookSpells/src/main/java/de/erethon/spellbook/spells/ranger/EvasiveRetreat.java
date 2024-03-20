@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
@@ -18,7 +18,7 @@ public class EvasiveRetreat extends RangerBaseSpell {
     public boolean onCast() {
         Arrow arrow = caster.getWorld().spawn(caster.getLocation(), Arrow.class);
         arrow.setVelocity(caster.getLocation().getDirection().multiply(3));
-        arrow.setDamageType(DamageType.PHYSICAL);
+        arrow.setDamageType(PDamageType.MAGIC);
         arrow.setGravity(false);
         Location location = caster.getLocation();
         location.setPitch(-10);

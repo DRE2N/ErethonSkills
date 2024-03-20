@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellTrait;
@@ -20,7 +20,7 @@ public class Executioner extends SpellTrait {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         if (System.currentTimeMillis() - lastAttack < cooldown) return damage;
         lastAttack = System.currentTimeMillis();
         target.addEffect(caster, effectData, duration, stacks);

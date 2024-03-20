@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.EntityTargetSpell;
@@ -30,7 +30,7 @@ public class SwordCleave extends AssassinBaseSpell {
             if (!Spellbook.canAttack(caster, entity)) {
                 continue;
             }
-            entity.damage(Spellbook.getVariedDamage(attackDmg, caster, true) * damageMultiplier, caster, DamageType.PHYSICAL);
+            entity.damage(Spellbook.getVariedDamage(attackDmg, caster, true) * damageMultiplier, caster, PDamageType.PHYSICAL);
             triggerTraits(target);
         }
         return super.onCast();

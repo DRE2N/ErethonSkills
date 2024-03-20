@@ -10,7 +10,7 @@ import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.CharacterSelection;
 import de.erethon.hecate.ui.DamageColor;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.papyrus.PlayerSwitchProfileEvent;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.pet.RangerPet;
@@ -79,8 +79,21 @@ public class PlayerCastListener implements Listener {
         }
     };
 
+    BukkitRunnable castModeUIUpdater = new BukkitRunnable() {
+        @Override
+        public void run() {
+            for (HPlayer player : cache.getPlayers()) {
+                HCharacter character = player.getSelectedCharacter();
+                if (character.isInCastmode()) {
+                    character.update();
+                }
+            }
+        }
+    };
+
     public PlayerCastListener() {
         remover.runTaskTimer(Hecate.getInstance(), 0, 20);
+        castModeUIUpdater.runTaskTimer(Hecate.getInstance(), 0, 10);
     }
 
     @EventHandler
@@ -129,7 +142,7 @@ public class PlayerCastListener implements Listener {
         }
     }
 
-    private void addDisplayDamage(Player player, LivingEntity entity, double damage, DamageType type) {
+    private void addDisplayDamage(Player player, LivingEntity entity, double damage, PDamageType type) {
         double rounded = Math.round(damage * 100.0) / 100.0;
         TextDisplay display = entity.getWorld().spawn(entity.getLocation().add(0, 0,0), TextDisplay.class, textDisplay -> {
             for (Player p : textDisplay.getTrackedPlayers()) { // TODO: Dmg numbers for party member would be cool

@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
@@ -48,7 +48,7 @@ public class SpawnPetTrait extends SpellTrait implements Listener {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         if (pet.isShouldAttackAutomatically()) {
             pet.makeAttack(target);
         }

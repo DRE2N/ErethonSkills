@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.assassin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.AoEBaseSpell;
@@ -45,7 +45,7 @@ public class TrapIron extends AssassinBaseTrap {
                 continue;
             }
             targets.add(entity);
-            entity.damage(Spellbook.getScaledValue(data, caster, entity, Attribute.ADV_PHYSICAL, damageMultiplier), caster, DamageType.PHYSICAL);
+            entity.damage(Spellbook.getScaledValue(data, caster, entity, Attribute.ADV_PHYSICAL, damageMultiplier), caster, PDamageType.PHYSICAL);
             triggerTraits(entity, 1);
         }
         if (!targets.isEmpty() && !triggeredFirstTime) {

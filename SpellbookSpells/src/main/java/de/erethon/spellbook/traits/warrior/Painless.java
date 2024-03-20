@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import org.bukkit.entity.LivingEntity;
@@ -17,7 +17,7 @@ public class Painless extends SpellTrait {
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         if (random.nextDouble() < missChance) {
             return 0;
         }

@@ -1,6 +1,6 @@
 package de.erethon.spellbook.effects;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellEffect;
@@ -13,7 +13,7 @@ public class PowerEffect extends SpellEffect {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         for (int i = 0; i <= stacks; i++) {
             damage = damage + data.getDouble("bonusDamage", 1.0);
         }

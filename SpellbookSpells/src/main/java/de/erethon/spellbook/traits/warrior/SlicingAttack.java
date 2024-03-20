@@ -1,7 +1,7 @@
 package de.erethon.spellbook.traits.warrior;
 
 import com.destroystokyo.paper.ParticleBuilder;
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
@@ -30,7 +30,7 @@ public class SlicingAttack extends SpellTrait {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         if (lastTarget == null) {
             lastTarget = target;
             attacks = 0;

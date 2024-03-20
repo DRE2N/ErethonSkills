@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.paladin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.SphereEffect;
@@ -38,7 +38,7 @@ public class HolyShield extends PaladinBaseSpell {
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         shield -= damage;
         if (shield <= 0) {
             cleanup();

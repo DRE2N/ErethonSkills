@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.entity.LivingEntity;
@@ -15,7 +15,7 @@ public class PreciseHit extends WarriorBaseSpell {
         keepAliveTicks = duration;
     }
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         keepAliveTicks = 0;
         interrupt();
         return damage + BonusDamage;

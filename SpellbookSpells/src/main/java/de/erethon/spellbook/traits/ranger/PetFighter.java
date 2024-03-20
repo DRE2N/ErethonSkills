@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.utils.RangerUtils;
@@ -15,7 +15,7 @@ public class PetFighter extends SpellTrait {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         if (!RangerUtils.hasPet(caster) || RangerUtils.getPet(caster).getHealth() >= RangerUtils.getPet(caster).getMaxHealth() / 2) {
             return super.onAttack(target, damage, type);
         }

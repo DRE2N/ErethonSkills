@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.sound.Sound;
@@ -23,7 +23,7 @@ public class SkullCrusher extends WarriorBaseSpell {
     @Override
     public boolean onCast() {
         target.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 80, 1));
-        target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADV_PHYSICAL), caster, DamageType.PHYSICAL);
+        target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADV_PHYSICAL), caster, PDamageType.PHYSICAL);
         target.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_DESTROY, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_DESTROY, Sound.Source.RECORD, 0.8f, 1));
         return super.onCast();

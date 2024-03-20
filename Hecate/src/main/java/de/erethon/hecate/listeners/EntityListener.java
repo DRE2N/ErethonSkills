@@ -16,6 +16,8 @@ import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.teams.TeamManager;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -25,9 +27,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.io.File;
 
 public class EntityListener implements Listener {
 
@@ -51,6 +56,7 @@ public class EntityListener implements Listener {
         }
         displayManager.addStatusDisplay(event.getEntity(), new EntityStatusDisplay((LivingEntity) event.getEntity()));
         event.getEntity().setCustomNameVisible(true);
+        Component.text("test").clickEvent(ClickEvent.runCommand("/test"));
     }
     @EventHandler
     public void onEntityAdd(EntityAddToWorldEvent event) {
@@ -71,6 +77,11 @@ public class EntityListener implements Listener {
                 displayManager.removeStatusDisplay(living);
             }
         }
+    }
+
+    @EventHandler
+    public void onLogin(PlayerJoinEvent event) {
+        event.getPlayer().displayName(Component.empty());
     }
 
     @EventHandler

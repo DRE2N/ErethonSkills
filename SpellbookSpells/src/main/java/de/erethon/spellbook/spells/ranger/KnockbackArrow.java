@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.utils.RangerUtils;
 import net.kyori.adventure.sound.Sound;
@@ -21,7 +21,7 @@ public class KnockbackArrow extends RangerBaseSpell {
 
     @Override
     public boolean onCast() {
-        RangerUtils.sendProjectile(caster, target, caster, 2, 0, DamageType.PHYSICAL);
+        RangerUtils.sendProjectile(caster, target, caster, 2, 0, PDamageType.PHYSICAL);
         double distance = target.getLocation().distance(caster.getLocation());
         distance = distance / 10;
         double knockback = Math.min(0, 16 - (knockbackMultiplier * distance));

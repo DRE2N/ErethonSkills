@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.paladin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import org.bukkit.attribute.Attribute;
@@ -17,7 +17,7 @@ public class PathOfGod extends SpellTrait {
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         if (caster.getHealth() / caster.getMaxHealth() < healthPercentage && !caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getModifiers().contains(modifier)) {
             caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(modifier);
         }

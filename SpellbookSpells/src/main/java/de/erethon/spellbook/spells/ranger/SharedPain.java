@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -22,7 +22,7 @@ public class SharedPain extends RangerPetBaseSpell {
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, DamageType type) {
+    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         pet.getBukkitLivingEntity().damage(Math.max(0, damage * petDamagePercentage), attacker, type);
         return super.onDamage(attacker, Math.max(0, damage - (damage * petDamagePercentage)), type);
     }

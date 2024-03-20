@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.paladin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import org.bukkit.entity.LivingEntity;
@@ -14,7 +14,7 @@ public class InstrumentOfFaith extends SpellTrait {
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, DamageType type) {
+    public double onAttack(LivingEntity target, double damage, PDamageType type) {
         return damage + bonusDamage;
     }
 }

@@ -1,6 +1,6 @@
 package de.erethon.spellbook.effects;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellEffect;
@@ -14,9 +14,9 @@ public class ConfusionEffect extends SpellEffect {
     }
 
     @Override
-    public double onAttack(LivingEntity attackTarget, double damage, DamageType type) {
+    public double onAttack(LivingEntity attackTarget, double damage, PDamageType type) {
         for (int i = 0; i <= stacks; i++) {
-            target.damage(data.getDouble("attackDamage", 1.0), DamageType.PHYSICAL);
+            target.damage(data.getDouble("attackDamage", 1.0), PDamageType.PHYSICAL);
         }
         return super.onAttack(target, damage, type);
     }
@@ -24,7 +24,7 @@ public class ConfusionEffect extends SpellEffect {
     @Override
     public boolean onCast(SpellbookSpell spell) {
         for (int i = 0; i <= stacks; i++) {
-            target.damage(data.getDouble("castDamage", 1.0), DamageType.MAGIC);
+            target.damage(data.getDouble("castDamage", 1.0), PDamageType.MAGIC);
         }
         return true;
     }

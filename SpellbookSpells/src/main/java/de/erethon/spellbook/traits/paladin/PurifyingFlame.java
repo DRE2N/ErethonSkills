@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.paladin;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.api.TraitTrigger;
@@ -18,7 +18,7 @@ public class PurifyingFlame extends SpellTrait {
     protected void onTrigger(TraitTrigger trigger) {
         if (trigger.getId() != 1) return;
         for (LivingEntity living : trigger.getTargets()) {
-            living.damage(damage, caster, DamageType.MAGIC);
+            living.damage(damage, caster, PDamageType.MAGIC);
         }
     }
 }

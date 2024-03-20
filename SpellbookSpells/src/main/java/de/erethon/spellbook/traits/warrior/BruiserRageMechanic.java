@@ -1,6 +1,6 @@
 package de.erethon.spellbook.traits.warrior;
 
-import de.erethon.papyrus.DamageType;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.traits.ClassMechanic;
 import org.bukkit.entity.LivingEntity;
@@ -19,7 +19,7 @@ public class BruiserRageMechanic extends ClassMechanic {
     }
 
     @Override
-    public double onDamage(LivingEntity target, double damage, DamageType type) {
+    public double onDamage(LivingEntity target, double damage, PDamageType type) {
         caster.addEnergy(ragePerHit);
         return super.onAttack(target, damage, type);
     }
