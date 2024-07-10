@@ -16,9 +16,9 @@ repositories {
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "1.5.11"
+    id("io.papermc.paperweight.userdev") version "1.7.1"
     id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.github.goooler.shadow") version "8.1.5"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
 }
 
@@ -27,25 +27,23 @@ version = "1.0-SNAPSHOT"
 description = "Spell plugin for Erethon"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-val papyrusVersion = "1.20.4-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21-R0.1-SNAPSHOT"
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true}
+    //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT") { isChanging = true }
     //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
-    implementation("de.erethon:bedrock:1.2.5") { isTransitive = false }
+    implementation("de.erethon:bedrock:1.3.0") { isTransitive = false }
     implementation(project(":SpellbookSpells"))
     //compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
 }
 
 
 tasks {
-    assemble {
-        dependsOn(reobfJar)
-    }
-
+    paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
     runServer {
         if (!project.buildDir.exists()) {
             project.buildDir.mkdir()
@@ -56,7 +54,7 @@ tasks {
     }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
+        options.release.set(21)
     }
     processResources {
         filteringCharset = Charsets.UTF_8.name()
@@ -64,12 +62,19 @@ tasks {
 
     shadowJar {
         dependencies {
-            include(dependency("de.erethon:bedrock:1.2.5"))
+            include(dependency("de.erethon:bedrock:1.3.0"))
             include(project(":SpellbookSpells"))
             include(dependency("com.elmakers.mine.bukkit:EffectLib:9.4"))
         }
         relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
         relocate("com.elmakers.mine.bukkit", "de.erethon.hecate.effectlib")
+    }
+    jar {
+        manifest {
+            attributes(
+                "paperweight-mappings-namespace" to "mojang"
+            )
+        }
     }
     bukkit {
         load = BukkitPluginDescription.PluginLoadOrder.STARTUP

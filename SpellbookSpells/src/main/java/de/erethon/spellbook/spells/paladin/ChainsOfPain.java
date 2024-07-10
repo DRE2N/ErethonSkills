@@ -66,7 +66,7 @@ public class ChainsOfPain extends PaladinBaseSpell implements Listener {
         effect.setLocation(target.getLocation().add(0, 1, 0));
         effect.setTargetLocation(secondTarget.getLocation().add(0, 1, 0));
         effect.infinite();
-        effect.particle = Particle.REDSTONE;
+        effect.particle = Particle.DUST;
         effect.color = Color.MAROON;
         effect.particleSize = 0.3f;
         effect.start();
@@ -105,7 +105,7 @@ public class ChainsOfPain extends PaladinBaseSpell implements Listener {
                         spellDoubleEffect.setLocation(effect.getLocation());
                         spellDoubleEffect.setTargetLocation(effect.getTarget());
                         spellDoubleEffect.duration = 10 * 50;
-                        spellDoubleEffect.particle = Particle.REDSTONE;
+                        spellDoubleEffect.particle = Particle.DUST;
                         spellDoubleEffect.color = Color.WHITE;
                         spellDoubleEffect.particleSize = 0.2f;
                         spellDoubleEffect.isZigZag = true;

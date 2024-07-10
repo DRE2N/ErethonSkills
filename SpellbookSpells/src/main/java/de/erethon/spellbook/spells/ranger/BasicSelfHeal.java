@@ -3,16 +3,19 @@ package de.erethon.spellbook.spells.ranger;
 import com.destroystokyo.paper.ParticleBuilder;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class BasicSelfHeal extends RangerBaseSpell {
 
+    private final NamespacedKey key = new NamespacedKey("spellbook", "basicselfheal");
     private final int baseHeal = data.getInt("baseHeal", 100);
     public double healingMultiplier = 1.0;
-    private AttributeModifier modifier = new AttributeModifier("BasicSelfHeal", -0.5, AttributeModifier.Operation.ADD_NUMBER);
+    private AttributeModifier modifier = new AttributeModifier(key, -0.5, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
 
     public BasicSelfHeal(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);

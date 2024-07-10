@@ -43,7 +43,7 @@ public class BerserkMode extends WarriorBaseSpell {
         effect.setEntity(caster);
         effect.iterations = 50;
         effect.type = EffectType.REPEATING;
-        effect.particle = Particle.REDSTONE;
+        effect.particle = Particle.DUST;
         effect.particleSize = 0.4f;
         effect.color = Color.RED;
         effect.duration = duration * 20 * 50;

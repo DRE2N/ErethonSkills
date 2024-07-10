@@ -25,7 +25,7 @@ public class MarkTarget extends AssassinBaseSpell {
 
     @Override
     protected void onTick() {
-        caster.getWorld().spawnParticle(Particle.SPELL, target.getLocation().add(0, 2, 0), 5);
+        caster.getWorld().spawnParticle(Particle.SCULK_CHARGE_POP, target.getLocation().add(0, 2, 0), 5);
     }
 
     @Override

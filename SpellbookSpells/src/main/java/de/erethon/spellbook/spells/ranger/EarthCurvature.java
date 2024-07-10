@@ -42,7 +42,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
         effect.radius = (float) range;
         effect.setLocation(caster.getLocation().add(0, 0.2,0));
         effect.orient = false;
-        effect.particle = Particle.REDSTONE;
+        effect.particle = Particle.DUST;
         effect.particleSize = 0.5f;
         effect.color = Color.YELLOW;
         effect.duration = 50 * keepAliveTicks;
@@ -50,7 +50,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
         spawnFallingBlocks(caster.getLocation());
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_TURTLE_EGG_CRACK, SoundCategory.RECORDS, 2, 0);
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
-            living.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 1));
+            living.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 100, 1));
             living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_PHYSICAL), caster, PDamageType.MAGIC);
         }
         return super.onCast();

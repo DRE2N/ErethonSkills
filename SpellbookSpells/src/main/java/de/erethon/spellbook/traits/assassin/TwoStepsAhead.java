@@ -22,7 +22,7 @@ public class TwoStepsAhead extends SpellTrait {
     @Override
     public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         if (System.currentTimeMillis() - lastHit < duration * 50L && random.nextDouble() < missChance) {
-            caster.getWorld().spawnParticle(Particle.CRIT_MAGIC, caster.getLocation(), 3);
+            caster.getWorld().spawnParticle(Particle.CRIT, caster.getLocation(), 3);
             return 0;
         }
         return super.onDamage(attacker, damage, type);

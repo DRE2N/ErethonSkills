@@ -7,7 +7,6 @@ import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Color;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 public class DustCloud extends AoEBaseSpell {
@@ -31,7 +30,7 @@ public class DustCloud extends AoEBaseSpell {
         cloud.setColor(Color.GRAY);
         cloud.setDuration(200);
         cloud.setRadius(2);
-        cloud.setBasePotionData(new PotionData(PotionType.THICK));
+        cloud.setBasePotionType(PotionType.THICK);
         return super.onCast();
     }
 

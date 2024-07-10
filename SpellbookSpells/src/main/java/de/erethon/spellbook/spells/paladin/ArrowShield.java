@@ -25,7 +25,7 @@ public class ArrowShield extends AoEBaseSpell {
         sphereEffect.color = Color.ORANGE;
         sphereEffect.radius = size - 1;
         sphereEffect.particles = 50;
-        sphereEffect.particle = Particle.REDSTONE;
+        sphereEffect.particle = Particle.DUST;
         sphereEffect.setEntity(caster);
         sphereEffect.duration = keepAliveTicks * 50;
         sphereEffect.start();

@@ -19,7 +19,7 @@ public class MarkOfTheHuntedEffect extends SpellEffect {
 
     @Override
     public void tick() {
-        target.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation().add(random.nextDouble(-0.5, 0.5), 1.9,random.nextDouble(-0.5, 0.5)), 1);
+        target.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, target.getLocation().add(random.nextDouble(-0.5, 0.5), 1.9,random.nextDouble(-0.5, 0.5)), 1);
 
     }
 

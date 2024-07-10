@@ -89,7 +89,7 @@ public class ProjectileRelatedSkill extends RangerBaseSpell implements Listener 
         effect.disappearWithOriginEntity = true;
         effect.duration = 20000;
         effect.iterations = -1;
-        effect.particle = Particle.REDSTONE.builder().data(new Particle.DustOptions(org.bukkit.Color.RED, 1)).particle();
+        effect.particle = Particle.DUST.builder().data(new Particle.DustOptions(org.bukkit.Color.RED, 1)).particle();
         effect.color = trailColor;
         effect.start();
     }

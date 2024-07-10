@@ -30,7 +30,7 @@ public class ThrowSand extends RangerBaseSpell {
         LineEffect effect = new LineEffect(Spellbook.getInstance().getEffectManager());
         effect.iterations = 1;
         effect.duration = 10 * 50;
-        effect.particle = Particle.REDSTONE;
+        effect.particle = Particle.DUST;
         effect.particleSize = 0.5f;
         effect.color = Color.YELLOW;
         effect.start();

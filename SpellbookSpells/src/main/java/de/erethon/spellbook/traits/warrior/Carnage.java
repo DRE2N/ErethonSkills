@@ -2,14 +2,17 @@ package de.erethon.spellbook.traits.warrior;
 
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class Carnage extends SpellTrait {
 
-    private final AttributeModifier defense = new AttributeModifier("CarnageIncoming", data.getDouble("resistanceMultiplier", 0.8), AttributeModifier.Operation.ADD_SCALAR);
-    private final AttributeModifier offense = new AttributeModifier("CarnageOutgoing", data.getDouble("advMultiplier", 1.33), AttributeModifier.Operation.ADD_SCALAR);
+    private final NamespacedKey key = new NamespacedKey("spellbook", "traitcarnage");
+    private final AttributeModifier defense = new AttributeModifier(key, data.getDouble("resistanceMultiplier", 0.8), AttributeModifier.Operation.ADD_SCALAR, EquipmentSlotGroup.ANY);
+    private final AttributeModifier offense = new AttributeModifier(key, data.getDouble("advMultiplier", 1.33), AttributeModifier.Operation.ADD_SCALAR, EquipmentSlotGroup.ANY);
 
     public Carnage(TraitData data, LivingEntity caster) {
         super(data, caster);

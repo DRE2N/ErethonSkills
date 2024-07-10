@@ -22,7 +22,7 @@ public class FireSword extends WarriorBaseSpell {
             return super.onDamage(target, damage, type);
         }
         target.damage(damage + bonusDamage, caster, PDamageType.MAGIC);
-        target.getWorld().spawnParticle(Particle.REDSTONE, target.getLocation().add(0, 1, 0), 1, new Particle.DustOptions(Color.ORANGE,3f));
+        target.getWorld().spawnParticle(Particle.DUST, target.getLocation().add(0, 1, 0), 1, new Particle.DustOptions(Color.ORANGE,3f));
         triggerTraits(target);
         return 0; // We can't deal damage twice in the same attack.
     }

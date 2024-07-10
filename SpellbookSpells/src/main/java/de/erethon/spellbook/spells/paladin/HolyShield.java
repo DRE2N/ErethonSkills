@@ -30,7 +30,7 @@ public class HolyShield extends PaladinBaseSpell {
         sphere.duration = keepAliveTicks * 50;
         sphere.iterations = -1;
         sphere.setEntity(caster);
-        sphere.particle = Particle.REDSTONE;
+        sphere.particle = Particle.DUST;
         sphere.particleSize = 1f;
         sphere.color = org.bukkit.Color.WHITE;
         sphere.start();

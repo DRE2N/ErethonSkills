@@ -2,15 +2,19 @@ package de.erethon.spellbook.effects;
 
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 /**
  * @author Fyreum
  */
 public class SlowEffect extends SpellEffect {
+
+    private final NamespacedKey key = new NamespacedKey("spellbook", "slow");
 
     AttributeInstance instance;
     AttributeModifier modifier;
@@ -24,7 +28,7 @@ public class SlowEffect extends SpellEffect {
 
     @Override
     public void onApply() {
-        modifier = new org.bukkit.attribute.AttributeModifier("slow", -strength, org.bukkit.attribute.AttributeModifier.Operation.MULTIPLY_SCALAR_1);
+        modifier = new org.bukkit.attribute.AttributeModifier(key, -strength, org.bukkit.attribute.AttributeModifier.Operation.MULTIPLY_SCALAR_1, EquipmentSlotGroup.ANY);
         instance.addTransientModifier(modifier);
     }
 

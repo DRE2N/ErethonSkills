@@ -3,11 +3,14 @@ package de.erethon.spellbook.traits.ranger;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class SurvivalExpert extends SpellTrait {
 
+    private final NamespacedKey key = new NamespacedKey("spellbook", "traitsurvivalexpert");
     private final double bonusHealth = data.getDouble("bonusHealth", 0.2);
     private AttributeModifier modifier;
 
@@ -20,7 +23,7 @@ public class SurvivalExpert extends SpellTrait {
         if (modifier != null) {
             caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).removeModifier(modifier);
         }
-        modifier = new AttributeModifier("survival_expert", caster.getMaxHealth() * bonusHealth, AttributeModifier.Operation.ADD_NUMBER);
+        modifier = new AttributeModifier(key, caster.getMaxHealth() * bonusHealth, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
         caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).addTransientModifier(modifier);
     }
 

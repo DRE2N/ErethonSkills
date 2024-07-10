@@ -2,14 +2,17 @@ package de.erethon.spellbook.traits.assassin;
 
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class ShadowWalker extends SpellTrait {
 
+    private final NamespacedKey key = new NamespacedKey("spellbook", "traitshadowwalker");
     private final int lightLevel = data.getInt("lightLevel", 7);
-    private final AttributeModifier modifier = new AttributeModifier("ShadowWalker", data.getDouble("speedBonus"), AttributeModifier.Operation.ADD_NUMBER);
+    private final AttributeModifier modifier = new AttributeModifier(key, data.getDouble("speedBonus"), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
 
     public ShadowWalker(TraitData data, LivingEntity caster) {
         super(data, caster);

@@ -1,7 +1,6 @@
 package de.erethon.spellbook.spells;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
-import de.erethon.hephaestus.HItemStack;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -35,9 +34,6 @@ public class TestSpell extends SpellbookSpell implements Listener {
 
     @Override
     protected boolean onCast() {
-        Main.itemLibrary.readyBehaviours();
-        HItemStack stack = Main.itemLibrary.get(new ResourceLocation("hecate:test_item")).getItem();
-        caster.getLocation().getWorld().dropItem(caster.getLocation(), stack.getBukkitStack());
         return true;
     }
 

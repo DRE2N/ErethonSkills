@@ -44,7 +44,7 @@ public class Backstab extends AssassinBaseSpell {
         EffectManager manager = Spellbook.getInstance().getEffectManager();
         CylinderEffect effectTarget = new CylinderEffect(manager);
         effectTarget.setLocation(location);
-        effectTarget.particle = Particle.REDSTONE;
+        effectTarget.particle = Particle.DUST;
         effectTarget.particleSize = 0.4f;
         effectTarget.color = Color.BLACK;
         effectTarget.duration = 500;
@@ -52,7 +52,7 @@ public class Backstab extends AssassinBaseSpell {
         effectTarget.start();
         CylinderEffect effectCaster = new CylinderEffect(manager);
         effectCaster.setEntity(caster);
-        effectCaster.particle = Particle.REDSTONE;
+        effectCaster.particle = Particle.DUST;
         effectCaster.particleSize = 0.4f;
         effectCaster.color = Color.BLACK;
         effectCaster.duration = 500;

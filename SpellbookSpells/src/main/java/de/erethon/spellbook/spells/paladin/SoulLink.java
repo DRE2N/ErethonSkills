@@ -38,7 +38,7 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
         effect = new LineEffect(Spellbook.getInstance().getEffectManager());
         effect.setLocation(caster.getLocation().add(0, 1.5, 0));
         effect.setTargetLocation(target.getLocation().add(0, 1.5, 0));
-        effect.particle = Particle.REDSTONE;
+        effect.particle = Particle.DUST;
         effect.color = Color.PURPLE;
         effect.particleSize = 0.3f;
         effect.start();

@@ -6,16 +6,19 @@ import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.events.PetSpawnEvent;
 import de.erethon.spellbook.spells.ranger.pet.RangerPet;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class ThickFur extends SpellTrait implements Listener {
 
-    private final AttributeModifier modifier = new AttributeModifier("thickfur", data.getDouble("bonusHealth", 100), AttributeModifier.Operation.ADD_NUMBER);
+    private final NamespacedKey key = new NamespacedKey("spellbook", "traitthickfur");
+    private final AttributeModifier modifier = new AttributeModifier(key, data.getDouble("bonusHealth", 100), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
     public ThickFur(TraitData data, LivingEntity caster) {
         super(data, caster);
     }

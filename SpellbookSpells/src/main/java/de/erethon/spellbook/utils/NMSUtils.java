@@ -1,17 +1,21 @@
 package de.erethon.spellbook.utils;
 
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftEntity;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.util.BoundingBox;
@@ -38,7 +42,7 @@ public class NMSUtils {
     // less stupid than ItemMeta at least
     public static org.bukkit.inventory.ItemStack getItemStackWithModelData(Material material, int data) {
         ItemStack itemStack = ItemStack.fromBukkitCopy(new org.bukkit.inventory.ItemStack(material, 1));
-        itemStack.getOrCreateTag().putInt("CustomModelData", data);
+        itemStack.applyComponents(DataComponentMap.builder().set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(data)).build());
         return itemStack.getBukkitStack();
     }
 
@@ -76,17 +80,5 @@ public class NMSUtils {
         entity.getBukkitEntity().teleport(location);
         Level world = entity.getCommandSenderWorld();
         world.addFreshEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-    }
-
-    public static Entity addAttachment(org.bukkit.entity.LivingEntity living, Entity bukkitentity, double offset) {
-        net.minecraft.world.entity.LivingEntity nms = ((CraftLivingEntity) living).getHandle();
-        net.minecraft.world.entity.Entity entity= ((CraftEntity) bukkitentity).getHandle();
-        entity.setInvulnerable(true);
-        entity.noPhysics = true;
-        if (entity instanceof LivingEntity livingEntity) {
-            livingEntity.collides = false;
-        }
-        nms.addAttachment(entity, "head", 0, offset, 0);
-        return entity.getBukkitEntity();
     }
 }

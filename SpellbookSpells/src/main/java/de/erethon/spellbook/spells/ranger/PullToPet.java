@@ -22,7 +22,7 @@ public class PullToPet extends RangerPetBaseSpell {
         Location loc = pet.getLocation();
         CircleEffect effect = new CircleEffect(Spellbook.getInstance().getEffectManager());
         effect.radius = range;
-        effect.particle = Particle.REDSTONE.builder().data(new Particle.DustOptions(org.bukkit.Color.RED, 1)).particle();
+        effect.particle = Particle.DUST.builder().data(new Particle.DustOptions(org.bukkit.Color.RED, 1)).particle();
         effect.wholeCircle = true;
         effect.iterations = 1;
         effect.setLocation(loc);

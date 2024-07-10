@@ -8,6 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.projectile.Arrow;
+import net.minecraft.world.entity.projectile.ProjectileDeflection;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -15,8 +16,8 @@ import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.EulerAngle;
@@ -33,7 +34,7 @@ public class ItemProjectile extends Arrow {
     SpellbookSpell spell;
 
     public ItemProjectile(org.bukkit.inventory.ItemStack item, double x, double y, double z, World world, SpellbookSpell spell) {
-        super(((CraftWorld) world).getHandle(), x, y, z, CraftItemStack.asNMSCopy(item));
+        super(((CraftWorld) world).getHandle(), x, y, z, CraftItemStack.asNMSCopy(item), CraftItemStack.asNMSCopy(item));
         this.spell = spell;
         net.minecraft.world.entity.decoration.ArmorStand nms = NMSUtils.spawnInvisibleArmorstand(new Location(world, x, y, z), false, true, true, false);
         itemStack = CraftItemStack.asNMSCopy(item);
@@ -42,7 +43,7 @@ public class ItemProjectile extends Arrow {
         armorStand = (ArmorStand) nms.getBukkitEntity();
         arrow = (org.bukkit.entity.Arrow) getBukkitEntity();
         ServerLevel level = ((CraftWorld) world).getHandle().getLevel();
-        level.getEntityLookup().addNewEntity(this);
+        level.addFreshEntity(this);
         setSilent(true);
         setBaseDamage(0);
         level.getServer().getPlayerList().broadcastAll(new ClientboundRemoveEntitiesPacket(this.getId()));
@@ -143,8 +144,7 @@ public class ItemProjectile extends Arrow {
     }
 
     @Override
-    public void preOnHit(@NotNull HitResult hitResult) {
-        super.preOnHit(hitResult);
+    public ProjectileDeflection preHitTargetOrDeflectSelf(HitResult hitResult) {
         Entity entity = null;
         if (hitResult.getType() == HitResult.Type.ENTITY) {
             EntityHitResult result = (EntityHitResult) hitResult;
@@ -152,6 +152,7 @@ public class ItemProjectile extends Arrow {
         }
         ItemProjectileHitEvent event = new ItemProjectileHitEvent(spell, this, arrow, entity);
         Bukkit.getServer().getPluginManager().callEvent(event);
+        return super.preHitTargetOrDeflectSelf(hitResult);
     }
 
     @Override

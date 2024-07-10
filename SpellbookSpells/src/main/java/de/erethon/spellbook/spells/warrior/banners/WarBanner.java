@@ -23,7 +23,7 @@ public class WarBanner extends WarriorBaseSpell {
     protected Wolf bannerHolder;
     public int radius = data.getInt("radius", 5);
     private final int bannerHealth = data.getInt("bannerHealth", 20);
-    private final Particle particle = new ParticleBuilder(Particle.REDSTONE).color(Spellbook.parseColor(data.getString("ringColor", "16777215"))).particle();
+    private final Particle particle = new ParticleBuilder(Particle.DUST).color(Spellbook.parseColor(data.getString("ringColor", "16777215"))).particle();
 
     public WarBanner(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);

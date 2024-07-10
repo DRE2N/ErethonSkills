@@ -4,6 +4,7 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Biome;
@@ -12,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,6 +21,7 @@ import java.util.Set;
 
 public class ForestKnowledge extends SpellTrait implements Listener {
 
+    private final NamespacedKey key = new NamespacedKey("spellbook", "traitforestknowledge");
     private final AttributeModifier speedBonus;
     private final Set<Biome> forestBiomes = new HashSet<>(Arrays.asList(
             Biome.DARK_FOREST,
@@ -41,7 +44,7 @@ public class ForestKnowledge extends SpellTrait implements Listener {
 
     public ForestKnowledge(TraitData data, LivingEntity caster) {
         super(data, caster);
-        speedBonus = new AttributeModifier("forest_knowledge", data.getDouble("movementSpeedBonus", 0.1), AttributeModifier.Operation.ADD_NUMBER);
+        speedBonus = new AttributeModifier(key, data.getDouble("movementSpeedBonus", 0.1), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
     }
 
     @EventHandler

@@ -2,13 +2,16 @@ package de.erethon.spellbook.traits.warrior;
 
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class QuickStrokes extends SpellTrait {
 
-    private final AttributeModifier attackSpeedModifier = new AttributeModifier("QuickStrokesSpeed", data.getDouble("attackSpeedMultiplier", 1.1), AttributeModifier.Operation.ADD_SCALAR);
-    private final AttributeModifier healthModifier = new AttributeModifier("QuickStrokesHealth", data.getDouble("healthMultiplier", 0.8), AttributeModifier.Operation.ADD_SCALAR);
+    private final NamespacedKey key = new NamespacedKey("spellbook", "traitquickstrokes");
+    private final AttributeModifier attackSpeedModifier = new AttributeModifier(key, data.getDouble("attackSpeedMultiplier", 1.1), AttributeModifier.Operation.ADD_SCALAR, EquipmentSlotGroup.ANY);
+    private final AttributeModifier healthModifier = new AttributeModifier(key, data.getDouble("healthMultiplier", 0.8), AttributeModifier.Operation.ADD_SCALAR, EquipmentSlotGroup.ANY);
 
     public QuickStrokes(TraitData data, LivingEntity caster) {
         super(data, caster);

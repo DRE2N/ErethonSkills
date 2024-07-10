@@ -30,7 +30,7 @@ public class ShieldHit extends PaladinBaseSpell {
         target.playSound(Sound.sound(org.bukkit.Sound.ITEM_SHIELD_BLOCK, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.ITEM_SHIELD_BLOCK, Sound.Source.RECORD, 0.8f, 1));
         CircleEffect circle = new CircleEffect(Spellbook.getInstance().getEffectManager());
-        circle.particle = Particle.REDSTONE;
+        circle.particle = Particle.DUST;
         circle.radius = 1.2f;
         circle.color = Color.BLACK;
         circle.particleCount = 8;

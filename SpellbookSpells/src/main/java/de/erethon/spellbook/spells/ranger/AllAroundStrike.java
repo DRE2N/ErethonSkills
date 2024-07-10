@@ -6,18 +6,22 @@ import de.erethon.spellbook.api.SpellbookSpell;
 import de.slikey.effectlib.effect.CircleEffect;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class AllAroundStrike extends RangerBaseSpell {
+
+    private final NamespacedKey key = new NamespacedKey("spellbook", "allaroundstrike");
     private double radius = data.getDouble("startRadius", 2);
     private final double radiusPerTick = data.getDouble("radiusPerTick", 0.2);
-    private final AttributeModifier attackBaseMod = new AttributeModifier("attackBaseMod", data.getDouble("attackModifier", -5), AttributeModifier.Operation.ADD_NUMBER);
+    private final AttributeModifier attackBaseMod = new AttributeModifier(key, data.getDouble("attackModifier", -5), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
 
     private CircleEffect circle = new CircleEffect(Spellbook.getInstance().getEffectManager());
     private CircleEffect attackMarker = new CircleEffect(Spellbook.getInstance().getEffectManager());
@@ -33,7 +37,7 @@ public class AllAroundStrike extends RangerBaseSpell {
         Location location = new Location(caster.getWorld(), casterLoc.getX(), casterLoc.getY() + 1, casterLoc.getZ(), casterLoc.getYaw(), 0f);
         location.setPitch(0f);
         location.setYaw(casterLoc.getYaw());
-        circle.particle = Particle.REDSTONE;
+        circle.particle = Particle.DUST;
         circle.color = Color.GREEN;
         circle.particleSize = 0.3f;
         circle.particles = 20;
@@ -79,7 +83,7 @@ public class AllAroundStrike extends RangerBaseSpell {
                 continue;
             }
             living.setNoDamageTicks(0);
-            AttributeModifier attackBonus = new AttributeModifier("attackBonus", Spellbook.getScaledValue(data, caster, living, Attribute.ADV_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER);
+            AttributeModifier attackBonus = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, living, Attribute.ADV_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
             caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(attackBonus);
             caster.attack(living);
             caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(attackBonus);

@@ -3,12 +3,15 @@ package de.erethon.spellbook.traits.warrior;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class Relentless extends SpellTrait {
 
+    private final NamespacedKey key = new NamespacedKey("spellbook", "traitrelentless");
     private final double attributeBonusPerEnemy = data.getDouble("attributeBonusPerEnemy", 1);
     private final double range = data.getDouble("range", 7);
     private AttributeModifier modifier;
@@ -29,7 +32,7 @@ public class Relentless extends SpellTrait {
             caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
             caster.getAttribute(Attribute.RES_MAGIC).removeModifier(modifier);
         }
-        modifier = new AttributeModifier("Relentless", i * attributeBonusPerEnemy, AttributeModifier.Operation.ADD_NUMBER);
+        modifier = new AttributeModifier(key, i * attributeBonusPerEnemy, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
         caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
         caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);
         super.onTick();

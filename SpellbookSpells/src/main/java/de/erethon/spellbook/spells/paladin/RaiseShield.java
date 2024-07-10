@@ -4,14 +4,17 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.CircleEffect;
 import net.kyori.adventure.sound.Sound;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class RaiseShield extends PaladinBaseSpell {
 
-    private final AttributeModifier modifier = new AttributeModifier("RaiseShield", Spellbook.getScaledValue(data, caster, Attribute.RES_MAGIC), AttributeModifier.Operation.ADD_NUMBER);
+    private final NamespacedKey key = new NamespacedKey("spellbook", "raiseshield");
+    private final AttributeModifier modifier = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, Attribute.RES_MAGIC), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
 
     private CircleEffect circle;
 

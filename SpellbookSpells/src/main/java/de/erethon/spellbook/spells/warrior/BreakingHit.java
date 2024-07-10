@@ -2,13 +2,16 @@ package de.erethon.spellbook.spells.warrior;
 
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.sound.Sound;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class BreakingHit extends WarriorBaseSpell {
 
-    private final AttributeModifier reduction = new AttributeModifier("BreakingHit", data.getDouble("reduction", 0.5), AttributeModifier.Operation.ADD_SCALAR);
+    private final NamespacedKey key = new NamespacedKey("spellbook", "breakinghit");
+    private final AttributeModifier reduction = new AttributeModifier(key, data.getDouble("reduction", 0.5), AttributeModifier.Operation.ADD_SCALAR, EquipmentSlotGroup.ANY);
     public double durationMultiplier = 1.0;
 
     public BreakingHit(LivingEntity caster, SpellData spellData) {

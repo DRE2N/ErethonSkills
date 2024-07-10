@@ -10,6 +10,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket;
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.EntityType;
@@ -22,10 +23,10 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_20_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -110,7 +111,7 @@ public class AoEBaseSpell extends SpellbookSpell {
             }
         }
         circleEffect = new CircleEffect(Spellbook.getInstance().getEffectManager());
-        circleEffect.particle = Particle.REDSTONE;
+        circleEffect.particle = Particle.DUST;
         circleEffect.color = circleColor;
         circleEffect.radius = (float) size;
         circleEffect.iterations = 1;
@@ -178,10 +179,9 @@ public class AoEBaseSpell extends SpellbookSpell {
         enemyItem.setItemMeta(meta);
         display.setItemStack(CraftItemStack.asNMSCopy(enemyItem));
         entityIDs.add(display.getId());
-        ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(display);
-        ClientboundSetEntityDataPacket dataPacket = new ClientboundSetEntityDataPacket(display.getId(), display.getEntityData().packDirty());
-        nmsplayer.connection.send(addEntityPacket);
-        nmsplayer.connection.send(dataPacket);
+        //ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(display, new ServerEntity(level, entity));
+        ////nmsplayer.connection.send(addEntityPacket);
+        //nmsplayer.connection.send(dataPacket);
     }
 
     public Set<LivingEntity> getEntities() {

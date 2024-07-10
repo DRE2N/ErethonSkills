@@ -2,14 +2,17 @@ package de.erethon.spellbook.traits.warrior;
 
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class Assault extends SpellTrait {
 
-    private final AttributeModifier speedModifier = new AttributeModifier("AssaultSpeed", data.getDouble("bonusSpeed", 0.1), AttributeModifier.Operation.ADD_NUMBER);
-    private final AttributeModifier physicalModifier = new AttributeModifier("AssaultPhysical", data.getDouble("bonusPhysical", 25), AttributeModifier.Operation.ADD_NUMBER);
+    private final NamespacedKey key = new NamespacedKey("spellbook", "traitassault");
+    private final AttributeModifier speedModifier = new AttributeModifier(key, data.getDouble("bonusSpeed", 0.1), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
+    private final AttributeModifier physicalModifier = new AttributeModifier(key, data.getDouble("bonusPhysical", 25), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
 
     public Assault(TraitData data, LivingEntity caster) {
         super(data, caster);

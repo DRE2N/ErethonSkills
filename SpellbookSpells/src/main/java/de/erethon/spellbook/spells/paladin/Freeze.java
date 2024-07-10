@@ -3,10 +3,12 @@ package de.erethon.spellbook.spells.paladin;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.CircleEffect;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -16,8 +18,8 @@ import java.util.Set;
 
 public class Freeze extends PaladinBaseSpell {
 
-    private final AttributeModifier modifier = new AttributeModifier("Freeze", -10000, AttributeModifier.Operation.ADD_NUMBER);
-    private final PotionEffect noJump = new PotionEffect(PotionEffectType.JUMP, PotionEffect.INFINITE_DURATION, 128, false, false, false);
+    private final NamespacedKey key = new NamespacedKey("spellbook", "freeze");
+    private final AttributeModifier modifier = new AttributeModifier(key, -10000, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
 
     private final Set<LivingEntity> frozen = new HashSet<>();
     private final Set<CircleEffect> circles = new HashSet<>();
@@ -34,7 +36,7 @@ public class Freeze extends PaladinBaseSpell {
             frozen.add(living);
             living.setVelocity(new Vector());
             living.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(modifier);
-            living.addPotionEffect(noJump);
+            living.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).addTransientModifier(modifier);
             CircleEffect circle = new CircleEffect(Spellbook.getInstance().getEffectManager());
             circle.radius = 1.2f;
             circle.particle = Particle.SNOWFLAKE;
@@ -52,7 +54,7 @@ public class Freeze extends PaladinBaseSpell {
     protected void cleanup() {
         for (LivingEntity living : frozen) {
             living.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
-            living.removePotionEffect(PotionEffectType.JUMP);
+            living.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).removeModifier(modifier);
         }
         for (CircleEffect circle : circles) {
             circle.cancel();

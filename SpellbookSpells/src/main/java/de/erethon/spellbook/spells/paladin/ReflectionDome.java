@@ -28,7 +28,7 @@ public class ReflectionDome extends PaladinBaseSpell {
         sphereEffect.color = Color.BLUE;
         sphereEffect.radius = radius - 1;
         sphereEffect.particles = 50;
-        sphereEffect.particle = Particle.REDSTONE;
+        sphereEffect.particle = Particle.DUST;
         sphereEffect.setEntity(caster);
         sphereEffect.duration = keepAliveTicks * 50;
         sphereEffect.start();

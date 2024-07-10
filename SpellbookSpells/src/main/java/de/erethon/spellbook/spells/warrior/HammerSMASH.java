@@ -87,7 +87,7 @@ public class HammerSMASH extends WarriorBaseSpell implements Listener {
             effect.setLocation(caster.getLocation());
             effect.iterations = 100;
             effect.type = EffectType.REPEATING;
-            effect.particle = Particle.REDSTONE;
+            effect.particle = Particle.DUST;
             effect.particleSize = 1f;
             effect.color = Color.GRAY;
             effect.duration = 20 * 50;

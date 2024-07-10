@@ -2,9 +2,11 @@ package de.erethon.spellbook.spells.warrior.banners;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -12,6 +14,7 @@ import java.util.HashSet;
 
 public class ToughnessBanner extends WarBanner {
 
+    private final NamespacedKey key = new NamespacedKey("spellbook", "toughnessbanner");
     Collection<LivingEntity> affected = new HashSet<>();
 
     public ToughnessBanner(LivingEntity caster, SpellData spellData) {
@@ -32,7 +35,7 @@ public class ToughnessBanner extends WarBanner {
         super.onTick();
         for (LivingEntity affected : affected) {
             affected.getAttribute(Attribute.RES_PHYSICAL).getModifiers().forEach(modifier -> {
-                if (modifier.getName().equals("ToughnessBanner")) {
+                if (modifier.getKey() == key) {
                     affected.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
                 }
             });
@@ -42,7 +45,7 @@ public class ToughnessBanner extends WarBanner {
             if (affected == caster) {
                 continue;
             }
-            entity.getAttribute(Attribute.RES_PHYSICAL).addModifier(new AttributeModifier("ToughnessBanner", Spellbook.getScaledValue(data, caster, entity, Attribute.RES_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER));
+            entity.getAttribute(Attribute.RES_PHYSICAL).addModifier(new AttributeModifier(key, Spellbook.getScaledValue(data, caster, entity, Attribute.RES_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY));
         }
     }
 }

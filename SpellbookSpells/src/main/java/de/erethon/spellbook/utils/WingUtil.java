@@ -101,20 +101,20 @@ public class WingUtil {
         Point3D rotated;
         for(Point3D point : outline) {
             rotated = point.rotate(bodyRot).multiply(size);
-            new ParticleBuilder(Particle.REDSTONE).location(new Location(playerWorld, rotated.x + x, rotated.y + y, rotated.z +z)).allPlayers().color(outlineColor).spawn();
+            new ParticleBuilder(Particle.DUST).location(new Location(playerWorld, rotated.x + x, rotated.y + y, rotated.z +z)).allPlayers().color(outlineColor).spawn();
             point.z *= -1;
             rotated = point.rotate(bodyRot + 3.1415f).multiply(size);
             point.z *= -1;
-            new ParticleBuilder(Particle.REDSTONE).location(new Location(playerWorld, rotated.x + x, rotated.y + y, rotated.z +z)).allPlayers().color(outlineColor).spawn();
+            new ParticleBuilder(Particle.DUST).location(new Location(playerWorld, rotated.x + x, rotated.y + y, rotated.z +z)).allPlayers().color(outlineColor).spawn();
         }
 
         for(Point3D point : fill) {
             rotated = point.rotate(bodyRot).multiply(size);
-            new ParticleBuilder(Particle.REDSTONE).location(new Location(playerWorld, rotated.x + x, rotated.y + y, rotated.z + z)).allPlayers().color(fillColor).spawn();
+            new ParticleBuilder(Particle.DUST).location(new Location(playerWorld, rotated.x + x, rotated.y + y, rotated.z + z)).allPlayers().color(fillColor).spawn();
             point.z *= -1;
             rotated = point.rotate(bodyRot + 3.1415f).multiply(size);
             point.z *= -1;
-            new ParticleBuilder(Particle.REDSTONE).location(new Location(playerWorld, rotated.x + x, rotated.y + y , rotated.z + z)).allPlayers().color(fillColor).spawn();
+            new ParticleBuilder(Particle.DUST).location(new Location(playerWorld, rotated.x + x, rotated.y + y , rotated.z + z)).allPlayers().color(fillColor).spawn();
         }
     }
 }

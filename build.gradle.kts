@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("io.papermc.paperweight.userdev") version "1.5.11"
+    id("io.papermc.paperweight.userdev") version "1.7.1"
 }
 
 repositories {
@@ -27,5 +27,6 @@ tasks {
 
 
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", "1.20.4-R0.1-SNAPSHOT") { isChanging = true }
+    paperweight.devBundle("de.erethon.papyrus", "1.21-R0.1-SNAPSHOT") { isChanging = true }
+    //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT") { isChanging = true }
 }

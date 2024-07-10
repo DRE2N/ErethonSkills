@@ -44,7 +44,7 @@ public class SlicingAttack extends SpellTrait {
             if (attacks >= requiredAttacks) {
                 damage *= 1.2;
                 attacks = 0;
-                new ParticleBuilder(Particle.REDSTONE)
+                new ParticleBuilder(Particle.DUST)
                         .data(new Particle.DustOptions(Color.RED, 5)).count(4)
                         .offset(0.5, 0.5, 0.5)
                         .receivers((Player) caster)

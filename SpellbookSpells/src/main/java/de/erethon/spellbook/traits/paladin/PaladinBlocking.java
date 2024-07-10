@@ -5,17 +5,20 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.traits.ClassMechanic;
 import net.minecraft.world.entity.player.Player;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class PaladinBlocking extends ClassMechanic {
 
+    private final NamespacedKey key = new NamespacedKey("spellbook", "paladinblocking");
     private final Player nmsPlayer;
     private double energyPerDamage = data.getDouble("energyPerDamage", 0.1);
     private final double damageMultiplier = data.getDouble("damageMultiplier", 0.33);
-    private final AttributeModifier energyRegen = new AttributeModifier("PaladinBlocking", data.getDouble("energyRegenRate", 0.1), AttributeModifier.Operation.ADD_NUMBER);
+    private final AttributeModifier energyRegen = new AttributeModifier(key, data.getDouble("energyRegenRate", 0.1), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
     private final TraitData endurantTrait = Spellbook.getTraitData("EndurantShield");
     private final double endurantEnergyPerDamage = endurantTrait.getDouble("energyPerDamage", 0.1);
 

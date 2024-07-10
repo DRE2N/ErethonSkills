@@ -43,7 +43,7 @@ public class GrapplingHook extends SpellbookSpell {
         LineEffect line = new LineEffect(Spellbook.getInstance().getEffectManager());
         line.setLocation(caster.getLocation().add(0, -1, 0));
         line.setTargetLocation(targetBlock.getLocation().add(0.5, 0.5, 0.5));
-        line.particle = Particle.REDSTONE;
+        line.particle = Particle.DUST;
         line.particleSize = 0.3f;
         line.color = Color.WHITE;
         line.iterations = 20;

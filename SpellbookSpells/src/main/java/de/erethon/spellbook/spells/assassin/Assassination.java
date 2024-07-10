@@ -4,16 +4,19 @@ import com.destroystokyo.paper.ParticleBuilder;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlotGroup;
 
 public class Assassination extends AssassinBaseSpell {
 
-    AttributeModifier critModifier;
-    AttributeModifier critChanceModifier;
-    AttributeModifier resistanceModifier;
+    private final NamespacedKey key = new NamespacedKey("spellbook", "assassination");
+    private AttributeModifier critModifier;
+    private AttributeModifier critChanceModifier;
+    private AttributeModifier resistanceModifier;
 
     public Assassination(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -22,9 +25,9 @@ public class Assassination extends AssassinBaseSpell {
 
     @Override
     public boolean onCast() {
-        critModifier = new AttributeModifier("assasinationCrit-" + caster.getUniqueId(), data.getInt("critAmount", 20), AttributeModifier.Operation.ADD_NUMBER);
-        critChanceModifier = new AttributeModifier("assasinationChance-" + caster.getUniqueId(), data.getInt("critChance", 50), AttributeModifier.Operation.ADD_NUMBER);
-        resistanceModifier = new AttributeModifier("assasinationRes-" + caster.getUniqueId(), data.getInt("resistances", -20), AttributeModifier.Operation.ADD_NUMBER);
+        critModifier = new AttributeModifier(key, data.getInt("critAmount", 20), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
+        critChanceModifier = new AttributeModifier(key, data.getInt("critChance", 50), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
+        resistanceModifier = new AttributeModifier(key, data.getInt("resistances", -20), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
         caster.getAttribute(Attribute.STAT_CRIT_DMG).addModifier(critModifier);
         caster.getAttribute(Attribute.STAT_CRIT_CHANCE).addModifier(critChanceModifier);
         return super.onCast();
@@ -33,7 +36,7 @@ public class Assassination extends AssassinBaseSpell {
     @Override
     protected void onTick() {
         for (int i = 0; i < 5; i++) {
-            new ParticleBuilder(Particle.REDSTONE).color(255, 0,50).allPlayers().location(caster.getLocation().add(0, -1, 0)).spawn();
+            new ParticleBuilder(Particle.DUST).color(255, 0,50).allPlayers().location(caster.getLocation().add(0, -1, 0)).spawn();
         }
     }
 

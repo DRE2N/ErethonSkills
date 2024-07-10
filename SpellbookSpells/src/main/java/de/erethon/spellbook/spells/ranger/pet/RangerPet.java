@@ -1,16 +1,18 @@
 package de.erethon.spellbook.spells.ranger.pet;
 
-import de.erethon.papyrus.CraftDamageType;
+import de.erethon.papyrus.CraftPDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.events.PetAttackEvent;
 import de.erethon.spellbook.events.PetDeathEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -28,9 +30,11 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Registry;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_20_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.attribute.CraftAttribute;
+import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -44,7 +48,7 @@ public class RangerPet extends Wolf {
 
     public static final NamespacedKey PET_STATUS_KEY = new NamespacedKey("spellbook", "pet_status");
 
-    private final FollowOwnerGoal followOwnerGoal = new FollowOwnerGoal(this, 1.0D, 2.0F, 10.0F, false);
+    private final FollowOwnerGoal followOwnerGoal = new FollowOwnerGoal(this, 1.0D, 2.0F, 10.0F);
     private final RandomStrollGoal randomStrollGoal = new RandomStrollGoal(this, 1.0D, 500, false);
     private final MoveTowardsRestrictionGoal moveTowardsRestrictionGoal = new MoveTowardsRestrictionGoal(this, 1.0D);
     private final Transformation petStatusTextTransformation = new Transformation(
@@ -66,7 +70,7 @@ public class RangerPet extends Wolf {
         CraftLivingEntity craftOwner = (CraftLivingEntity) bukkitOwner;
         this.owner = craftOwner.getHandle();
         setPetDisplayType(craftDisplayType);
-        setTame(true);
+        setTame(true, false);
         setOwnerUUID(owner.getUUID());
         setCustomName(owner.getName());
         setSilent(true);
@@ -87,7 +91,7 @@ public class RangerPet extends Wolf {
     }
 
     @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity tracker) {
         return new ClientboundAddEntityPacket(getId(), getUUID(), getX(), getY(), getZ(), getYRot(), getXRot(), petDisplayType, 0, getDeltaMovement(), getYHeadRot(), this);
     }
 
@@ -95,8 +99,9 @@ public class RangerPet extends Wolf {
         for (Attribute attribute : BuiltInRegistries.ATTRIBUTE.stream().toList()) {
             if (attribute == Attributes.MOVEMENT_SPEED) continue; // We don't want to make the pet extremely slow
             if (attribute == Attributes.ATTACK_SPEED) continue; // We don't want to make the pet attack extremely slow either
-            if (getAttribute(attribute) == null || owner.getAttribute(attribute) == null) continue;
-            getAttribute(attribute).setBaseValue(owner.getAttribute(attribute).getBaseValue() * attributeMultiplier);
+            Holder<Attribute> holder = (Holder<Attribute>) attribute;
+            if (getAttribute(holder) == null || owner.getAttribute(holder) == null) continue;
+            getAttribute(holder).setBaseValue(owner.getAttribute(holder).getBaseValue() * attributeMultiplier);
         }
         setHealth(getMaxHealth());
     }
@@ -134,7 +139,7 @@ public class RangerPet extends Wolf {
     }
 
     public void setPetDisplayType(org.bukkit.entity.EntityType type) {
-        this.petDisplayType = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(type.getKey().toString()));
+        this.petDisplayType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(type.getKey().toString()));
         displayEntityType = petDisplayType;
     }
 
@@ -181,7 +186,7 @@ public class RangerPet extends Wolf {
 
     @Override
     public boolean doHurtTarget(Entity target) {
-        bukkitMob.getWorld().spawnParticle(Particle.REDSTONE, new Location(bukkitMob.getWorld(), target.getX(), target.getY() + 0.5, target.getZ()), 4,
+        bukkitMob.getWorld().spawnParticle(Particle.DUST, new Location(bukkitMob.getWorld(), target.getX(), target.getY() + 0.5, target.getZ()), 4,
                 new Particle.DustOptions(Color.fromRGB(40, 180, 60), 1));
         PetAttackEvent event = new PetAttackEvent(this, (org.bukkit.entity.LivingEntity) target.getBukkitEntity());
         Bukkit.getPluginManager().callEvent(event);
@@ -189,7 +194,7 @@ public class RangerPet extends Wolf {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount, CraftDamageType type) {
+    public boolean hurt(DamageSource source, float amount, CraftPDamageType type) {
         if (source.getEntity() == owner) {
             return false;
         }
