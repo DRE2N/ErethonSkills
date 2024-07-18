@@ -43,7 +43,6 @@ public class CharacterSelection implements InventoryHolder, Listener {
         Bukkit.getPluginManager().registerEvents(this, Hecate.getInstance());
         prepareInventory();
         player.openInventory(inventory);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 127, true, false, false));
         MessageUtil.log(player.getName() + " is now in character selection.");
     }
 

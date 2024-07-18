@@ -10,6 +10,7 @@ import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.CharacterSelection;
 import de.erethon.hecate.ui.DamageColor;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
+import de.erethon.hecate.util.ResourcepackHandler;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.papyrus.PlayerSwitchProfileEvent;
 import de.erethon.spellbook.api.SpellData;
@@ -41,6 +42,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -245,19 +247,9 @@ public class PlayerCastListener implements Listener {
         player.setInvisible(false);
         player.setWalkSpeed(0.2f);
         HPlayer hPlayer = cache.getByPlayer(player);
-        if (hPlayer.isAutoJoinWithLastCharacter() && hPlayer.getSelectedCharacterID() != 0) {
-            CraftPlayer craftPlayer = (CraftPlayer) player;
-            ServerPlayer serverPlayer = craftPlayer.getHandle();
-            serverPlayer.server.getPlayerList().switchProfile(serverPlayer, hPlayer.getSelectedCharacterID());
-            return;
-        }
-        BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                new CharacterSelection(hPlayer);
-            }
-        };
-        runnable.runTaskLater(Hecate.getInstance(), 5);
+        new ResourcepackHandler(player, player1 -> {
+            finishResourcepack(player, hPlayer);
+        });
     }
 
     @EventHandler
@@ -300,11 +292,28 @@ public class PlayerCastListener implements Listener {
         }
     }
 
+
     private void castRightclickAction(Player player) {
         HCharacter hCharacter = cache.getCharacter(player);
         if (!hCharacter.isInCastmode()) return;
         if (hCharacter.gethClass() != null && hCharacter.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
             hCharacter.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK).queue(player);
         }
+    }
+
+    private void finishResourcepack(Player player, HPlayer hPlayer) {
+        if (hPlayer.isAutoJoinWithLastCharacter() && hPlayer.getSelectedCharacterID() != 0) {
+            CraftPlayer craftPlayer = (CraftPlayer) player;
+            ServerPlayer serverPlayer = craftPlayer.getHandle();
+            serverPlayer.server.getPlayerList().switchProfile(serverPlayer, hPlayer.getSelectedCharacterID());
+            return;
+        }
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                new CharacterSelection(hPlayer);
+            }
+        };
+        runnable.runTaskLater(Hecate.getInstance(), 20);
     }
 }
