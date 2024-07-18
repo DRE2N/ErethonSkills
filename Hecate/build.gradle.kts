@@ -36,7 +36,7 @@ dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true}
     //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT") { isChanging = true }
     //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
-    implementation("de.erethon:bedrock:1.3.0") { isTransitive = false }
+    implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
     implementation(project(":SpellbookSpells"))
     //compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
 }
@@ -48,8 +48,8 @@ tasks {
         if (!project.buildDir.exists()) {
             project.buildDir.mkdir()
         }
-        val f = File(project.buildDir, "server.jar");
-        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-reobf.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        val f = File(project.buildDir,  "server.jar");
+        //uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
     }
     compileJava {
@@ -62,9 +62,9 @@ tasks {
 
     shadowJar {
         dependencies {
-            include(dependency("de.erethon:bedrock:1.3.0"))
+            include(dependency("de.erethon:bedrock:1.4.0"))
             include(project(":SpellbookSpells"))
-            include(dependency("com.elmakers.mine.bukkit:EffectLib:9.4"))
+            include(dependency("com.elmakers.mine.bukkit:EffectLib:10.3"))
         }
         relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
         relocate("com.elmakers.mine.bukkit", "de.erethon.hecate.effectlib")
