@@ -45,6 +45,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.jetbrains.annotations.NotNull;
@@ -303,9 +304,13 @@ public class PlayerCastListener implements Listener {
 
     private void finishResourcepack(Player player, HPlayer hPlayer) {
         if (hPlayer.isAutoJoinWithLastCharacter() && hPlayer.getSelectedCharacterID() != 0) {
+            MessageUtil.log("Auto-joining with last character for " + player.getName() + ".");
             CraftPlayer craftPlayer = (CraftPlayer) player;
             ServerPlayer serverPlayer = craftPlayer.getHandle();
             serverPlayer.server.getPlayerList().switchProfile(serverPlayer, hPlayer.getSelectedCharacterID());
+            serverPlayer.setGameMode(serverPlayer.gameMode.getGameModeForPlayer());
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
+            MessageUtil.sendMessage(player, "<gray>Automatically joined with the last character. <br><i>If you want to select a different character, use /h character.");
             return;
         }
         BukkitRunnable runnable = new BukkitRunnable() {
@@ -314,6 +319,6 @@ public class PlayerCastListener implements Listener {
                 new CharacterSelection(hPlayer);
             }
         };
-        runnable.runTaskLater(Hecate.getInstance(), 20);
+        runnable.runTaskLater(Hecate.getInstance(), 5);
     }
 }
