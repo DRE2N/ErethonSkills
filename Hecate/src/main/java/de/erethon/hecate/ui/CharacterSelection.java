@@ -6,6 +6,7 @@ import de.erethon.hecate.casting.HCharacter;
 import de.erethon.hecate.casting.HPlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import org.bukkit.Bukkit;
@@ -37,7 +38,7 @@ public class CharacterSelection implements InventoryHolder, Listener {
     private ItemStack charCreation = null;
 
     public CharacterSelection(HPlayer hPlayer) {
-        this.inventory = Bukkit.createInventory(this, 9, "Charakter auswählen");
+        this.inventory = Bukkit.createInventory(this, 9, MiniMessage.miniMessage().deserialize("<blue>Welcome! <dark_gray>- <dark_red>Character Selection"));
         this.hPlayer = hPlayer;
         this.player = hPlayer.getPlayer();
         Bukkit.getPluginManager().registerEvents(this, Hecate.getInstance());
@@ -56,15 +57,16 @@ public class CharacterSelection implements InventoryHolder, Listener {
                 continue;
             }
             ItemStack icon = character.getIcon();
-            icon.lore(Arrays.asList(Component.text("ID: " + character.getCharacterID(), NamedTextColor.GRAY), Component.text("Traitline: " + character.getSelectedTraitline().getId())));
+            icon.lore(Arrays.asList(Component.text("ID: " + character.getCharacterID(), NamedTextColor.GRAY), Component.text("Traits: " + character.getSelectedTraitline().getId())));
             inventory.setItem(character.getCharacterID() - 1, icon);
         }
         charCreation = new ItemStack(Material.GREEN_CONCRETE);
         ItemMeta meta = charCreation.getItemMeta();
-        meta.displayName(Component.text("Neuen Charakter erstellen", NamedTextColor.GREEN));
+        meta.displayName(Component.text("Create new character", NamedTextColor.GREEN));
+        meta.lore(Arrays.asList(Component.text("Click here to create a new character.", NamedTextColor.GRAY), Component.text("You can have up to 2 characters.", NamedTextColor.GRAY)));
         charCreation.setItemMeta(meta);
         inventory.setItem(8, charCreation);
-        MessageUtil.sendMessage(player, "Select a character. Available characters: " + (hPlayer.getCharacters().size() - 1));
+        MessageUtil.sendMessage(player, "<gray>Please select a character. Available characters: " + (hPlayer.getCharacters().size() - 1));
     }
 
     @Override
@@ -87,12 +89,13 @@ public class CharacterSelection implements InventoryHolder, Listener {
             if (newID == 0) {
                 newID = 1;
             }
-            MessageUtil.sendMessage(player, "Creating new character with ID " + newID);
+            MessageUtil.sendMessage(player, "<gray>Creating new character with ID " + newID);
         }
         CraftPlayer craftPlayer = (CraftPlayer) player;
         ServerPlayer serverPlayer = craftPlayer.getHandle();
         PlayerList playerList = serverPlayer.server.getPlayerList();
         playerList.switchProfile(serverPlayer, newID);
+        serverPlayer.setGameMode(serverPlayer.gameMode.getGameModeForPlayer());
         MessageUtil.log(player.getName() + " has selected character " + newID);
         hasSelected = true;
         player.removePotionEffect(PotionEffectType.BLINDNESS);

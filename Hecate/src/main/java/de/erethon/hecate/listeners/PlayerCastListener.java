@@ -310,7 +310,7 @@ public class PlayerCastListener implements Listener {
             serverPlayer.server.getPlayerList().switchProfile(serverPlayer, hPlayer.getSelectedCharacterID());
             serverPlayer.setGameMode(serverPlayer.gameMode.getGameModeForPlayer());
             player.removePotionEffect(PotionEffectType.BLINDNESS);
-            MessageUtil.sendMessage(player, "<gray>Automatically joined with the last character. <br><i>If you want to select a different character, use /h character.");
+            MessageUtil.sendMessage(player, "<gray>Automatically selected the last character. <br><i>If you want to select a different character, use /h character.");
             return;
         }
         BukkitRunnable runnable = new BukkitRunnable() {
