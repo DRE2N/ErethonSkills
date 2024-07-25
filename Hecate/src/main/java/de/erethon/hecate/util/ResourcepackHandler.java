@@ -49,6 +49,11 @@ public class ResourcepackHandler implements Listener {
             player.sendResourcePacks(ResourcePackRequest.resourcePackRequest().required(false).replace(true).packs(info).prompt(message));
             MessageUtil.log("Sending resource pack to " + player.getName() + " with hash " + info.hash() + " and UUID " + info.id());
         });
+        pack.orTimeout(10, java.util.concurrent.TimeUnit.SECONDS).exceptionally(throwable -> {
+            MessageUtil.log("Failed to send resource pack to " + player.getName() + ". Timed out. Did the GitHub action fail?");
+            finishApply();
+            return null;
+        });
     }
 
     @EventHandler
@@ -79,9 +84,14 @@ public class ResourcepackHandler implements Listener {
             }
             if (event.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) {
                 MessageUtil.log("Resource pack applied successfully for " + player.getName());
-                callback.onResourcepackDone(player);
+                finishApply();
                 return;
             }
         }
+    }
+
+    public void finishApply() {
+        player.removePotionEffect(PotionEffectType.BLINDNESS);
+        callback.onResourcepackDone(player);
     }
 }
