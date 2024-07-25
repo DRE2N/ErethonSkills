@@ -7,6 +7,7 @@ import net.kyori.adventure.resource.ResourcePackRequest;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,7 +33,8 @@ public class ResourcepackHandler implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         this.callback = callback;
         this.player = player;
-        MessageUtil.sendMessage(player, "<gray>Loading resource pack... Please wait.");
+        Title title = Title.title(Component.empty(), Component.text("Loading resource pack...", NamedTextColor.GRAY));
+        player.showTitle(title);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100000, 127, true, false, false));
         sendPack(player);
     }
