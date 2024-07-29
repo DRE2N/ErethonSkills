@@ -88,6 +88,7 @@ public final class Hecate extends EPlugin {
             if (hPlayer.getSelectedCharacter().isInCastmode()) {
                 hPlayer.getSelectedCharacter().switchMode(CombatModeReason.PLUGIN);
             }
+            hPlayer.saveUser();
         }
         Bukkit.getScheduler().cancelTasks(this);
         HandlerList.unregisterAll(this);
