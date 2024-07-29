@@ -184,6 +184,10 @@ public class HPlayer extends YamlConfiguration implements Listener {
         return profileID;
     }
 
+    public void setAutoJoinWithLastCharacter(boolean autoJoinWithLastCharacter) {
+        this.autoJoinWithLastCharacter = autoJoinWithLastCharacter;
+    }
+
     @EventHandler
     public void onSwitch(PlayerSwitchProfileEvent event) {
         if (event.getPlayer().getUniqueId() != player.getUniqueId()) return;

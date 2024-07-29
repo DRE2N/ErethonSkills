@@ -24,5 +24,6 @@ public class HecateCommandCache extends ECommandCache {
         addCommand(new ClassCommand());
         addCommand(new CharacterCommand());
         addCommand(new ResourcepackCommand());
+        addCommand(new ToggleCommand()); // Temporary
     }
 }
