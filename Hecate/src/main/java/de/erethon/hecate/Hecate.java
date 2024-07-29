@@ -90,6 +90,7 @@ public final class Hecate extends EPlugin {
             }
             hPlayer.saveUser();
         }
+        // Duh duh duh
         Bukkit.getScheduler().cancelTasks(this);
         HandlerList.unregisterAll(this);
     }
