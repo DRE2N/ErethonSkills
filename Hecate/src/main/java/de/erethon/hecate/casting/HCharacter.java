@@ -142,7 +142,8 @@ public class HCharacter {
                 continue;
             }
             SpellData spellData = getSpellAt(slot);
-            inventory.getItem(slot).setAmount(player.calculateCooldown(spellData));
+            int cdAmount = player.calculateCooldown(spellData);
+            inventory.getItem(slot).setAmount(Math.max(1, Math.min(99, cdAmount))); // ItemStack codec fails otherwise
             if (spellData.getCooldown() == player.calculateCooldown(spellData)) {
                 player.setCooldown(inventory.getItem(slot).getType(), (player.calculateCooldown(getSpellAt(slot)) * 20) - 15); // its slightly offset visually
             }
