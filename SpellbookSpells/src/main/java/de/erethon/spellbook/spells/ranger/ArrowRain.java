@@ -1,7 +1,9 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -11,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
+import java.util.List;
 import java.util.Random;
 
 public class ArrowRain extends RangerBaseSpell implements Listener {
@@ -71,4 +74,9 @@ public class ArrowRain extends RangerBaseSpell implements Listener {
         caster.setCooldown(data);
     }
 
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
+        return super.getPlaceholders(c);
+    }
 }

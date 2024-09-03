@@ -58,7 +58,7 @@ public class RangerPet extends Wolf {
             new AxisAngle4f(0, 0, 0, 0));
     private EntityType<?> petDisplayType = EntityType.COW;
     private final LivingEntity owner;
-    private final org.bukkit.entity.Mob bukkitMob = getBukkitMob();
+    private final org.bukkit.entity.Mob bukkitMob = (org.bukkit.entity.Mob) getBukkitOwner();
     private TextDisplay statusDisplay;
 
     private boolean shouldAttackAutomatically = true;

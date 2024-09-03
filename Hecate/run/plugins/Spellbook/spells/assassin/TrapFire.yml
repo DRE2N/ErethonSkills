@@ -7,3 +7,15 @@ customItemDataEnemy: 17
 duration: 200
 effectDuration: 5
 effectStacks: 1
+name:
+  de: Feuerfalle
+  en: Fire Trap
+description:
+  de:
+    - "<!i><#757575>Falle"
+    - " "
+    - "<#757575>Legt eine Feuerfalle, die bei Berührung explodiert und"
+    - "<#757575>%attribute_adv_physical% Schaden verursacht."
+    - " "
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"

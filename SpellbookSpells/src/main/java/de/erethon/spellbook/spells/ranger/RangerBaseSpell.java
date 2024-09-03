@@ -1,21 +1,24 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.utils.SpellbookBaseSpell;
+import de.erethon.spellbook.spells.SpellbookBaseSpell;
 import de.erethon.spellbook.utils.Targeted;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.List;
+
 public class RangerBaseSpell extends SpellbookBaseSpell implements Targeted {
 
-    protected final int manaCost;
+    protected final int duration = data.getInt("duration", 10);
+    protected final int manaCost = data.getInt("manaCost", 10);
     public LivingEntity target;
 
     public RangerBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        manaCost = spellData.getInt("manaCost", 0);
     }
 
     @Override
@@ -66,5 +69,12 @@ public class RangerBaseSpell extends SpellbookBaseSpell implements Targeted {
     @Override
     public void setTarget(LivingEntity target) {
         this.target = target;
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(manaCost, VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

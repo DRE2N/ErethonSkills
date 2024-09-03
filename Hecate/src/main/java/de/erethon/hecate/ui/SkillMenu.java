@@ -112,7 +112,7 @@ public class SkillMenu implements Listener, InventoryHolder {
             MessageUtil.sendMessage(player.getPlayer(), "<green>You learned " + data.getId() + " at " + slot + "!");
         }
         int slot = event.getSlot();
-        /*
+
         if (slot >= 45 && slot <= 53) {
             ItemStack itemStack = event.getCursor();
             if (itemStack == null) {
@@ -132,7 +132,7 @@ public class SkillMenu implements Listener, InventoryHolder {
                 }
                 return;
             }
-        }*/
+        }
         if (slot == 45) {
             previousPage();
             event.setCancelled(true);
@@ -147,10 +147,12 @@ public class SkillMenu implements Listener, InventoryHolder {
     private ItemStack itemFromSpellData(SpellData data) {
         ItemStack itemStack = new ItemStack(Material.BOOK);
         ItemMeta meta = itemStack.getItemMeta();
-        meta.displayName(Component.text(data.getId(), NamedTextColor.RED));
-        List<Component> withPlaceholders = new ArrayList<>();
-        data.getDescription().forEach(component -> withPlaceholders.add(Spellbook.replacePlaceholders(component, player.getPlayer(), data, true, 1).decoration(TextDecoration.ITALIC, false)));
-        meta.lore(new ArrayList<>(withPlaceholders));
+        meta.displayName(Component.translatable("spellbook.spell.name." + data.getId(), data.getId()));
+        List<Component> lore = new ArrayList<>();
+        for (int i = 0; i < data.getDescriptionLineCount(); i++) {
+            lore.add(Component.translatable("spellbook.spell.description." + data.getId() + "." + i, ""));
+        }
+        meta.lore(lore);
         meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, data.getId());
         itemStack.setItemMeta(meta);
         return itemStack;

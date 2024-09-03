@@ -1,3 +1,21 @@
 class: assassin.DashBack
 energyCost: 30
 dashMultiplier: 2.0
+name:
+  de: Rückwärtsrolle
+  en: Dash Back
+description:
+  de:
+    - "<!i><#757575>Mobilität"
+    - " "
+    - "<#94958B>Springe ausweichend zurück."
+    - " "
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+  en:
+    - "<!i><#757575>Mobility"
+    - " "
+    - "<#94958B>Perform a backward roll."
+    - " "
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
+    - "<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"

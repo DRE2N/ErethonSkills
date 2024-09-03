@@ -1,14 +1,18 @@
 package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.SphereEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
+
+import java.util.List;
 
 public class ReflectionDome extends PaladinBaseSpell {
 
@@ -18,8 +22,8 @@ public class ReflectionDome extends PaladinBaseSpell {
 
     public ReflectionDome(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        channelDuration = 120;
-        keepAliveTicks = 120;
+        channelDuration = duration * 20;
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -59,4 +63,9 @@ public class ReflectionDome extends PaladinBaseSpell {
         triggerTraits(); // Maybe some finish effects would be cool
     }
 
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
+        return super.getPlaceholders(c);
+    }
 }

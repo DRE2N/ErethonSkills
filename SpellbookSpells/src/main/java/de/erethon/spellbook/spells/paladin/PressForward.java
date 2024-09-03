@@ -2,17 +2,19 @@ package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.AoEBaseSpell;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class PressForward extends AoEBaseSpell {
 
-    private final int duration = data.getInt("duration", 100);
     private final int stacks = data.getInt("stacks", 1);
 
     private final EffectData speed = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Speed");
@@ -20,7 +22,7 @@ public class PressForward extends AoEBaseSpell {
 
     public PressForward(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = data.getInt("keepAliveTicks", 100);
+        keepAliveTicks = duration * 20;
     }
 
 
@@ -37,5 +39,11 @@ public class PressForward extends AoEBaseSpell {
             triggerTraits(affected);
             affected.add(entity);
         }
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster caster) {
+        spellAddedPlaceholders.add(Component.text(stacks, VALUE_COLOR));
+        return super.getPlaceholders(caster);
     }
 }

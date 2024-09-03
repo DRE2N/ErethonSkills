@@ -26,6 +26,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TraitMenu implements Listener, InventoryHolder {
 
     private static final Hecate plugin = Hecate.getInstance();
@@ -115,8 +118,12 @@ public class TraitMenu implements Listener, InventoryHolder {
         TraitLineEntry entry = traitline.getTraitLineEntries(level).get(index);
         ItemStack item = new ItemStack(ICON_MATERIAL);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.text(entry.data().getId()));
-        meta.lore(entry.data().getDescription());
+        meta.displayName(Component.translatable("spellbook.trait.name." + entry.data().getId(), entry.data().getId()));
+        List<Component> lore = new ArrayList<>();
+        for (int i = 0; i < entry.data().getDescriptionLineCount(); i++) {
+            lore.add(Component.translatable("spellbook.trait.description." + entry.data().getId() + "." + i, ""));
+        }
+        meta.lore(lore);
         if (active) {
             meta.setCustomModelData(entry.activeModelData());
         } else {

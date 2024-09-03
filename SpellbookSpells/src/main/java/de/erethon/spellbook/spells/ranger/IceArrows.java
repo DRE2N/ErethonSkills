@@ -1,12 +1,16 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+
+import java.util.List;
 
 public class IceArrows extends ProjectileRelatedSkill {
 
@@ -18,7 +22,7 @@ public class IceArrows extends ProjectileRelatedSkill {
     public IceArrows(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         trailColor = Color.AQUA;
-        keepAliveTicks = spellData.getInt("duration", 20 * 15);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -30,5 +34,13 @@ public class IceArrows extends ProjectileRelatedSkill {
             living.addEffect(caster, effectData, effectDuration, stacks);
         }
         super.onDamage(event, projectile);
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(stacks, VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

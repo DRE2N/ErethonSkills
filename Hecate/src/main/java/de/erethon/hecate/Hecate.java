@@ -13,8 +13,15 @@ import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.listeners.EntityListener;
 import de.erethon.hecate.listeners.PlayerCastListener;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
+import de.erethon.hecate.util.SpellbookTranslator;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
+import de.erethon.spellbook.api.TraitData;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.translation.GlobalTranslator;
+import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.Main;
@@ -23,11 +30,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.Server;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.event.HandlerList;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public final class Hecate extends EPlugin {
@@ -47,6 +58,8 @@ public final class Hecate extends EPlugin {
     private final Set<HClass> hClasses = new HashSet<>();
 
     public boolean ready = false;
+    private final GlobalTranslator translator = GlobalTranslator.translator();
+    private final SpellbookTranslator reg = new SpellbookTranslator();
 
     public Hecate() {
         settings = EPluginSettings.builder()
@@ -78,8 +91,63 @@ public final class Hecate extends EPlugin {
             Bukkit.getServer().getSpellbookAPI().getLibrary().reload();
             loadTraitlines();
             loadClasses();
+            registerTranslations();
+            translator.addSource(reg);
             ready = true;
         }, 30);
+    }
+
+    private void registerTranslations() {
+        for (SpellData data : spellbook.getAPI().getLibrary().getLoaded().values()) {
+            if (data.contains("name")) {
+                ConfigurationSection nameSection = data.getConfigurationSection("name");
+                for (String key : nameSection.getKeys(false)) {
+                    String value = nameSection.getString(key, "<no translation>");
+                    Locale locale = Locale.of(key);
+                    reg.registerTranslation("spellbook.spell.name." + data.getId(), value, locale);
+                }
+            }
+            if (data.contains("description")) {
+                ConfigurationSection descriptionSection = data.getConfigurationSection("description");
+                int maxLineCount = 0;  // We need to know this for lore rendering
+                for (String key : descriptionSection.getKeys(false)) {
+                    List<String> value = descriptionSection.getStringList(key);
+                    Locale locale = Locale.of(key);
+                    int i = 0;
+                    for (String line : value) {
+                        reg.registerTranslation("spellbook.spell.description." + data.getId() + "." + i, line, locale);
+                        i++;
+                    }
+                    maxLineCount = Math.max(maxLineCount, i);
+                }
+                data.setDescriptionLineCount(maxLineCount);
+            }
+        }
+        for (TraitData data : spellbook.getAPI().getLibrary().getLoadedTraits().values()) {
+            if (data.contains("name")) {
+                ConfigurationSection nameSection = data.getConfigurationSection("name");
+                for (String key : nameSection.getKeys(false)) {
+                    String value = nameSection.getString(key, "<no translation>");
+                    Locale locale = Locale.of(key);
+                    reg.registerTranslation("spellbook.trait.name." + data.getId(), value, locale);
+                }
+            }
+            if (data.contains("description")) {
+                ConfigurationSection descriptionSection = data.getConfigurationSection("description");
+                int maxLineCount = 0;
+                for (String key : descriptionSection.getKeys(false)) {
+                    List<String> value = descriptionSection.getStringList(key);
+                    Locale locale = Locale.of(key);
+                    int i = 0;
+                    for (String line : value) {
+                        reg.registerTranslation("spellbook.trait.description." + data.getId() + "." + i, line, locale);
+                        i++;
+                    }
+                    maxLineCount = Math.max(maxLineCount, i);
+                }
+                data.setDescriptionLineCount(maxLineCount);
+            }
+        }
     }
 
     @Override

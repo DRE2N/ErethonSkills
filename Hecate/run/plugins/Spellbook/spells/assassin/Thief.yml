@@ -1,3 +1,25 @@
 class: assassin.Thief
 duration: 20
 maxDistance: 8
+name:
+  de: Dieb
+  en: Thief
+description:
+  de:
+    - "<!i><#757575>Fernkampfangriff"
+    - " "
+    - "<#94958B>Stiehlt eine zufällige Buff von deinem Ziel "
+    - "<#94958B>beim nächsten Angriff."
+    - " "
+    - "<!i><yellow>⌛ <#94958B>Dauer: %skill_duration% Sekunden"
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+  en:
+    - "<!i><#757575>Ranged Attack"
+    - " "
+    - "<#94958B>Steals a random buff from your target "
+    - "<#94958B>on the next attack."
+    - " "
+    - "<!i><yellow>⌛ <#94958B>Duration: %skill_duration% seconds"
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
+    - "<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"

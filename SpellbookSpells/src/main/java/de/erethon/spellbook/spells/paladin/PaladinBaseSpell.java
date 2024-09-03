@@ -1,14 +1,18 @@
 package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.utils.SpellbookBaseSpell;
-import de.erethon.spellbook.utils.Targeted;
+import de.erethon.spellbook.spells.SpellbookBaseSpell;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.List;
+
 public class PaladinBaseSpell extends SpellbookBaseSpell {
+
+    protected final int duration = data.getInt("duration", 10);
 
     LivingEntity target;
 
@@ -60,5 +64,12 @@ public class PaladinBaseSpell extends SpellbookBaseSpell {
     @Override
     public void setTarget(LivingEntity target) {
         this.target = target;
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(data.getInt("range", 0), VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

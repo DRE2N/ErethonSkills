@@ -1,17 +1,22 @@
 package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.AoEBaseSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.List;
+
 public class TrapExplosion extends AssassinBaseTrap {
+
+    private final int duration = data.getInt("duration", 10);
 
     public TrapExplosion(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
-
 
     @Override
     public boolean onPrecast() {
@@ -19,15 +24,11 @@ public class TrapExplosion extends AssassinBaseTrap {
     }
 
     @Override
-    protected boolean onCast() {
-        keepAliveTicks = data.getInt("duration", 10) * 10;
+    public boolean onCast() {
+        keepAliveTicks = duration * 20;
         return super.onCast();
     }
 
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
-    }
 
     @Override
     protected void onEnter(LivingEntity entity) {
@@ -43,6 +44,13 @@ public class TrapExplosion extends AssassinBaseTrap {
     @Override
     protected void onTickFinish() {
         super.onTickFinish();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster caster) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(damageMultiplier, VALUE_COLOR));
+        return super.getPlaceholders(caster);
     }
 }
 

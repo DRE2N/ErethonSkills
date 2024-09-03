@@ -7,20 +7,25 @@ import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.events.CombatModeEnterEvent;
 import de.erethon.hecate.events.CombatModeLeaveEvent;
 import de.erethon.hecate.events.CombatModeReason;
+import de.erethon.hecate.util.ClientsideItemStacks;
+import de.erethon.hecate.util.SpellbookTranslator;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -40,6 +45,7 @@ public class HCharacter {
 
     private final HPlayer hPlayer;
     private final Player player;
+    private final ServerPlayer serverPlayer;
     private final int characterID;
 
     private int level = 1;
@@ -61,6 +67,8 @@ public class HCharacter {
     public HCharacter(HPlayer hPlayer, int characterID) {
         this.hPlayer = hPlayer;
         this.player = hPlayer.getPlayer();
+        CraftPlayer craftPlayer = (CraftPlayer) player;
+        this.serverPlayer = craftPlayer.getHandle();
         this.characterID = characterID;
         this.selectedTraitline = hClass.getDefaultTraitline();
         selectedTraitline.defaultSpellSlots.toArray(new SpellData[8]);
@@ -106,14 +114,6 @@ public class HCharacter {
             hotbarSlot = inventory.getHeldItemSlot();
             inventory.setHeldItemSlot(WEAPON_SLOT);
             // Cooldowns are per material for some reason.
-            inventory.setItem(0, new ItemStack(Material.BLACK_DYE));
-            inventory.setItem(1, new ItemStack(Material.BLUE_DYE));
-            inventory.setItem(2, new ItemStack(Material.BROWN_DYE));
-            inventory.setItem(3, new ItemStack(Material.CYAN_DYE));
-            inventory.setItem(4, new ItemStack(Material.GRAY_DYE));
-            inventory.setItem(5, new ItemStack(Material.GREEN_DYE));
-            inventory.setItem(6, new ItemStack(Material.LIGHT_BLUE_DYE));
-            inventory.setItem(7, new ItemStack(Material.LIGHT_GRAY_DYE));
             isInCastmode = true;
             updateDescriptions();
             for (TraitData trait : combatOnlyTraits) {
@@ -166,17 +166,29 @@ public class HCharacter {
 
     public void updateDescriptions() {
         PlayerInventory inventory = player.getInventory();
-        for (int slot = 0; slot < WEAPON_SLOT; slot++) {
-            if (inventory.getItem(slot) == null || getSpellAt(slot) == null) {
-                continue;
+        BukkitRunnable asyncSlotSender = new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (int slot = 0; slot < WEAPON_SLOT; slot++) {
+                    if (inventory.getItem(slot) == null || getSpellAt(slot) == null) {
+                        continue;
+                    }
+                    SpellData spellData = getSpellAt(slot);
+                    List<Component> arguments = spellData.getActiveSpell(player).getPlaceholders(player);
+                    ItemStack item = new ItemStack(SpellbookTranslator.SPELL_ICONS[slot]);
+                    ItemMeta meta = item.getItemMeta();
+                    meta.displayName(Component.translatable("spellbook.spell.name." + spellData.getId(), spellData.getId()));
+                    List<Component> lore = new ArrayList<>();
+                    for (int i = 0; i < spellData.getDescriptionLineCount(); i++) {
+                        lore.add(Component.translatable("spellbook.spell.description." + spellData.getId() + "." + i, "", arguments));
+                    }
+                    meta.lore(lore);
+                    item.setItemMeta(meta);
+                    inventory.setItem(slot, item);
+                }
             }
-            ItemStack item = inventory.getItem(slot);
-            ItemMeta meta = item.getItemMeta();
-            SpellData spellData = getSpellAt(slot);
-            meta.lore(spellData.getDescription());
-            meta.displayName(Component.text(spellData.getId()));
-            item.setItemMeta(meta);
-        }
+        };
+        asyncSlotSender.runTaskAsynchronously(Hecate.getInstance());
     }
 
     public boolean isInCastmode() {
@@ -280,6 +292,9 @@ public class HCharacter {
         return player;
     }
 
+    public ServerPlayer getServerPlayer() {
+        return (ServerPlayer) player;
+    }
 
     public SpellData getSpellAt(int slot) {
         return assignedSlots[slot];

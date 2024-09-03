@@ -1,9 +1,11 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.slikey.effectlib.effect.CircleEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -14,6 +16,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EquipmentSlotGroup;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class AllAroundStrike extends RangerBaseSpell {
@@ -21,14 +24,14 @@ public class AllAroundStrike extends RangerBaseSpell {
     private final NamespacedKey key = new NamespacedKey("spellbook", "allaroundstrike");
     private double radius = data.getDouble("startRadius", 2);
     private final double radiusPerTick = data.getDouble("radiusPerTick", 0.2);
-    private final AttributeModifier attackBaseMod = new AttributeModifier(key, data.getDouble("attackModifier", -5), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
+    private final AttributeModifier attackBaseMod = new AttributeModifier(key, data.getDouble("attackModifier", -5), AttributeModifier.Operation.ADD_NUMBER);
 
     private CircleEffect circle = new CircleEffect(Spellbook.getInstance().getEffectManager());
     private CircleEffect attackMarker = new CircleEffect(Spellbook.getInstance().getEffectManager());
 
     public AllAroundStrike(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("keepAliveTicks", 20);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -83,7 +86,7 @@ public class AllAroundStrike extends RangerBaseSpell {
                 continue;
             }
             living.setNoDamageTicks(0);
-            AttributeModifier attackBonus = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, living, Attribute.ADV_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
+            AttributeModifier attackBonus = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, living, Attribute.ADV_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER);
             caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(attackBonus);
             caster.attack(living);
             caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(attackBonus);
@@ -97,5 +100,12 @@ public class AllAroundStrike extends RangerBaseSpell {
         caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(attackBaseMod);
         circle.cancel();
         attackMarker.cancel();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        return super.getPlaceholders(c);
     }
 }

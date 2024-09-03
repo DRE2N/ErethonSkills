@@ -4,3 +4,17 @@ speed: 2.0
 divergence: 1
 coefficients:
   adv_physical: 1.1
+name:
+  de: Dolchwurf
+  en: Dagger Throw
+description:
+  de:
+    - "<!i><#757575>Fernangriff"
+    - " "
+    - "<#94958B>Wirft einen Dolch, der dass das Ziel kurzzeitig verlangsamt und"
+    - "<#94958B>%attribute_adv_physical% Schaden verursacht."
+    - " "
+    - "<!i><yellow>⌛ <#94958B>Dauer: %skill_duration% Sekunden"
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+

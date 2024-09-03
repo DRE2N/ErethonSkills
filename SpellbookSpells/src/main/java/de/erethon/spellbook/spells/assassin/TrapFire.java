@@ -2,13 +2,19 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.AoEBaseSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.List;
+
 public class TrapFire extends AssassinBaseTrap {
+
+    private final int duration = data.getInt("duration", 10);
 
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Burning");
     private final int effectDuration = data.getInt("effectDuration", 5) * 20;
@@ -25,16 +31,12 @@ public class TrapFire extends AssassinBaseTrap {
     }
 
     @Override
-    protected boolean onCast() {
-        keepAliveTicks = data.getInt("duration", 200);
+    public boolean onCast() {
+        keepAliveTicks = duration;
         tickInterval = 20;
         return super.onCast();
     }
 
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
-    }
 
     @Override
     public void onTick() {
@@ -57,6 +59,14 @@ public class TrapFire extends AssassinBaseTrap {
     @Override
     protected void onTickFinish() {
         super.onTickFinish();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster caster) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(effectStacks * damageMultiplier, VALUE_COLOR));
+        return super.getPlaceholders(caster);
     }
 }
 

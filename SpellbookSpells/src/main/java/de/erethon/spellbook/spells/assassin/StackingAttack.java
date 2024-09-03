@@ -2,20 +2,26 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.List;
+
 public class StackingAttack extends AssassinBaseSpell {
 
-    int stacks;
+    private final int duration = data.getInt("duration", 10);
+    private final int stacks = data.getInt("stacks", 3);
+    private int currentStacks = 0;
 
     public StackingAttack(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("duration", 10) * 20;
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -29,10 +35,17 @@ public class StackingAttack extends AssassinBaseSpell {
             return damage;
         }
         damage = damage + (Spellbook.getScaledValue(data, caster, target, Attribute.ADV_AIR) * stacks);
-        if (stacks <= data.getInt("maxStacks", 7)) {
-            stacks++;
+        if (currentStacks <= stacks) {
+            currentStacks++;
         }
         triggerTraits(target);
         return super.onAttack(target, damage, type);
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(stacks, VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

@@ -3,10 +3,12 @@ package de.erethon.spellbook.spells.paladin;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCastEvent;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.utils.SpellbookBaseSpell;
+import de.erethon.spellbook.spells.SpellbookBaseSpell;
 import de.slikey.effectlib.effect.LineEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -22,10 +24,12 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ChainsOfPain extends PaladinBaseSpell implements Listener {
 
+    private final int duration = data.getInt("duration", 10);
     private final double maxDistance = data.getDouble("maxDistance", 7);
     private final double lookForSecondTargetRange = data.getDouble("lookForSecondTargetRange", 5);
     private final EffectData stun = Spellbook.getEffectData("Stun");
@@ -39,7 +43,7 @@ public class ChainsOfPain extends PaladinBaseSpell implements Listener {
 
     public ChainsOfPain(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("keepAliveTicks", 1200);
+        keepAliveTicks = duration * 20;
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
     }
 
@@ -153,5 +157,14 @@ public class ChainsOfPain extends PaladinBaseSpell implements Listener {
         secondTarget.getWorld().playSound(secondTarget.getLocation(), Sound.ENTITY_PHANTOM_SWOOP, SoundCategory.RECORDS, 1, 1.5f);
         effect.cancel();
         HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(maxDistance, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(lookForSecondTargetRange, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(stunDuration, VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

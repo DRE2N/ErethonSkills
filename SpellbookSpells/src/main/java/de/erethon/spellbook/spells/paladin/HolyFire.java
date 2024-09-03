@@ -1,9 +1,11 @@
 package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.CircleEffect;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
@@ -11,10 +13,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class HolyFire extends PaladinBaseSpell {
 
+    private final int duration = data.getInt("duration", 10);
     private final float range = (float) data.getDouble("range", 0.8);
     private final double healAmount = data.getDouble("baseFinishHeal", 15);
 
@@ -22,7 +26,7 @@ public class HolyFire extends PaladinBaseSpell {
 
     public HolyFire(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = data.getInt("keepAliveTicks", 100);
+        keepAliveTicks = duration * 20;
         channelDuration = keepAliveTicks;
     }
 
@@ -101,4 +105,11 @@ public class HolyFire extends PaladinBaseSpell {
         circleEffect.cancel();
     }
 
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(healAmount + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER), ATTR_HEALING_POWER_COLOR));
+        return super.getPlaceholders(c);
+    }
 }

@@ -1,10 +1,14 @@
 package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.List;
 
 public class ShieldStorm extends PaladinBaseSpell {
 
@@ -37,5 +41,13 @@ public class ShieldStorm extends PaladinBaseSpell {
         };
         runLater.runTaskLater(Spellbook.getInstance().getImplementer(), delay);
         return super.onCast();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(stormSpeed, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(throwbackSpeed, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(delay, VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

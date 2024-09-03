@@ -2,13 +2,17 @@ package de.erethon.spellbook.spells.ranger;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EquipmentSlotGroup;
+
+import java.util.List;
 
 public class BasicSelfHeal extends RangerBaseSpell {
 
@@ -19,7 +23,7 @@ public class BasicSelfHeal extends RangerBaseSpell {
 
     public BasicSelfHeal(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = data.getInt("duration", 40);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -38,5 +42,11 @@ public class BasicSelfHeal extends RangerBaseSpell {
         caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
         caster.setHealth(Math.min((caster.getHealth() + Spellbook.getScaledValue(data, caster, caster, Attribute.STAT_HEALINGPOWER) * baseHeal * healingMultiplier), caster.getMaxHealth()));
         triggerTraits();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.STAT_HEALINGPOWER) * baseHeal * healingMultiplier, ATTR_HEALING_POWER_COLOR));
+        return super.getPlaceholders(c);
     }
 }

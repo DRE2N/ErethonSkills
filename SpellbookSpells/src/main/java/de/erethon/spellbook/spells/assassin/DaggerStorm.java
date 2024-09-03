@@ -2,11 +2,13 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.events.ItemProjectileHitEvent;
 import de.erethon.spellbook.utils.AssassinUtils;
 import de.erethon.spellbook.utils.ItemProjectile;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -15,6 +17,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+
+import java.util.List;
 
 public class DaggerStorm extends AssassinBaseSpell implements Listener {
 
@@ -52,5 +56,14 @@ public class DaggerStorm extends AssassinBaseSpell implements Listener {
                 triggerTraits(entity);
             }
         }
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(daggers, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(divergence, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(speed, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, false, Attribute.ADV_PHYSICAL) * damageMultiplier, ATTR_PHYSICAL_COLOR));
+        return super.getPlaceholders(caster);
     }
 }

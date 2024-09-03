@@ -2,4 +2,28 @@ class: assassin.Masterthief
 duration: 20
 energyCost: 90
 maxDistance: 8
+name:
+  de: Meisterdieb
+  en: Master Thief
+description:
+  de:
+    - "<!i><#757575>Fernkampfangriff"
+    - " "
+    - "<#94958B>Stiehlt eine zufällige Fähigkeit von deinem Ziel."
+    - "<#94958B>Die gestohlene Fähigkeit kann einmalig benutzt werden."
+    - "<#94958B>Der Gegner wird für %skill_duration% Sekunden betäubt."
+    - " "
+    - "<!i><yellow>⌛ <#94958B>Dauer: %skill_duration% Sekunden"
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+  en:
+    - "<!i><#757575>Ranged Attack"
+    - " "
+    - "<#94958B>Steals a random ability from your target."
+    - "<#94958B>The stolen ability can be used once."
+    - "<#94958B>The enemy is stunned for %skill_duration% seconds."
+    - " "
+    - "<!i><yellow>⌛ <#94958B>Duration: %skill_duration% seconds"
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
+    - "<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"
 

@@ -2,10 +2,14 @@ package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.SphereEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
+
+import java.util.List;
 
 public class HolyShield extends PaladinBaseSpell {
 
@@ -17,7 +21,7 @@ public class HolyShield extends PaladinBaseSpell {
 
     public HolyShield(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("keepAliveTicks", 1200);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -55,5 +59,12 @@ public class HolyShield extends PaladinBaseSpell {
     protected void cleanup() {
         shield = 0;
         sphere.cancel();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text((int) (shieldPercent * 100), VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

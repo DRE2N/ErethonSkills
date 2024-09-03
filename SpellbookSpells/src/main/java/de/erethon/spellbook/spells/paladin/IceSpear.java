@@ -2,9 +2,11 @@ package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
@@ -13,7 +15,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
+import java.util.List;
+
 public class IceSpear extends PaladinSpearSpell implements Listener {
+
+    private final int baseDuration = data.getInt("baseDuration", 20);
+    private final int stacks = data.getInt("stacks", 1);
 
     private final EffectData slowness = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
     public boolean shouldSlow = true;
@@ -40,10 +47,10 @@ public class IceSpear extends PaladinSpearSpell implements Listener {
     public void onAttack(PrePlayerAttackEntityEvent event) {
         Player player = event.getPlayer();
         if (player != target) return;
-        int duration = (int) (data.getInt("baseDuration", 20) + Math.round(Spellbook.getScaledValue(data, caster, target, Attribute.ADV_PHYSICAL)));
+        int duration = (int) (baseDuration + Math.round(Spellbook.getScaledValue(data, caster, target, damageAttribute)));
         triggerTraits(target);
         if (shouldSlow) {
-            player.addEffect(caster, slowness, duration, data.getInt("stacks", 1));
+            player.addEffect(caster, slowness, duration, stacks);
         }
         player.setFreezeTicks(duration);
     }
@@ -51,5 +58,12 @@ public class IceSpear extends PaladinSpearSpell implements Listener {
     @Override
     protected void cleanup() {
         HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(baseDuration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text((baseDuration + Math.round(Spellbook.getScaledValue(data, caster, target, damageAttribute))), VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

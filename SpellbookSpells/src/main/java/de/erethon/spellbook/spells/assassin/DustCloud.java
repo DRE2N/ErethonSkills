@@ -1,13 +1,17 @@
 package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.papyrus.PDamageType;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.AoEBaseSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionType;
+
+import java.util.List;
 
 public class DustCloud extends AoEBaseSpell {
 
@@ -24,7 +28,7 @@ public class DustCloud extends AoEBaseSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         keepAliveTicks = 200;
         AreaEffectCloud cloud = target.getWorld().spawn(target, AreaEffectCloud.class);
         cloud.setColor(Color.GRAY);
@@ -77,5 +81,11 @@ public class DustCloud extends AoEBaseSpell {
     @Override
     protected void onTickFinish() {
         super.onTickFinish();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(invisCooldown, VALUE_COLOR));
+        return super.getPlaceholders(caster);
     }
 }

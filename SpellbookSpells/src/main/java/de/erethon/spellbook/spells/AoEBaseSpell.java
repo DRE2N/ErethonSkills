@@ -1,9 +1,11 @@
 package de.erethon.spellbook.spells;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.slikey.effectlib.effect.CircleEffect;
+import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -39,7 +41,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class AoEBaseSpell extends SpellbookSpell {
+import static de.erethon.spellbook.spells.SpellbookBaseSpell.VALUE_COLOR;
+
+public class AoEBaseSpell extends SpellbookBaseSpell {
 
     public Location target = null;
     protected boolean packet = false;
@@ -48,6 +52,7 @@ public class AoEBaseSpell extends SpellbookSpell {
     private final int maxDistance;
     private final boolean self;
     public double size;
+    public int duration = 20;
     private int customItemDataFriendly;
     private int customItemDataEnemy;
 
@@ -65,6 +70,8 @@ public class AoEBaseSpell extends SpellbookSpell {
         }
         maxDistance = spellData.getInt("maxDistance", 32);
         size = spellData.getDouble("size", 2);
+        duration = spellData.getInt("duration", 5);
+        keepAliveTicks = duration * 20;
         this.self = false;
     }
 
@@ -100,7 +107,7 @@ public class AoEBaseSpell extends SpellbookSpell {
     }
 
     @Override
-    protected boolean onCast() {
+    public boolean onCast() {
         BlockPos pos = new BlockPos((int) target.getX(), (int) target.getY(), (int) target.getZ());
         if (packet) {
            /* for (OfflinePlayer player : team.getPlayers()) {
@@ -186,5 +193,23 @@ public class AoEBaseSpell extends SpellbookSpell {
 
     public Set<LivingEntity> getEntities() {
         return entities;
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster caster) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(size, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(maxDistance, VALUE_COLOR));
+        return super.getPlaceholders(caster);
+    }
+
+    @Override
+    public LivingEntity getTarget() {
+        return null;
+    }
+
+    @Override
+    public void setTarget(LivingEntity target) {
+
     }
 }

@@ -2,3 +2,26 @@ class: assassin.MarkTarget
 energyCost: 30
 duration: 10
 critDmgBonus: 20
+name:
+  de: Ziel markieren
+  en: Mark Target
+description:
+  de:
+    - "<!i><!i><#757575>Fernangriff"
+    - " "
+    - "<#94958B>Markiert einen Gegener. Diesem gegenüber erhält"
+    - "<#94958B>der Assassine eine erhöhte Crit-Chance"
+    - " "
+    - "<!i><!i><yellow>⌛ <#94958B>Dauer: %skill_duration% Sekunden"
+    - "<!i><!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+    - "<!i><!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+  en:
+    - "<!i><#757575>Ranged Attack"
+    - " "
+    - "<#94958B>Mark a target. The assassin gains an increased"
+    - "<#94958B>crit chance against this target."
+    - " "
+    - "<!i><!i><yellow>⌛ <#94958B>Duration: %skill_duration% seconds"
+    - "<!i><!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
+    - "<!i><!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"
+

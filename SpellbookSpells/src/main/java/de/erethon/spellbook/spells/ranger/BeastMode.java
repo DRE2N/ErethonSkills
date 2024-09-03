@@ -1,11 +1,15 @@
 package de.erethon.spellbook.spells.ranger;
 
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EquipmentSlotGroup;
+
+import java.util.List;
 
 public class BeastMode extends RangerPetBaseSpell {
 
@@ -15,7 +19,7 @@ public class BeastMode extends RangerPetBaseSpell {
 
     public BeastMode(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = data.getInt("duration", 600);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -41,5 +45,11 @@ public class BeastMode extends RangerPetBaseSpell {
         caster.getAttribute(Attribute.STAT_HEALTHREGEN).removeModifier(modifier);
         caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).removeModifier(modifier);
         petTrait.spawn();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(attributeMultiplier * 100, ATTR_PHYSICAL_COLOR));
+        return super.getPlaceholders(c);
     }
 }

@@ -11,7 +11,7 @@ public class EvasiveRetreat extends RangerBaseSpell {
 
     public EvasiveRetreat(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = data.getInt("duration", 10);
+        keepAliveTicks = duration * 20;
     }
 
     @Override

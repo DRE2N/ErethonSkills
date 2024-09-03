@@ -15,7 +15,6 @@ public class HolyCage extends AoEBaseSpell {
 
     public HolyCage(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = data.getInt("keepAliveTicks", 200);
     }
 
     @Override

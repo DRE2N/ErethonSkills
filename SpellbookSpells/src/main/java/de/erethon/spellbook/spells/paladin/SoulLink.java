@@ -1,9 +1,11 @@
 package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.LineEffect;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -13,6 +15,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
+
+import java.util.List;
 
 public class SoulLink extends PaladinBaseSpell implements Listener {
 
@@ -24,7 +28,7 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
     public SoulLink(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
-        keepAliveTicks = spellData.getInt("duration", 600);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -85,5 +89,12 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
         HandlerList.unregisterAll(this);
         if (effect == null) return;
         effect.cancel();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(damagePercentage * 100, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(maxDistance, VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

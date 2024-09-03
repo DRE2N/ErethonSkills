@@ -1,9 +1,11 @@
 package de.erethon.spellbook.spells.assassin;
 
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.EntityTargetSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
 import de.erethon.spellbook.utils.NMSUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -13,7 +15,11 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class ThrowBola extends AssassinBaseSpell {
+
+    private final int duration = data.getInt("duration", 3);
 
     private final NamespacedKey key = new NamespacedKey("spellbook", "throwbola");
     private AttributeModifier modifier;
@@ -21,7 +27,7 @@ public class ThrowBola extends AssassinBaseSpell {
 
     public ThrowBola(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = data.getInt("duration", 3) * 20;
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -47,4 +53,9 @@ public class ThrowBola extends AssassinBaseSpell {
         armorStand.remove();
     }
 
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        return super.getPlaceholders(c);
+    }
 }

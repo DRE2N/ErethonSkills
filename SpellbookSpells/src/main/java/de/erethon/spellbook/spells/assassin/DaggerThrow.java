@@ -3,6 +3,7 @@ package de.erethon.spellbook.spells.assassin;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.events.ItemProjectileHitEvent;
@@ -10,6 +11,7 @@ import de.erethon.spellbook.utils.AssassinUtils;
 import de.erethon.spellbook.utils.ItemProjectile;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -20,6 +22,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.List;
+
 /**
  * @author Fyreum
  */
@@ -28,7 +32,6 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
     Vector direction;
     ItemProjectile arrow;
     private final float speed = (float) data.getDouble("speed", 2.0);
-    private final double damage = Spellbook.getScaledValue(data, caster, Attribute.ADV_PHYSICAL);
     private final int divergence = data.getInt("divergence", 1);
 
     public DaggerThrow(LivingEntity caster, SpellData spellData) {
@@ -68,12 +71,15 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
     }
 
     @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
+    protected void cleanup() {
+        HandlerList.unregisterAll(this);
     }
 
     @Override
-    protected void cleanup() {
-        HandlerList.unregisterAll(this);
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(speed, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(divergence, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, (LivingEntity) caster, (LivingEntity) caster, false, Attribute.ADV_PHYSICAL), VALUE_COLOR));
+        return super.getPlaceholders(caster);
     }
 }

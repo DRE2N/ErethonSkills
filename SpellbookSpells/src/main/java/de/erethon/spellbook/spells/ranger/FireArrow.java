@@ -1,7 +1,9 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.entity.LivingEntity;
@@ -9,6 +11,7 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.Collections;
+import java.util.List;
 
 public class FireArrow extends ProjectileRelatedSkill {
 
@@ -32,5 +35,13 @@ public class FireArrow extends ProjectileRelatedSkill {
     protected void onHit(ProjectileHitEvent event, LivingEntity living) {
         living.addEffect(caster, fire, burningDuration, burningStacks);
         triggerTraits(Collections.singleton(living));
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(burningDuration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(burningStacks, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(affectedArrows, VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

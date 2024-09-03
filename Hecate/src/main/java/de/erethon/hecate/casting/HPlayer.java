@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -202,5 +203,9 @@ public class HPlayer extends YamlConfiguration implements Listener {
 
     public boolean isAutoJoinWithLastCharacter() {
         return autoJoinWithLastCharacter;
+    }
+
+    public Locale getLocale() {
+        return player.locale();
     }
 }

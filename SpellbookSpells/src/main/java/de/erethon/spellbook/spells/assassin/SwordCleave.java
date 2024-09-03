@@ -2,11 +2,15 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.EntityTargetSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+
+import java.util.List;
 
 public class SwordCleave extends AssassinBaseSpell {
 
@@ -36,4 +40,10 @@ public class SwordCleave extends AssassinBaseSpell {
         return super.onCast();
     }
 
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(damageMultiplier, VALUE_COLOR));
+        return super.getPlaceholders(c);
+    }
 }

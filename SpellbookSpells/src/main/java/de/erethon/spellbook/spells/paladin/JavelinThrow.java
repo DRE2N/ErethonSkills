@@ -1,8 +1,10 @@
 package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
@@ -11,6 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
+
+import java.util.List;
 
 public class JavelinThrow extends PaladinSpearSpell implements Listener {
 
@@ -49,5 +53,11 @@ public class JavelinThrow extends PaladinSpearSpell implements Listener {
     protected void cleanup() {
         HandlerList.unregisterAll(this);
         trident.remove();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, true, damageAttribute), VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

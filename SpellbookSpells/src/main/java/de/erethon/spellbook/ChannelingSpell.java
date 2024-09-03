@@ -2,7 +2,6 @@ package de.erethon.spellbook;
 
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.utils.SpellbookBaseSpell;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;

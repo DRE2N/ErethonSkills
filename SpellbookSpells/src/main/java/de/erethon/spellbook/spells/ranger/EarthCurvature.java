@@ -3,8 +3,10 @@ package de.erethon.spellbook.spells.ranger;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCastEvent;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.CircleEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -22,6 +24,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.List;
 import java.util.Random;
 
 public class EarthCurvature extends RangerBaseSpell implements Listener {
@@ -32,7 +35,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
 
     public EarthCurvature(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("duration", 1000);
+        keepAliveTicks = duration * 20;
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
     }
 
@@ -51,7 +54,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_TURTLE_EGG_CRACK, SoundCategory.RECORDS, 2, 0);
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
             living.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 100, 1));
-            living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_PHYSICAL), caster, PDamageType.MAGIC);
+            living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_MAGIC), caster, PDamageType.MAGIC);
         }
         return super.onCast();
     }
@@ -82,5 +85,12 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
             block.setHurtEntities(false);
             block.setVelocity(new Vector(random.nextDouble(-1, 1), 0.8, random.nextDouble(-1, 1)));
         }
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, true, Attribute.ADV_MAGIC), ATTR_MAGIC_COLOR));
+        return super.getPlaceholders(c);
     }
 }

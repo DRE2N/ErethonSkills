@@ -1,9 +1,13 @@
 package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.List;
 
 public class SwordStorm extends AssassinBaseSpell {
 
@@ -36,5 +40,12 @@ public class SwordStorm extends AssassinBaseSpell {
         };
         runnable.runTaskTimer(Spellbook.getInstance().getImplementer(), 0, ticksBetweenAttacks);
         return super.onCast();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(String.format("%.2f", (double) ticksBetweenAttacks / 20), VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(attacks, VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

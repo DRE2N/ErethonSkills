@@ -1,3 +1,21 @@
 class: assassin.ShadowJump
 invisDuration: 15
 dashMultiplier: 1.5
+name:
+  de: Schattensprung
+  en: Shadow Jump
+description:
+    de:
+        - "<!i><#757575>Mobilität"
+        - " "
+        - "<#94958B>Führt einen unsichtbaren Sprung nach vorne durch."
+        - " "
+        - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+        - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+    en:
+        - "<!i><#757575>Mobility"
+        - " "
+        - "<#94958B>Performs an invisible dash forward."
+        - " "
+        - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
+        - "<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"

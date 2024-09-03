@@ -1,0 +1,50 @@
+package de.erethon.hecate.util;
+
+import de.erethon.bedrock.chat.MiniMessageTranslator;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.util.TriState;
+import org.bukkit.Material;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+public class SpellbookTranslator extends MiniMessageTranslator {
+
+    public static final Material[] SPELL_ICONS = new Material[] {
+            Material.BLACK_DYE,
+            Material.BLUE_DYE,
+            Material.BROWN_DYE,
+            Material.CYAN_DYE,
+            Material.GRAY_DYE,
+            Material.GREEN_DYE,
+            Material.LIGHT_BLUE_DYE,
+            Material.LIGHT_GRAY_DYE,
+            Material.LIME_DYE,
+            Material.MAGENTA_DYE,
+    };
+
+    private final Map<String, Map<Locale, String>> translations = new HashMap<>();
+
+    public void registerTranslation(String key, String translation, Locale locale) {
+        translations.computeIfAbsent(key, k -> new HashMap<>()).put(locale, translation);
+    }
+
+    @Override
+    public @NotNull Key name() {
+        return Key.key("spellbook");
+    }
+
+    @Override
+    public @NotNull TriState hasAnyTranslations() {
+        return TriState.TRUE;
+    }
+
+    @Override
+    protected @Nullable String getMiniMessageString(@NotNull String key, @NotNull Locale locale) {
+        Map<Locale, String> map = translations.get(key);
+        return map == null ? null : map.get(locale);
+    }
+}

@@ -1,3 +1,23 @@
 class: assassin.SwordStorm
 ticksBetweenAttacks: 10
 attacks: 5
+name:
+  de: Schwertsturm
+  en: Sword Storm
+description:
+  de:
+    - "<!i><#757575>Fernangriff"
+    - " "
+    - "<#94958B>Greift das Ziel mit mehreren schnellen Angriffen an und"
+    - "<#94958B>verursacht %attribute_adv_physical% Schaden."
+    - " "
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+  en:
+    - "<!i><#757575>Ranged Attack"
+    - " "
+    - "<#94958B>Attacks the target with multiple fast strikes and"
+    - "<#94958B>deals %attribute_adv_physical% damage."
+    - " "
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
+    - "<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"

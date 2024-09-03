@@ -1,15 +1,21 @@
 package de.erethon.spellbook.spells.assassin;
 
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 
-public class ShadowJump extends AssassinBaseSpell{
+import java.util.List;
+
+public class ShadowJump extends AssassinBaseSpell {
+
+    private final int duration = data.getInt("duration", 15);
 
     public ShadowJump(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = data.getInt("invisDuration", 15);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -30,5 +36,11 @@ public class ShadowJump extends AssassinBaseSpell{
     @Override
     protected void onTickFinish() {
         caster.setInvisible(false);
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        return super.getPlaceholders(c);
     }
 }

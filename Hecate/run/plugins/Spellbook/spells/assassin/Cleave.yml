@@ -3,3 +3,25 @@ energyCost: 10
 maxDistance: 4
 coefficients:
   adv_physical: 0.5
+name:
+  de: Schwertwirbel
+  en: Sword Cleave
+description:
+  de:
+    - "<!i><#757575>Nahkampfangriff"
+    - " "
+    - "<#94958B>Holt zu Flächenschlag aus der den ersten Gegner trifft und"
+    - "<#94958B>%attribute_adv_physical% Schaden verursacht."
+    - "<#94958B>Weitere getroffene Ziele erleiden %swordcleave_modifier% Schaden davon."
+    - " "
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+  en:
+    - "<!i><#757575>Melee Attack"
+    - " "
+    - "<#94958B>Performs a cleave that hits the first enemy and"
+    - "<#94958B>deals %attribute_adv_physical% damage."
+    - "<#94958B>Additional targets hit take %swordcleave_modifier% of that damage."
+    - " "
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
+    - "<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"

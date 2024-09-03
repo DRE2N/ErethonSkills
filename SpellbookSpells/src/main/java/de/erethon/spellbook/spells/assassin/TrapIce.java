@@ -2,13 +2,19 @@ package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.AoEBaseSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.List;
+
 public class TrapIce extends AssassinBaseTrap {
+
+    private final int duration = data.getInt("duration", 10);
 
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
     private final int effectDuration = data.getInt("effectDuration", 5) * 20;
@@ -25,8 +31,8 @@ public class TrapIce extends AssassinBaseTrap {
     }
 
     @Override
-    protected boolean onCast() {
-        keepAliveTicks = data.getInt("duration", 10);
+    public boolean onCast() {
+        keepAliveTicks = duration;
         tickInterval = 20;
         return super.onCast();
     }
@@ -54,6 +60,14 @@ public class TrapIce extends AssassinBaseTrap {
     @Override
     protected void onTickFinish() {
         super.onTickFinish();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster caster) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(effectStacks, VALUE_COLOR));
+        return super.getPlaceholders(caster);
     }
 }
 

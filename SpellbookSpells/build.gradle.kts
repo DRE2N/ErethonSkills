@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", "1.21-R0.1-SNAPSHOT") { isChanging = true }
+    paperweight.devBundle("de.erethon.papyrus", "1.21.1-R0.1-SNAPSHOT") { isChanging = true }
     //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT") { isChanging = true }
     implementation("com.elmakers.mine.bukkit:EffectLib:10.3")
     compileOnly("de.erethon:bedrock:1.4.0")

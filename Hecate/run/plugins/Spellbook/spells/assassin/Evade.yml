@@ -2,3 +2,4 @@ class: assassin.Evasion
 energyCost: 30
 duration: 8
 chance: 0.8
+# Wollen wir diesen Spell noch haben? Er ist sehr öde

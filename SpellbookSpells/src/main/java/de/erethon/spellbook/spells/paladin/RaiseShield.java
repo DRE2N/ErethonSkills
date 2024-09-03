@@ -20,7 +20,7 @@ public class RaiseShield extends PaladinBaseSpell {
 
     public RaiseShield(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("keepAliveTicks", 200);
+        keepAliveTicks = duration * 20;
     }
 
     @Override

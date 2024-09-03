@@ -7,3 +7,16 @@ customItemDataEnemy: 19
 duration: 20
 effectDuration: 5
 effectStacks: 1
+name:
+  de: Eisfalle
+  en: Ice Trap
+description:
+  de:
+    - "<!i><#757575>Falle"
+    - " "
+    - "<#757575>Legt eine Eisfalle, die bei Berührung auslöst und"
+    - "<#757575>%attribute_adv_physical% Schaden verursacht sowie"
+    - "<#757575>den Gegner für %skill_effect_duration% Sekunden verlangsamt."
+    - " "
+    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"

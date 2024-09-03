@@ -1,10 +1,12 @@
 package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.EntityTargetSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
@@ -12,8 +14,9 @@ import java.util.Random;
 
 public class Thief extends AssassinBaseSpell {
 
-    Random random = new Random();
-    EffectData effectData;
+    private final int duration = data.getInt("duration", 5);
+
+    private final Random random = new Random();
 
     public Thief(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -31,12 +34,17 @@ public class Thief extends AssassinBaseSpell {
             caster.sendParsedActionBar("<#ff0000>Das Ziel hat keine Effekte");
             return false;
         }
-        effectData = datas.get(random.nextInt(datas.size())).data;
-        caster.addEffect(caster, effectData, data.getInt("duration", 5) * 20, 1);
+        EffectData effectData = datas.get(random.nextInt(datas.size())).data;
+        caster.addEffect(caster, effectData, duration * 20, 1);
         target.removeEffect(effectData);
         triggerTraits(target);
         caster.sendParsedActionBar("<green>Du hast " + effectData.getName() + " gestohlen!");
         return true;
     }
 
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        return super.getPlaceholders(c);
+    }
 }
