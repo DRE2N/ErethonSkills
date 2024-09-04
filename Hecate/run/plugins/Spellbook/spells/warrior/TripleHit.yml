@@ -5,3 +5,13 @@ hitInveral: 10
 thirdBonusDamage: 150
 powerStacks: 3
 powerDuration: 200
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- hit interval
+- third bonus damage
+- power stacks
+- power duration
+- duration
+- cooldown

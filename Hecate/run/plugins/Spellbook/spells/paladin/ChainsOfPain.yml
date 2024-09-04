@@ -4,3 +4,13 @@ keepAliveTicks: 600
 maxDistance: 10
 lookForSecondTargetRange: 8
 stunDuration: 100
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- maxDistance
+- lookForSecondTargetRange
+- stunDuration
+- duration
+- range
+- cooldown

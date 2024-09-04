@@ -16,10 +16,7 @@ import java.util.Set;
 
 public class TrapIron extends AssassinBaseTrap {
 
-    private final int duration = data.getInt("duration", 10);
-
     public boolean triggeredFirstTime = false;
-
 
     public TrapIron(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -35,11 +32,6 @@ public class TrapIron extends AssassinBaseTrap {
         keepAliveTicks = duration;
         tickInterval = 20;
         return super.onCast();
-    }
-
-    @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
     }
 
     @Override
@@ -63,8 +55,8 @@ public class TrapIron extends AssassinBaseTrap {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_PHYSICAL, damageMultiplier), ATTR_PHYSICAL_COLOR));
+        placeholderNames.add("damage");
         return super.getPlaceholders(caster);
     }
 }

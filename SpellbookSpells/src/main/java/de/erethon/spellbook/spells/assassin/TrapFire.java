@@ -14,10 +14,10 @@ import java.util.List;
 
 public class TrapFire extends AssassinBaseTrap {
 
-    private final int duration = data.getInt("duration", 10);
+    private final int lifetime = data.getInt("lifetime", 10);
 
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Burning");
-    private final int effectDuration = data.getInt("effectDuration", 5) * 20;
+    private final int effectDuration = data.getInt("effectDuration", 5);
     private final int effectStacks = data.getInt("effectStacks", 1);
 
     public TrapFire(LivingEntity caster, SpellData spellData) {
@@ -32,7 +32,7 @@ public class TrapFire extends AssassinBaseTrap {
 
     @Override
     public boolean onCast() {
-        keepAliveTicks = duration;
+        keepAliveTicks = lifetime * 20;
         tickInterval = 20;
         return super.onCast();
     }
@@ -46,7 +46,7 @@ public class TrapFire extends AssassinBaseTrap {
                 continue;
             }*/
             MessageUtil.log("TrapFire: " + entity.getName() + " is burning");
-            entity.addEffect(caster, effectData, effectDuration, (int) Math.round(effectStacks * damageMultiplier)); // TODO: Nothing happening here?
+            entity.addEffect(caster, effectData, effectDuration * 20, (int) Math.round(effectStacks * damageMultiplier)); // TODO: Nothing happening here?
             triggerTraits(2);
         }
     }
@@ -63,9 +63,12 @@ public class TrapFire extends AssassinBaseTrap {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster caster) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(lifetime, VALUE_COLOR));
+        placeholderNames.add("lifetime");
         spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        placeholderNames.add("effectDuration");
         spellAddedPlaceholders.add(Component.text(effectStacks * damageMultiplier, VALUE_COLOR));
+        placeholderNames.add("effectStacks");
         return super.getPlaceholders(caster);
     }
 }

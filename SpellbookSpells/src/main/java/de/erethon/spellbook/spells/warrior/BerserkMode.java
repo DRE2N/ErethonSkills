@@ -2,11 +2,13 @@ package de.erethon.spellbook.spells.warrior;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.CylinderEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -15,9 +17,10 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class BerserkMode extends WarriorBaseSpell {
 
-    private final int duration = data.getInt("duration", 5);
     private final int baseDamagePerTick = data.getInt("damagePerTick", 10);
 
     private final WorldBorder fakeBorder = Bukkit.getServer().createWorldBorder();
@@ -70,5 +73,12 @@ public class BerserkMode extends WarriorBaseSpell {
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
         damage =+Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_PHYSICAL);
         return super.onAttack(target, damage, type);
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(baseDamagePerTick * 20, VALUE_COLOR));
+        placeholderNames.add("damage per second");
+        return super.getPlaceholders(c);
     }
 }

@@ -94,7 +94,9 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(damagePercentage * 100, VALUE_COLOR));
+        placeholderNames.add("damage percentage");
         spellAddedPlaceholders.add(Component.text(maxDistance, VALUE_COLOR));
+        placeholderNames.add("max distance");
         return super.getPlaceholders(c);
     }
 }

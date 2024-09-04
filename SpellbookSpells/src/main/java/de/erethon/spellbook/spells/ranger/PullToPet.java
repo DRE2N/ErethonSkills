@@ -1,12 +1,16 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.CircleEffect;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
+
+import java.util.List;
 
 public class PullToPet extends RangerPetBaseSpell {
 
@@ -33,5 +37,12 @@ public class PullToPet extends RangerPetBaseSpell {
             entity.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, Sound.Source.PLAYER, 1, 1));
         }
         return true;
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        placeholderNames.add("range");
+        return super.getPlaceholders(c);
     }
 }

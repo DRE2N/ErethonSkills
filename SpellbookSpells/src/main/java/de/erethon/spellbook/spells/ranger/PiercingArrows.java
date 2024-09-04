@@ -47,4 +47,6 @@ public class PiercingArrows extends ProjectileRelatedSkill {
         triggerTraits(affected);
     }
 
+
+
 }

@@ -18,8 +18,10 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
     public static TextColor ATTR_PHYSICAL_COLOR = TextColor.fromCSSHexString("#f02607");
     public static TextColor ATTR_MAGIC_COLOR = TextColor.fromCSSHexString("#0fdcfa");
     public static TextColor ATTR_HEALING_POWER_COLOR = TextColor.fromCSSHexString("#32ac21");
+    public static TextColor ATTR_AIR_COLOR = TextColor.fromCSSHexString("#f0f0f0");
 
     protected List<Component> spellAddedPlaceholders = new ArrayList<>();
+    protected List<String> placeholderNames = new ArrayList<>();
 
     public SpellbookBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -34,7 +36,12 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
     public List<Component> getPlaceholders(SpellCaster c) {
         List<Component> placeholders = new ArrayList<>();
         placeholders.add(Component.text(data.getCooldown(), VALUE_COLOR));
+        placeholderNames.add("cooldown");
         placeholders.addAll(spellAddedPlaceholders);
         return placeholders;
+    }
+
+    public List<String> getPlaceholderNames() {
+        return placeholderNames;
     }
 }

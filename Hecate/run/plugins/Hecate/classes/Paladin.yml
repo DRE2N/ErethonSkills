@@ -1,5 +1,6 @@
 displayName: Paladin
 defaultTraitline: PaladinGuardian
+color: '#18c9f5'
 traitlines:
   - PaladinGuardian
   - PaladinHierophant

@@ -1,8 +1,10 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.ParticleEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -14,6 +16,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+
+import java.util.List;
 
 public class ProjectileRelatedSkill extends RangerBaseSpell implements Listener {
 
@@ -93,4 +97,5 @@ public class ProjectileRelatedSkill extends RangerBaseSpell implements Listener 
         effect.color = trailColor;
         effect.start();
     }
+
 }

@@ -9,3 +9,10 @@ coefficients: # Initial hit is physical, spell cast damage is magic
   entities:
     adv_physical: 1.0
     adv_magic: 2.0
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- range
+- damage
+- cooldown

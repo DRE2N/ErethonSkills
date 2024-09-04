@@ -5,3 +5,11 @@ coefficients:
     adv_physical: 1.5
   entities:
     adv_physical: 2.0
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- damage
+- duration
+- range
+- cooldown

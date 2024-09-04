@@ -77,6 +77,7 @@ public class ArrowRain extends RangerBaseSpell implements Listener {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
+        placeholderNames.add("radius");
         return super.getPlaceholders(c);
     }
 }

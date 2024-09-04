@@ -12,18 +12,29 @@ name:
   en: Dagger Storm
 description:
   de:
-    - "<!i><#757575>Fernangriff"
-    - " "
-    - "<#94958B>Wirft mehrere Dolche um sich herum und"
-    - "<#94958B>verursacht %attribute_adv_physical% Schaden."
-    - " "
-    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
-    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+  - <!i><#757575>Fernangriff
+  - ' '
+  - <#94958B>Wirft mehrere Dolche um sich herum und
+  - <#94958B>verursacht %attribute_adv_physical% Schaden.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie'
   en:
-    - "<!i><#757575>Ranged Attack"
-    - " "
-    - "<#94958B>Throws multiple daggers around you and"
-    - "<#94958B>deals %attribute_adv_physical% damage."
-    - " "
-    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
-    - "<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"
+  - <!i><#757575>Ranged Attack
+  - ' '
+  - <#94958B>Throws multiple daggers around you and
+  - <#94958B>deals %attribute_adv_physical% damage.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds'
+  - '<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- daggers
+- divergence
+- speed
+- range
+- energyCost
+- duration
+- cooldown

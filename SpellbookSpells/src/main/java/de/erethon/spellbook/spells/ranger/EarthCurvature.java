@@ -90,7 +90,9 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        placeholderNames.add("range");
         spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, true, Attribute.ADV_MAGIC), ATTR_MAGIC_COLOR));
+        placeholderNames.add("damage");
         return super.getPlaceholders(c);
     }
 }

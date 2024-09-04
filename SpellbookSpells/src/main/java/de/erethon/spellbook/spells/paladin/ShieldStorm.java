@@ -46,8 +46,11 @@ public class ShieldStorm extends PaladinBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(stormSpeed, VALUE_COLOR));
+        placeholderNames.add("storm speed");
         spellAddedPlaceholders.add(Component.text(throwbackSpeed, VALUE_COLOR));
+        placeholderNames.add("throwback speed");
         spellAddedPlaceholders.add(Component.text(delay, VALUE_COLOR));
+        placeholderNames.add("delay");
         return super.getPlaceholders(c);
     }
 }

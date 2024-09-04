@@ -7,8 +7,6 @@ import org.bukkit.entity.LivingEntity;
 
 public class ShoutPull extends AbstractWarriorShout {
 
-    public int range = data.getInt("range", 10);
-
     public ShoutPull(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }

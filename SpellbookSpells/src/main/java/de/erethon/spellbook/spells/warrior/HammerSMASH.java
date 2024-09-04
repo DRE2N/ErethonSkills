@@ -6,6 +6,7 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.animation.Animation;
 import de.erethon.spellbook.animation.AnimationPart;
 import de.erethon.spellbook.animation.AnimationStage;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.utils.TransformationUtil;
@@ -15,6 +16,7 @@ import de.slikey.effectlib.effect.CircleEffect;
 import de.slikey.effectlib.effect.CylinderEffect;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -36,6 +38,7 @@ import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -131,5 +134,12 @@ public class HammerSMASH extends WarriorBaseSpell implements Listener {
     protected void onTickFinish() {
         blocks.forEach(FallingBlock::remove);
         HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(getData(), caster, caster, false, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        placeholderNames.add("damage");
+        return super.getPlaceholders(c);
     }
 }

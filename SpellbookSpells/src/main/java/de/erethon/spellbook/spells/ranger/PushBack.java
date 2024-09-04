@@ -1,10 +1,14 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
+
+import java.util.List;
 
 public class PushBack extends RangerBaseSpell {
 
@@ -26,5 +30,12 @@ public class PushBack extends RangerBaseSpell {
             entity.setVelocity(pushVector);
         }
         return super.onCast();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
+        placeholderNames.add("radius");
+        return super.getPlaceholders(c);
     }
 }

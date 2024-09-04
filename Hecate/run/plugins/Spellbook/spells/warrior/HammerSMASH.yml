@@ -1,12 +1,19 @@
 class: warrior.HammerSMASH
 name: Hammer SMASH!
-description: "SMASH!"
+description: SMASH!
 cooldown: 120
 pushVector: 0.9
 inFrontVector: 1.5
 smashAfterTicks: 18
 coefficients:
-    players:
-        adv_physical: 5
-    entities:
-        adv_physical: 0.2
+  players:
+    adv_physical: 5
+  entities:
+    adv_physical: 0.2
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- damage
+- duration
+- cooldown

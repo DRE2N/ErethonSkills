@@ -11,8 +11,6 @@ import java.util.List;
 
 public class ShadowJump extends AssassinBaseSpell {
 
-    private final int duration = data.getInt("duration", 15);
-
     public ShadowJump(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         keepAliveTicks = duration * 20;
@@ -38,9 +36,4 @@ public class ShadowJump extends AssassinBaseSpell {
         caster.setInvisible(false);
     }
 
-    @Override
-    public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
-        return super.getPlaceholders(c);
-    }
 }

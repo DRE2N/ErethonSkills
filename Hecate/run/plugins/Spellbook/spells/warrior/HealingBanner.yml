@@ -8,3 +8,10 @@ coefficients:
     stat_healingpower: 2
   entities:
     stat_healingpower: 0.2
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- radius
+- duration
+- cooldown

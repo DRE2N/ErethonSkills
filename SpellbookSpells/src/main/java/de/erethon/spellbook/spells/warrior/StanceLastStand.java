@@ -1,8 +1,10 @@
 package de.erethon.spellbook.spells.warrior;
 
 import de.erethon.papyrus.PDamageType;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import net.kyori.adventure.text.Component;
 import net.minecraft.world.entity.Display;
 import org.bukkit.Material;
 import org.bukkit.entity.ItemDisplay;
@@ -11,6 +13,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
+
+import java.util.List;
 
 public class StanceLastStand extends AbstractWarriorStance {
 
@@ -21,7 +25,7 @@ public class StanceLastStand extends AbstractWarriorStance {
 
     public StanceLastStand(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = duration;
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -58,5 +62,14 @@ public class StanceLastStand extends AbstractWarriorStance {
         if (display != null) {
             display.remove();
         }
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(damageReduction * 100, VALUE_COLOR));
+        placeholderNames.add("damage reduction");
+        spellAddedPlaceholders.add(Component.text(attackReduction * 100, VALUE_COLOR));
+        placeholderNames.add("attack reduction");
+        return super.getPlaceholders(c);
     }
 }

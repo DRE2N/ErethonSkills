@@ -41,6 +41,7 @@ public class FarShot extends ProjectileRelatedSkill {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, Attribute.ADV_MAGIC), ATTR_MAGIC_COLOR));
+        placeholderNames.add("damage per block");
         return super.getPlaceholders(c);
     }
 }

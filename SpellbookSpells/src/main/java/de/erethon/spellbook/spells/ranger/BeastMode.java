@@ -50,6 +50,7 @@ public class BeastMode extends RangerPetBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(attributeMultiplier * 100, ATTR_PHYSICAL_COLOR));
+        placeholderNames.add("attribute multiplier");
         return super.getPlaceholders(c);
     }
 }

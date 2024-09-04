@@ -168,6 +168,7 @@ public class Spellbook {
      */
     public static double getVariedDamage(double damage, LivingEntity entity, boolean canCrit) {
         double maxVariance = damage / VARIANCE;
+        maxVariance = Math.max(1, maxVariance);
         MessageUtil.log("Max variance: " + maxVariance + " | Damage: " + damage);
         double variance = -maxVariance + random.nextDouble(maxVariance * 2);
         damage += variance;

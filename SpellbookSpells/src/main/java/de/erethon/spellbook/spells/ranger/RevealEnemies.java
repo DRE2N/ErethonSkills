@@ -1,10 +1,13 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class RevealEnemies extends RangerBaseSpell {
@@ -33,5 +36,12 @@ public class RevealEnemies extends RangerBaseSpell {
         });
         triggerTraits(affected);
         return super.onCast();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        placeholderNames.add("range");
+        return super.getPlaceholders(c);
     }
 }

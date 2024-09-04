@@ -15,7 +15,6 @@ public class Evasion extends AssassinBaseSpell {
 
     Random random = new Random();
     double chance = data.getDouble("chance", 0.7);
-    private final int duration = data.getInt("duration", 20);
 
     public Evasion(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -32,8 +31,8 @@ public class Evasion extends AssassinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         spellAddedPlaceholders.add(Component.text(chance, VALUE_COLOR));
+        placeholderNames.add("chance");
         return super.getPlaceholders(caster);
     }
 }

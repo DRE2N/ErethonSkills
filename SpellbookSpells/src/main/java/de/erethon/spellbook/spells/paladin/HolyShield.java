@@ -63,8 +63,8 @@ public class HolyShield extends PaladinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         spellAddedPlaceholders.add(Component.text((int) (shieldPercent * 100), VALUE_COLOR));
+        placeholderNames.add("shieldPercent");
         return super.getPlaceholders(c);
     }
 }

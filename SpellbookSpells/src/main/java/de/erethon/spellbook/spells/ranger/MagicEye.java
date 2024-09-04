@@ -2,7 +2,9 @@ package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.craftbukkit.entity.CraftArrow;
@@ -12,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityShootBowEvent;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MagicEye extends ProjectileRelatedSkill {
@@ -28,7 +31,7 @@ public class MagicEye extends ProjectileRelatedSkill {
         super(caster, spellData);
         shouldEndWhenProjectileHits = false;
         trailColor = Color.RED;
-        keepAliveTicks = spellData.getInt("duration", 1000);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -79,5 +82,14 @@ public class MagicEye extends ProjectileRelatedSkill {
             arrow.remove();
         }
         super.cleanup();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        placeholderNames.add("range");
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        placeholderNames.add("duration");
+        return super.getPlaceholders(c);
     }
 }

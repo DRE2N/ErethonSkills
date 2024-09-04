@@ -16,7 +16,7 @@ import java.util.List;
 public class BlindnessArea extends AoEBaseSpell {
 
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Blindness");
-    private final int duration = data.getInt("effectDuration", 200);
+    private final int effectDuration = data.getInt("effectDuration", 200);
 
     public BlindnessArea(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -44,13 +44,14 @@ public class BlindnessArea extends AoEBaseSpell {
         super.onTick();
         for (LivingEntity entity : getEntities()) {
             if (!Spellbook.canAttack(caster, entity)) continue;
-            entity.addEffect(caster, effectData, duration, (int) Spellbook.getScaledValue(data, caster, entity, Attribute.ADV_MAGIC));
+            entity.addEffect(caster, effectData, effectDuration, (int) Spellbook.getScaledValue(data, caster, entity, Attribute.ADV_MAGIC));
         }
     }
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        placeholderNames.add("effectDuration");
         return super.getPlaceholders(caster);
     }
 }

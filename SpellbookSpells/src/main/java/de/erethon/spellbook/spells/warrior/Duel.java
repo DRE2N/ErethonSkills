@@ -1,10 +1,12 @@
 package de.erethon.spellbook.spells.warrior;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.CircleEffect;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,6 +24,7 @@ import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Duel extends WarriorBaseSpell implements Listener {
@@ -38,7 +41,7 @@ public class Duel extends WarriorBaseSpell implements Listener {
     public Duel(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
-        keepAliveTicks = spellData.getInt("keepAliveTicks", 200);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -90,8 +93,8 @@ public class Duel extends WarriorBaseSpell implements Listener {
         Location midpoint = caster.getLocation().toVector().getMidpoint(duelOpponent.getLocation().toVector()).toLocation(caster.getWorld()).add(0, 1, 0);
         midpoint.setPitch(0);
         for (ItemDisplay sword : swords) {
-            // TODO: Teleport duration 10 once updated
             sword.teleport(midpoint.add(0, 2, 0));
+            sword.setTeleportDuration(10);
         }
         circleEffect.setLocation(midpoint);
         circleEffect.start();
@@ -113,5 +116,16 @@ public class Duel extends WarriorBaseSpell implements Listener {
             sword.remove();
         }
         HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(maxDistance, VALUE_COLOR));
+        placeholderNames.add("maxDistance");
+        spellAddedPlaceholders.add(Component.text(furyStacks, VALUE_COLOR));
+        placeholderNames.add("furyStacks");
+        spellAddedPlaceholders.add(Component.text(powerStacks, VALUE_COLOR));
+        placeholderNames.add("powerStacks");
+        return super.getPlaceholders(c);
     }
 }

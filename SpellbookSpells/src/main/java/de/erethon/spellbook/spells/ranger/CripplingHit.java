@@ -35,6 +35,7 @@ public class CripplingHit extends RangerBaseSpell{
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(nauseaDuration, VALUE_COLOR));
+        placeholderNames.add("nausea duration");
         return super.getPlaceholders(c);
     }
 }

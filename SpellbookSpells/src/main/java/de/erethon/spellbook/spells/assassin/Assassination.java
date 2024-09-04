@@ -27,7 +27,7 @@ public class Assassination extends AssassinBaseSpell {
 
     public Assassination(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = data.getInt("duration", 10) * 20;
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -56,8 +56,11 @@ public class Assassination extends AssassinBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(critChance, VALUE_COLOR));
+        placeholderNames.add("critChance");
         spellAddedPlaceholders.add(Component.text(critAmount, VALUE_COLOR));
+        placeholderNames.add("critAmount");
         spellAddedPlaceholders.add(Component.text(resistance, VALUE_COLOR));
+        placeholderNames.add("resistance");
         return super.getPlaceholders(caster);
     }
 }

@@ -1,5 +1,6 @@
 displayName: Krieger
 defaultTraitline: WarriorBruiser
+color: '#d18d06'
 traitlines:
   - WarriorBruiser
   - WarriorColossus

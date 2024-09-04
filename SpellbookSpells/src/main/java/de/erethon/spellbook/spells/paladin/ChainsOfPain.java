@@ -29,7 +29,6 @@ import java.util.Set;
 
 public class ChainsOfPain extends PaladinBaseSpell implements Listener {
 
-    private final int duration = data.getInt("duration", 10);
     private final double maxDistance = data.getDouble("maxDistance", 7);
     private final double lookForSecondTargetRange = data.getDouble("lookForSecondTargetRange", 5);
     private final EffectData stun = Spellbook.getEffectData("Stun");
@@ -161,10 +160,12 @@ public class ChainsOfPain extends PaladinBaseSpell implements Listener {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         spellAddedPlaceholders.add(Component.text(maxDistance, VALUE_COLOR));
+        placeholderNames.add("maxDistance");
         spellAddedPlaceholders.add(Component.text(lookForSecondTargetRange, VALUE_COLOR));
+        placeholderNames.add("lookForSecondTargetRange");
         spellAddedPlaceholders.add(Component.text(stunDuration, VALUE_COLOR));
+        placeholderNames.add("stunDuration");
         return super.getPlaceholders(c);
     }
 }

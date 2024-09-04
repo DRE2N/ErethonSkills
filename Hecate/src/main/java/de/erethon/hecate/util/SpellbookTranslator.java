@@ -1,7 +1,10 @@
 package de.erethon.hecate.util;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.chat.MiniMessageTranslator;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.util.TriState;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
@@ -42,9 +45,17 @@ public class SpellbookTranslator extends MiniMessageTranslator {
         return TriState.TRUE;
     }
 
+
+
     @Override
     protected @Nullable String getMiniMessageString(@NotNull String key, @NotNull Locale locale) {
         Map<Locale, String> map = translations.get(key);
-        return map == null ? null : map.get(locale);
+        if (map == null) {
+            return null;
+        }
+        if (map.get(locale) == null) { // fallback to US
+            locale = Locale.US;
+        }
+        return map.get(locale);
     }
 }

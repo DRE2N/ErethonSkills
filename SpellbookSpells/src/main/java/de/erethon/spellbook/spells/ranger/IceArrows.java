@@ -39,8 +39,11 @@ public class IceArrows extends ProjectileRelatedSkill {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        placeholderNames.add("duration");
         spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        placeholderNames.add("effect duration");
         spellAddedPlaceholders.add(Component.text(stacks, VALUE_COLOR));
+        placeholderNames.add("effect stacks");
         return super.getPlaceholders(c);
     }
 }

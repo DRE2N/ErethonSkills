@@ -107,9 +107,10 @@ public class HolyFire extends PaladinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        placeholderNames.add("range");
         spellAddedPlaceholders.add(Component.text(healAmount + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER), ATTR_HEALING_POWER_COLOR));
+        placeholderNames.add("healing");
         return super.getPlaceholders(c);
     }
 }

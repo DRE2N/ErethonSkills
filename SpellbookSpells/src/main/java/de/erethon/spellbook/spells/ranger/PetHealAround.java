@@ -2,10 +2,14 @@ package de.erethon.spellbook.spells.ranger;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+
+import java.util.List;
 
 public class PetHealAround extends RangerPetBaseSpell {
 
@@ -27,5 +31,14 @@ public class PetHealAround extends RangerPetBaseSpell {
             new ParticleBuilder(Particle.HEART).location(living.getLocation().add(0, 1, 0)).count(3).spawn();
         }
         return super.onCast();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        placeholderNames.add("range");
+        spellAddedPlaceholders.add(Component.text(baseHeal + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER), ATTR_HEALING_POWER_COLOR));
+        placeholderNames.add("heal amount");
+        return super.getPlaceholders(c);
     }
 }

@@ -9,20 +9,26 @@ name:
   en: Flashbang
 description:
   de:
-    - "<!i><#757575>Granate"
-    - " "
-    - "<#94958B>Blendet Gegner für eine kurze Zeit um dich herum."
-    - " "
-    - "<!i><yellow>→ <#94958B>Reichweite: %skill_range% Blöcke"
-    - "<!i><yellow>⌛ <#94958B>Dauer: %skill_duration% Sekunden"
-    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
-    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+  - <!i><#757575>Granate
+  - ' '
+  - <#94958B>Blendet Gegner für eine kurze Zeit um dich herum.
+  - ' '
+  - '<!i><yellow>→ <#94958B>Reichweite: %skill_range% Blöcke'
+  - '<!i><yellow>⌛ <#94958B>Dauer: %skill_duration% Sekunden'
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie'
   en:
-    - "<!i><#757575>Grenade"
-    - " "
-    - "<#94958B>Blinds enemies around you for a short time."
-    - " "
-    - "<!i><yellow>→ <#94958B>Range: %skill_range% blocks"
-    - "<!i><yellow>⌛ <#94958B>Duration: %skill_duration% seconds"
-    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
-    - "<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"
+  - <!i><#757575>Grenade
+  - ' '
+  - <#94958B>Blinds enemies around you for a short time.
+  - ' '
+  - '<!i><yellow>→ <#94958B>Range: %skill_range% blocks'
+  - '<!i><yellow>⌛ <#94958B>Duration: %skill_duration% seconds'
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds'
+  - '<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- effectDuration
+- cooldown

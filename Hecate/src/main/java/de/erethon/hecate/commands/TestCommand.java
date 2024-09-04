@@ -1,10 +1,13 @@
 package de.erethon.hecate.commands;
 
 import de.erethon.bedrock.command.ECommand;
+import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellbookSpell;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -39,11 +42,19 @@ public class TestCommand extends ECommand {
 
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
-        ItemStack itemStack = new ItemStack(Material.DIAMOND);
+        SpellData data = Bukkit.getServer().getSpellbookAPI().getLibrary().getSpellByID(args[1]);
+        if (data == null) {
+            commandSender.sendMessage("Spell not found.");
+            return;
+        }
         Player player = (Player) commandSender;
-        itemStack.editMeta(meta -> meta.displayName(Component.translatable("test")));
-        itemStack.editMeta(itemMeta -> itemMeta.lore(List.of(Component.translatable("test"))));
-        player.getInventory().addItem(itemStack);
+        SpellbookSpell spell = data.getActiveSpell(player);
+        player.sendMessage(Component.translatable("test"));
+        player.sendMessage(Component.translatable("spellbook.spell.name." + data.getId(), data.getName()));
+        for (int i = 0; i < data.getDescriptionLineCount(); i++) {
+            player.sendMessage(Component.translatable("spellbook.spell.description." + data.getId() + "." + i, spell.getPlaceholders(player)));
+        }
+
     }
 
 

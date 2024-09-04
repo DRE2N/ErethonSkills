@@ -3,3 +3,9 @@ size: 4
 keepAliveTicks: 200
 duration: 1000
 stacks: 1
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- stacks
+- cooldown

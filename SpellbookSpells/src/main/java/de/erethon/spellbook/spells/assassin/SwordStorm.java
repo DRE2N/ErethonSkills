@@ -45,7 +45,9 @@ public class SwordStorm extends AssassinBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(String.format("%.2f", (double) ticksBetweenAttacks / 20), VALUE_COLOR));
+        placeholderNames.add("timeBetweenAttacks");
         spellAddedPlaceholders.add(Component.text(attacks, VALUE_COLOR));
+        placeholderNames.add("attacks");
         return super.getPlaceholders(c);
     }
 }

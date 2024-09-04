@@ -47,6 +47,7 @@ public class BasicSelfHeal extends RangerBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.STAT_HEALINGPOWER) * baseHeal * healingMultiplier, ATTR_HEALING_POWER_COLOR));
+        placeholderNames.add("heal amount");
         return super.getPlaceholders(c);
     }
 }

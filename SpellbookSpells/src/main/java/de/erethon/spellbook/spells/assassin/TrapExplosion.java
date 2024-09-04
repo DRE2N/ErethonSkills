@@ -12,7 +12,7 @@ import java.util.List;
 
 public class TrapExplosion extends AssassinBaseTrap {
 
-    private final int duration = data.getInt("duration", 10);
+    private final int lifetime = data.getInt("lifetime", 10);
 
     public TrapExplosion(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -25,7 +25,7 @@ public class TrapExplosion extends AssassinBaseTrap {
 
     @Override
     public boolean onCast() {
-        keepAliveTicks = duration * 20;
+        keepAliveTicks = lifetime * 20;
         return super.onCast();
     }
 
@@ -48,8 +48,10 @@ public class TrapExplosion extends AssassinBaseTrap {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster caster) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(lifetime, VALUE_COLOR));
+        placeholderNames.add("lifetime");
         spellAddedPlaceholders.add(Component.text(damageMultiplier, VALUE_COLOR));
+        placeholderNames.add("damageMultiplier");
         return super.getPlaceholders(caster);
     }
 }

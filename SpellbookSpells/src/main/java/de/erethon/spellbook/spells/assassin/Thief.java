@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class Thief extends AssassinBaseSpell {
 
-    private final int duration = data.getInt("duration", 5);
+    private final int effectDuration = data.getInt("effectDuration", 5);
 
     private final Random random = new Random();
 
@@ -35,7 +35,7 @@ public class Thief extends AssassinBaseSpell {
             return false;
         }
         EffectData effectData = datas.get(random.nextInt(datas.size())).data;
-        caster.addEffect(caster, effectData, duration * 20, 1);
+        caster.addEffect(caster, effectData, effectDuration * 20, 1);
         target.removeEffect(effectData);
         triggerTraits(target);
         caster.sendParsedActionBar("<green>Du hast " + effectData.getName() + " gestohlen!");
@@ -44,7 +44,8 @@ public class Thief extends AssassinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        placeholderNames.add("effectDuration");
         return super.getPlaceholders(c);
     }
 }

@@ -68,8 +68,8 @@ public class Freeze extends PaladinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
+        placeholderNames.add("radius");
         return super.getPlaceholders(c);
     }
 }

@@ -9,12 +9,23 @@ name:
   en: Dagger Throw
 description:
   de:
-    - "<!i><#757575>Fernangriff"
-    - " "
-    - "<#94958B>Wirft einen Dolch, der dass das Ziel kurzzeitig verlangsamt und"
-    - "<#94958B>%attribute_adv_physical% Schaden verursacht."
-    - " "
-    - "<!i><yellow>⌛ <#94958B>Dauer: %skill_duration% Sekunden"
-    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
-    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+  - <!i><#757575>Fernangriff
+  - ' '
+  - <#94958B>Wirft einen Dolch, der dass das Ziel kurzzeitig verlangsamt und
+  - <#94958B>%attribute_adv_physical% Schaden verursacht.
+  - ' '
+  - '<!i><yellow>⌛ <#94958B>Dauer: %skill_duration% Sekunden'
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- speed
+- divergence
+- damage
+- range
+- energyCost
+- duration
+- cooldown
 

@@ -58,8 +58,11 @@ public class CripplingShot extends ProjectileRelatedSkill {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        placeholderNames.add("effect duration");
         spellAddedPlaceholders.add(Component.text(stacks, VALUE_COLOR));
+        placeholderNames.add("effect stacks");
         spellAddedPlaceholders.add(Component.text(projectileSpeed, VALUE_COLOR));
+        placeholderNames.add("projectile speed");
         return super.getPlaceholders(c);
     }
 }

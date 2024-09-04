@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -28,6 +29,7 @@ public class HClass extends YamlConfiguration {
 
     private String id;
     private String displayName;
+    private TextColor color;
     private String description;
     private int maxLevel;
     private final HashMap<Integer, HashMap<Attribute, Double>> baseAttributesPerLevel = new HashMap<>();
@@ -75,12 +77,17 @@ public class HClass extends YamlConfiguration {
         return displayName;
     }
 
+    public TextColor getColor() {
+        return color;
+    }
+
     @Override
     public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
         super.load(file);
         id = file.getName().replace(".yml", "");
         displayName = getString("displayName");
         defaultTraitline = Hecate.getInstance().getTraitline(getString("defaultTraitline"));
+        color = TextColor.fromHexString(getString("color", "#ffffff"));
         ConfigurationSection specialActionSection = getConfigurationSection("specialActionKeys");
         if (specialActionSection != null) {
             for (String key : specialActionSection.getKeys(false)) {

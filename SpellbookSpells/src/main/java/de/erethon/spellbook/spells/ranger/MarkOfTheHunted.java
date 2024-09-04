@@ -1,11 +1,14 @@
 package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.Collections;
+import java.util.List;
 
 public class MarkOfTheHunted extends RangerBaseSpell {
 
@@ -29,5 +32,12 @@ public class MarkOfTheHunted extends RangerBaseSpell {
         target.addEffect(caster, effectData, effectDuration, 1);
         triggerTraits(Collections.singleton(target));
         return super.onCast();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        placeholderNames.add("effect duration");
+        return super.getPlaceholders(c);
     }
 }

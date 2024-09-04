@@ -2,4 +2,13 @@ class: assassin.Evasion
 energyCost: 30
 duration: 8
 chance: 0.8
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- chance
+- range
+- energyCost
+- duration
+- cooldown
 # Wollen wir diesen Spell noch haben? Er ist sehr öde

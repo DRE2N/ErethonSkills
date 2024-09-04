@@ -8,6 +8,7 @@ import de.erethon.hecate.classes.TraitLineEntry;
 import de.erethon.hecate.classes.Traitline;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.MenuType;
@@ -118,7 +119,8 @@ public class TraitMenu implements Listener, InventoryHolder {
         TraitLineEntry entry = traitline.getTraitLineEntries(level).get(index);
         ItemStack item = new ItemStack(ICON_MATERIAL);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(Component.translatable("spellbook.trait.name." + entry.data().getId(), entry.data().getId()));
+        Component name = Component.translatable("spellbook.trait.name." + entry.data().getId());
+        meta.displayName(Component.text().append(name).color(player.gethClass().getColor()).decoration(TextDecoration.BOLD, true).build());
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < entry.data().getDescriptionLineCount(); i++) {
             lore.add(Component.translatable("spellbook.trait.description." + entry.data().getId() + "." + i, ""));

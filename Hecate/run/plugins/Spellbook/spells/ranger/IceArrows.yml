@@ -2,3 +2,11 @@ class: ranger.IceArrows
 duration: 300
 effectDuration: 200
 effectStacks: 1
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- duration
+- effect duration
+- effect stacks
+- cooldown

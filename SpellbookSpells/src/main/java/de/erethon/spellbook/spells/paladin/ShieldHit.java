@@ -51,7 +51,8 @@ public class ShieldHit extends PaladinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(baseDuration + Spellbook.getScaledValue(data, target, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(baseDuration + Spellbook.getScaledValue(data, caster, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        placeholderNames.add("effect duration");
         return super.getPlaceholders(c);
     }
 

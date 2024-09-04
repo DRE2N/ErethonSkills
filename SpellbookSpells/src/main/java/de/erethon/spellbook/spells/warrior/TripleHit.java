@@ -3,9 +3,13 @@ package de.erethon.spellbook.spells.warrior;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.List;
 
 public class TripleHit extends WarriorBaseSpell {
 
@@ -19,7 +23,7 @@ public class TripleHit extends WarriorBaseSpell {
 
     public TripleHit(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("keepAliveTicks", 500);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -49,5 +53,18 @@ public class TripleHit extends WarriorBaseSpell {
         }
         lastHitDamage = damage;
         return super.onAttack(target, damage, type);
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(hitInterval, VALUE_COLOR));
+        placeholderNames.add("hit interval");
+        spellAddedPlaceholders.add(Component.text(thirdBonusDamage, VALUE_COLOR));
+        placeholderNames.add("third bonus damage");
+        spellAddedPlaceholders.add(Component.text(powerStacks, VALUE_COLOR));
+        placeholderNames.add("power stacks");
+        spellAddedPlaceholders.add(Component.text(powerDuration, VALUE_COLOR));
+        placeholderNames.add("power duration");
+        return super.getPlaceholders(c);
     }
 }

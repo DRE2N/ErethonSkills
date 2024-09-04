@@ -2,21 +2,23 @@ package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.effect.CircleEffect;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ComprehensiveBlessing extends PaladinBaseSpell {
 
-    private final double range = data.getDouble("range", 10);
-
+    private final int range = data.getInt("range", 10);
     private final Set<CircleEffect> circleEffects = new HashSet<>();
 
     public ComprehensiveBlessing(LivingEntity caster, SpellData spellData) {
@@ -59,5 +61,12 @@ public class ComprehensiveBlessing extends PaladinBaseSpell {
         };
         moveCircles.runTaskTimer(Spellbook.getInstance().getImplementer(), 0, 1);
         return super.onCast();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        placeholderNames.add("range");
+        return super.getPlaceholders(c);
     }
 }

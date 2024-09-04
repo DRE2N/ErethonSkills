@@ -78,8 +78,11 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(speed, VALUE_COLOR));
+        placeholderNames.add("speed");
         spellAddedPlaceholders.add(Component.text(divergence, VALUE_COLOR));
-        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, (LivingEntity) caster, (LivingEntity) caster, false, Attribute.ADV_PHYSICAL), VALUE_COLOR));
+        placeholderNames.add("divergence");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, false, Attribute.ADV_PHYSICAL), VALUE_COLOR));
+        placeholderNames.add("damage");
         return super.getPlaceholders(caster);
     }
 }

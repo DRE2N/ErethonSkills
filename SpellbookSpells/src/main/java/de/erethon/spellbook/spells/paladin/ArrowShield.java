@@ -16,8 +16,6 @@ import java.util.List;
 
 public class ArrowShield extends AoEBaseSpell {
 
-    private final int duration = data.getInt("duration", 10);
-
     private SphereEffect sphereEffect;
 
     public ArrowShield(LivingEntity caster, SpellData spellData) {
@@ -49,9 +47,4 @@ public class ArrowShield extends AoEBaseSpell {
         sphereEffect.cancel();
     }
 
-    @Override
-    public List<Component> getPlaceholders(SpellCaster caster) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
-        return super.getPlaceholders(caster);
-    }
 }

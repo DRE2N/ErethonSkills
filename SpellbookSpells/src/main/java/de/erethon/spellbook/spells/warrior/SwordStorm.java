@@ -1,9 +1,11 @@
 package de.erethon.spellbook.spells.warrior;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.slikey.effectlib.effect.CircleEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -12,6 +14,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EquipmentSlotGroup;
+
+import java.util.List;
 
 public class SwordStorm extends WarriorBaseSpell {
 
@@ -25,7 +29,7 @@ public class SwordStorm extends WarriorBaseSpell {
 
     public SwordStorm(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("keepAliveTicks", 20);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -89,5 +93,16 @@ public class SwordStorm extends WarriorBaseSpell {
         caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(attackBaseMod);
         circle.cancel();
         attackMarker.cancel();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
+        placeholderNames.add("radius");
+        spellAddedPlaceholders.add(Component.text(radiusPerTick, VALUE_COLOR));
+        placeholderNames.add("radius per tick");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        placeholderNames.add("damage bonus");
+        return super.getPlaceholders(c);
     }
 }

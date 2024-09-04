@@ -58,6 +58,7 @@ public class JavelinThrow extends PaladinSpearSpell implements Listener {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, true, damageAttribute), VALUE_COLOR));
+        placeholderNames.add("damage");
         return super.getPlaceholders(c);
     }
 }

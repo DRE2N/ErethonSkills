@@ -26,6 +26,7 @@ public class FirstAid extends RangerBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(baseHeal + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER), ATTR_HEALING_POWER_COLOR));
+        placeholderNames.add("heal amount");
         return super.getPlaceholders(c);
     }
 }

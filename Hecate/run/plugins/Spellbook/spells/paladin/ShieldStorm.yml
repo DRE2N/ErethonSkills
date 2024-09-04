@@ -2,3 +2,13 @@ class: paladin.ShieldStorm
 stormSpeed: 1.5
 throwbackSpeed: 2
 delay: 40
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- storm speed
+- throwback speed
+- delay
+- duration
+- range
+- cooldown

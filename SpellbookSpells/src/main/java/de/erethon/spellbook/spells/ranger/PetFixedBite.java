@@ -19,7 +19,7 @@ public class PetFixedBite extends RangerPetBaseSpell {
 
     public PetFixedBite(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("keepAliveTicks", 80);
+        keepAliveTicks = duration * 20;
     }
 
     @Override

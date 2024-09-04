@@ -17,7 +17,9 @@ import de.erethon.hecate.util.SpellbookTranslator;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
+import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
+import de.erethon.spellbook.spells.SpellbookBaseSpell;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.translation.GlobalTranslator;
@@ -30,12 +32,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.craftbukkit.CraftServer;
+import org.bukkit.entity.Pig;
 import org.bukkit.event.HandlerList;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -93,6 +99,7 @@ public final class Hecate extends EPlugin {
             loadClasses();
             registerTranslations();
             translator.addSource(reg);
+            createPlaceholderDefinitions(Bukkit.getWorlds().get(0));
             ready = true;
         }, 30);
     }
@@ -101,21 +108,40 @@ public final class Hecate extends EPlugin {
         for (SpellData data : spellbook.getAPI().getLibrary().getLoaded().values()) {
             if (data.contains("name")) {
                 ConfigurationSection nameSection = data.getConfigurationSection("name");
+                if (nameSection == null) {
+                    MessageUtil.log("Spell " + data.getId() + " has no name.");
+                    continue;
+                }
                 for (String key : nameSection.getKeys(false)) {
                     String value = nameSection.getString(key, "<no translation>");
-                    Locale locale = Locale.of(key);
+                    Locale locale;
+                    if (key.contains("de")) {
+                        locale = Locale.GERMANY;
+                    } else {
+                        locale = Locale.US;
+                    }
                     reg.registerTranslation("spellbook.spell.name." + data.getId(), value, locale);
                 }
             }
             if (data.contains("description")) {
                 ConfigurationSection descriptionSection = data.getConfigurationSection("description");
+                if (descriptionSection == null) {
+                    MessageUtil.log("Spell " + data.getId() + " has no description.");
+                    continue;
+                }
                 int maxLineCount = 0;  // We need to know this for lore rendering
                 for (String key : descriptionSection.getKeys(false)) {
                     List<String> value = descriptionSection.getStringList(key);
-                    Locale locale = Locale.of(key);
+                    Locale locale;
+                    if (key.contains("de")) {
+                        locale = Locale.GERMANY;
+                    } else {
+                        locale = Locale.US;
+                    }
                     int i = 0;
                     for (String line : value) {
                         reg.registerTranslation("spellbook.spell.description." + data.getId() + "." + i, line, locale);
+                        MessageUtil.log("Registered translation for " + data.getId() + " line " + i + " in " + locale + ": " + line);
                         i++;
                     }
                     maxLineCount = Math.max(maxLineCount, i);
@@ -126,18 +152,36 @@ public final class Hecate extends EPlugin {
         for (TraitData data : spellbook.getAPI().getLibrary().getLoadedTraits().values()) {
             if (data.contains("name")) {
                 ConfigurationSection nameSection = data.getConfigurationSection("name");
+                if (nameSection == null) {
+                    MessageUtil.log("Trait " + data.getId() + " has no name.");
+                    continue;
+                }
                 for (String key : nameSection.getKeys(false)) {
                     String value = nameSection.getString(key, "<no translation>");
-                    Locale locale = Locale.of(key);
+                    Locale locale;
+                    if (key.contains("de")) {
+                        locale = Locale.GERMANY;
+                    } else {
+                        locale = Locale.US;
+                    }
                     reg.registerTranslation("spellbook.trait.name." + data.getId(), value, locale);
                 }
             }
             if (data.contains("description")) {
                 ConfigurationSection descriptionSection = data.getConfigurationSection("description");
+                if (descriptionSection == null) {
+                    MessageUtil.log("Trait " + data.getId() + " has no description.");
+                    continue;
+                }
                 int maxLineCount = 0;
                 for (String key : descriptionSection.getKeys(false)) {
                     List<String> value = descriptionSection.getStringList(key);
-                    Locale locale = Locale.of(key);
+                    Locale locale;
+                    if (key.contains("de")) {
+                        locale = Locale.GERMANY;
+                    } else {
+                        locale = Locale.US;
+                    }
                     int i = 0;
                     for (String line : value) {
                         reg.registerTranslation("spellbook.trait.description." + data.getId() + "." + i, line, locale);
@@ -148,6 +192,36 @@ public final class Hecate extends EPlugin {
                 data.setDescriptionLineCount(maxLineCount);
             }
         }
+        translator.addSource(reg);
+    }
+
+    private void createPlaceholderDefinitions(World world ) {
+        MessageUtil.log("Creating placeholder definitions...");
+        Pig pig = world.spawn(world.getSpawnLocation(), Pig.class);
+        pig.setPersistent(false);
+        pig.setInvisible(true);
+        for (SpellData data : spellbook.getAPI().getLibrary().getLoaded().values()) {
+            // We need some entity
+            SpellbookSpell spell = data.getActiveSpell(pig);
+            if (spell != null) {
+                spell.getPlaceholders(pig);
+                if (spell instanceof SpellbookBaseSpell baseSpell) {
+                    List<String> placeholders = new ArrayList<>(baseSpell.getPlaceholderNames());
+                    data.set("availablePlaceholders", placeholders);
+                    data.setComments("availablePlaceholders", List.of("This list contains all placeholders that can be used in this spell.",
+                            "You can use those placeholders in the description with",
+                            "<arg:(index of placeholder)>. Example: <arg:1> for the first placeholder."));
+                }
+                try {
+                    data.save(data.getFile());
+                } catch (IOException e) {
+                    MessageUtil.log("Failed to save spell data for " + data.getId() + " after creating placeholder definitions.");
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        pig.remove();
+        MessageUtil.log("Done. Created placeholder definitions for " + spellbook.getAPI().getLibrary().getLoaded().size() + " spells.");
     }
 
     @Override

@@ -37,7 +37,7 @@ public class JudgementOfGod extends PaladinBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
-        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        placeholderNames.add("duration");
         return super.getPlaceholders(c);
     }
 }

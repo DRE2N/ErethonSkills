@@ -14,8 +14,6 @@ import java.util.List;
 
 public class TrapPoison extends AssassinBaseTrap {
 
-    private final int duration = data.getInt("duration", 10);
-
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Poison");
     private final int effectDuration = data.getInt("effectDuration", 5) * 20;
     private final int effectStacks = data.getInt("effectStacks", 1);
@@ -64,9 +62,10 @@ public class TrapPoison extends AssassinBaseTrap {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster caster) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        placeholderNames.add("effectDuration");
         spellAddedPlaceholders.add(Component.text(effectStacks * damageMultiplier, VALUE_COLOR));
+        placeholderNames.add("effectStacks");
         return super.getPlaceholders(caster);
     }
 }

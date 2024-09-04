@@ -1,3 +1,11 @@
 class: paladin.JudgementOfGod
 range: 16
 duration: 100
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- duration
+- duration
+- range
+- cooldown

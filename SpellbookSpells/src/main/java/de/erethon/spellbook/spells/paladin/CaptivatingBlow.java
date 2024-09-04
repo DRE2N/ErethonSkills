@@ -50,8 +50,10 @@ public class CaptivatingBlow extends PaladinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text((int) (duration + Spellbook.getScaledValue(data, target, Attribute.ADV_PHYSICAL)), ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text((int) (duration + Spellbook.getScaledValue(data, caster, Attribute.ADV_PHYSICAL)), ATTR_PHYSICAL_COLOR));
+        placeholderNames.add("effect duration");
         spellAddedPlaceholders.add(Component.text(stacks, VALUE_COLOR));
+        placeholderNames.add("stacks");
         return super.getPlaceholders(c);
     }
 }

@@ -44,6 +44,7 @@ public class PressForward extends AoEBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster caster) {
         spellAddedPlaceholders.add(Component.text(stacks, VALUE_COLOR));
+        placeholderNames.add("stacks");
         return super.getPlaceholders(caster);
     }
 }

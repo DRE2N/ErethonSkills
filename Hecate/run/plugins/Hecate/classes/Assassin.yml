@@ -1,5 +1,6 @@
 displayName: Assassine
 defaultTraitline: AssassinShadow
+color: '#70212C'
 traitlines:
   - AssassinAssassin
   - AssassinSaboteur

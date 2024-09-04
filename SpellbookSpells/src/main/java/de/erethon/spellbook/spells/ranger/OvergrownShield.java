@@ -14,13 +14,13 @@ import org.bukkit.util.BoundingBox;
 public class OvergrownShield extends ChannelingSpell {
 
     int modelData = data.getInt("modelData", 1);
-    int duration = data.getInt("duration", 400);
+    int duration = data.getInt("duration", 10);
     BoundingBox aabb;
     ArmorStand armorStand;
 
     public OvergrownShield(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = duration;
+        keepAliveTicks = duration * 20;
     }
 
 

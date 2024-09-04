@@ -5,19 +5,28 @@ name:
   en: Speed Burst
 description:
   de:
-    - "<!i><#757575>Verzauberung"
-    - " "
-    - "<#94958B>Erhöht die Angriffsgeschsgeschwindigkeit und"
-    - "<#94958B>Resistenzen für %skill_duration% Sekunden."
-    - " "
-    - "<!i><yellow>⌛ <#94958B>Dauer: %skill_duration% Sekunden"
-    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
-    - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
+  - <!i><#757575>Verzauberung
+  - ' '
+  - <#94958B>Erhöht die Angriffsgeschsgeschwindigkeit und
+  - <#94958B>Resistenzen für %skill_duration% Sekunden.
+  - ' '
+  - '<!i><yellow>⌛ <#94958B>Dauer: %skill_duration% Sekunden'
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie'
   en:
-    - "<!i><#757575>Enchantment"
-    - " "
-    - "<#94958B>Increases attack speed and resistances for %skill_duration% seconds."
-    - " "
-    - "<!i><yellow>⌛ <#94958B>Duration: %skill_duration% seconds"
-    - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
-    - "<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"
+  - <!i><#757575>Enchantment
+  - ' '
+  - <#94958B>Increases attack speed and resistances for %skill_duration% seconds.
+  - ' '
+  - '<!i><yellow>⌛ <#94958B>Duration: %skill_duration% seconds'
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds'
+  - '<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- effect duration
+- range
+- energyCost
+- duration
+- cooldown

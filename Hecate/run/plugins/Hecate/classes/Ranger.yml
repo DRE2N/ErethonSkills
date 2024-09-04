@@ -1,5 +1,6 @@
 displayName: Ranger
 defaultTraitline: RangerBeast
+color: '#62d106'
 traitlines:
   - RangerBeast
   - RangerDeathEye

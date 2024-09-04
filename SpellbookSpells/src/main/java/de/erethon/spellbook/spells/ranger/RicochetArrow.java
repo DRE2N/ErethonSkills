@@ -3,8 +3,10 @@ package de.erethon.spellbook.spells.ranger;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.utils.RangerUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.AbstractArrow;
@@ -16,6 +18,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.util.Vector;
+
+import java.util.List;
 
 public class RicochetArrow extends RangerBaseSpell implements Listener {
 
@@ -65,6 +69,19 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
     @Override
     protected void cleanup() {
         HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(ricochetRange, VALUE_COLOR));
+        placeholderNames.add("ricochetRange");
+        spellAddedPlaceholders.add(Component.text(maxRicochets, VALUE_COLOR));
+        placeholderNames.add("maxRicochets");
+        spellAddedPlaceholders.add(Component.text(damageReductionPerRicochet, VALUE_COLOR));
+        placeholderNames.add("damageReductionPerRicochet");
+        spellAddedPlaceholders.add(Component.text(projectileSpeed, VALUE_COLOR));
+        placeholderNames.add("projectileSpeed");
+        return super.getPlaceholders(c);
     }
 
 }

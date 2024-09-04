@@ -2,11 +2,13 @@ package de.erethon.spellbook.spells.warrior.banners;
 
 import com.destroystokyo.paper.ParticleBuilder;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.spells.warrior.WarriorBaseSpell;
 import de.erethon.spellbook.utils.TransformationUtil;
 import de.slikey.effectlib.effect.CircleEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -16,6 +18,8 @@ import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 public class WarBanner extends WarriorBaseSpell {
     protected ItemStack itemStack;
@@ -63,5 +67,12 @@ public class WarBanner extends WarriorBaseSpell {
     protected void cleanup() {
         banner.remove();
         bannerHolder.remove();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
+        placeholderNames.add("radius");
+        return super.getPlaceholders(c);
     }
 }

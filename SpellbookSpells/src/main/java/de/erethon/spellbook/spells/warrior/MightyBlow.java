@@ -2,13 +2,17 @@ package de.erethon.spellbook.spells.warrior;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
+
+import java.util.List;
 
 public class MightyBlow extends WarriorBaseSpell {
 
@@ -33,5 +37,12 @@ public class MightyBlow extends WarriorBaseSpell {
             entity.playSound(Sound.sound(org.bukkit.Sound.ITEM_FIRECHARGE_USE, Sound.Source.RECORD, 1, 1));
         });
         return super.onCast();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
+        placeholderNames.add("radius");
+        return super.getPlaceholders(c);
     }
 }

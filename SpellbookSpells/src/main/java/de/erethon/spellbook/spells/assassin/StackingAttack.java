@@ -15,7 +15,6 @@ import java.util.List;
 
 public class StackingAttack extends AssassinBaseSpell {
 
-    private final int duration = data.getInt("duration", 10);
     private final int stacks = data.getInt("stacks", 3);
     private int currentStacks = 0;
 
@@ -44,8 +43,10 @@ public class StackingAttack extends AssassinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         spellAddedPlaceholders.add(Component.text(stacks, VALUE_COLOR));
+        placeholderNames.add("stacks");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_AIR), ATTR_AIR_COLOR));
+        placeholderNames.add("damage");
         return super.getPlaceholders(c);
     }
 }

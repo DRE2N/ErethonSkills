@@ -62,8 +62,8 @@ public class IceSpear extends PaladinSpearSpell implements Listener {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(baseDuration, VALUE_COLOR));
-        spellAddedPlaceholders.add(Component.text((baseDuration + Math.round(Spellbook.getScaledValue(data, caster, target, damageAttribute))), VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text((baseDuration + Math.round(Spellbook.getScaledValue(data, caster, caster, damageAttribute))), VALUE_COLOR));
+        placeholderNames.add("effect duration");
         return super.getPlaceholders(c);
     }
 }

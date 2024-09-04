@@ -10,13 +10,12 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class NatureWalk extends RangerBaseSpell implements Listener {
 
-    int duration = data.getInt("duration", 400);
     int interval = data.getInt("interval", 2);
 
     public NatureWalk(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         tickInterval = interval;
-        keepAliveTicks = duration;
+        keepAliveTicks = duration * 20;
     }
 
     @EventHandler
@@ -30,7 +29,6 @@ public class NatureWalk extends RangerBaseSpell implements Listener {
         if (event.getEntity() != caster || !event.hasChangedBlock()) {
             return;
         }
-
     }
 
 

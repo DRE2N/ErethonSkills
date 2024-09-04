@@ -14,8 +14,6 @@ import java.util.Set;
 
 public class DontMoveBack extends PaladinBaseSpell {
 
-    private final int duration = data.getInt("duration", 10);
-
     private final EffectData dontmoveback = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("DontMoveBackEffect");
 
     public DontMoveBack(LivingEntity caster, SpellData spellData) {
@@ -38,7 +36,6 @@ public class DontMoveBack extends PaladinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         return super.getPlaceholders(c);
     }
 }

@@ -39,11 +39,6 @@ public class DustCloud extends AoEBaseSpell {
     }
 
     @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
-    }
-
-    @Override
     protected void onTick() {
         super.onTick();
         invisCooldown--;
@@ -86,6 +81,7 @@ public class DustCloud extends AoEBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(invisCooldown, VALUE_COLOR));
+        placeholderNames.add("invisCooldown");
         return super.getPlaceholders(caster);
     }
 }

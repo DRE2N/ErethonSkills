@@ -16,7 +16,7 @@ public class BreakingHit extends WarriorBaseSpell {
 
     public BreakingHit(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("keepAliveTicks", 100);
+        keepAliveTicks = duration * 20;
     }
 
     @Override

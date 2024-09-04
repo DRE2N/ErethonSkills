@@ -147,7 +147,8 @@ public class SkillMenu implements Listener, InventoryHolder {
     private ItemStack itemFromSpellData(SpellData data) {
         ItemStack itemStack = new ItemStack(Material.BOOK);
         ItemMeta meta = itemStack.getItemMeta();
-        meta.displayName(Component.translatable("spellbook.spell.name." + data.getId(), data.getId()));
+        Component name = Component.translatable("spellbook.spell.name." + data.getId());
+        meta.displayName(Component.text().append(name).color(player.gethClass().getColor()).decoration(TextDecoration.BOLD, true).build());
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < data.getDescriptionLineCount(); i++) {
             lore.add(Component.translatable("spellbook.spell.description." + data.getId() + "." + i, ""));

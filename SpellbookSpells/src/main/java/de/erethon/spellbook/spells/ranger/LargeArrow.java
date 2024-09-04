@@ -2,11 +2,13 @@ package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.ChannelingSpell;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.events.ItemProjectileHitEvent;
 import de.erethon.spellbook.utils.ItemProjectile;
 import de.erethon.spellbook.utils.NMSUtils;
 import de.erethon.spellbook.utils.RangerUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -16,12 +18,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
+import java.util.List;
+
 public class LargeArrow extends ChannelingSpell implements Listener {
 
     private double arrowBoxSize;
     private double damage;
     private PDamageType damageType;
     private ItemStack itemStack;
+    private int manaCost = data.getInt("manaCost", 10);
 
     public LargeArrow(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -64,4 +69,12 @@ public class LargeArrow extends ChannelingSpell implements Listener {
         return RangerUtils.hasMana(caster, data);
     }
 
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(manaCost, VALUE_COLOR));
+        placeholderNames.add("mana cost");
+        spellAddedPlaceholders.add(Component.text(damage, ATTR_PHYSICAL_COLOR));
+        placeholderNames.add("damage");
+        return super.getPlaceholders(c);
+    }
 }

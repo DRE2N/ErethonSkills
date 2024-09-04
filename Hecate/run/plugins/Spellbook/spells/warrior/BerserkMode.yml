@@ -1,6 +1,7 @@
 class: warrior.BerserkMode
 name: Berserk Mode
-description: "You enter a berserk rage, increasing your damage and attack speed, but loosing health."
+description: You enter a berserk rage, increasing your damage and attack speed, but
+  loosing health.
 cooldown: 120
 damagePerTick: 1
 duration: 5
@@ -9,3 +10,10 @@ coefficients:
     adv_physical: 0.5
   entities:
     adv_physical: 0.66
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- damage per second
+- duration
+- cooldown

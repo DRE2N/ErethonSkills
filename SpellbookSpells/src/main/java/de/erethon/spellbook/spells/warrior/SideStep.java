@@ -12,7 +12,7 @@ public class SideStep extends WarriorBaseSpell {
 
     public SideStep(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = spellData.getInt("keepAliveTicks", 10);
+        keepAliveTicks = duration * 20;
     }
 
     @Override

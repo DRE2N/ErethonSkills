@@ -14,7 +14,6 @@ import java.util.List;
 
 public class DoubleAttack extends AssassinBaseSpell {
 
-    private final int duration = data.getInt("duration", 200);
 
     public DoubleAttack(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -22,7 +21,7 @@ public class DoubleAttack extends AssassinBaseSpell {
 
     @Override
     public boolean onCast() {
-        keepAliveTicks = duration;
+        keepAliveTicks = duration * 20;
         return super.onCast();
     }
 
@@ -40,9 +39,4 @@ public class DoubleAttack extends AssassinBaseSpell {
         return super.onAttack(target, damage, type);
     }
 
-    @Override
-    public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
-        return super.getPlaceholders(caster);
-    }
 }

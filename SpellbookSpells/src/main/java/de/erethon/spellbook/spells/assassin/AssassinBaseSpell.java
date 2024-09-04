@@ -13,6 +13,7 @@ import java.util.List;
 
 public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
 
+    public int duration = data.getInt("duration", 10);
     public int energyCost = data.getInt("energyCost", 0);
     public int range = data.getInt("range", 32);
     public LivingEntity target;
@@ -83,7 +84,11 @@ public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        placeholderNames.add("range");
         spellAddedPlaceholders.add(Component.text(energyCost, VALUE_COLOR));
+        placeholderNames.add("energyCost");
+        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        placeholderNames.add("duration");
         return super.getPlaceholders(caster);
     }
 }

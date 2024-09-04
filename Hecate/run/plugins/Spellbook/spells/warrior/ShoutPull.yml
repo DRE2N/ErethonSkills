@@ -1,13 +1,20 @@
 class: warrior.ShoutPull
-name: "<red>Kommt her!"
+name: <red>Kommt her!
 cooldown: 20
 description:
-  - "<#757575>Schlachtruf"
-  - ""
-  - "<#94958B>Zieht einen Gegner heran und"
-  - "<#94958B>verursacht %attribute_adv_physical% <white>+ %attribute_adv_air% Schaden." # Demo. Der Skill macht was anderes.
-  - ""
-  - "<yellow>→ <#94958B>Reichweite: %skill_range% Blöcke"
-  - "<yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
+- <#757575>Schlachtruf
+- ''
+- <#94958B>Zieht einen Gegner heran und
+- <#94958B>verursacht %attribute_adv_physical% <white>+ %attribute_adv_air% Schaden.
+- ''
+- '<yellow>→ <#94958B>Reichweite: %skill_range% Blöcke'
+- '<yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden'
 range: 10
 strength: 2
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- range
+- duration
+- cooldown

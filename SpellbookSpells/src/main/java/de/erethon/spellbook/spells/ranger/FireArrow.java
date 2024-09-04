@@ -40,8 +40,11 @@ public class FireArrow extends ProjectileRelatedSkill {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(burningDuration, VALUE_COLOR));
+        placeholderNames.add("burning duration");
         spellAddedPlaceholders.add(Component.text(burningStacks, VALUE_COLOR));
+        placeholderNames.add("burning stacks");
         spellAddedPlaceholders.add(Component.text(affectedArrows, VALUE_COLOR));
+        placeholderNames.add("affected arrows");
         return super.getPlaceholders(c);
     }
 }

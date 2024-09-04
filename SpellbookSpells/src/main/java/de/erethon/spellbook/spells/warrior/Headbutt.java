@@ -4,11 +4,13 @@ import de.erethon.papyrus.PDamageType;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.EntityTargetSpell;
 import de.slikey.effectlib.effect.CircleEffect;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
@@ -20,6 +22,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class Headbutt extends WarriorBaseSpell implements Listener {
 
@@ -67,4 +71,12 @@ public class Headbutt extends WarriorBaseSpell implements Listener {
     protected void cleanup() {
         HandlerList.unregisterAll(this);
     }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(stunDuration, VALUE_COLOR));
+        placeholderNames.add("stun duration");
+        return super.getPlaceholders(c);
+    }
+
 }

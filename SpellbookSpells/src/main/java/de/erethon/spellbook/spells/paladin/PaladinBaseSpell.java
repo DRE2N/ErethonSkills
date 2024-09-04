@@ -69,7 +69,9 @@ public class PaladinBaseSpell extends SpellbookBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        placeholderNames.add("duration");
         spellAddedPlaceholders.add(Component.text(data.getInt("range", 0), VALUE_COLOR));
+        placeholderNames.add("range");
         return super.getPlaceholders(c);
     }
 }

@@ -31,7 +31,7 @@ public class DaggerStorm extends AssassinBaseSpell implements Listener {
     public DaggerStorm(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         tickInterval = 2;
-        keepAliveTicks = data.getInt("duration", 500);
+        keepAliveTicks = duration * 20;
         Bukkit.getServer().getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
     }
 
@@ -61,8 +61,11 @@ public class DaggerStorm extends AssassinBaseSpell implements Listener {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(daggers, VALUE_COLOR));
+        placeholderNames.add("daggers");
         spellAddedPlaceholders.add(Component.text(divergence, VALUE_COLOR));
+        placeholderNames.add("divergence");
         spellAddedPlaceholders.add(Component.text(speed, VALUE_COLOR));
+        placeholderNames.add("speed");
         spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, false, Attribute.ADV_PHYSICAL) * damageMultiplier, ATTR_PHYSICAL_COLOR));
         return super.getPlaceholders(caster);
     }

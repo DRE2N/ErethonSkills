@@ -11,21 +11,28 @@ name:
   de: Giftfalle
   en: Poison Trap
 description:
-    de:
-      - "<!i><#757575>Falle"
-      - " "
-      - "<#757575>Legt eine Giftfalle, die bei Berührung auslöst und"
-      - "<#757575>%attribute_adv_physical% Schaden verursacht sowie"
-      - "<#757575>den Gegner für %skill_effect_duration% Sekunden vergiftet."
-      - " "
-      - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
-      - "<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie"
-    en:
-      - "<!i><#757575>Trap"
-      - " "
-      - "<#757575>Places a poison trap that triggers on touch and"
-      - "<#757575>deals %attribute_adv_physical% damage as well as"
-      - "<#757575>poisons the enemy for %skill_effect_duration% seconds."
-      - " "
-      - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
-      - "<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy"
+  de:
+  - <!i><#757575>Falle
+  - ' '
+  - <#757575>Legt eine Giftfalle, die bei Berührung auslöst und
+  - <#757575>%attribute_adv_physical% Schaden verursacht sowie
+  - <#757575>den Gegner für %skill_effect_duration% Sekunden vergiftet.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Skillkosten:  %skill_energy% Energie'
+  en:
+  - <!i><#757575>Trap
+  - ' '
+  - <#757575>Places a poison trap that triggers on touch and
+  - <#757575>deals %attribute_adv_physical% damage as well as
+  - <#757575>poisons the enemy for %skill_effect_duration% seconds.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds'
+  - '<!i><yellow>⚡ <#94958B>Energy Cost:  %skill_energy% Energy'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- effectDuration
+- effectStacks
+- cooldown

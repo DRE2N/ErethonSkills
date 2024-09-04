@@ -43,7 +43,9 @@ public class SwordCleave extends AssassinBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
-        spellAddedPlaceholders.add(Component.text(damageMultiplier, VALUE_COLOR));
+        placeholderNames.add("radius");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        placeholderNames.add("damage");
         return super.getPlaceholders(c);
     }
 }

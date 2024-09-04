@@ -16,7 +16,6 @@ import java.util.List;
 
 public class MarkTarget extends AssassinBaseSpell {
 
-    private final int duration = data.getInt("duration", 10);
     private final double critDmgBonus = data.getDouble("critDmgBonus", 1.0);
 
     public MarkTarget(LivingEntity caster, SpellData spellData) {
@@ -47,8 +46,8 @@ public class MarkTarget extends AssassinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         spellAddedPlaceholders.add(Component.text(caster.getAttribute(Attribute.STAT_CRIT_DMG).getValue() + critDmgBonus, VALUE_COLOR));
+        placeholderNames.add("critDmg");
         return super.getPlaceholders(caster);
     }
 }

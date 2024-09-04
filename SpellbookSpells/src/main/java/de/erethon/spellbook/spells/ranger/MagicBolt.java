@@ -2,15 +2,19 @@ package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.utils.RangerUtils;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityShootBowEvent;
+
+import java.util.List;
 
 public class MagicBolt extends ProjectileRelatedSkill {
 
@@ -43,5 +47,14 @@ public class MagicBolt extends ProjectileRelatedSkill {
             caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_VILLAGER_NO, Sound.Source.RECORD, 1, 1));
         }
         return super.onCast();
+    }
+
+    @Override
+    public List<Component> getPlaceholders(SpellCaster c) {
+        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+        placeholderNames.add("range");
+        spellAddedPlaceholders.add(Component.text(maxTargets, VALUE_COLOR));
+        placeholderNames.add("max targets");
+        return super.getPlaceholders(c);
     }
 }

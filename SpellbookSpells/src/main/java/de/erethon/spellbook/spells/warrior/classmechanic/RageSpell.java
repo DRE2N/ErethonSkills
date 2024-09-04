@@ -4,12 +4,13 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCastEvent;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.spells.warrior.WarriorBaseSpell;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class RageSpell extends SpellbookSpell implements Listener {
+public class RageSpell extends WarriorBaseSpell implements Listener {
 
     private final int rageLevelRequired = data.getInt("requiredRageLevel", 99);
     private final SpellData spellToOverload = Bukkit.getServer().getSpellbookAPI().getLibrary().getSpellByID(data.getString("spellToOverload"));

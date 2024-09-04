@@ -6,19 +6,25 @@ name:
   de: Eisenfalle
   en: Iron Trap
 description:
-    de:
-      - "<!i><#757575>Falle"
-      - " "
-      - "<#757575>Legt eine Eisenfalle, die bei Berührung auslöst und"
-      - "<#757575>%attribute_adv_physical% Schaden verursacht."
-      - " "
-      - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden"
-      - "<!i><yellow>⚡ <#94958B>Skillkosten:  0 Energie"
-    en:
-      - "<!i><#757575>Trap"
-      - " "
-      - "<#757575>Places an iron trap that triggers on touch and"
-      - "<#757575>deals %attribute_adv_physical% damage."
-      - " "
-      - "<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds"
-      - "<!i><yellow>⚡ <#94958B>Energy Cost:  0 Energy"
+  de:
+  - <!i><#757575>Falle
+  - ' '
+  - <#757575>Legt eine Eisenfalle, die bei Berührung auslöst und
+  - <#757575>%attribute_adv_physical% Schaden verursacht.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Skillkosten:  0 Energie'
+  en:
+  - <!i><#757575>Trap
+  - ' '
+  - <#757575>Places an iron trap that triggers on touch and
+  - <#757575>deals %attribute_adv_physical% damage.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: %skill_cooldown% seconds'
+  - '<!i><yellow>⚡ <#94958B>Energy Cost:  0 Energy'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:0>
+availablePlaceholders:
+- damage
+- cooldown

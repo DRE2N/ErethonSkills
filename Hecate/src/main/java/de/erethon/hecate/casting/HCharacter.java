@@ -7,13 +7,12 @@ import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.events.CombatModeEnterEvent;
 import de.erethon.hecate.events.CombatModeLeaveEvent;
 import de.erethon.hecate.events.CombatModeReason;
-import de.erethon.hecate.util.ClientsideItemStacks;
 import de.erethon.hecate.util.SpellbookTranslator;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
-import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
@@ -26,13 +25,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -166,29 +163,24 @@ public class HCharacter {
 
     public void updateDescriptions() {
         PlayerInventory inventory = player.getInventory();
-        BukkitRunnable asyncSlotSender = new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (int slot = 0; slot < WEAPON_SLOT; slot++) {
-                    if (inventory.getItem(slot) == null || getSpellAt(slot) == null) {
-                        continue;
-                    }
-                    SpellData spellData = getSpellAt(slot);
-                    List<Component> arguments = spellData.getActiveSpell(player).getPlaceholders(player);
-                    ItemStack item = new ItemStack(SpellbookTranslator.SPELL_ICONS[slot]);
-                    ItemMeta meta = item.getItemMeta();
-                    meta.displayName(Component.translatable("spellbook.spell.name." + spellData.getId(), spellData.getId()));
-                    List<Component> lore = new ArrayList<>();
-                    for (int i = 0; i < spellData.getDescriptionLineCount(); i++) {
-                        lore.add(Component.translatable("spellbook.spell.description." + spellData.getId() + "." + i, "", arguments));
-                    }
-                    meta.lore(lore);
-                    item.setItemMeta(meta);
-                    inventory.setItem(slot, item);
-                }
+        for (int slot = 0; slot < WEAPON_SLOT; slot++) {
+            if (getSpellAt(slot) == null) {
+                continue;
             }
-        };
-        asyncSlotSender.runTaskAsynchronously(Hecate.getInstance());
+            SpellData spellData = getSpellAt(slot);
+            List<Component> arguments = spellData.getActiveSpell(player).getPlaceholders(player);
+            ItemStack item = new ItemStack(SpellbookTranslator.SPELL_ICONS[slot]);
+            ItemMeta meta = item.getItemMeta();
+            Component name = Component.translatable("spellbook.spell.name." + spellData.getId());
+            meta.displayName(Component.text().append(name).color(gethClass().getColor()).decoration(TextDecoration.BOLD, true).build());
+            List<Component> lore = new ArrayList<>();
+            for (int i = 0; i < spellData.getDescriptionLineCount(); i++) {
+                lore.add(Component.translatable("spellbook.spell.description." + spellData.getId() + "." + i, "", arguments));
+            }
+            meta.lore(lore);
+            item.setItemMeta(meta);
+            inventory.setItem(slot, item);
+        }
     }
 
     public boolean isInCastmode() {

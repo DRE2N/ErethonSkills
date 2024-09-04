@@ -19,8 +19,6 @@ import java.util.List;
 
 public class ThrowBola extends AssassinBaseSpell {
 
-    private final int duration = data.getInt("duration", 3);
-
     private final NamespacedKey key = new NamespacedKey("spellbook", "throwbola");
     private AttributeModifier modifier;
     private ArmorStand armorStand;
@@ -53,9 +51,4 @@ public class ThrowBola extends AssassinBaseSpell {
         armorStand.remove();
     }
 
-    @Override
-    public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
-        return super.getPlaceholders(c);
-    }
 }

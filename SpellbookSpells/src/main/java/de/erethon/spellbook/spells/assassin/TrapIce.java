@@ -14,10 +14,8 @@ import java.util.List;
 
 public class TrapIce extends AssassinBaseTrap {
 
-    private final int duration = data.getInt("duration", 10);
-
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
-    private final int effectDuration = data.getInt("effectDuration", 5) * 20;
+    private final int effectDuration = data.getInt("effectDuration", 5);
     private final int effectStacks = data.getInt("effectStacks", 1);
 
     public TrapIce(LivingEntity caster, SpellData spellData) {
@@ -38,11 +36,6 @@ public class TrapIce extends AssassinBaseTrap {
     }
 
     @Override
-    protected void onAfterCast() {
-        caster.removeEnergy(data.getInt("energyCost", 0));
-    }
-
-    @Override
     public void onTick() {
         super.onTick();
         for (LivingEntity entity : getEntities()) {
@@ -50,7 +43,7 @@ public class TrapIce extends AssassinBaseTrap {
                 continue;
             }
             if (!entity.hasEffect(effectData)) {
-                entity.addEffect(caster, effectData, effectDuration, effectStacks);
+                entity.addEffect(caster, effectData, effectDuration * 20, effectStacks);
                 triggerTraits(entity, 1);
                 triggerTraits(2);
             }
@@ -64,9 +57,10 @@ public class TrapIce extends AssassinBaseTrap {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster caster) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
         spellAddedPlaceholders.add(Component.text(effectDuration, VALUE_COLOR));
+        placeholderNames.add("effectDuration");
         spellAddedPlaceholders.add(Component.text(effectStacks, VALUE_COLOR));
+        placeholderNames.add("effectStacks");
         return super.getPlaceholders(caster);
     }
 }
