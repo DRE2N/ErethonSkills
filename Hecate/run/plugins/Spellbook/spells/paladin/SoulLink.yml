@@ -4,7 +4,7 @@ maxDistance: 16
 damagePercentage: 0.25
 # This list contains all placeholders that can be used in this spell.
 # You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:0>
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
 availablePlaceholders:
 - damage percentage
 - max distance

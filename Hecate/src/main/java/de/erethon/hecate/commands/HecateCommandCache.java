@@ -12,7 +12,7 @@ public class HecateCommandCache extends ECommandCache {
         super(LABEL, plugin);
         this.plugin = plugin;
         addCommand(new SkillCommand());
-        addCommand(new TestCommand());
+        addCommand(new DisplayCommand());
         addCommand(new LearnSkillCommand());
         addCommand(new ReloadCommand());
         addCommand(new LearnGUICommand());
