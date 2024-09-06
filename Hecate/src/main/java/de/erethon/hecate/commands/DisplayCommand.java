@@ -8,29 +8,27 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class TestCommand extends ECommand {
+public class DisplayCommand extends ECommand {
 
     GlobalTranslator translator;
     TranslationRegistry reg;
 
-    public TestCommand() {
-        setCommand("test");
-        setAliases("s");
+    public DisplayCommand() {
+        setCommand("display");
+        setAliases("d");
         setMinArgs(0);
         setMaxArgs(3);
         setPlayerCommand(true);
         setConsoleCommand(false);
         setHelp("Help.");
-        setPermission("hecate.reload");
+        setPermission("hecate.display");
 
         translator = GlobalTranslator.translator();
         reg = TranslationRegistry.create(Key.key("hecate"));
@@ -42,6 +40,10 @@ public class TestCommand extends ECommand {
 
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
+        if (args.length < 2) {
+            commandSender.sendMessage("Usage: /h display <spell>");
+            return;
+        }
         SpellData data = Bukkit.getServer().getSpellbookAPI().getLibrary().getSpellByID(args[1]);
         if (data == null) {
             commandSender.sendMessage("Spell not found.");
@@ -49,17 +51,18 @@ public class TestCommand extends ECommand {
         }
         Player player = (Player) commandSender;
         SpellbookSpell spell = data.getActiveSpell(player);
-        player.sendMessage(Component.translatable("test"));
         player.sendMessage(Component.translatable("spellbook.spell.name." + data.getId(), data.getName()));
         for (int i = 0; i < data.getDescriptionLineCount(); i++) {
             player.sendMessage(Component.translatable("spellbook.spell.description." + data.getId() + "." + i, spell.getPlaceholders(player)));
         }
-
     }
 
-
-
-
-
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 2) {
+            return Bukkit.getServer().getSpellbookAPI().getLibrary().getLoaded().keySet().stream().toList();
+        }
+        return super.onTabComplete(sender, args);
+    }
 }
 
