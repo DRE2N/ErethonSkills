@@ -168,7 +168,9 @@ public class PlayerCastListener implements Listener {
             if (passenger instanceof TextDisplay display
                     && !(passenger.getPersistentDataContainer().has(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE)
                     || passenger.getPersistentDataContainer().has(RangerPet.PET_STATUS_KEY, PersistentDataType.BYTE))) {
-                activeDisplays.put(display, displays.get(display));
+                if (displays.containsKey(display) && displays.get(display) != null) { // Be safe
+                    activeDisplays.put(display, displays.get(display));
+                }
             }
         }
         List<Display> sorted = activeDisplays.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).map(Map.Entry::getKey).toList();
