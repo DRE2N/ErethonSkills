@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.SpellEffect;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -13,6 +14,7 @@ import org.bukkit.entity.TextDisplay;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
+import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
@@ -27,7 +29,10 @@ public class EntityStatusDisplay {
 
     public EntityStatusDisplay(LivingEntity holder) {
         this.holder = holder;
-        holder.getWorld().spawn(holder.getLocation(), TextDisplay.class, textDisplay -> {
+        Location locWithOutRotation = holder.getLocation().clone().setDirection(new Vector());
+        locWithOutRotation.setPitch(0);
+        locWithOutRotation.setYaw(0);
+        holder.getWorld().spawn(locWithOutRotation, TextDisplay.class, textDisplay -> {
             Transformation nameTagTransform = new Transformation(new Vector3f(0, (float) Math.max(0.8f, holder.getHeight() - 1.2f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.9f, 0.9f, 0.9f), new AxisAngle4f(0, 0, 0, 0));
             textDisplay.setTransformation(nameTagTransform);
             textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
@@ -39,7 +44,7 @@ public class EntityStatusDisplay {
             holder.addPassenger(textDisplay);
             entityNameTag = textDisplay;
         });
-        holder.getWorld().spawn(holder.getLocation(), TextDisplay.class, textDisplay -> {
+        holder.getWorld().spawn(locWithOutRotation, TextDisplay.class, textDisplay -> {
             Transformation healthDisplayTransformation = new Transformation(new Vector3f(0, (float) Math.max(0.3f, holder.getHeight() - 2f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.2f, 3f, 0.4f), new AxisAngle4f(0, 0, 0, 0));
             textDisplay.setTransformation(healthDisplayTransformation);
             textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
@@ -51,7 +56,7 @@ public class EntityStatusDisplay {
             holder.addPassenger(textDisplay);
             healthDisplay = textDisplay;
         });
-        holder.getWorld().spawn(holder.getLocation(), TextDisplay.class, textDisplay -> {
+        holder.getWorld().spawn(locWithOutRotation, TextDisplay.class, textDisplay -> {
             Transformation statusDisplayTransform = new Transformation(new Vector3f(0, (float) Math.max(0.6f, holder.getHeight() - 1.4f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.4f, 0.4f, 0.4f), new AxisAngle4f(0, 0, 0, 0));
             textDisplay.setTransformation(statusDisplayTransform);
             textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
