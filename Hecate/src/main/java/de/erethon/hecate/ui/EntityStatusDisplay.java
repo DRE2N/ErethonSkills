@@ -8,6 +8,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Color;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -62,6 +63,11 @@ public class EntityStatusDisplay {
             holder.addPassenger(textDisplay);
             statusDisplay = textDisplay;
         });
+        if (holder instanceof Player player) {
+            player.hideEntity(Hecate.getInstance(), statusDisplay);
+            player.hideEntity(Hecate.getInstance(), healthDisplay);
+            player.hideEntity(Hecate.getInstance(), entityNameTag);
+        }
     }
 
     public void updateDisplayName() {
