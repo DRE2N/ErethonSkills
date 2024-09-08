@@ -32,8 +32,14 @@ public class EntityStatusDisplayManager {
     }
 
     public void removeStatusDisplay(Entity entity) {
-        displays.get(entity).remove();
-        displays.remove(entity);
+        BukkitRunnable later = new BukkitRunnable() {
+            @Override
+            public void run() {
+                displays.get(entity).remove();
+                displays.remove(entity);
+            }
+        };
+        later.runTaskLater(Hecate.getInstance(), 1); // Don't remove entities in the remove event
     }
 
     public EntityStatusDisplay getStatusDisplay(Entity entity) {
