@@ -27,4 +27,7 @@ description:
 # <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
 availablePlaceholders:
 - damage
+- duration
+- size
+- maxDistance
 - cooldown

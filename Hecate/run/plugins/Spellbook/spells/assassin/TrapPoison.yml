@@ -35,4 +35,7 @@ description:
 availablePlaceholders:
 - effectDuration
 - effectStacks
+- duration
+- size
+- maxDistance
 - cooldown

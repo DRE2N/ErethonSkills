@@ -26,4 +26,7 @@ availablePlaceholders:
 - lifetime
 - effectDuration
 - effectStacks
+- duration
+- size
+- maxDistance
 - cooldown

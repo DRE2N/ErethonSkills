@@ -198,8 +198,11 @@ public class AoEBaseSpell extends SpellbookBaseSpell {
     @Override
     public List<Component> getPlaceholders(SpellCaster caster) {
         spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
+        placeholderNames.add("duration");
         spellAddedPlaceholders.add(Component.text(size, VALUE_COLOR));
+        placeholderNames.add("size");
         spellAddedPlaceholders.add(Component.text(maxDistance, VALUE_COLOR));
+        placeholderNames.add("maxDistance");
         return super.getPlaceholders(caster);
     }
 
