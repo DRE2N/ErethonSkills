@@ -14,10 +14,19 @@ public class PassiveEnergyRegen extends SpellTrait {
         super(traitData, caster);
     }
 
+    @Override
+    protected void onAdd() {
+        caster.setMaxEnergy(100);
+    }
 
     @Override
     protected void onTick() {
         caster.addEnergy(energy);
+    }
+
+    @Override
+    protected void onRemove() {
+        caster.setMaxEnergy(0);
     }
 }
 

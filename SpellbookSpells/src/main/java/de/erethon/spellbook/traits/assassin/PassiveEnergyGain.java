@@ -14,9 +14,19 @@ public class PassiveEnergyGain extends SpellTrait {
     }
 
     @Override
+    protected void onAdd() {
+        caster.setMaxEnergy(100);
+    }
+
+    @Override
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
         caster.addEnergy((int) (damage / 2));
         return damage;
+    }
+
+    @Override
+    protected void onRemove() {
+        caster.setMaxEnergy(0);
     }
 
 }
