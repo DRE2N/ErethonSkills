@@ -2,6 +2,7 @@ package de.erethon.hecate.listeners;
 
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
+import de.erethon.aether.events.CreatureLoadEvent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.ui.EntityStatusDisplay;
@@ -56,13 +57,17 @@ public class EntityListener implements Listener {
         }
         displayManager.addStatusDisplay(event.getEntity(), new EntityStatusDisplay((LivingEntity) event.getEntity()));
         event.getEntity().setCustomNameVisible(true);
-        Component.text("test").clickEvent(ClickEvent.runCommand("/test"));
     }
     @EventHandler
     public void onEntityAdd(EntityAddToWorldEvent event) {
         if (event.getEntity() instanceof LivingEntity living) {
             teamManager.loadEntity(living);
         }
+    }
+
+    @EventHandler
+    public void onCreatureLoad(CreatureLoadEvent event) {
+        displayManager.addStatusDisplay(event.getMob().getBukkitEntity(), new EntityStatusDisplay(event.getMob().getBukkitLivingEntity()));
     }
 
     // We need to clear things in case someone logs out or is despawned while having a buff active

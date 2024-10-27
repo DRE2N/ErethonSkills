@@ -34,11 +34,9 @@ val papyrusVersion = "1.21.1-R0.1-SNAPSHOT"
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true}
-    //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT") { isChanging = true }
-    //compileOnly("de.erethon.papyrus:papyrus-api:1.19")
     implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
     implementation(project(":SpellbookSpells"))
-    //compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
+    compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT") // For correct nametags
 }
 
 
