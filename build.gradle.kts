@@ -20,6 +20,12 @@ tasks {
         dependsOn("SpellbookSpells:assemble")
         dependsOn("Hecate:assemble")
     }
+    compileJava {
+        options.encoding = Charsets.UTF_8.name()
+        options.release.set(21)
+        targetCompatibility = JavaVersion.VERSION_21.name
+        sourceCompatibility = JavaVersion.VERSION_21.name
+    }
 
 
 }
