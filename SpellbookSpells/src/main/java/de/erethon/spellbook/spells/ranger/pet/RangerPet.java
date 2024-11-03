@@ -11,6 +11,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.damagesource.DamageSource;
@@ -56,20 +57,19 @@ public class RangerPet extends Wolf {
             new AxisAngle4f(0, 0, 0, 0),
             new Vector3f(0.5f, 0.5f, 0.5f),
             new AxisAngle4f(0, 0, 0, 0));
-    private EntityType<?> petDisplayType = EntityType.COW;
     private final LivingEntity owner;
-    private final org.bukkit.entity.Mob bukkitMob = (org.bukkit.entity.Mob) getBukkitOwner();
+    private final org.bukkit.entity.Mob bukkitMob;
     private TextDisplay statusDisplay;
 
     private boolean shouldAttackAutomatically = true;
     private boolean isCurrentlyGoingToLocation = false;
     private boolean isIdleMoving = false;
 
-    public RangerPet(org.bukkit.entity.LivingEntity bukkitOwner, World world, org.bukkit.entity.EntityType craftDisplayType) {
+    public RangerPet(org.bukkit.entity.LivingEntity bukkitOwner, World world) {
         super(EntityType.WOLF, ((CraftWorld) world).getHandle());
         CraftLivingEntity craftOwner = (CraftLivingEntity) bukkitOwner;
         this.owner = craftOwner.getHandle();
-        setPetDisplayType(craftDisplayType);
+        this.bukkitMob = (org.bukkit.entity.Mob) this.getBukkitEntity();
         setTame(true, false);
         setOwnerUUID(owner.getUUID());
         setCustomName(owner.getName());
@@ -90,27 +90,29 @@ public class RangerPet extends Wolf {
         });
     }
 
-    @Override
-    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(@NotNull ServerEntity tracker) {
-        return new ClientboundAddEntityPacket(getId(), getUUID(), getX(), getY(), getZ(), getYRot(), getXRot(), petDisplayType, 0, getDeltaMovement(), getYHeadRot(), this);
-    }
-
     public void setScaledAttributes(double attributeMultiplier) {
         for (Attribute attribute : BuiltInRegistries.ATTRIBUTE.stream().toList()) {
             if (attribute == Attributes.MOVEMENT_SPEED) continue; // We don't want to make the pet extremely slow
             if (attribute == Attributes.ATTACK_SPEED) continue; // We don't want to make the pet attack extremely slow either
-            Holder<Attribute> holder = (Holder<Attribute>) attribute;
+            if (attribute == Attributes.FOLLOW_RANGE) continue; // Don't change the follow range either
+            if (attribute == Attributes.JUMP_STRENGTH) continue; // Don't change jumping
+            if (attribute == Attributes.STEP_HEIGHT) continue; // Don't change stepping
+            Holder<Attribute> holder = BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute);
             if (getAttribute(holder) == null || owner.getAttribute(holder) == null) continue;
             getAttribute(holder).setBaseValue(owner.getAttribute(holder).getBaseValue() * attributeMultiplier);
         }
+        getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0.3D);
+        getAttribute(Attributes.STEP_HEIGHT).setBaseValue(1.0D);
+        getAttribute(Attributes.JUMP_STRENGTH).setBaseValue(0.41D);
         setHealth(getMaxHealth());
     }
 
     public void makeAttack(org.bukkit.entity.LivingEntity bukkitLiving) {
         CraftLivingEntity craftLiving = (CraftLivingEntity) bukkitLiving;
         LivingEntity living = craftLiving.getHandle();
+        if (living == this || living == owner) return; // Don't attack yourself or your owner
         setTarget(living, EntityTargetEvent.TargetReason.CUSTOM, false);
-        statusDisplay.text(Component.text("ATTACKING").color(NamedTextColor.RED));
+        statusDisplay.text(Component.text("⚔").color(NamedTextColor.RED));
     }
 
     public void stopAttack() {
@@ -133,14 +135,9 @@ public class RangerPet extends Wolf {
     @Override
     public void tick() {
         super.tick();
-        if (isCurrentlyGoingToLocation && navigation.isDone()) {
+        if (isCurrentlyGoingToLocation && navigation.isDone() || isCurrentlyGoingToLocation && navigation.isStuck()) { // If the pet is stuck or has reached the location
             isCurrentlyGoingToLocation = false;
         }
-    }
-
-    public void setPetDisplayType(org.bukkit.entity.EntityType type) {
-        this.petDisplayType = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(type.getKey().toString()));
-        displayEntityType = petDisplayType;
     }
 
     public void teleport(int x, int y, int z) {
