@@ -42,6 +42,7 @@ public class ItemProjectile extends Arrow {
         armorStandNMS = nms;
         armorStand = (ArmorStand) nms.getBukkitEntity();
         arrow = (org.bukkit.entity.Arrow) getBukkitEntity();
+        persist = false;
         ServerLevel level = ((CraftWorld) world).getHandle().getLevel();
         level.addFreshEntity(this);
         setSilent(true);
