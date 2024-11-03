@@ -2,6 +2,8 @@ package de.erethon.hecate.classes;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
+import de.erethon.hecate.casting.HCharacter;
+import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.TraitData;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Traitline extends YamlConfiguration {
@@ -32,6 +35,9 @@ public class Traitline extends YamlConfiguration {
     private int initialLevelRequirement = 0;
     private final HashMap<Integer, List<TraitLineEntry>> traitMap = new HashMap<>();
     private final Set<SpellData> spells = new HashSet<>();
+    public List<SpellData> defaultSpellSlots = new ArrayList<>();
+    private final Map<SpecialActionKey, SpellData> specialActionMap = new HashMap<>();
+    private final Set<TraitData> innateTraits = new HashSet<>();
 
     public Traitline(File file) throws IOException, InvalidConfigurationException {
         load(file);
@@ -64,7 +70,26 @@ public class Traitline extends YamlConfiguration {
     public Set<SpellData> getSpells() {
         return spells;
     }
-    public List<SpellData> defaultSpellSlots = new ArrayList<>();
+
+    public SpellData getSpecialAction(SpecialActionKey key) {
+        return specialActionMap.get(key);
+    }
+
+    public Set<TraitData> getInnateTraits() {
+        return innateTraits;
+    }
+
+    public void onSwitchTo(HCharacter character) {
+        for (TraitData trait : innateTraits) {
+            character.getPlayer().addTrait(trait);
+        }
+    }
+
+    public void onSwitchFrom(HCharacter character) {
+        for (TraitData trait : innateTraits) {
+            character.getPlayer().removeTrait(trait);
+        }
+    }
 
     @Override
     public void load(File file) throws IOException, InvalidConfigurationException {
@@ -90,6 +115,36 @@ public class Traitline extends YamlConfiguration {
                 continue;
             }
             defaultSpellSlots.add(spell);
+        }
+        ConfigurationSection specialActionSection = getConfigurationSection("specialActionKeys");
+        if (specialActionSection != null) {
+            for (String key : specialActionSection.getKeys(false)) {
+                ConfigurationSection actionSection = specialActionSection.getConfigurationSection(key);
+                if (actionSection == null) {
+                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getId());
+                    continue;
+                }
+                SpecialActionKey actionKey = SpecialActionKey.valueOf(key.toUpperCase());
+                String spellId = actionSection.getString("spell");
+                if (spellId == null) {
+                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getId());
+                    continue;
+                }
+                SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
+                if (spellData == null) {
+                    MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getId());
+                    continue;
+                }
+                specialActionMap.put(actionKey, spellData);
+            }
+        }
+        for (String id : getStringList("innateTraits")) {
+            TraitData trait = spellbookAPI.getLibrary().getTraitByID(id);
+            if (trait == null) {
+                MessageUtil.log("Unknown trait '" + id + "' found for 'innateTraits' in traitline file " + id);
+                continue;
+            }
+            innateTraits.add(trait);
         }
         for (String key : getConfigurationSection("traitLine").getKeys(false)) {
             int level = Integer.parseInt(key);

@@ -32,7 +32,7 @@ public class SpawnPetTrait extends SpellTrait implements Listener {
     }
 
     public void spawn() {
-        pet = new RangerPet(caster, caster.getWorld(), EntityType.PIG);
+        pet = new RangerPet(caster, caster.getWorld());
         pet.teleport(caster.getLocation().getBlockX(), caster.getLocation().getBlockY(), caster.getLocation().getBlockZ());
         pet.setScaledAttributes(attributeModifier);
         pet.addToWorld();

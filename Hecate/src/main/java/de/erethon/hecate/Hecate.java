@@ -141,7 +141,6 @@ public final class Hecate extends EPlugin {
                     int i = 0;
                     for (String line : value) {
                         reg.registerTranslation("spellbook.spell.description." + data.getId() + "." + i, line, locale);
-                        MessageUtil.log("Registered translation for " + data.getId() + " line " + i + " in " + locale + ": " + line);
                         i++;
                     }
                     maxLineCount = Math.max(maxLineCount, i);

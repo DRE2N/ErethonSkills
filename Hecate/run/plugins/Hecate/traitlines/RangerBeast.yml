@@ -8,6 +8,15 @@ spells:
   - PullToPet
   - BeastMode
   - PetRoar
+  - PetGoToTarget
+  - PetCallback
+specialActionKeys:
+  LEFT_CLICK:
+    spell: 'PetGoToTarget'
+  Q:
+    spell: 'PetCallback'
+innateTraits:
+  - SpawnPet
 traitLine:
   0:
     ForestKnowledge:

@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells.ranger.pet;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;

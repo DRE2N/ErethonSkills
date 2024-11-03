@@ -214,8 +214,8 @@ public class PlayerCastListener implements Listener {
         HCharacter hCharacter = cache .getCharacter(event.getPlayer());
         if (hCharacter.isInCastmode()) {
             event.setCancelled(true);
-            if (hCharacter.gethClass() != null && hCharacter.gethClass().getSpecialAction(SpecialActionKey.Q) != null) {
-                hCharacter.gethClass().getSpecialAction(SpecialActionKey.Q).queue(event.getPlayer());
+            if (hCharacter.getSelectedTraitline() != null && hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.Q) != null) {
+                hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.Q).queue(event.getPlayer());
             }
         }
     }
@@ -225,11 +225,21 @@ public class PlayerCastListener implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             castRightclickAction(event.getPlayer());
         }
+        if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            castLeftclickAction(event.getPlayer());
+        }
     }
 
     @EventHandler
     public void onRightClickOnEntity(PlayerInteractEntityEvent event) {
         castRightclickAction(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player player) {
+            castLeftclickAction(player);
+        }
     }
 
     @EventHandler
@@ -298,9 +308,17 @@ public class PlayerCastListener implements Listener {
 
     private void castRightclickAction(Player player) {
         HCharacter hCharacter = cache.getCharacter(player);
-        if (!hCharacter.isInCastmode()) return;
-        if (hCharacter.gethClass() != null && hCharacter.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
-            hCharacter.gethClass().getSpecialAction(SpecialActionKey.RIGHT_CLICK).queue(player);
+        if (hCharacter == null || !hCharacter.isInCastmode()) return;
+        if (hCharacter.getSelectedTraitline() != null && hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
+            hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK).queue(player);
+        }
+    }
+
+    private void castLeftclickAction(Player player) {
+        HCharacter hCharacter = cache.getCharacter(player);
+        if (hCharacter == null || !hCharacter.isInCastmode()) return;
+        if (hCharacter.getSelectedTraitline() != null && hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.LEFT_CLICK) != null) {
+            hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.LEFT_CLICK).queue(player);
         }
     }
 

@@ -157,7 +157,7 @@ public class HCharacter {
                 negative.append(effect.data.getIcon()).append(" ");
             }
         }
-        Component component = miniMessage.deserialize("<dark_red>" + health + "<dark_gray>/<dark_red>" + maxHealth + " <<<    <green>+" + positive + " <dark_gray>| <red>-" + negative + "  <yellow>>>> " + player.getEnergy() + "<dark_gray>/<yellow>" + player.getMaxEnergy());
+        Component component = miniMessage.deserialize("<dark_red>" + health + "<dark_gray>/<dark_red>" + maxHealth + " <<< <green>" + positive + "<green>+ <dark_gray>| <red>-" + negative + " <yellow>>>> " + player.getEnergy() + "<dark_gray>/<yellow>" + player.getMaxEnergy());
         player.sendActionBar(component);
     }
 
@@ -368,7 +368,11 @@ public class HCharacter {
     }
 
     public void setSelectedTraitline(Traitline selectedTraitline) {
+        if (selectedTraitline != null) {
+            this.selectedTraitline.onSwitchFrom(this);
+        }
         this.selectedTraitline = selectedTraitline;
+        selectedTraitline.onSwitchTo(this);
     }
 
     public void setMaxEnergy(int i) {

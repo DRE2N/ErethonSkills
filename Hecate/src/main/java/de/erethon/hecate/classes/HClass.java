@@ -35,8 +35,6 @@ public class HClass extends YamlConfiguration {
     private final HashMap<Integer, HashMap<Attribute, Double>> baseAttributesPerLevel = new HashMap<>();
     private final HashMap<Integer, Double> xpPerLevel = new HashMap<>();
 
-    private final Map<SpecialActionKey, SpellData> specialActionMap = new HashMap<>();
-
     public HClass(File file) {
         try {
             load(file);
@@ -69,10 +67,6 @@ public class HClass extends YamlConfiguration {
         return id;
     }
 
-    public SpellData getSpecialAction(SpecialActionKey key) {
-        return specialActionMap.get(key);
-    }
-
     public String getDisplayName() {
         return displayName;
     }
@@ -88,28 +82,6 @@ public class HClass extends YamlConfiguration {
         displayName = getString("displayName");
         defaultTraitline = Hecate.getInstance().getTraitline(getString("defaultTraitline"));
         color = TextColor.fromHexString(getString("color", "#ffffff"));
-        ConfigurationSection specialActionSection = getConfigurationSection("specialActionKeys");
-        if (specialActionSection != null) {
-            for (String key : specialActionSection.getKeys(false)) {
-                ConfigurationSection actionSection = specialActionSection.getConfigurationSection(key);
-                if (actionSection == null) {
-                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getId());
-                    continue;
-                }
-                SpecialActionKey actionKey = SpecialActionKey.valueOf(key.toUpperCase());
-                String spellId = actionSection.getString("spell");
-                if (spellId == null) {
-                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getId());
-                    continue;
-                }
-                SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
-                if (spellData == null) {
-                    MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getId());
-                    continue;
-                }
-                specialActionMap.put(actionKey, spellData);
-            }
-        }
         ConfigurationSection spellLevelSection = getConfigurationSection("spellLevels");
         if (spellLevelSection == null) {
             MessageUtil.log("Class " + getId()+ " has no spell levels configured!");
