@@ -1,0 +1,3 @@
+dbUrl: jdbc:mysql://localhost:3306/testing
+dbUser: malte
+dbPassword: rnuig45

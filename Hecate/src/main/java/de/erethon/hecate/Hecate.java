@@ -4,8 +4,8 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
-import de.erethon.hecate.casting.HPlayer;
-import de.erethon.hecate.casting.HPlayerCache;
+import de.erethon.hecate.data.DatabaseManager;
+import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.commands.HecateCommandCache;
@@ -20,17 +20,10 @@ import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.spells.SpellbookBaseSpell;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.Main;
 import net.minecraft.server.MinecraftServer;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Registry;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -40,7 +33,6 @@ import org.bukkit.event.HandlerList;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -57,8 +49,8 @@ public final class Hecate extends EPlugin {
     public static File TRAITLINES;
 
     private Spellbook spellbook;
-    private HPlayerCache hPlayerCache;
     private HecateCommandCache commands;
+    private DatabaseManager databaseManager;
     private EntityStatusDisplayManager statusDisplayManager;
     private final Set<Traitline> traitlines = new HashSet<>();
     private final Set<HClass> hClasses = new HashSet<>();
@@ -84,10 +76,8 @@ public final class Hecate extends EPlugin {
 
     public void loadCore() {
         spellbook = new Spellbook(this);
-        MessageUtil.log("Loading spells...");
-        for (String spell : spellbook.getAPI().getLibrary().getLoaded().keySet()) {
-            MessageUtil.log("- " + spell);
-        }
+        databaseManager = new DatabaseManager();
+        databaseManager.createTables().join();
         initFolders();
         instantiate();
         registerCommands();
@@ -225,15 +215,9 @@ public final class Hecate extends EPlugin {
 
     @Override
     public void onDisable() {
-        for (HPlayer hPlayer : hPlayerCache.getPlayers()) { // TODO: This does not seem to include all players?
-            if (hPlayer.getSelectedCharacter().isInCastmode()) {
-                hPlayer.getSelectedCharacter().switchMode(CombatModeReason.PLUGIN);
-            }
-            hPlayer.saveUser();
-        }
-        // Duh duh duh
         Bukkit.getScheduler().cancelTasks(this);
         HandlerList.unregisterAll(this);
+        databaseManager.close();
     }
 
     private void loadClasses() {
@@ -277,12 +261,9 @@ public final class Hecate extends EPlugin {
     }
 
     public void instantiate() {
-        hPlayerCache = new HPlayerCache(this);
         statusDisplayManager = new EntityStatusDisplayManager();
         Server server = Bukkit.getServer();
         CraftServer craftServer = (CraftServer) server;
-        MinecraftServer minecraftServer = craftServer.getServer();
-        minecraftServer.registryAccess().registryOrThrow(Registries.BIOME);
     }
 
     public void registerCommands() {
@@ -300,8 +281,8 @@ public final class Hecate extends EPlugin {
         return spellbook.getAPI();
     }
 
-    public HPlayerCache getHPlayerCache() {
-        return hPlayerCache;
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 
     public HecateCommandCache getCommands() {
