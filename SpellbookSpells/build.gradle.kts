@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("io.papermc.paperweight.userdev") version "1.7.1"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.14"
 
 }
 
@@ -18,12 +18,12 @@ repositories {
     maven("https://repo.md-5.net/content/repositories/releases/")
     maven("https://hub.spigotmc.org/nexus/content/groups/public/")
     maven("https://jitpack.io")
-    maven("https://erethon.de/repo")
+    maven("https://repo.erethon.de/releases")
+    maven("https://repo.erethon.de/snapshots")
 }
 
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", "1.21.1-R0.1-SNAPSHOT") { isChanging = true }
-    //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT") { isChanging = true }
+    paperweight.devBundle("de.erethon.papyrus", "1.21.4-R0.1-SNAPSHOT") { isChanging = true }
     implementation("com.elmakers.mine.bukkit:EffectLib:10.3")
     compileOnly("de.erethon:bedrock:1.4.0")
 }

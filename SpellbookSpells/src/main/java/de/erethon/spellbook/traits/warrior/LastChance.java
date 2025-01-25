@@ -24,8 +24,8 @@ public class LastChance extends SpellTrait {
     @Override
     public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         if (caster.getHealth() / caster.getMaxHealth() <= healthTriggerPercentage) {
-            caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
-            caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(modifier);
             addedAt = System.currentTimeMillis();
         }
         return super.onDamage(attacker, damage, type);
@@ -34,8 +34,8 @@ public class LastChance extends SpellTrait {
     @Override
     protected void onTick() {
         if (addedAt != 0 && System.currentTimeMillis() - addedAt > duration) {
-            caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
-            caster.getAttribute(Attribute.RES_MAGIC).removeModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(modifier);
             addedAt = 0;
         }
     }

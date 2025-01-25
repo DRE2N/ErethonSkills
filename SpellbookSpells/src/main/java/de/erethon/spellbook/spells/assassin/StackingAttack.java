@@ -33,7 +33,7 @@ public class StackingAttack extends AssassinBaseSpell {
         if (target != this.target) {
             return damage;
         }
-        damage = damage + (Spellbook.getScaledValue(data, caster, target, Attribute.ADV_AIR) * stacks);
+        damage = damage + (Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_AIR) * stacks);
         if (currentStacks <= stacks) {
             currentStacks++;
         }
@@ -45,7 +45,7 @@ public class StackingAttack extends AssassinBaseSpell {
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(stacks, VALUE_COLOR));
         placeholderNames.add("stacks");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_AIR), ATTR_AIR_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADVANTAGE_AIR), ATTR_AIR_COLOR));
         placeholderNames.add("damage");
         return super.getPlaceholders(c);
     }

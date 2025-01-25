@@ -19,13 +19,13 @@ public class QuickStrokes extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_ATTACK_SPEED).addTransientModifier(attackSpeedModifier);
-        caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).addTransientModifier(healthModifier);
+        caster.getAttribute(org.bukkit.attribute.Attribute.ATTACK_SPEED).addTransientModifier(attackSpeedModifier);
+        caster.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).addTransientModifier(healthModifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_ATTACK_SPEED).removeModifier(attackSpeedModifier);
-        caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).removeModifier(healthModifier);
+        caster.getAttribute(org.bukkit.attribute.Attribute.ATTACK_SPEED).removeModifier(attackSpeedModifier);
+        caster.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).removeModifier(healthModifier);
     }
 }

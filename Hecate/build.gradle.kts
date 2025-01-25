@@ -11,12 +11,13 @@ repositories {
     maven("https://repo.md-5.net/content/repositories/releases/")
     maven("https://hub.spigotmc.org/nexus/content/groups/public/")
     maven("https://jitpack.io")
-    maven("https://erethon.de/repo")
+    maven("https://repo.erethon.de/releases")
+    maven("https://repo.erethon.de/snapshots")
 }
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "1.7.1"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.14"
     id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
     id("io.github.goooler.shadow") version "8.1.5"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
@@ -30,11 +31,12 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-val papyrusVersion = "1.21.1-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.4-R0.1-SNAPSHOT"
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true}
     implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
+    implementation("com.zaxxer:HikariCP:5.1.0")
     implementation(project(":SpellbookSpells"))
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT") // For correct nametags
 }
@@ -63,11 +65,13 @@ tasks {
     shadowJar {
         dependencies {
             include(dependency("de.erethon:bedrock:1.4.0"))
+            include(dependency("com.zaxxer:HikariCP:5.1.0"))
             include(project(":SpellbookSpells"))
             include(dependency("com.elmakers.mine.bukkit:EffectLib:10.3"))
         }
         relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
         relocate("com.elmakers.mine.bukkit", "de.erethon.hecate.effectlib")
+        relocate("com.zaxxer.hikari", "de.erethon.hecate.hikari")
     }
     jar {
         manifest {

@@ -18,11 +18,11 @@ public class ScarredBody extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).addTransientModifier(modifier);
+        caster.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).removeModifier(modifier);
+        caster.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).removeModifier(modifier);
     }
 }

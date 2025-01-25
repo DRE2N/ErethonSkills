@@ -33,14 +33,14 @@ public class FarShot extends ProjectileRelatedSkill {
     @Override
     protected void onDamage(EntityDamageByEntityEvent event, Projectile projectile) {
         double distance = projectile.getLocation().distance(startLocation);
-        double damage = distance * (Spellbook.getScaledValue(data, caster, (LivingEntity) event.getEntity(), Attribute.ADV_MAGIC));
-        ((LivingEntity) event.getEntity()).damage(damage, PDamageType.MAGIC);
+        double damage = distance * (Spellbook.getScaledValue(data, caster, (LivingEntity) event.getEntity(), Attribute.ADVANTAGE_MAGICAL));
+        //missing method ((LivingEntity) event.getEntity()).damage(damage, PDamageType.MAGIC);
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_ATTACK_STRONG, Sound.Source.RECORD, 1, 0));
     }
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, Attribute.ADV_MAGIC), ATTR_MAGIC_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, Attribute.ADVANTAGE_MAGICAL), ATTR_MAGIC_COLOR));
         placeholderNames.add("damage per block");
         return super.getPlaceholders(c);
     }

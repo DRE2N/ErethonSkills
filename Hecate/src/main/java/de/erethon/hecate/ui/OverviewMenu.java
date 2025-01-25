@@ -1,7 +1,7 @@
 package de.erethon.hecate.ui;
 
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HCharacter;
+import de.erethon.hecate.data.HCharacter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -34,7 +34,7 @@ public class OverviewMenu implements Listener, InventoryHolder {
     private void prepareInventory() {
         traitMenu = new ItemStack(Material.GLOWSTONE_DUST);
         ItemMeta meta = traitMenu.getItemMeta();
-        meta.displayName(Component.text("Trait: " + character.getSelectedTraitline().getId(), NamedTextColor.BLUE));
+        //missing method meta.displayName(Component.text("Trait: " + character.getSelectedTraitline().getId(), NamedTextColor.BLUE));
         traitMenu.setItemMeta(meta);
         skillMenu = new ItemStack(Material.ENCHANTED_BOOK);
         meta = skillMenu.getItemMeta();
@@ -51,7 +51,7 @@ public class OverviewMenu implements Listener, InventoryHolder {
         ItemStack item = event.getCurrentItem();
         if (item == null) return;
         if (item.equals(traitMenu)) {
-            new TraitMenu(character);
+            //new TraitMenu(character);
             return;
         }
         if (item.equals(skillMenu)) {

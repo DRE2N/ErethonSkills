@@ -10,7 +10,7 @@ import org.bukkit.entity.LivingEntity;
 
 public class AssassinsAreNotTanky extends SpellTrait {
 
-    private final double bonusDamage = caster.getAttribute(Attribute.ADV_PHYSICAL).getValue() * data.getDouble("damageCoefficient", 0.7);
+    private final double bonusDamage = caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).getValue() * data.getDouble("damageCoefficient", 0.7);
     private double threshold = data.getDouble("threshold", 0.8);
 
     public AssassinsAreNotTanky(TraitData traitData, LivingEntity caster) {
@@ -19,7 +19,7 @@ public class AssassinsAreNotTanky extends SpellTrait {
 
     @Override
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
-        double maxHealth = caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double maxHealth = caster.getAttribute(Attribute.MAX_HEALTH).getValue();
         if (caster.getHealth() > (maxHealth * threshold)) {
             damage = damage + bonusDamage;
         }

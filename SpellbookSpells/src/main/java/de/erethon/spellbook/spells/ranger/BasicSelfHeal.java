@@ -28,7 +28,7 @@ public class BasicSelfHeal extends RangerBaseSpell {
 
     @Override
     public boolean onCast() {
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(modifier);
         return super.onCast();
     }
 
@@ -39,7 +39,7 @@ public class BasicSelfHeal extends RangerBaseSpell {
 
     @Override
     protected void onTickFinish() {
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(modifier);
         caster.setHealth(Math.min((caster.getHealth() + Spellbook.getScaledValue(data, caster, caster, Attribute.STAT_HEALINGPOWER) * baseHeal * healingMultiplier), caster.getMaxHealth()));
         triggerTraits();
     }

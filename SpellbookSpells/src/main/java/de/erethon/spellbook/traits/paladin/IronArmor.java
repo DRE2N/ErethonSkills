@@ -21,13 +21,13 @@ public class IronArmor extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        double magicRes = caster.getAttribute(Attribute.RES_MAGIC).getValue() * percent;
+        double magicRes = caster.getAttribute(Attribute.RESISTANCE_MAGICAL).getValue() * percent;
         modifier = new AttributeModifier(key, magicRes, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(modifier);
     }
 }

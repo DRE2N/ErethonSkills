@@ -24,7 +24,7 @@ public class LifeStealPassiveSpell extends PassiveSpell {
         if (damage <= 0) {
             return damage;
         }
-        double maxHealth = caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double maxHealth = caster.getAttribute(Attribute.MAX_HEALTH).getValue();
         double health = caster.getHealth();
         if (health >= maxHealth) {
             return damage;

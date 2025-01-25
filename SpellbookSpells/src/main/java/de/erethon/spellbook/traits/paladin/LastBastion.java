@@ -23,8 +23,8 @@ public class LastBastion extends SpellTrait {
     @Override
     protected void onTick() {
         if (modifier != null) {
-            caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
-            caster.getAttribute(Attribute.RES_MAGIC).removeModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(modifier);
         }
         int enemies = 0;
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range))  {
@@ -32,9 +32,9 @@ public class LastBastion extends SpellTrait {
             if (!Spellbook.canAttack(caster, living)) continue;
             enemies++;
         }
-        double resistance = (caster.getAttribute(Attribute.RES_PHYSICAL).getValue() * resistancePercentagePerEnemy) * enemies;
+        double resistance = (caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).getValue() * resistancePercentagePerEnemy) * enemies;
         modifier = new AttributeModifier(key, resistance, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(modifier);
     }
 }

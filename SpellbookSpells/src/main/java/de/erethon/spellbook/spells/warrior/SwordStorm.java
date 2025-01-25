@@ -62,7 +62,7 @@ public class SwordStorm extends WarriorBaseSpell {
         attackMarker.setLocation(location);
         attackMarker.maxAngle = Math.PI;
         attackMarker.start();
-        caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(attackBaseMod);
+        caster.getAttribute(Attribute.ATTACK_DAMAGE).addTransientModifier(attackBaseMod);
         return super.onCast();
     }
 
@@ -81,16 +81,16 @@ public class SwordStorm extends WarriorBaseSpell {
                 continue;
             }
             living.setNoDamageTicks(0);
-            AttributeModifier attackBonus = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, living, Attribute.ADV_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-            caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(attackBonus);
+            AttributeModifier attackBonus = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, living, Attribute.ADVANTAGE_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
+            caster.getAttribute(Attribute.ATTACK_DAMAGE).addTransientModifier(attackBonus);
             caster.attack(living);
-            caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(attackBonus);
+            caster.getAttribute(Attribute.ATTACK_DAMAGE).removeModifier(attackBonus);
         }
     }
 
     @Override
     protected void cleanup() {
-        caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(attackBaseMod);
+        caster.getAttribute(Attribute.ATTACK_DAMAGE).removeModifier(attackBaseMod);
         circle.cancel();
         attackMarker.cancel();
     }
@@ -101,7 +101,7 @@ public class SwordStorm extends WarriorBaseSpell {
         placeholderNames.add("radius");
         spellAddedPlaceholders.add(Component.text(radiusPerTick, VALUE_COLOR));
         placeholderNames.add("radius per tick");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADVANTAGE_PHYSICAL), ATTR_PHYSICAL_COLOR));
         placeholderNames.add("damage bonus");
         return super.getPlaceholders(c);
     }

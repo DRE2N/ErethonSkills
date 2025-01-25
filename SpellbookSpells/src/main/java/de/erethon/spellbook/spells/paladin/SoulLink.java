@@ -80,7 +80,7 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
         }
         double paladinDamage = event.getDamage() * damagePercentage;
         event.setDamage(event.getDamage() - paladinDamage);
-        caster.damage(paladinDamage, event.getDamageType());
+        //missing method caster.damage(paladinDamage, event.getDamageType());
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_STARE, Sound.Source.RECORD, 1, 1));
     }
 

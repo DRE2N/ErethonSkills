@@ -22,7 +22,7 @@ public class SlowEffect extends SpellEffect {
 
     public SlowEffect(EffectData data, LivingEntity caster, LivingEntity target, int duration, int stacks) {
         super(data, caster, target, duration, stacks);
-        instance = target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+        instance = target.getAttribute(Attribute.MOVEMENT_SPEED);
         strength = data.getDouble("strength", 0.2);
     }
 

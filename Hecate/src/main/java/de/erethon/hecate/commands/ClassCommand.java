@@ -3,7 +3,7 @@ package de.erethon.hecate.commands;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HCharacter;
+import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.classes.HClass;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,7 +25,7 @@ public class ClassCommand extends ECommand {
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
-        HCharacter hCharacter = plugin.getHPlayerCache().getCharacter(player);
+        /*HCharacter hCharacter = plugin.getHPlayerCache().getCharacter(player);
         if (args.length < 2) {
             MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /h class <class/list>");
             return;
@@ -53,6 +53,6 @@ public class ClassCommand extends ECommand {
             return;
         }
         target.sethClass(hClass);
-        MessageUtil.sendMessage(player, "<green>Class " + hClass.getDisplayName() + " set for " + target.getPlayer().getName() + ".");
+        MessageUtil.sendMessage(player, "<green>Class " + hClass.getDisplayName() + " set for " + target.getPlayer().getName() + ".");*/
     }
 }

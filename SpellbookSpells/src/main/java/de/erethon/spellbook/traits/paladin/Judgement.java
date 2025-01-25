@@ -20,17 +20,17 @@ public class Judgement extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(offensePercentage);
-        caster.getAttribute(Attribute.ADV_MAGIC).addTransientModifier(offensePercentage);
-        caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(defensePercentage);
-        caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(defensePercentage);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(offensePercentage);
+        caster.getAttribute(Attribute.ADVANTAGE_MAGICAL).addTransientModifier(offensePercentage);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(defensePercentage);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(defensePercentage);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(offensePercentage);
-        caster.getAttribute(Attribute.ADV_MAGIC).removeModifier(offensePercentage);
-        caster.getAttribute(Attribute.RES_MAGIC).removeModifier(defensePercentage);
-        caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(defensePercentage);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(offensePercentage);
+        caster.getAttribute(Attribute.ADVANTAGE_MAGICAL).removeModifier(offensePercentage);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(defensePercentage);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(defensePercentage);
     }
 }

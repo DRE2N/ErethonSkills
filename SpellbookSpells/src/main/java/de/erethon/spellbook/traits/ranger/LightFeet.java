@@ -19,11 +19,11 @@ public class LightFeet extends SpellTrait {
 
     @Override
     public void onAdd() {
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(modifier);
     }
 
     @Override
     public void onRemove() {
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(modifier);
     }
 }

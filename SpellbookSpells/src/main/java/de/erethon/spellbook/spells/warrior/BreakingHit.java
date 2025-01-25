@@ -27,7 +27,7 @@ public class BreakingHit extends WarriorBaseSpell {
     @Override
     public boolean onCast() {
         keepAliveTicks = (int) (keepAliveTicks * durationMultiplier);
-        target.getAttribute(Attribute.RES_PHYSICAL).addModifier(reduction);
+        target.getAttribute(Attribute.RESISTANCE_PHYSICAL).addModifier(reduction);
         target.playSound(Sound.sound(org.bukkit.Sound.ITEM_ARMOR_EQUIP_CHAIN, Sound.Source.RECORD, 1, 0));
         caster.playSound(Sound.sound(org.bukkit.Sound.ITEM_ARMOR_EQUIP_CHAIN, Sound.Source.RECORD, 0.8f, 0));
         return super.onCast();
@@ -35,7 +35,7 @@ public class BreakingHit extends WarriorBaseSpell {
 
     @Override
     protected void cleanup() {
-        target.getAttribute(Attribute.RES_PHYSICAL).removeModifier(reduction);
+        target.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(reduction);
         super.cleanup();
     }
 }

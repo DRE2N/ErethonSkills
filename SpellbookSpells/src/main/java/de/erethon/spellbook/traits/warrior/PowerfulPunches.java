@@ -19,11 +19,11 @@ public class PowerfulPunches extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(modifier);
     }
 }

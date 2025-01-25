@@ -35,8 +35,8 @@ public class PetFixedBite extends RangerPetBaseSpell {
     public boolean onCast() {
         target = pet.getTarget().getBukkitLivingEntity();
         pet.makeAttack(target);
-        target.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).addTransientModifier(modifier);
-        target.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(modifier);
+        target.getAttribute(Attribute.JUMP_STRENGTH).addTransientModifier(modifier);
+        target.getAttribute(org.bukkit.attribute.Attribute.MOVEMENT_SPEED).addTransientModifier(modifier);
         target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_WOLF_GROWL, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_WOLF_GROWL, Sound.Source.RECORD, 0.8f, 1));
         return super.onCast();
@@ -44,8 +44,8 @@ public class PetFixedBite extends RangerPetBaseSpell {
 
     @Override
     protected void cleanup() {
-        target.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).removeModifier(modifier);
-        target.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
+        target.getAttribute(Attribute.JUMP_STRENGTH).removeModifier(modifier);
+        target.getAttribute(org.bukkit.attribute.Attribute.MOVEMENT_SPEED).removeModifier(modifier);
         super.cleanup();
     }
 }

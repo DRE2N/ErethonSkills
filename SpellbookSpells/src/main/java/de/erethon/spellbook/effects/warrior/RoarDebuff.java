@@ -19,13 +19,13 @@ public class RoarDebuff extends SpellEffect {
 
     @Override
     public void onApply() {
-        target.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(modifier);
-        target.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(modifier);
+        target.getAttribute(Attribute.ATTACK_DAMAGE).addTransientModifier(modifier);
+        target.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(modifier);
     }
 
     @Override
     public void onRemove() {
-        target.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(modifier);
-        target.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(modifier);
+        target.getAttribute(Attribute.ATTACK_DAMAGE).removeModifier(modifier);
+        target.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(modifier);
     }
 }

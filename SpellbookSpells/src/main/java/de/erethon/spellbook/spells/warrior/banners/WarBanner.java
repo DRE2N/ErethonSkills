@@ -38,7 +38,7 @@ public class WarBanner extends WarriorBaseSpell {
         bannerHolder = location.getWorld().spawn(location, Wolf.class, wolf -> {
             wolf.setCustomName("War Banner");
             wolf.setInvisible(true);
-            wolf.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(bannerHealth);
+            wolf.getAttribute(Attribute.MAX_HEALTH).setBaseValue(bannerHealth);
             wolf.setSilent(true);
             wolf.setOwner((AnimalTamer) caster);
             banner = location.getWorld().spawn(location, ItemDisplay.class, itemDisplay -> {

@@ -19,11 +19,11 @@ public class Fighter extends SpellTrait {
 
     @Override
     public void onAdd() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(modifier);
     }
 
     @Override
     public void onRemove() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(modifier);
     }
 }

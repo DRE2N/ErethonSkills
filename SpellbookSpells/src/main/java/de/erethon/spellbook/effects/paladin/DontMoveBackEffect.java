@@ -20,13 +20,13 @@ public class DontMoveBackEffect extends SpellEffect {
 
     @Override
     public void onApply() {
-        target.getAttribute(Attribute.RES_MAGIC).addModifier(defenseMod);
-        target.getAttribute(Attribute.RES_PHYSICAL).addModifier(defenseMod);
+        target.getAttribute(Attribute.RESISTANCE_MAGICAL).addModifier(defenseMod);
+        target.getAttribute(Attribute.RESISTANCE_PHYSICAL).addModifier(defenseMod);
     }
 
     @Override
     public void onRemove() {
-        target.getAttribute(Attribute.RES_MAGIC).removeModifier(defenseMod);
-        target.getAttribute(Attribute.RES_PHYSICAL).removeModifier(defenseMod);
+        target.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(defenseMod);
+        target.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(defenseMod);
     }
 }

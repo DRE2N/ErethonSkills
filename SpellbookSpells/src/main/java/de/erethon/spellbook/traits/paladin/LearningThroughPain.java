@@ -21,16 +21,16 @@ public class LearningThroughPain extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(advAttributeModifier);
-        caster.getAttribute(Attribute.ADV_MAGIC).addTransientModifier(advAttributeModifier);
-        caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(advAttributeModifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(advAttributeModifier);
+        caster.getAttribute(Attribute.ADVANTAGE_MAGICAL).addTransientModifier(advAttributeModifier);
+        caster.getAttribute(Attribute.ATTACK_DAMAGE).addTransientModifier(advAttributeModifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(advAttributeModifier);
-        caster.getAttribute(Attribute.ADV_MAGIC).removeModifier(advAttributeModifier);
-        caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(advAttributeModifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(advAttributeModifier);
+        caster.getAttribute(Attribute.ADVANTAGE_MAGICAL).removeModifier(advAttributeModifier);
+        caster.getAttribute(Attribute.ATTACK_DAMAGE).removeModifier(advAttributeModifier);
     }
 
     @Override

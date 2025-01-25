@@ -2,7 +2,7 @@ package de.erethon.hecate.ui;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HCharacter;
+import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.TraitLineEntry;
 import de.erethon.hecate.classes.Traitline;
@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TraitMenu implements Listener, InventoryHolder {
+public class TraitMenu implements Listener/*, InventoryHolder*/ {
 
     private static final Hecate plugin = Hecate.getInstance();
 
@@ -51,6 +51,7 @@ public class TraitMenu implements Listener, InventoryHolder {
 
     public TraitMenu(HCharacter player) {
         this.player = player;
+    }}/*
         this.hClass = player.gethClass();
         if (hClass == null) {
             MessageUtil.sendMessage(player.getPlayer(), "<red>You have no class selected.");
@@ -210,3 +211,4 @@ public class TraitMenu implements Listener, InventoryHolder {
         return topInventory;
     }
 }
+*/

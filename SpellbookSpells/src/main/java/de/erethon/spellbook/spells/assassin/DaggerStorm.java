@@ -52,7 +52,7 @@ public class DaggerStorm extends AssassinBaseSpell implements Listener {
                 if (entity == caster || !Spellbook.canAttack(caster, entity)) {
                     return;
                 }
-                entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADV_PHYSICAL) * damageMultiplier, caster, PDamageType.PHYSICAL);
+                //missing method - entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADVANTAGE_PHYSICAL) * damageMultiplier, caster, PDamageType.PHYSICAL);
                 triggerTraits(entity);
             }
         }
@@ -66,7 +66,7 @@ public class DaggerStorm extends AssassinBaseSpell implements Listener {
         placeholderNames.add("divergence");
         spellAddedPlaceholders.add(Component.text(speed, VALUE_COLOR));
         placeholderNames.add("speed");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, false, Attribute.ADV_PHYSICAL) * damageMultiplier, ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, false, Attribute.ADVANTAGE_PHYSICAL) * damageMultiplier, ATTR_PHYSICAL_COLOR));
         return super.getPlaceholders(caster);
     }
 }

@@ -21,14 +21,14 @@ public class FrenzyBuff extends SpellEffect {
     @Override
     public void onApply() {
         if (modifier != null) {
-            target.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(modifier);
+            target.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(modifier);
         }
         modifier = new AttributeModifier(key, bonusDamage * stacks, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        target.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(modifier);
+        target.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(modifier);
     }
 
     @Override
     public void onRemove() {
-        target.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(modifier);
+        target.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(modifier);
     }
 }

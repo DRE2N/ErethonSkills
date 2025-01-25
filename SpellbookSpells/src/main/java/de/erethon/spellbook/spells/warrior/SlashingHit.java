@@ -31,16 +31,16 @@ public class SlashingHit extends WarriorBaseSpell {
 
     @Override
     public boolean onCast() {
-        target.addEffect(caster, bleeding, effectDuration + ((int) Spellbook.getScaledValue(data, caster, target, Attribute.ADV_PHYSICAL)), (int) (stacks * bleedingStackMultiplier));
-        target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADV_PHYSICAL) * damageMultiplier, caster, PDamageType.PHYSICAL);
+        target.addEffect(caster, bleeding, effectDuration + ((int) Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL)), (int) (stacks * bleedingStackMultiplier));
+        //missing method target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL) * damageMultiplier, caster, PDamageType.PHYSICAL);
         return super.onCast();
     }
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, true, Attribute.ADV_PHYSICAL) * damageMultiplier, ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, true, Attribute.ADVANTAGE_PHYSICAL) * damageMultiplier, ATTR_PHYSICAL_COLOR));
         placeholderNames.add("damage");
-        spellAddedPlaceholders.add(Component.text(effectDuration + ((int) Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_PHYSICAL)), VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(effectDuration + ((int) Spellbook.getScaledValue(data, caster, caster, Attribute.ADVANTAGE_PHYSICAL)), VALUE_COLOR));
         placeholderNames.add("effect duration");
         spellAddedPlaceholders.add(Component.text((int) (stacks * bleedingStackMultiplier), VALUE_COLOR));
         placeholderNames.add("stacks");

@@ -29,12 +29,12 @@ public class SwordCleave extends AssassinBaseSpell {
     @Override
     public boolean onCast() {
         caster.attack(target);
-        double attackDmg = Spellbook.getScaledValue(data, caster, target, Attribute.ADV_PHYSICAL);
+        double attackDmg = Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL);
         for (LivingEntity entity : target.getLocation().getNearbyLivingEntities(radius)) {
             if (!Spellbook.canAttack(caster, entity)) {
                 continue;
             }
-            entity.damage(Spellbook.getVariedDamage(attackDmg, caster, true) * damageMultiplier, caster, PDamageType.PHYSICAL);
+            //missing method - entity.damage(Spellbook.getVariedDamage(attackDmg, caster, true) * damageMultiplier, caster, PDamageType.PHYSICAL);
             triggerTraits(target);
         }
         return super.onCast();
@@ -44,7 +44,7 @@ public class SwordCleave extends AssassinBaseSpell {
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
         placeholderNames.add("radius");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADVANTAGE_PHYSICAL), ATTR_PHYSICAL_COLOR));
         placeholderNames.add("damage");
         return super.getPlaceholders(c);
     }

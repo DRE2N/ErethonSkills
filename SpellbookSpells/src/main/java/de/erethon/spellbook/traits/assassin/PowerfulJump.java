@@ -21,11 +21,11 @@ public class PowerfulJump extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.JUMP_STRENGTH).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).removeModifier(modifier);
+        caster.getAttribute(Attribute.JUMP_STRENGTH).removeModifier(modifier);
     }
 }

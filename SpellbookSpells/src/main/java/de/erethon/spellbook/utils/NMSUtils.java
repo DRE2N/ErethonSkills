@@ -3,6 +3,7 @@ package de.erethon.spellbook.utils;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -42,7 +43,7 @@ public class NMSUtils {
     // less stupid than ItemMeta at least
     public static org.bukkit.inventory.ItemStack getItemStackWithModelData(Material material, int data) {
         ItemStack itemStack = ItemStack.fromBukkitCopy(new org.bukkit.inventory.ItemStack(material, 1));
-        itemStack.applyComponents(DataComponentMap.builder().set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(data)).build());
+        //missing method itemStack.applyComponents(DataComponentMap.builder().set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(data)).build());
         return itemStack.getBukkitStack();
     }
 
@@ -71,7 +72,7 @@ public class NMSUtils {
         Optional<net.minecraft.world.entity.EntityType<?>> types = net.minecraft.world.entity.EntityType.byString(String.valueOf(type.getKey()));
         if (types.isPresent()) {
             net.minecraft.world.entity.EntityType<?> entityTypes = types.get();
-            return entityTypes.create(world);
+            return entityTypes.create(world, EntitySpawnReason.NATURAL);
         }
         return null;
     }

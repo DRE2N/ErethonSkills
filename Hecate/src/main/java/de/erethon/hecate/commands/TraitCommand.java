@@ -3,8 +3,7 @@ package de.erethon.hecate.commands;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HCharacter;
-import de.erethon.hecate.ui.TraitMenu;
+import de.erethon.hecate.data.HCharacter;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import org.bukkit.Bukkit;
@@ -30,7 +29,8 @@ public class TraitCommand extends ECommand {
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
-        HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(player);
+    }}
+        /*HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(player);
         if (args[1].equalsIgnoreCase("list")) {
             MessageUtil.sendMessage(player, "<green>Traits:");
             for (SpellTrait trait : player.getActiveTraits()) {
@@ -98,4 +98,4 @@ public class TraitCommand extends ECommand {
         }
         return null;
     }
-}
+}*/

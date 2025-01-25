@@ -2,11 +2,10 @@ package de.erethon.hecate.ui;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HCharacter;
+import de.erethon.hecate.data.HCharacter;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,17 +25,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SkillMenu implements Listener, InventoryHolder {
+public class SkillMenu implements Listener {
 
     private final NamespacedKey key = new NamespacedKey(Hecate.getInstance(), "skillmenu");
-    private final Inventory inventory;
     private final HCharacter player;
     private final List<SpellData> spells = new ArrayList<>();
     private int currentIndex = 0;
 
     public SkillMenu(HCharacter player) {
         this.player = player;
-        inventory = Bukkit.createInventory(this, 54, ChatColor.DARK_RED + "Skills");
+    }
+}
+        /*inventory = Bukkit.createInventory(this, 54, ChatColor.DARK_RED + "Skills");
         if (player.gethClass() == null || player.getSelectedTraitline() == null) {
             MessageUtil.sendMessage(player.getPlayer(), "<red>You have no class/traitline selected.");
             return;
@@ -91,8 +91,9 @@ public class SkillMenu implements Listener, InventoryHolder {
         clearPageOfSpells();
         addAPageOfSpells(currentIndex);
     }
+}
 
-    @EventHandler
+    /*@EventHandler
     private void onClick(InventoryClickEvent event) {
         if (event.getInventory().getHolder() != this) {
             return;
@@ -164,3 +165,4 @@ public class SkillMenu implements Listener, InventoryHolder {
         return inventory;
     }
 }
+*/

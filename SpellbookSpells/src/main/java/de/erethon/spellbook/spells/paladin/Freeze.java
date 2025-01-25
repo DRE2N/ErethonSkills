@@ -40,8 +40,8 @@ public class Freeze extends PaladinBaseSpell {
             if (!Spellbook.canAttack(caster, living)) continue;
             frozen.add(living);
             living.setVelocity(new Vector());
-            living.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(modifier);
-            living.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).addTransientModifier(modifier);
+            living.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(modifier);
+            living.getAttribute(Attribute.JUMP_STRENGTH).addTransientModifier(modifier);
             CircleEffect circle = new CircleEffect(Spellbook.getInstance().getEffectManager());
             circle.radius = 1.2f;
             circle.particle = Particle.SNOWFLAKE;
@@ -58,8 +58,8 @@ public class Freeze extends PaladinBaseSpell {
     @Override
     protected void cleanup() {
         for (LivingEntity living : frozen) {
-            living.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
-            living.getAttribute(Attribute.GENERIC_JUMP_STRENGTH).removeModifier(modifier);
+            living.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(modifier);
+            living.getAttribute(Attribute.JUMP_STRENGTH).removeModifier(modifier);
         }
         for (CircleEffect circle : circles) {
             circle.cancel();

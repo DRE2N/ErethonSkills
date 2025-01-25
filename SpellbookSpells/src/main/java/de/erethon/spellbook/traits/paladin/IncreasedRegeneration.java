@@ -19,11 +19,11 @@ public class IncreasedRegeneration extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.STAT_HEALTHREGEN).addTransientModifier(regenBonus);
+        caster.getAttribute(Attribute.STAT_HEALTH_REGEN).addTransientModifier(regenBonus);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.STAT_HEALTHREGEN).removeModifier(regenBonus);
+        caster.getAttribute(Attribute.STAT_HEALTH_REGEN).removeModifier(regenBonus);
     }
 }

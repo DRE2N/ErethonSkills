@@ -33,7 +33,7 @@ public class ShieldHit extends PaladinBaseSpell {
 
     @Override
     public boolean onCast() {
-        target.addEffect(caster, slowness, (int) (baseDuration + Spellbook.getScaledValue(data, target, Attribute.ADV_PHYSICAL)), stacks);
+        target.addEffect(caster, slowness, (int) (baseDuration + Spellbook.getScaledValue(data, target, Attribute.ADVANTAGE_PHYSICAL)), stacks);
         target.playSound(Sound.sound(org.bukkit.Sound.ITEM_SHIELD_BLOCK, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.ITEM_SHIELD_BLOCK, Sound.Source.RECORD, 0.8f, 1));
         CircleEffect circle = new CircleEffect(Spellbook.getInstance().getEffectManager());
@@ -51,7 +51,7 @@ public class ShieldHit extends PaladinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(baseDuration + Spellbook.getScaledValue(data, caster, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(baseDuration + Spellbook.getScaledValue(data, caster, Attribute.ADVANTAGE_PHYSICAL), ATTR_PHYSICAL_COLOR));
         placeholderNames.add("effect duration");
         return super.getPlaceholders(c);
     }

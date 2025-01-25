@@ -17,7 +17,7 @@ public class BlessedWeapons extends SpellTrait {
     protected SpellbookSpell onSpellCast(SpellbookSpell cast) {
         if (cast instanceof PaladinSpearSpell spear) {
             spear.damageType = PDamageType.MAGIC;
-            spear.damageAttribute = Attribute.ADV_MAGIC;
+            spear.damageAttribute = Attribute.ADVANTAGE_MAGICAL;
         }
         return cast;
     }

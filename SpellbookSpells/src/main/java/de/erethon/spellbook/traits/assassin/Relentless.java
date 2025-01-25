@@ -19,11 +19,11 @@ public class Relentless extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(damageBonus);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(damageBonus);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(damageBonus);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(damageBonus);
     }
 }

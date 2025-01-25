@@ -71,7 +71,7 @@ public class BerserkMode extends WarriorBaseSpell {
 
     @Override
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
-        damage =+Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_PHYSICAL);
+        damage =+Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADVANTAGE_PHYSICAL);
         return super.onAttack(target, damage, type);
     }
 

@@ -75,6 +75,7 @@ public class HClass extends YamlConfiguration {
         return color;
     }
 
+    @SuppressWarnings("removal")
     @Override
     public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
         super.load(file);

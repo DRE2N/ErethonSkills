@@ -21,8 +21,8 @@ public class PathOfGod extends SpellTrait {
 
     @Override
     public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
-        if (caster.getHealth() / caster.getMaxHealth() < healthPercentage && !caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getModifiers().contains(modifier)) {
-            caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(modifier);
+        if (caster.getHealth() / caster.getMaxHealth() < healthPercentage && !caster.getAttribute(Attribute.MOVEMENT_SPEED).getModifiers().contains(modifier)) {
+            caster.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(modifier);
         }
         return super.onDamage(attacker, damage, type);
     }
@@ -30,7 +30,7 @@ public class PathOfGod extends SpellTrait {
     @Override
     protected void onTick() {
         if (caster.getHealth() / caster.getMaxHealth() > healthPercentage) {
-            caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
+            caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(modifier);
         }
     }
 }

@@ -34,9 +34,9 @@ public class ToughnessBanner extends WarBanner {
     protected void onTick() {
         super.onTick();
         for (LivingEntity affected : affected) {
-            affected.getAttribute(Attribute.RES_PHYSICAL).getModifiers().forEach(modifier -> {
+            affected.getAttribute(Attribute.RESISTANCE_PHYSICAL).getModifiers().forEach(modifier -> {
                 if (modifier.getKey() == key) {
-                    affected.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
+                    affected.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(modifier);
                 }
             });
         }
@@ -45,7 +45,7 @@ public class ToughnessBanner extends WarBanner {
             if (affected == caster) {
                 continue;
             }
-            entity.getAttribute(Attribute.RES_PHYSICAL).addModifier(new AttributeModifier(key, Spellbook.getScaledValue(data, caster, entity, Attribute.RES_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY));
+            entity.getAttribute(Attribute.RESISTANCE_PHYSICAL).addModifier(new AttributeModifier(key, Spellbook.getScaledValue(data, caster, entity, Attribute.RESISTANCE_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY));
         }
     }
 }

@@ -3,7 +3,7 @@ package de.erethon.hecate.commands;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HCharacter;
+import de.erethon.hecate.data.HCharacter;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,7 +29,7 @@ public class LearnSkillCommand extends ECommand {
 
     @Override
     public void onExecute(String[] args, CommandSender sender) {
-        Player player = (Player) sender;
+        /*Player player = (Player) sender;
         HCharacter hCharacter = Hecate.getInstance().getHPlayerCache().getCharacter(player);
         SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(args[1]);
         if (spellData == null) {
@@ -42,9 +42,9 @@ public class LearnSkillCommand extends ECommand {
         } else if (args.length != 3) {
             MessageUtil.sendMessage(sender, "Active spells require a slot number");
             return;
-        }*/
+        }
         hCharacter.learnSpell(spellData, Integer.parseInt(args[2]));
-        MessageUtil.sendMessage(sender, "Learned spell " + spellData.getId() + " in slot " + args[2]);
+        MessageUtil.sendMessage(sender, "Learned spell " + spellData.getId() + " in slot " + args[2]);*/
     }
 
     @Override

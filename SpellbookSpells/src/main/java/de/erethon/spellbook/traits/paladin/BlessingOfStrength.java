@@ -19,13 +19,13 @@ public class BlessingOfStrength extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.ADV_MAGIC).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_MAGICAL).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(modifier);
-        caster.getAttribute(Attribute.ADV_MAGIC).removeModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_MAGICAL).removeModifier(modifier);
     }
 }

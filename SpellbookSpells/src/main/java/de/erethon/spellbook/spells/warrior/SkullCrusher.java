@@ -27,7 +27,7 @@ public class SkullCrusher extends WarriorBaseSpell {
     @Override
     public boolean onCast() {
         target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 80, 1));
-        target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADV_PHYSICAL), caster, PDamageType.PHYSICAL);
+        //missing method target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL), caster, PDamageType.PHYSICAL);
         target.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_DESTROY, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_DESTROY, Sound.Source.RECORD, 0.8f, 1));
         return super.onCast();
@@ -35,7 +35,7 @@ public class SkullCrusher extends WarriorBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL), ATTR_PHYSICAL_COLOR));
         placeholderNames.add("damage");
         return super.getPlaceholders(c);
     }

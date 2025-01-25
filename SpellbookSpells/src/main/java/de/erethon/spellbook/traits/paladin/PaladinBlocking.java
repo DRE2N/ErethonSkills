@@ -43,11 +43,11 @@ public class PaladinBlocking extends ClassMechanic {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.STAT_ENERGYREGEN).addTransientModifier(energyRegen);
+        caster.getAttribute(Attribute.STAT_ENERGY_REGEN).addTransientModifier(energyRegen);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.STAT_ENERGYREGEN).removeModifier(energyRegen);
+        caster.getAttribute(Attribute.STAT_ENERGY_REGEN).removeModifier(energyRegen);
     }
 }

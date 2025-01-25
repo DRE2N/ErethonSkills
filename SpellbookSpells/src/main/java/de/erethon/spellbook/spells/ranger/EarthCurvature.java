@@ -54,7 +54,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_TURTLE_EGG_CRACK, SoundCategory.RECORDS, 2, 0);
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
             living.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 100, 1));
-            living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_MAGIC), caster, PDamageType.MAGIC);
+            //missing method living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_MAGICAL), caster, PDamageType.MAGIC);
         }
         return super.onCast();
     }
@@ -64,7 +64,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
         LivingEntity living = event.getCaster();
         if (!Spellbook.canAttack(caster, living)) return;
         if (living.getLocation().distance(caster.getLocation()) > range) return;
-        living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADV_MAGIC), caster, PDamageType.MAGIC);
+        //missing method living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_MAGICAL), caster, PDamageType.MAGIC);
         living.getWorld().playSound(living.getLocation(), Sound.ENTITY_BLAZE_HURT, SoundCategory.RECORDS, 1, 1);
     }
 
@@ -91,7 +91,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
         placeholderNames.add("range");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, true, Attribute.ADV_MAGIC), ATTR_MAGIC_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, true, Attribute.ADVANTAGE_MAGICAL), ATTR_MAGIC_COLOR));
         placeholderNames.add("damage");
         return super.getPlaceholders(c);
     }

@@ -26,8 +26,8 @@ public class WildHunt extends SpellTrait implements Listener {
 
     @EventHandler
     public void onPetSpawn(PetSpawnEvent event) {
-        event.getPet().getBukkitLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).addTransientModifier(healthModifier);
-        event.getPet().getBukkitLivingEntity().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(dmgModifier);
+        event.getPet().getBukkitLivingEntity().getAttribute(Attribute.MAX_HEALTH).addTransientModifier(healthModifier);
+        event.getPet().getBukkitLivingEntity().getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(dmgModifier);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class ThickFur extends SpellTrait implements Listener {
     public void onPetSpawn(PetSpawnEvent event) {
         RangerPet pet = event.getPet();
         if (!(event.getPet().getBukkitOwner() == caster)) return;
-        pet.getBukkitLivingEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).addModifier(modifier);
+        pet.getBukkitLivingEntity().getAttribute(Attribute.MAX_HEALTH).addModifier(modifier);
     }
 
     @Override

@@ -21,12 +21,12 @@ public class BetterRaiseShield extends SpellTrait {
     @Override
     protected void onTrigger(TraitTrigger trigger) {
         if (trigger.getId() == 0) {
-            caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);
-            caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(modifier);
         }
         if (trigger.getId() == 1) {
-            caster.getAttribute(Attribute.RES_MAGIC).removeModifier(modifier);
-            caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(modifier);
         }
     }
 }

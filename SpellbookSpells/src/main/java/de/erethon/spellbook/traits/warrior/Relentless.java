@@ -29,12 +29,12 @@ public class Relentless extends SpellTrait {
             }
         }
         if (modifier != null) {
-            caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
-            caster.getAttribute(Attribute.RES_MAGIC).removeModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(modifier);
         }
         modifier = new AttributeModifier(key, i * attributeBonusPerEnemy, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(modifier);
         super.onTick();
     }
 }

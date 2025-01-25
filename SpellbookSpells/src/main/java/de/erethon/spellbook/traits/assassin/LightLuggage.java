@@ -20,15 +20,15 @@ public class LightLuggage extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(defenseModifier);
-        caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(defenseModifier);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(defenseModifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(defenseModifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
-        caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(defenseModifier);
-        caster.getAttribute(Attribute.RES_MAGIC).removeModifier(defenseModifier);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(defenseModifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(defenseModifier);
     }
 }

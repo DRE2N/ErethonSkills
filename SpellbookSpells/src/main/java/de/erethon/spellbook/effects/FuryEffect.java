@@ -19,7 +19,7 @@ public class FuryEffect extends SpellEffect {
 
     public FuryEffect(EffectData data, LivingEntity caster, LivingEntity target, int duration, int stacks) {
         super(data, caster, target, duration, stacks);
-        instance = target.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+        instance = target.getAttribute(Attribute.ATTACK_SPEED);
     }
 
     @Override

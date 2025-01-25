@@ -66,7 +66,7 @@ public class AllAroundStrike extends RangerBaseSpell {
         attackMarker.setLocation(location);
         attackMarker.maxAngle = Math.PI;
         attackMarker.start();
-        caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(attackBaseMod);
+        caster.getAttribute(Attribute.ATTACK_DAMAGE).addTransientModifier(attackBaseMod);
         return true;
     }
 
@@ -86,10 +86,10 @@ public class AllAroundStrike extends RangerBaseSpell {
                 continue;
             }
             living.setNoDamageTicks(0);
-            AttributeModifier attackBonus = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, living, Attribute.ADV_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER);
-            caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(attackBonus);
+            AttributeModifier attackBonus = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, living, Attribute.ADVANTAGE_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER);
+            caster.getAttribute(Attribute.ATTACK_DAMAGE).addTransientModifier(attackBonus);
             caster.attack(living);
-            caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(attackBonus);
+            caster.getAttribute(Attribute.ATTACK_DAMAGE).removeModifier(attackBonus);
             entities.add(living);
         }
         triggerTraits(entities);
@@ -97,7 +97,7 @@ public class AllAroundStrike extends RangerBaseSpell {
 
     @Override
     protected void cleanup() {
-        caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(attackBaseMod);
+        caster.getAttribute(Attribute.ATTACK_DAMAGE).removeModifier(attackBaseMod);
         circle.cancel();
         attackMarker.cancel();
     }
@@ -106,7 +106,7 @@ public class AllAroundStrike extends RangerBaseSpell {
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(radius, VALUE_COLOR));
         placeholderNames.add("radius");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ATTACK_DAMAGE), ATTR_PHYSICAL_COLOR));
         placeholderNames.add("damage");
         return super.getPlaceholders(c);
     }

@@ -56,7 +56,7 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
                 if (entity == caster || !Spellbook.canAttack(caster, entity)) {
                     return;
                 }
-                entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADV_PHYSICAL), caster, PDamageType.PHYSICAL);
+                //missing method - entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADVANTAGE_PHYSICAL), caster, PDamageType.PHYSICAL);
                 triggerTraits(target);
                 EffectData effect = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
                 if (effect != null) {
@@ -81,7 +81,7 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
         placeholderNames.add("speed");
         spellAddedPlaceholders.add(Component.text(divergence, VALUE_COLOR));
         placeholderNames.add("divergence");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, false, Attribute.ADV_PHYSICAL), VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, false, Attribute.ADVANTAGE_PHYSICAL), VALUE_COLOR));
         placeholderNames.add("damage");
         return super.getPlaceholders(caster);
     }

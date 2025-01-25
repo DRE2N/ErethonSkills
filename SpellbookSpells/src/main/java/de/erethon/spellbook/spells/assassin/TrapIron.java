@@ -43,7 +43,7 @@ public class TrapIron extends AssassinBaseTrap {
                 continue;
             }
             targets.add(entity);
-            entity.damage(Spellbook.getScaledValue(data, caster, entity, Attribute.ADV_PHYSICAL, damageMultiplier), caster, PDamageType.PHYSICAL);
+            //missing method - entity.damage(Spellbook.getScaledValue(data, caster, entity, Attribute.ADVANTAGE_PHYSICAL, damageMultiplier), caster, PDamageType.PHYSICAL);
             triggerTraits(entity, 1);
         }
         if (!targets.isEmpty() && !triggeredFirstTime) {
@@ -55,7 +55,7 @@ public class TrapIron extends AssassinBaseTrap {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADV_PHYSICAL, damageMultiplier), ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getScaledValue(data, caster, caster, Attribute.ADVANTAGE_PHYSICAL, damageMultiplier), ATTR_PHYSICAL_COLOR));
         placeholderNames.add("damage");
         return super.getPlaceholders(caster);
     }

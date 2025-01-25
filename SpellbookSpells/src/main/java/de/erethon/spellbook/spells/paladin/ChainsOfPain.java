@@ -99,7 +99,7 @@ public class ChainsOfPain extends PaladinBaseSpell implements Listener {
                             } else if (spell.getTarget() == secondTarget) {
                                 newSpell.setTarget(target);
                             }
-                            newSpell.onCast(); // let's hope no spell _requires_ onPrecast to work. We don't want cooldown or mana costs to be applied here.
+                            newSpell.onCast(); // let's hope no spell _requiRESISTANCE_ onPrecast to work. We don't want cooldown or mana costs to be applied here.
                             alreadyCasted.add(newSpell);
                         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                             throw new RuntimeException(e);

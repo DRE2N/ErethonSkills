@@ -37,7 +37,7 @@ public class MarkTarget extends AssassinBaseSpell {
     @Override
     public double onAttack(LivingEntity entity, double damage, PDamageType type) {
         if (entity == target) {
-            damage += caster.getAttribute(Attribute.STAT_CRIT_DMG).getValue() + critDmgBonus;
+            damage += caster.getAttribute(Attribute.STAT_CRIT_DAMAGE).getValue() + critDmgBonus;
             caster.getWorld().spawnParticle(Particle.CRIT, target.getLocation(), 5);
             caster.playSound(Sound.sound(Key.key("entity.generic.attack.crit"), Sound.Source.RECORD, 1.0f, 1.0f));
         }
@@ -46,7 +46,7 @@ public class MarkTarget extends AssassinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(caster.getAttribute(Attribute.STAT_CRIT_DMG).getValue() + critDmgBonus, VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(caster.getAttribute(Attribute.STAT_CRIT_DAMAGE).getValue() + critDmgBonus, VALUE_COLOR));
         placeholderNames.add("critDmg");
         return super.getPlaceholders(caster);
     }

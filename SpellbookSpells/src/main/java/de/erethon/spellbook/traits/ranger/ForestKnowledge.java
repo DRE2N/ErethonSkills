@@ -53,11 +53,11 @@ public class ForestKnowledge extends SpellTrait implements Listener {
         if (!event.hasChangedBlock()) return;
         if (isInForest && !forestBiomes.contains(event.getTo().getBlock().getBiome())) {
             isInForest = false;
-            caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(speedBonus);
+            caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedBonus);
         }
         if (forestBiomes.contains(event.getTo().getBlock().getBiome())) {
             isInForest = true;
-            caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(speedBonus);
+            caster.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(speedBonus);
         }
     }
 

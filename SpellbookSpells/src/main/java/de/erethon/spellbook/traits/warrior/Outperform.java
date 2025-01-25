@@ -20,13 +20,13 @@ public class Outperform extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(damageModifier);
-        caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).addTransientModifier(healthModifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(damageModifier);
+        caster.getAttribute(Attribute.MAX_HEALTH).addTransientModifier(healthModifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(damageModifier);
-        caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).removeModifier(healthModifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(damageModifier);
+        caster.getAttribute(Attribute.MAX_HEALTH).removeModifier(healthModifier);
     }
 }

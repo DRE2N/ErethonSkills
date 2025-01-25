@@ -44,7 +44,7 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
     @Override
     public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
-        initialProjectile = RangerUtils.sendProjectile(caster, target, caster,  projectileSpeed, Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC), PDamageType.MAGIC);
+        initialProjectile = RangerUtils.sendProjectile(caster, target, caster,  projectileSpeed, Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADVANTAGE_MAGICAL), PDamageType.MAGIC);
         return true;
     }
 
@@ -61,7 +61,7 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
                 return;
             }
             RangerUtils.sendProjectile((LivingEntity) event.getHitEntity(), living, caster,  projectileSpeed,
-                    Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC) - (ricochets * damageReductionPerRicochet) , PDamageType.MAGIC);
+                    Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADVANTAGE_MAGICAL) - (ricochets * damageReductionPerRicochet) , PDamageType.MAGIC);
             ricochets++;
         }
     }

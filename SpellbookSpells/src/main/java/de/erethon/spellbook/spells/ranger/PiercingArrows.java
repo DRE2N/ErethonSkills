@@ -40,7 +40,7 @@ public class PiercingArrows extends ProjectileRelatedSkill {
                 caster.sendMessage("Degrees: " + degrees);
             }
             if (degrees <= maxMinAngle && degrees >= -maxMinAngle) {
-                RangerUtils.sendProjectile((LivingEntity) event.getEntity(), living, caster, 2, Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADV_MAGIC), PDamageType.MAGIC);
+                RangerUtils.sendProjectile((LivingEntity) event.getEntity(), living, caster, 2, Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADVANTAGE_MAGICAL), PDamageType.MAGIC);
                 affected.add(living);
             }
         }

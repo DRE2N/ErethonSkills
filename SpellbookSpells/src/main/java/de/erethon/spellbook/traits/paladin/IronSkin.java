@@ -19,11 +19,11 @@ public class IronSkin extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).addTransientModifier(bonus);
+        caster.getAttribute(Attribute.MAX_HEALTH).addTransientModifier(bonus);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).removeModifier(bonus);
+        caster.getAttribute(Attribute.MAX_HEALTH).removeModifier(bonus);
     }
 }

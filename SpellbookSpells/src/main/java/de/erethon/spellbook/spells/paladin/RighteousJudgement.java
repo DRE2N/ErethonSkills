@@ -32,7 +32,7 @@ public class RighteousJudgement extends PaladinBaseSpell {
 
     @Override
     public boolean onCast() {
-        target.addEffect(caster, weakness, (int) (baseDuration + Spellbook.getScaledValue(data, caster, Attribute.ADV_MAGIC)), stacks);
+        target.addEffect(caster, weakness, (int) (baseDuration + Spellbook.getScaledValue(data, caster, Attribute.ADVANTAGE_MAGICAL)), stacks);
         target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_WITHER_SPAWN, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_WITHER_SPAWN, Sound.Source.RECORD, 0.8f, 1));
         CircleEffect circle = new CircleEffect(Spellbook.getInstance().getEffectManager());
@@ -48,7 +48,7 @@ public class RighteousJudgement extends PaladinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(baseDuration + Spellbook.getScaledValue(data, caster, Attribute.ADV_MAGIC), ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(baseDuration + Spellbook.getScaledValue(data, caster, Attribute.ADVANTAGE_MAGICAL), ATTR_PHYSICAL_COLOR));
         placeholderNames.add("effect duration");
         spellAddedPlaceholders.add(Component.text(stacks, VALUE_COLOR));
         placeholderNames.add("stacks");

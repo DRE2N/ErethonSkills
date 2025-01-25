@@ -20,13 +20,13 @@ public class Weakling extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(speedModifier);
-        caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).addTransientModifier(healthBonus);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(speedModifier);
+        caster.getAttribute(Attribute.MAX_HEALTH).addTransientModifier(healthBonus);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(speedModifier);
-        caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).removeModifier(healthBonus);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedModifier);
+        caster.getAttribute(Attribute.MAX_HEALTH).removeModifier(healthBonus);
     }
 }

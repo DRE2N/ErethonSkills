@@ -45,24 +45,24 @@ public class StunEffect extends SpellEffect {
         for (SpellbookSpell spell : target.getActiveSpells()) {
             spell.interrupt();
         }
-        target.getAttribute(Attribute.GENERIC_GRAVITY).addTransientModifier(modifier);
+        target.getAttribute(Attribute.GRAVITY).addTransientModifier(modifier);
         target.playSound(Sound.sound(Key.key("block.anvil.place"), Sound.Source.RECORD, 0.5f, 0));
         if (target instanceof Player player) {
             prevMoveSpeed = player.getWalkSpeed(); // Walk speed doesn't change FOV.
             player.setWalkSpeed(0);
             return;
         }
-        prevMoveSpeed = target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
-        target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(0);
+        prevMoveSpeed = target.getAttribute(Attribute.MOVEMENT_SPEED).getBaseValue();
+        target.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0);
     }
 
     @Override
     public void onRemove() {
-        target.getAttribute(Attribute.GENERIC_GRAVITY).removeModifier(modifier);
+        target.getAttribute(Attribute.GRAVITY).removeModifier(modifier);
         if (target instanceof Player player) {
             player.setWalkSpeed((float) prevMoveSpeed);
             return;
         }
-        target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(prevMoveSpeed);
+        target.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(prevMoveSpeed);
     }
 }

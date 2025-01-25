@@ -26,10 +26,10 @@ public class Untiring extends SpellTrait {
         }
         double healthRegen = missingHealthPercent * healthRegenPerMissingHealthPercent;
         if (modifier != null) {
-            caster.getAttribute(Attribute.STAT_HEALTHREGEN).removeModifier(modifier);
+            caster.getAttribute(Attribute.STAT_HEALTH_REGEN).removeModifier(modifier);
         }
         modifier = new AttributeModifier(key, healthRegen, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        caster.getAttribute(Attribute.STAT_HEALTHREGEN).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.STAT_HEALTH_REGEN).addTransientModifier(modifier);
         super.onTick();
     }
 }

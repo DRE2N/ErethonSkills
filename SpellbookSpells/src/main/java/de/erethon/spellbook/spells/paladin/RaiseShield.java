@@ -18,7 +18,7 @@ import java.util.List;
 public class RaiseShield extends PaladinBaseSpell {
 
     private final NamespacedKey key = new NamespacedKey("spellbook", "raiseshield");
-    private final AttributeModifier modifier = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, Attribute.RES_MAGIC), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
+    private final AttributeModifier modifier = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, Attribute.RESISTANCE_MAGICAL), AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
 
     private CircleEffect circle;
 
@@ -29,8 +29,8 @@ public class RaiseShield extends PaladinBaseSpell {
 
     @Override
     public boolean onCast() {
-        caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(modifier);
         triggerTraits(0);
         caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, Sound.Source.RECORD, 1, 2));
         circle = new CircleEffect(Spellbook.getInstance().getEffectManager());
@@ -46,8 +46,8 @@ public class RaiseShield extends PaladinBaseSpell {
 
     @Override
     protected void cleanup() {
-        caster.getAttribute(Attribute.RES_MAGIC).removeModifier(modifier);
-        caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(modifier);
         triggerTraits(1);
         caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_BEACON_DEACTIVATE, Sound.Source.RECORD, 1, 2));
         circle.cancel();
@@ -55,7 +55,7 @@ public class RaiseShield extends PaladinBaseSpell {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text((int) Spellbook.getScaledValue(data, caster, Attribute.RES_MAGIC), ATTR_MAGIC_COLOR));
+        spellAddedPlaceholders.add(Component.text((int) Spellbook.getScaledValue(data, caster, Attribute.RESISTANCE_MAGICAL), ATTR_MAGIC_COLOR));
         placeholderNames.add("magic resistance");
         return super.getPlaceholders(c);
     }

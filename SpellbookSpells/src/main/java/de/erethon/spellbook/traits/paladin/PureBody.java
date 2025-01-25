@@ -20,13 +20,13 @@ public class PureBody extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).addTransientModifier(healthBuff);
-        caster.getAttribute(Attribute.STAT_HEALTHREGEN).addTransientModifier(regenBuff);
+        caster.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).addTransientModifier(healthBuff);
+        caster.getAttribute(Attribute.STAT_HEALTH_REGEN).addTransientModifier(regenBuff);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).removeModifier(healthBuff);
-        caster.getAttribute(Attribute.STAT_HEALTHREGEN).removeModifier(regenBuff);
+        caster.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).removeModifier(healthBuff);
+        caster.getAttribute(Attribute.STAT_HEALTH_REGEN).removeModifier(regenBuff);
     }
 }

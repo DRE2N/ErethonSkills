@@ -55,7 +55,7 @@ public class LargeArrow extends ChannelingSpell implements Listener {
     @EventHandler
     private void onHit(ItemProjectileHitEvent event) {
         if (event.getSpell() == this && event.getHitEntity() instanceof LivingEntity living) {
-            living.damage(damage, caster, damageType);
+            //missing method living.damage(damage, caster, damageType);
         }
     }
 

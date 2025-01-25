@@ -20,13 +20,13 @@ public class Assault extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(speedModifier);
-        caster.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(physicalModifier);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(speedModifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(physicalModifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(speedModifier);
-        caster.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(physicalModifier);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedModifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(physicalModifier);
     }
 }

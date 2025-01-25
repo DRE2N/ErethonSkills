@@ -2,9 +2,9 @@ package de.erethon.hecate.listeners;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.casting.HCharacter;
-import de.erethon.hecate.casting.HPlayer;
-import de.erethon.hecate.casting.HPlayerCache;
+import de.erethon.hecate.data.DatabaseManager;
+import de.erethon.hecate.data.HCharacter;
+import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.CharacterSelection;
@@ -20,7 +20,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Display;
@@ -40,19 +39,15 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
-import org.jetbrains.annotations.NotNull;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import javax.naming.Name;
 import java.io.File;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -63,7 +58,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerCastListener implements Listener {
 
     private ConcurrentHashMap<TextDisplay, Long> displays = new ConcurrentHashMap<>();
-    private final HPlayerCache cache =  Hecate.getInstance().getHPlayerCache();
+    private final DatabaseManager cache =  Hecate.getInstance().getDatabaseManager();
 
     BukkitRunnable remover = new BukkitRunnable() {
         @Override
@@ -87,9 +82,9 @@ public class PlayerCastListener implements Listener {
         public void run() {
             for (HPlayer player : cache.getPlayers()) {
                 HCharacter character = player.getSelectedCharacter();
-                if (character.isInCastmode()) {
+                /*if (character.isInCastmode()) {
                     character.update();
-                }
+                }*/
             }
         }
     };
@@ -101,7 +96,7 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onModeSwitch(PlayerSwapHandItemsEvent event) {
-        HCharacter hCharacter = cache.getCharacter(event.getPlayer());
+        /*HCharacter hCharacter = cache.getCharacter(event.getPlayer());
         // The OffHandItem is the item that WOULD BE in the offhand if the event is not cancelled. Thanks Spigot for great method naming!
         if ((event.getOffHandItem() != null && event.getOffHandItem().getType() == Material.STICK || hCharacter.isInCastmode())) {
             event.setCancelled(true);
@@ -134,7 +129,7 @@ public class PlayerCastListener implements Listener {
                     MessageUtil.sendMessage(event.getPlayer(), "&cThere was an error while loading your inventory. Please report this issue.");
                 }
             });
-        }
+        }*/
     }
 
 
@@ -184,7 +179,7 @@ public class PlayerCastListener implements Listener {
 
     }
 
-    @EventHandler
+    /*@EventHandler
     public void onItemSwitch(PlayerItemHeldEvent event) {
         HCharacter hCharacter = cache.getCharacter(event.getPlayer());
         if (!hCharacter.isInCastmode()) {
@@ -340,5 +335,5 @@ public class PlayerCastListener implements Listener {
             }
         };
         runnable.runTaskLater(Hecate.getInstance(), 5);
-    }
+    }*/
 }

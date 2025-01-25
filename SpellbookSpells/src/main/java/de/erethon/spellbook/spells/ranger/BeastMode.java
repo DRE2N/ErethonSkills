@@ -27,23 +27,23 @@ public class BeastMode extends RangerPetBaseSpell {
         caster.teleport(pet.getLocation());
         caster.getWorld().playSound(caster.getLocation(), org.bukkit.Sound.ENTITY_WOLF_HOWL, 1, 1);
         pet.remove();
-        caster.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.ADV_MAGIC).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.STAT_HEALTHREGEN).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_MAGICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.STAT_HEALTH_REGEN).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.MAX_HEALTH).addTransientModifier(modifier);
         return true;
     }
 
     @Override
     protected void onTickFinish() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(modifier);
-        caster.getAttribute(Attribute.ADV_MAGIC).removeModifier(modifier);
-        caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
-        caster.getAttribute(Attribute.RES_MAGIC).removeModifier(modifier);
-        caster.getAttribute(Attribute.STAT_HEALTHREGEN).removeModifier(modifier);
-        caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).removeModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.ADVANTAGE_MAGICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.STAT_HEALTH_REGEN).removeModifier(modifier);
+        caster.getAttribute(Attribute.MAX_HEALTH).removeModifier(modifier);
         petTrait.spawn();
     }
 

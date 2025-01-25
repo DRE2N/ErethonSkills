@@ -16,14 +16,14 @@ public class BuffLastStand extends SpellEffect {
 
     @Override
     public void onApply() {
-        value = Spellbook.getScaledValue(data, caster, target, Attribute.RES_PHYSICAL);
-        target.getAttribute(Attribute.RES_PHYSICAL).setBaseValue(target.getAttribute(Attribute.RES_PHYSICAL).getBaseValue() + value);
-        target.getAttribute(Attribute.RES_MAGIC).setBaseValue(target.getAttribute(Attribute.RES_MAGIC).getBaseValue() + value);
+        value = Spellbook.getScaledValue(data, caster, target, Attribute.RESISTANCE_PHYSICAL);
+        target.getAttribute(Attribute.RESISTANCE_PHYSICAL).setBaseValue(target.getAttribute(Attribute.RESISTANCE_PHYSICAL).getBaseValue() + value);
+        target.getAttribute(Attribute.RESISTANCE_MAGICAL).setBaseValue(target.getAttribute(Attribute.RESISTANCE_MAGICAL).getBaseValue() + value);
     }
 
     @Override
     public void onRemove() {
-        target.getAttribute(Attribute.RES_PHYSICAL).setBaseValue(target.getAttribute(Attribute.RES_PHYSICAL).getBaseValue() - value);
-        target.getAttribute(Attribute.RES_MAGIC).setBaseValue(target.getAttribute(Attribute.RES_MAGIC).getBaseValue() - value);
+        target.getAttribute(Attribute.RESISTANCE_PHYSICAL).setBaseValue(target.getAttribute(Attribute.RESISTANCE_PHYSICAL).getBaseValue() - value);
+        target.getAttribute(Attribute.RESISTANCE_MAGICAL).setBaseValue(target.getAttribute(Attribute.RESISTANCE_MAGICAL).getBaseValue() - value);
     }
 }

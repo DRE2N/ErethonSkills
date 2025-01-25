@@ -36,7 +36,7 @@ public class ThrowBola extends AssassinBaseSpell {
     @Override
     public boolean onCast() {
         modifier = new AttributeModifier(key, -100.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(modifier);
+        target.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(modifier);
         triggerTraits(target);
         armorStand = target.getWorld().spawn(target.getLocation(), ArmorStand.class);
         armorStand.setInvisible(true);
@@ -47,7 +47,7 @@ public class ThrowBola extends AssassinBaseSpell {
 
     @Override
     protected void cleanup() {
-        target.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
+        target.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(modifier);
         armorStand.remove();
     }
 

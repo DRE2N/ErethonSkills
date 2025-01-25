@@ -21,14 +21,14 @@ public class IceArmor extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        double physRes = caster.getAttribute(Attribute.RES_PHYSICAL).getValue() * percent;
+        double physRes = caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).getValue() * percent;
         modifier = new AttributeModifier(key, physRes, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.RES_MAGIC).removeModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(modifier);
     }
 
 }

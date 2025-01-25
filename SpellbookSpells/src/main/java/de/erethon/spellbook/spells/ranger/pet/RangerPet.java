@@ -178,10 +178,12 @@ public class RangerPet extends Wolf {
         return (org.bukkit.entity.LivingEntity) owner.getBukkitEntity();
     }
 
+}
+
     // Overrides
 
 
-    @Override
+    /*@Override
     public boolean doHurtTarget(Entity target) {
         bukkitMob.getWorld().spawnParticle(Particle.DUST, new Location(bukkitMob.getWorld(), target.getX(), target.getY() + 0.5, target.getZ()), 4,
                 new Particle.DustOptions(Color.fromRGB(40, 180, 60), 1));
@@ -214,4 +216,4 @@ public class RangerPet extends Wolf {
         super.remove(reason);
     }
 
-}
+}*/

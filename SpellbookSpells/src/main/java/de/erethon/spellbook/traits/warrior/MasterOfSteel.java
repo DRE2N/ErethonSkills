@@ -21,11 +21,11 @@ public class MasterOfSteel extends SpellTrait {
     // Have to do this on tick as other things might affect stats
     @Override
     protected void onTick() {
-        double advPhysical = caster.getAttribute(Attribute.ADV_PHYSICAL).getValue();
+        double advPhysical = caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).getValue();
         if (modifier != null) {
-            caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(modifier);
+            caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(modifier);
         }
         modifier = new AttributeModifier(key, advPhysical * conversionMultiplier, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(modifier);
     }
 }

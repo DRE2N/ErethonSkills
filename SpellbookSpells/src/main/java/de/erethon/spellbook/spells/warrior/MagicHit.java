@@ -18,7 +18,7 @@ public class MagicHit extends PaladinBaseSpell {
         if (type == PDamageType.PHYSICAL) {
             currentTicks = keepAliveTicks;
             triggerTraits(target);
-            return damage + Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, org.bukkit.attribute.Attribute.ADV_MAGIC);
+            return damage + Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, org.bukkit.attribute.Attribute.ADVANTAGE_MAGICAL);
         }
         return super.onAttack(target, damage, type);
     }

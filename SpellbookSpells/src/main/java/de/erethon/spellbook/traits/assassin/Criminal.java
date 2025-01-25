@@ -19,11 +19,11 @@ public class Criminal extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(weaponDamageBonus);
+        caster.getAttribute(Attribute.ATTACK_DAMAGE).addTransientModifier(weaponDamageBonus);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(weaponDamageBonus);
+        caster.getAttribute(Attribute.ATTACK_DAMAGE).removeModifier(weaponDamageBonus);
     }
 }

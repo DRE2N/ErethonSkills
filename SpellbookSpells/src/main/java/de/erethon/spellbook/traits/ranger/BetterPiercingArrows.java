@@ -34,7 +34,7 @@ public class BetterPiercingArrows extends SpellTrait {
     protected void onTrigger(TraitTrigger trigger) {
         for (LivingEntity living : trigger.getTargets()) {
             living.addEffect(caster, bleeding, bleedingDuration, bleedingStacks);
-            living.damage(bonusDamage, caster, PDamageType.PHYSICAL);
+            //living.damage(bonusDamage, caster, PDamageType.PHYSICAL); Missing API
         }
     }
 }

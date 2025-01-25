@@ -145,19 +145,19 @@ public class Spellbook {
 
     private static double getScaledValue(YamlConfiguration data, LivingEntity caster, boolean pvp, Attribute attribute, double multiplier) {
         if (pvp) {
-            if (!data.contains("coefficients.players." + attribute.name().toLowerCase())) {
+            if (!data.contains("coefficients.players." + attribute.getKey())) {
                 return caster.getAttribute(attribute).getValue() * multiplier;
             }
         }
         else {
-            if (!data.contains("coefficients.entities." + attribute.name().toLowerCase())) {
+            if (!data.contains("coefficients.entities." + attribute.getKey())) {
                 return caster.getAttribute(attribute).getValue() * multiplier;
             }
         }
         if (getInstance().DEBUG) {
             //MessageUtil.log("Scaled value for entity damage " + attribute.name() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + attribute.name().toUpperCase(), 1.0));
         }
-        return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + attribute.name().toUpperCase(), 1.0)) * multiplier;
+        return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + attribute.getKey(), 1.0)) * multiplier;
     }
 
     /**
@@ -174,7 +174,7 @@ public class Spellbook {
         if (canCrit) {
             int crit = random.nextInt(101);
             if (crit < entity.getAttribute(Attribute.STAT_CRIT_CHANCE).getValue()) {
-                damage = (float) (damage + entity.getAttribute(Attribute.STAT_CRIT_DMG).getValue());
+                damage = (float) (damage + entity.getAttribute(Attribute.STAT_CRIT_DAMAGE).getValue());
             }
         }
         if (getInstance().DEBUG) {

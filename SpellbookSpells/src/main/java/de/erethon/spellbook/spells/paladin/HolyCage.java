@@ -25,11 +25,11 @@ public class HolyCage extends AoEBaseSpell {
 
     @Override
     protected void onEnter(LivingEntity entity) {
-        entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(slowModifier);
+        entity.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(slowModifier);
     }
 
     @Override
     protected void onLeave(LivingEntity entity) {
-        entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(slowModifier);
+        entity.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(slowModifier);
     }
 }

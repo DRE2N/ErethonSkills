@@ -26,7 +26,7 @@ public class KnockbackArrow extends RangerBaseSpell {
         distance = distance / 10;
         double knockback = Math.min(0, 16 - (knockbackMultiplier * distance));
         target.setVelocity(caster.getLocation().getDirection().multiply(knockback));
-        target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_GENERIC_SWIM, Sound.Source.RECORD, 1, 1));
+        target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_SWIM, Sound.Source.RECORD, 1, 1));
         return super.onCast();
     }
 }

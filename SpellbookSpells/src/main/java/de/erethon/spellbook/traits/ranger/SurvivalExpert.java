@@ -21,15 +21,15 @@ public class SurvivalExpert extends SpellTrait {
     @Override
     protected void onAdd() {
         if (modifier != null) {
-            caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).removeModifier(modifier);
+            caster.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).removeModifier(modifier);
         }
         modifier = new AttributeModifier(key, caster.getMaxHealth() * bonusHealth, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).addTransientModifier(modifier);
+        caster.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).removeModifier(modifier);
+        caster.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).removeModifier(modifier);
     }
 
     @Override

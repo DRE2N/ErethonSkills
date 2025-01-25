@@ -20,13 +20,13 @@ public class Carnage extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).addTransientModifier(offense);
-        caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(defense);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(offense);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(defense);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.ADV_PHYSICAL).removeModifier(offense);
-        caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(defense);
+        caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).removeModifier(offense);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(defense);
     }
 }

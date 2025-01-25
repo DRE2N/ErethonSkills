@@ -19,11 +19,11 @@ public class HierophantTraining extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.ATTACK_DAMAGE).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).removeModifier(modifier);
+        caster.getAttribute(Attribute.ATTACK_DAMAGE).removeModifier(modifier);
     }
 }

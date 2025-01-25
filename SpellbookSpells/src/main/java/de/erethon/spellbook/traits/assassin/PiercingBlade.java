@@ -19,11 +19,11 @@ public class PiercingBlade extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.PEN_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.PENETRATION_PHYSICAL).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.PEN_PHYSICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.PENETRATION_PHYSICAL).removeModifier(modifier);
     }
 }

@@ -27,14 +27,14 @@ public class PetRoar extends RangerPetBaseSpell {
         for (LivingEntity living : pet.getLocation().getNearbyLivingEntities(radius)) {
             if (living == caster) continue;
             if (!Spellbook.canAttack(caster, living)) continue;
-            living.addEffect(caster, weakness, effectDuration + (int) Math.round(Spellbook.getScaledValue(data, living, Attribute.ADV_MAGIC)), stacks);
+            living.addEffect(caster, weakness, effectDuration + (int) Math.round(Spellbook.getScaledValue(data, living, Attribute.ADVANTAGE_MAGICAL)), stacks);
         }
         return super.onCast();
     }
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(effectDuration + Math.round(Spellbook.getScaledValue(data, caster, Attribute.ADV_MAGIC)), VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(effectDuration + Math.round(Spellbook.getScaledValue(data, caster, Attribute.ADVANTAGE_MAGICAL)), VALUE_COLOR));
         placeholderNames.add("effect duration");
         spellAddedPlaceholders.add(Component.text(data.getInt("stacks", 1), VALUE_COLOR));
         placeholderNames.add("stacks");

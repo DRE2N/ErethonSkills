@@ -35,7 +35,7 @@ public class Assassination extends AssassinBaseSpell {
         critModifier = new AttributeModifier(key, critAmount, AttributeModifier.Operation.ADD_NUMBER);
         critChanceModifier = new AttributeModifier(key, critChance, AttributeModifier.Operation.ADD_NUMBER);
         resistanceModifier = new AttributeModifier(key, resistance, AttributeModifier.Operation.ADD_NUMBER);
-        caster.getAttribute(Attribute.STAT_CRIT_DMG).addModifier(critModifier);
+        caster.getAttribute(Attribute.STAT_CRIT_DAMAGE).addModifier(critModifier);
         caster.getAttribute(Attribute.STAT_CRIT_CHANCE).addModifier(critChanceModifier);
         return super.onCast();
     }
@@ -49,7 +49,7 @@ public class Assassination extends AssassinBaseSpell {
 
     @Override
     protected void cleanup() {
-        caster.getAttribute(Attribute.STAT_CRIT_DMG).removeModifier(critModifier);
+        caster.getAttribute(Attribute.STAT_CRIT_DAMAGE).removeModifier(critModifier);
         caster.getAttribute(Attribute.STAT_CRIT_CHANCE).removeModifier(critChanceModifier);
     }
 

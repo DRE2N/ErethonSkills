@@ -22,16 +22,16 @@ public class SteadyBlow extends SpellTrait {
 
     @Override
     protected void onTrigger(TraitTrigger trigger) {
-        caster.getAttribute(Attribute.RES_PHYSICAL).addTransientModifier(bonusModifier);
-        caster.getAttribute(Attribute.RES_MAGIC).addTransientModifier(bonusModifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(bonusModifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(bonusModifier);
         lastAdded = System.currentTimeMillis();
     }
 
     @Override
     protected void onTick() {
         if (lastAdded == 0 || System.currentTimeMillis() - lastAdded < duration) return;
-        caster.getAttribute(Attribute.RES_PHYSICAL).removeModifier(bonusModifier);
-        caster.getAttribute(Attribute.RES_MAGIC).removeModifier(bonusModifier);
+        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).removeModifier(bonusModifier);
+        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).removeModifier(bonusModifier);
         lastAdded = 0;
     }
 }

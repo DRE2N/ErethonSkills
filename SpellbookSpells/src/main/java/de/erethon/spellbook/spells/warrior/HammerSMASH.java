@@ -91,7 +91,7 @@ public class HammerSMASH extends WarriorBaseSpell implements Listener {
                 if (entity == caster || !Spellbook.canAttack(caster, entity)) {
                     return;
                 }
-                entity.damage(Spellbook.getVariedAttributeBasedDamage(getData(), caster, entity, false, Attribute.ADV_PHYSICAL), caster, PDamageType.PHYSICAL);
+                //missing method - entity.damage(Spellbook.getVariedAttributeBasedDamage(getData(), caster, entity, false, Attribute.ADVANTAGE_PHYSICAL), caster, PDamageType.PHYSICAL);
                 affectedForTrait.add(entity);
             });
             triggerTraits(affectedForTrait);
@@ -126,7 +126,7 @@ public class HammerSMASH extends WarriorBaseSpell implements Listener {
 
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(getData(), caster, caster, false, Attribute.ADV_PHYSICAL), ATTR_PHYSICAL_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(getData(), caster, caster, false, Attribute.ADVANTAGE_PHYSICAL), ATTR_PHYSICAL_COLOR));
         placeholderNames.add("damage");
         return super.getPlaceholders(c);
     }

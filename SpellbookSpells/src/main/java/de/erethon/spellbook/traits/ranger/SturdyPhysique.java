@@ -19,11 +19,11 @@ public class SturdyPhysique extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.MAX_HEALTH).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.GENERIC_MAX_HEALTH).removeModifier(modifier);
+        caster.getAttribute(Attribute.MAX_HEALTH).removeModifier(modifier);
     }
 }

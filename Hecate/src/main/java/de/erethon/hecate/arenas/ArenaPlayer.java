@@ -1,7 +1,7 @@
 package de.erethon.hecate.arenas;
 
-import de.erethon.hecate.casting.HCharacter;
-import de.erethon.hecate.casting.HPlayer;
+import de.erethon.hecate.data.HCharacter;
+import de.erethon.hecate.data.HPlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;

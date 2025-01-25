@@ -44,7 +44,7 @@ public class BlindnessArea extends AoEBaseSpell {
         super.onTick();
         for (LivingEntity entity : getEntities()) {
             if (!Spellbook.canAttack(caster, entity)) continue;
-            entity.addEffect(caster, effectData, effectDuration, (int) Spellbook.getScaledValue(data, caster, entity, Attribute.ADV_MAGIC));
+            entity.addEffect(caster, effectData, effectDuration, (int) Spellbook.getScaledValue(data, caster, entity, Attribute.ADVANTAGE_MAGICAL));
         }
     }
 

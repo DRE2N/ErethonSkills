@@ -22,9 +22,9 @@ public class ShadowWalker extends SpellTrait {
     protected void onTick() {
         int light = caster.getLocation().add(0, -1, 0).getBlock().getLightLevel();
         if (light > lightLevel) {
-            caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(modifier);
+            caster.getAttribute(org.bukkit.attribute.Attribute.MOVEMENT_SPEED).removeModifier(modifier);
         } else {
-            caster.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED).addTransientModifier(modifier);
+            caster.getAttribute(org.bukkit.attribute.Attribute.MOVEMENT_SPEED).addTransientModifier(modifier);
         }
 
     }

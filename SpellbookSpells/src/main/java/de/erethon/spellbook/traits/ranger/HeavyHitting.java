@@ -19,13 +19,13 @@ public class HeavyHitting extends SpellTrait {
 
     @Override
     protected void onAdd() {
-        caster.getAttribute(Attribute.PEN_PHYSICAL).addTransientModifier(modifier);
-        caster.getAttribute(Attribute.PEN_MAGIC).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.PENETRATION_PHYSICAL).addTransientModifier(modifier);
+        caster.getAttribute(Attribute.PENETRATION_MAGICAL).addTransientModifier(modifier);
     }
 
     @Override
     protected void onRemove() {
-        caster.getAttribute(Attribute.PEN_PHYSICAL).removeModifier(modifier);
-        caster.getAttribute(Attribute.PEN_MAGIC).removeModifier(modifier);
+        caster.getAttribute(Attribute.PENETRATION_PHYSICAL).removeModifier(modifier);
+        caster.getAttribute(Attribute.PENETRATION_MAGICAL).removeModifier(modifier);
     }
 }

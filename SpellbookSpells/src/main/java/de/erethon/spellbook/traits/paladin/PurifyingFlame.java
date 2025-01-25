@@ -18,7 +18,7 @@ public class PurifyingFlame extends SpellTrait {
     protected void onTrigger(TraitTrigger trigger) {
         if (trigger.getId() != 1) return;
         for (LivingEntity living : trigger.getTargets()) {
-            living.damage(damage, caster, PDamageType.MAGIC);
+            //missing method living.damage(damage, caster, PDamageType.MAGIC);
         }
     }
 }

@@ -51,7 +51,7 @@ public class HolyFire extends PaladinBaseSpell {
         Set<LivingEntity> entities = new HashSet<>();
         caster.getNearbyEntities(range, 2, range).forEach(e -> {
             if (e instanceof LivingEntity living && Spellbook.canAttack(caster, living)) {
-                living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, false, Attribute.ADV_MAGIC));
+                living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, false, Attribute.ADVANTAGE_MAGICAL));
                 entities.add(living);
             }
         });
