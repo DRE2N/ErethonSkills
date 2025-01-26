@@ -19,7 +19,7 @@ public class HPlayer {
 
     private final UUID playerId;
     private Player player;
-    private HCharacter selectedCharacter;
+    private @Nullable HCharacter selectedCharacter;
     private final List<HCharacter> characters;
     private int maximumCharacters = 3;
 
@@ -40,7 +40,11 @@ public class HPlayer {
         this.player = player;
     }
 
-    public HCharacter getSelectedCharacter() {
+    /**
+     * @return the selected HCharacter of the player
+     * Will return null if the player has no selected character, e.g., is in the character selection screen
+     */
+    public @Nullable HCharacter getSelectedCharacter() {
         return selectedCharacter;
     }
 
@@ -56,22 +60,25 @@ public class HPlayer {
         this.characters.clear();
         this.characters.addAll(characters);
         if (!characters.isEmpty()) {
-            this.selectedCharacter = characters.getFirst();
+            this.selectedCharacter = null;
         }
     }
 
     public void setSelectedCharacter(HCharacter selectedCharacter, boolean dontSave) {
+        if (selectedCharacter == null) {
+            this.selectedCharacter = null; // Player is most likely in character selection screen and has no character selected yet
+            return;
+        }
         lock.lock();
         try {
             if (this.selectedCharacter != null) {
                 if (!dontSave) {
-                    this.selectedCharacter.saveCharacterPlayerData()
+                    this.selectedCharacter.saveCharacterPlayerData(false)
                             .thenCompose(v -> {
                                 this.selectedCharacter = selectedCharacter;
                                 return selectedCharacter.loadCharacterPlayerData();
                             })
                             .thenRun(() -> {
-                                saveToDatabase(databaseManager);
                                 MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                             })
                             .exceptionally(ex -> {
@@ -94,7 +101,7 @@ public class HPlayer {
                 selectedCharacter.loadCharacterPlayerData()
                         .thenRun(() -> {
                             if (!dontSave) {
-                                saveToDatabase(databaseManager);
+                                selectedCharacter.saveCharacterPlayerData(false);
                             }
                             MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                         })
@@ -106,12 +113,5 @@ public class HPlayer {
         } finally {
             lock.unlock();
         }
-    }
-
-    public void saveToDatabase(DatabaseManager dbManager) {
-        List<CompletableFuture<Void>> futures = characters.stream()
-                .map(character -> character.saveToDatabase(dbManager))
-                .toList();
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 }

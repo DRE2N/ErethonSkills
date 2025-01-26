@@ -50,7 +50,8 @@ public class DatabaseManager implements Listener {
     public CompletableFuture<Void> createTables() {
         String createPlayersTable = "CREATE TABLE IF NOT EXISTS Players (" +
                 "player_id CHAR(36) PRIMARY KEY," +
-                "last_online TIMESTAMP)";
+                "last_online TIMESTAMP)," +
+                "last_character CHAR(36) REFERENCES Characters(character_id))";
 
         String createCharactersTable = "CREATE TABLE IF NOT EXISTS Characters (" +
                 "character_id CHAR(36) PRIMARY KEY," +
@@ -89,7 +90,7 @@ public class DatabaseManager implements Listener {
         String query = "INSERT INTO Characters (character_id, player_id, level, class_id, playerdata, created_at, skills) " +
                 "VALUES (?, ?, ?, ?, ?, NOW(), ?) ON DUPLICATE KEY UPDATE " +
                 "level = VALUES(level), class_id = VALUES(class_id), playerdata = VALUES(playerdata), skills = VALUES(skills)";
-        byte[] playerData = character.serializePlayerDataToBlob();
+        byte[] playerData = character.serializePlayerDataToBlob(false);
         return executeUpdateWithParams(query, character.getCharacterID().toString(), character.getHPlayer().getPlayerId().toString(),
                 character.getLevel(), character.getClassId(), playerData, String.join(",", character.getSkills()))
                 .thenApply(rowsAffected -> {
@@ -295,8 +296,8 @@ public class DatabaseManager implements Listener {
         Player player = event.getPlayer();
         HPlayer hPlayer = playerToHPlayerMap.get(player);
         if (hPlayer != null) {
-            hPlayer.saveToDatabase(this);
-            hPlayer.getSelectedCharacter().saveCharacterPlayerData();
+            savePlayerData(hPlayer);
+            hPlayer.getSelectedCharacter().saveCharacterPlayerData(false);
             playerToHPlayerMap.remove(player);
             uuidToHPlayerMap.remove(player.getUniqueId());
         }
