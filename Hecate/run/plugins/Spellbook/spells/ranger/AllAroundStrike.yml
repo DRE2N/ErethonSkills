@@ -1,5 +1,5 @@
 class: ranger.AllAroundStrike
-keepAliveTicks: 30
+duration: 25
 startRadius: 1
 radiusPerTick: 0.1
 attackModifier: -20

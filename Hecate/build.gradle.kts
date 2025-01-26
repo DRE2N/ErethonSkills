@@ -11,7 +11,6 @@ repositories {
     maven("https://repo.md-5.net/content/repositories/releases/")
     maven("https://hub.spigotmc.org/nexus/content/groups/public/")
     maven("https://jitpack.io")
-    maven("https://repo.erethon.de/releases")
     maven("https://repo.erethon.de/snapshots")
 }
 plugins {
@@ -49,7 +48,7 @@ tasks {
             project.buildDir.mkdir()
         }
         val f = File(project.buildDir,  "server.jar");
-        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        //uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
     }
     compileJava {
@@ -69,9 +68,10 @@ tasks {
             include(project(":SpellbookSpells"))
             include(dependency("com.elmakers.mine.bukkit:EffectLib:10.3"))
         }
-        relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
+        // Comment relocations out for hotswapping
+        /*relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
         relocate("com.elmakers.mine.bukkit", "de.erethon.hecate.effectlib")
-        relocate("com.zaxxer.hikari", "de.erethon.hecate.hikari")
+        relocate("com.zaxxer.hikari", "de.erethon.hecate.hikari")*/
     }
     jar {
         manifest {

@@ -13,7 +13,6 @@ repositories {
     maven("https://repo.md-5.net/content/repositories/releases/")
     maven("https://hub.spigotmc.org/nexus/content/groups/public/")
     maven("https://jitpack.io")
-    maven("https://repo.erethon.de/releases")
     maven("https://repo.erethon.de/snapshots")
 }
 tasks {

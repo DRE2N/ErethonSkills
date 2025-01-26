@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
@@ -31,7 +32,7 @@ public class AllAroundStrike extends RangerBaseSpell {
 
     public AllAroundStrike(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = duration * 20;
+        keepAliveTicks = duration;
     }
 
     @Override
@@ -86,7 +87,8 @@ public class AllAroundStrike extends RangerBaseSpell {
                 continue;
             }
             living.setNoDamageTicks(0);
-            AttributeModifier attackBonus = new AttributeModifier(key, Spellbook.getScaledValue(data, caster, living, Attribute.ADVANTAGE_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER);
+            NamespacedKey perEntityKey = new NamespacedKey("spellbook", "allaroundstrike" + living.getEntityId());
+            AttributeModifier attackBonus = new AttributeModifier(perEntityKey, Spellbook.getScaledValue(data, caster, living, Attribute.ADVANTAGE_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER);
             caster.getAttribute(Attribute.ATTACK_DAMAGE).addTransientModifier(attackBonus);
             caster.attack(living);
             caster.getAttribute(Attribute.ATTACK_DAMAGE).removeModifier(attackBonus);

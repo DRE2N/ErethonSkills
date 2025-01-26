@@ -3,6 +3,8 @@ package de.erethon.hecate.commands;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import net.minecraft.core.registries.BuiltInRegistries;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -36,17 +38,12 @@ public class AttributeCommand extends ECommand {
             return;
         }
         try {
-            attribute = Attribute.valueOf(args[1].toUpperCase());
+            attribute = Registry.ATTRIBUTE.get(NamespacedKey.minecraft(args[1]));
         } catch (IllegalArgumentException e) {
             MessageUtil.sendMessage(commandSender, "Attribute '" + args[1] + "' not found");
-            MessageUtil.sendMessage(commandSender, "Available attributes: " + Arrays.toString(Attribute.values()));
             return;
         }
         player.getAttribute(attribute).setBaseValue(Double.parseDouble(args[2]));
-        MessageUtil.sendMessage(commandSender, "Set " + attribute.name() + " to " + args[2]);
-    }
-
-    public void test() {
-        return;
+        MessageUtil.sendMessage(commandSender, "Set " + attribute.getKey() + " to " + args[2]);
     }
 }
