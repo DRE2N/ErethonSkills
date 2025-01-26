@@ -32,7 +32,7 @@ public class SlashingHit extends WarriorBaseSpell {
     @Override
     public boolean onCast() {
         target.addEffect(caster, bleeding, effectDuration + ((int) Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL)), (int) (stacks * bleedingStackMultiplier));
-        //missing method target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL) * damageMultiplier, caster, PDamageType.PHYSICAL);
+        target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL) * damageMultiplier, caster, PDamageType.PHYSICAL);
         return super.onCast();
     }
 

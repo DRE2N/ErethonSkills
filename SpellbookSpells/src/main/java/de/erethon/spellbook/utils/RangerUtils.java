@@ -53,7 +53,7 @@ public class RangerUtils {
         direction.multiply(speed);
         AbstractArrow proj = start.launchProjectile(Arrow.class, direction);
         proj.setShooter(shooter);
-        //missing method proj.setDamageType(damageType);
+        //proj.setDamageType(damageType);
         proj.setDamage(damage);
         ItemStack stack = new ItemStack(Material.NETHER_STAR);
         stack.editMeta(meta -> {

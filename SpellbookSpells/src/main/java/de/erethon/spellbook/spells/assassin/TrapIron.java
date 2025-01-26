@@ -43,7 +43,7 @@ public class TrapIron extends AssassinBaseTrap {
                 continue;
             }
             targets.add(entity);
-            //missing method - entity.damage(Spellbook.getScaledValue(data, caster, entity, Attribute.ADVANTAGE_PHYSICAL, damageMultiplier), caster, PDamageType.PHYSICAL);
+            entity.damage(Spellbook.getScaledValue(data, caster, entity, Attribute.ADVANTAGE_PHYSICAL, damageMultiplier), caster, PDamageType.PHYSICAL);
             triggerTraits(entity, 1);
         }
         if (!targets.isEmpty() && !triggeredFirstTime) {

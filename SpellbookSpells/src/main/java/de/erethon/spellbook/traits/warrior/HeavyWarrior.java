@@ -41,7 +41,7 @@ public class HeavyWarrior extends SpellTrait implements Listener {
         caster.getLocation().getNearbyLivingEntities(radius).forEach(entity -> {
             if (entity == caster) return;
             if (!Spellbook.canAttack(caster, entity)) return;
-            //missing method - entity.damage(damage, caster);
+            entity.damage(damage, caster);
         });
         caster.getWorld().playSound(caster.getLocation(), Sound.ITEM_AXE_STRIP, SoundCategory.RECORDS,1f, 0.5f);
     }

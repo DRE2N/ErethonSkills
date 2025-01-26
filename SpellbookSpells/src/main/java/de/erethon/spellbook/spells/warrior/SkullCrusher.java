@@ -27,7 +27,7 @@ public class SkullCrusher extends WarriorBaseSpell {
     @Override
     public boolean onCast() {
         target.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 80, 1));
-        //missing method target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL), caster, PDamageType.PHYSICAL);
+        target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL), caster, PDamageType.PHYSICAL);
         target.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_DESTROY, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.BLOCK_ANVIL_DESTROY, Sound.Source.RECORD, 0.8f, 1));
         return super.onCast();

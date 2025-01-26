@@ -30,7 +30,7 @@ public class SkillCommand extends ECommand {
 
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
-        /*HCharacter player = Hecate.getInstance().getHPlayerCache().getCharacter((Player) commandSender);
+        HCharacter player = Hecate.getInstance().getDatabaseManager().getCurrentCharacter((Player) commandSender);
         SpellData spellData = spellbook.getLibrary().getSpellByID(args[1]);
 
         if (spellData == null) {
@@ -38,7 +38,7 @@ public class SkillCommand extends ECommand {
             return;
         }
         SpellbookSpell spellbookSpell = spellData.queue(player.getPlayer());
-        MessageUtil.log("Spell " + spellbookSpell.getData().getId() + " (" + spellbookSpell.getUuid() + ") queued.");*/
+        MessageUtil.log("Spell " + spellbookSpell.getData().getId() + " (" + spellbookSpell.getUuid() + ") queued.");
     }
 
     @Override

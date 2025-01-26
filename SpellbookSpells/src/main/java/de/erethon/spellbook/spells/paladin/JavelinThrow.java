@@ -42,7 +42,7 @@ public class JavelinThrow extends PaladinSpearSpell implements Listener {
         if (event.getEntity() != trident) return;
         if (event.getHitEntity() != null && event.getHitEntity() instanceof LivingEntity living) {
             if (!Spellbook.canAttack(caster, living)) return;
-            //missing method living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, damageAttribute), caster, damageType);
+            living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, damageAttribute), caster, damageType);
             triggerTraits(target);
             caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ARROW_HIT_PLAYER, Sound.Source.RECORD, 1, 1));
         }

@@ -15,7 +15,7 @@ public class TestTrait extends SpellTrait {
     @Override
     protected void onTrigger(TraitTrigger trigger) {
         for (LivingEntity entity : trigger.getTargets()) {
-            //missing method - entity.damage(100);
+            entity.damage(100);
             MessageUtil.broadcastMessage("TestTrait triggered on " + entity.getName());
         }
     }

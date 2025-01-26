@@ -63,7 +63,7 @@ public class MagicEye extends ProjectileRelatedSkill {
         for (AbstractArrow arrow : shotArrows) {
             arrow.getLocation().getNearbyLivingEntities(xzRange, yRange).forEach(living -> {
                 if (living == caster || !Spellbook.canAttack(caster, living)) return;
-                //missing method living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_PHYSICAL), caster, PDamageType.PHYSICAL);
+                living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_PHYSICAL), caster, PDamageType.PHYSICAL);
                 arrow.remove();
                 removal.add(arrow);
             });

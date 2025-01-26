@@ -13,6 +13,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
@@ -68,7 +69,7 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
 
 
     @EventHandler
-    public void onDamage(EntityDamageEvent event) {
+    public void onDamage(EntityDamageByEntityEvent event) {
         if (event.getEntity() != target) {
             return;
         }
@@ -80,7 +81,7 @@ public class SoulLink extends PaladinBaseSpell implements Listener {
         }
         double paladinDamage = event.getDamage() * damagePercentage;
         event.setDamage(event.getDamage() - paladinDamage);
-        //missing method caster.damage(paladinDamage, event.getDamageType());
+        caster.damage(paladinDamage, event.getDamageType());
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_STARE, Sound.Source.RECORD, 1, 1));
     }
 

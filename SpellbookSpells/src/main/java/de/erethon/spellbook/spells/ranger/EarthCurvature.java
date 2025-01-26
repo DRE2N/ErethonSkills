@@ -54,7 +54,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_TURTLE_EGG_CRACK, SoundCategory.RECORDS, 2, 0);
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
             living.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 100, 1));
-            //missing method living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_MAGICAL), caster, PDamageType.MAGIC);
+            living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_MAGICAL), caster, PDamageType.MAGIC);
         }
         return super.onCast();
     }
@@ -64,7 +64,7 @@ public class EarthCurvature extends RangerBaseSpell implements Listener {
         LivingEntity living = event.getCaster();
         if (!Spellbook.canAttack(caster, living)) return;
         if (living.getLocation().distance(caster.getLocation()) > range) return;
-        //missing method living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_MAGICAL), caster, PDamageType.MAGIC);
+        living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_MAGICAL), caster, PDamageType.MAGIC);
         living.getWorld().playSound(living.getLocation(), Sound.ENTITY_BLAZE_HURT, SoundCategory.RECORDS, 1, 1);
     }
 

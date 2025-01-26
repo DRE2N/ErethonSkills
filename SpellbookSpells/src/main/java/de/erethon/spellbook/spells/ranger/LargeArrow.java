@@ -31,7 +31,7 @@ public class LargeArrow extends ChannelingSpell implements Listener {
     public LargeArrow(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         arrowBoxSize = spellData.getDouble("arrowBoxSize", 3.0);
-        itemStack = NMSUtils.getItemStackWithModelData(Material.ARROW, spellData.getInt("modelData", 1));
+        itemStack = NMSUtils.getItemStackWithModelData(Material.ARROW, spellData.getString("modelData", "large_arrow"));
         damage = spellData.getDouble("damage", 1.0);
         damageType = PDamageType.valueOf(spellData.getString("damageType", "PHYSICAL").toUpperCase());
     }
@@ -55,7 +55,7 @@ public class LargeArrow extends ChannelingSpell implements Listener {
     @EventHandler
     private void onHit(ItemProjectileHitEvent event) {
         if (event.getSpell() == this && event.getHitEntity() instanceof LivingEntity living) {
-            //missing method living.damage(damage, caster, damageType);
+            living.damage(damage, caster, damageType);
         }
     }
 

@@ -13,7 +13,7 @@ import org.bukkit.util.BoundingBox;
 
 public class OvergrownShield extends ChannelingSpell {
 
-    int modelData = data.getInt("modelData", 1);
+    String modelData = data.getString("modelData", "overgrown_shield");
     int duration = data.getInt("duration", 10);
     BoundingBox aabb;
     ArmorStand armorStand;

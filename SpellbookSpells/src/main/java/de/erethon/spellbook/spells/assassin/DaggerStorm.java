@@ -52,7 +52,7 @@ public class DaggerStorm extends AssassinBaseSpell implements Listener {
                 if (entity == caster || !Spellbook.canAttack(caster, entity)) {
                     return;
                 }
-                //missing method - entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADVANTAGE_PHYSICAL) * damageMultiplier, caster, PDamageType.PHYSICAL);
+                entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADVANTAGE_PHYSICAL) * damageMultiplier, caster, PDamageType.PHYSICAL);
                 triggerTraits(entity);
             }
         }

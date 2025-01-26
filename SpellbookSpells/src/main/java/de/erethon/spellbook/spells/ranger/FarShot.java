@@ -34,7 +34,7 @@ public class FarShot extends ProjectileRelatedSkill {
     protected void onDamage(EntityDamageByEntityEvent event, Projectile projectile) {
         double distance = projectile.getLocation().distance(startLocation);
         double damage = distance * (Spellbook.getScaledValue(data, caster, (LivingEntity) event.getEntity(), Attribute.ADVANTAGE_MAGICAL));
-        //missing method ((LivingEntity) event.getEntity()).damage(damage, PDamageType.MAGIC);
+        ((LivingEntity) event.getEntity()).damage(damage, PDamageType.MAGIC);
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_ATTACK_STRONG, Sound.Source.RECORD, 1, 0));
     }
 

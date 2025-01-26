@@ -27,7 +27,7 @@ public class SharedPain extends RangerPetBaseSpell {
 
     @Override
     public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
-        //missing method pet.getBukkitLivingEntity().damage(Math.max(0, damage * petDamagePercentage), attacker, type);
+        pet.getBukkitLivingEntity().damage(Math.max(0, damage * petDamagePercentage), attacker, type);
         return super.onDamage(attacker, Math.max(0, damage - (damage * petDamagePercentage)), type);
     }
 

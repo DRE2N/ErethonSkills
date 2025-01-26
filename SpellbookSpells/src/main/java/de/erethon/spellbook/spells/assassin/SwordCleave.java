@@ -34,7 +34,7 @@ public class SwordCleave extends AssassinBaseSpell {
             if (!Spellbook.canAttack(caster, entity)) {
                 continue;
             }
-            //missing method - entity.damage(Spellbook.getVariedDamage(attackDmg, caster, true) * damageMultiplier, caster, PDamageType.PHYSICAL);
+            entity.damage(Spellbook.getVariedDamage(attackDmg, caster, true) * damageMultiplier, caster, PDamageType.PHYSICAL);
             triggerTraits(target);
         }
         return super.onCast();
