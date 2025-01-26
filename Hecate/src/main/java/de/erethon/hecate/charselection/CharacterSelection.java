@@ -53,6 +53,10 @@ public class CharacterSelection implements Listener {
         this.player = player;
         this.lobby = lobby;
         this.hPlayer = plugin.getDatabaseManager().getHPlayer(player);
+        if (hPlayer.getSelectedCharacter() != null && hPlayer.getSelectedCharacter().isInCastMode()) {
+            MessageUtil.sendMessage(player, "<red>You can't select a character while in combat mode.");
+            return;
+        }
         Bukkit.getPluginManager().registerEvents(this, plugin);
         List<HCharacter> characters = hPlayer.getCharacters();
         for (HCharacter character : characters) {
@@ -65,6 +69,7 @@ public class CharacterSelection implements Listener {
         }
         hPlayer.getSelectedCharacter().saveToDatabase(databaseManager).thenAccept(v -> { // make sure the current character is saved first
             setup();
+            hPlayer.setSelectedCharacter(null, false);
         });
 
     }
@@ -104,12 +109,12 @@ public class CharacterSelection implements Listener {
         HandlerList.unregisterAll(this);
         if (newCharacter) {
             player.teleportAsync(new Location(player.getWorld(), 0, 100, 0)); // Temp
-            hPlayer.getSelectedCharacter().saveCharacterPlayerData(); // Do a first save, just in case
+            hPlayer.getSelectedCharacter().saveCharacterPlayerData(false); // Do a first save, just in case
             MessageUtil.sendMessage(player, "<green>Character created! Welcome to Erethon!");
         }
     }
 
-    public void onCharacterSelected(CharacterDisplay display) {
+    public void onCharacterLeftClick(CharacterDisplay display) {
         if (playerIsDone) {
             return;
         }
@@ -122,6 +127,10 @@ public class CharacterSelection implements Listener {
         PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(hPlayer, character, false);
         Bukkit.getPluginManager().callEvent(event);
         HandlerList.unregisterAll(this);
+    }
+
+    public void onCharacterRightClick(CharacterDisplay display) {
+
     }
 
     @EventHandler
@@ -247,6 +256,10 @@ public class CharacterSelection implements Listener {
             String createdAt = character.getCreatedAt().toString();
             text = text.append(Component.newline());
             text = text.append(Component.text("created at: " + createdAt, NamedTextColor.DARK_GRAY));
+            if (player.hasPermission("hecate.admin")) { // Allow admins to see the character ID
+                text = text.append(Component.newline());
+                text = text.append(Component.text("ID: " + character.getCharacterID(), NamedTextColor.DARK_GRAY));
+            }
             textDisplay.text(text);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
             textDisplay.setDefaultBackground(false);

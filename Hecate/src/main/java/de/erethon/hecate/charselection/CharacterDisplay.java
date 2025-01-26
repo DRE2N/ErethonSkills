@@ -67,10 +67,10 @@ public class CharacterDisplay implements Listener {
             return;
         }
         if (!event.isAttack()) {
+            selection.onCharacterRightClick(this);
             return;
         }
         if (event.getEntityId() == entityId) {
-            MessageUtil.sendMessage(event.getPlayer(), "Interacted with character display. Attack: " + event.isAttack());
             selection.onCharacterLeftClick(this);
         }
     }

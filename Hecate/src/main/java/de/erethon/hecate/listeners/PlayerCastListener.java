@@ -57,6 +57,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerCastListener implements Listener {
 
+    private final Hecate plugin = Hecate.getInstance();
     private ConcurrentHashMap<TextDisplay, Long> displays = new ConcurrentHashMap<>();
     private final DatabaseManager cache =  Hecate.getInstance().getDatabaseManager();
 
@@ -90,46 +91,21 @@ public class PlayerCastListener implements Listener {
     };
 
     public PlayerCastListener() {
-        remover.runTaskTimer(Hecate.getInstance(), 0, 20);
-        castModeUIUpdater.runTaskTimer(Hecate.getInstance(), 0, 10);
+        remover.runTaskTimer(plugin, 0, 20);
+        castModeUIUpdater.runTaskTimer(plugin, 0, 10);
     }
 
     @EventHandler
     public void onModeSwitch(PlayerSwapHandItemsEvent event) {
-        /*HCharacter hCharacter = cache.getCharacter(event.getPlayer());
+        HCharacter hCharacter = plugin.getDatabaseManager().getCurrentCharacter(event.getPlayer());
+        if (hCharacter == null) {
+            return;
+        }
         // The OffHandItem is the item that WOULD BE in the offhand if the event is not cancelled. Thanks Spigot for great method naming!
-        if ((event.getOffHandItem() != null && event.getOffHandItem().getType() == Material.STICK || hCharacter.isInCastmode())) {
+        if (event.getOffHandItem().getType() == Material.STICK) {
+            hCharacter.switchCastMode(CombatModeReason.HOTKEY, !hCharacter.isInCastMode()); // The ! is important here lol
             event.setCancelled(true);
-            if (!hCharacter.isInCastmode()) {
-                hCharacter.saveInventory().thenAccept(bool -> {
-                    if (bool) {
-                        BukkitRunnable runnable = new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                hCharacter.switchMode(CombatModeReason.HOTKEY);
-                            }
-                        };
-                        runnable.runTask(Hecate.getInstance());
-                    } else {
-                        MessageUtil.sendMessage(event.getPlayer(), "&cThere was an error while saving your inventory. Please report this issue.");
-                    }
-                });
-                return;
-            }
-            hCharacter.loadInventory().thenAccept(bool -> {
-                if (bool) {
-                    BukkitRunnable runnable = new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            hCharacter.switchMode(CombatModeReason.HOTKEY);
-                        }
-                    };
-                    runnable.runTask(Hecate.getInstance());
-                } else {
-                    MessageUtil.sendMessage(event.getPlayer(), "&cThere was an error while loading your inventory. Please report this issue.");
-                }
-            });
-        }*/
+        }
     }
 
 
@@ -143,7 +119,7 @@ public class PlayerCastListener implements Listener {
     private void addDisplayDamage(Player player, LivingEntity entity, double damage, PDamageType type) {
         double rounded = Math.round(damage * 100.0) / 100.0;
         TextDisplay display = entity.getWorld().spawn(entity.getLocation().add(0, 0,0), TextDisplay.class, textDisplay -> {
-            for (Player p : textDisplay.getTrackedPlayers()) { // TODO: Dmg numbers for party member would be cool
+            for (Player p : textDisplay.getTrackedBy()) { // TODO: Dmg numbers for party member would be cool
                 p.hideEntity(Hecate.getInstance(), textDisplay);
             }
             player.showEntity(Hecate.getInstance(), textDisplay);

@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
