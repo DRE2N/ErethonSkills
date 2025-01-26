@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
+import de.erethon.papyrus.events.PlayerDataSaveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -140,6 +141,14 @@ public class DatabaseManager implements Listener {
 
     public HPlayer getHPlayer(UUID uuid) {
         return uuidToHPlayerMap.get(uuid);
+    }
+
+    public HCharacter getCurrentCharacter(Player player) {
+        HPlayer hPlayer = playerToHPlayerMap.get(player);
+        if (hPlayer == null) {
+            return null;
+        }
+        return hPlayer.getSelectedCharacter();
     }
 
     public Collection<HPlayer> getPlayers() {
@@ -316,6 +325,11 @@ public class DatabaseManager implements Listener {
         }
         playerToHPlayerMap.put(player, hPlayer);
         hPlayer.setPlayer(player);
+    }
+
+    @EventHandler
+    public void onPlayerDataSave(PlayerDataSaveEvent event) {
+        //savePlayerData(hPlayer); Needs the player too lol
     }
 
 }

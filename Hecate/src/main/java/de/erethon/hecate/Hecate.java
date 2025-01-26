@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
+import de.erethon.hecate.charselection.CharacterLobby;
 import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.classes.HClass;
@@ -283,6 +284,10 @@ public final class Hecate extends EPlugin {
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    public CharacterLobby getLobbyInUse() {
+        return new CharacterLobby("default");
     }
 
     public HecateCommandCache getCommands() {

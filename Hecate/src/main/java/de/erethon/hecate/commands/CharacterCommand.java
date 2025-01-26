@@ -7,6 +7,8 @@ import de.erethon.hecate.Hecate;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.data.DatabaseManager;
+import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
@@ -61,6 +63,8 @@ public class CharacterCommand extends ECommand implements TabCompleter {
             hPlayer.getCharacters().add(newCharacter);
             newCharacter.saveToDatabase(databaseManager);
             MessageUtil.sendMessage(commandSender, "<green>Character created with ID " + characterId + ".");
+            PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(hPlayer, newCharacter, true);
+            Bukkit.getPluginManager().callEvent(event);
         } else if (args.length == 3 && args[1].equalsIgnoreCase("switch")) {
             // Switch character
             UUID characterId = UUID.fromString(args[2]);
@@ -72,7 +76,9 @@ public class CharacterCommand extends ECommand implements TabCompleter {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 9999, 1, true, false, false));
             characterFuture.thenAccept(character -> {
                 if (character != null) {
-                    hPlayer.setSelectedCharacter(character);
+                    hPlayer.setSelectedCharacter(character, false);
+                    PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(hPlayer, character, false);
+                    Bukkit.getPluginManager().callEvent(event);
                     MessageUtil.sendMessage(commandSender, "<green>Switched to character with ID " + characterId + ".");
                 } else {
                     MessageUtil.sendMessage(commandSender, "<red>Character not found.");

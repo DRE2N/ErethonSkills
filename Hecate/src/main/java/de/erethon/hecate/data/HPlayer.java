@@ -21,6 +21,7 @@ public class HPlayer {
     private Player player;
     private HCharacter selectedCharacter;
     private final List<HCharacter> characters;
+    private int maximumCharacters = 3;
 
     public HPlayer(UUID uuid) {
         this.playerId = uuid;
@@ -47,6 +48,10 @@ public class HPlayer {
         return characters;
     }
 
+    public int getMaximumCharacters() {
+        return maximumCharacters;
+    }
+
     public void setCharacters(List<HCharacter> characters) {
         this.characters.clear();
         this.characters.addAll(characters);
@@ -55,28 +60,42 @@ public class HPlayer {
         }
     }
 
-    public void setSelectedCharacter(HCharacter selectedCharacter) {
+    public void setSelectedCharacter(HCharacter selectedCharacter, boolean dontSave) {
         lock.lock();
         try {
             if (this.selectedCharacter != null) {
-                this.selectedCharacter.saveCharacterPlayerData()
-                        .thenCompose(v -> {
-                            this.selectedCharacter = selectedCharacter;
-                            return selectedCharacter.loadCharacterPlayerData();
-                        })
-                        .thenRun(() -> {
-                            saveToDatabase(databaseManager);
-                            MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
-                        })
-                        .exceptionally(ex -> {
-                            ex.printStackTrace();
-                            return null;
-                        });
+                if (!dontSave) {
+                    this.selectedCharacter.saveCharacterPlayerData()
+                            .thenCompose(v -> {
+                                this.selectedCharacter = selectedCharacter;
+                                return selectedCharacter.loadCharacterPlayerData();
+                            })
+                            .thenRun(() -> {
+                                saveToDatabase(databaseManager);
+                                MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
+                            })
+                            .exceptionally(ex -> {
+                                ex.printStackTrace();
+                                return null;
+                            });
+                } else {
+                    this.selectedCharacter = selectedCharacter;
+                    selectedCharacter.loadCharacterPlayerData()
+                            .thenRun(() -> {
+                                MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
+                            })
+                            .exceptionally(ex -> {
+                                ex.printStackTrace();
+                                return null;
+                            });
+                }
             } else {
                 this.selectedCharacter = selectedCharacter;
                 selectedCharacter.loadCharacterPlayerData()
                         .thenRun(() -> {
-                            saveToDatabase(databaseManager);
+                            if (!dontSave) {
+                                saveToDatabase(databaseManager);
+                            }
                             MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                         })
                         .exceptionally(ex -> {

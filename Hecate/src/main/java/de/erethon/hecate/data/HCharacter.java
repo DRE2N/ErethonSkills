@@ -6,6 +6,7 @@ import de.erethon.hecate.Hecate;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -30,6 +31,7 @@ public class HCharacter {
     private Timestamp createdAt;
     private String lockedBy;
     private List<String> skills;
+    private CompoundTag playerData;
 
     public HCharacter(UUID characterID, HPlayer hPlayer, int level, String classId, Timestamp createdAt, List<String> skills) {
         this.characterID = characterID;
@@ -80,6 +82,10 @@ public class HCharacter {
 
     public Player getPlayer() {
         return hPlayer.getPlayer();
+    }
+
+    public CompoundTag getPlayerDataNBT() {
+        return playerData;
     }
 
     public CompletableFuture<Void> saveToDatabase(DatabaseManager dbManager) {
@@ -142,10 +148,15 @@ public class HCharacter {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(blob);
             CompoundTag tag = NbtIo.readCompressed(inputStream, NbtAccounter.unlimitedHeap());
+            playerData = tag;
             // Load the player data on the main thread
             BukkitRunnable runnable = new BukkitRunnable() {
                 @Override
                 public void run() {
+                    // Run data through DFU
+                    int dataVersion = NbtUtils.getDataVersion(tag, -1);
+                    ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, tag, dataVersion, net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion());
+                    // Load the player data
                     player.getHandle().load(tag);
                     // Resend possibly desynced data
                     ServerPlayer handle = player.getHandle();
