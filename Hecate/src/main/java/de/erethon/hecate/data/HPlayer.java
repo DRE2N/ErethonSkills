@@ -62,6 +62,7 @@ public class HPlayer {
         if (!characters.isEmpty()) {
             this.selectedCharacter = null;
         }
+        MessageUtil.log("Loaded " + characters.size() + " characters for player " + player.getName());
     }
 
     public void setSelectedCharacter(HCharacter selectedCharacter, boolean dontSave) {

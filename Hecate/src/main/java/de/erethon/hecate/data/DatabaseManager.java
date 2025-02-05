@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -41,44 +42,75 @@ public class DatabaseManager implements Listener {
 
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(dbUrl);
+        hikariConfig.setDataSourceClassName("org.postgresql.ds.PGSimpleDataSource");
         hikariConfig.setUsername(dbUser);
         hikariConfig.setPassword(dbPassword);
         this.dataSource = new HikariDataSource(hikariConfig);
         Bukkit.getPluginManager().registerEvents(this, Hecate.getInstance());
+
+        createTables().join();
     }
 
     public CompletableFuture<Void> createTables() {
-        String createPlayersTable = "CREATE TABLE IF NOT EXISTS Players (" +
-                "player_id CHAR(36) PRIMARY KEY," +
-                "last_online TIMESTAMP)," +
-                "last_character CHAR(36) REFERENCES Characters(character_id))";
-
         String createCharactersTable = "CREATE TABLE IF NOT EXISTS Characters (" +
-                "character_id CHAR(36) PRIMARY KEY," +
-                "player_id CHAR(36) REFERENCES Players(player_id)," +
+                "character_id UUID PRIMARY KEY," +
+                "player_id UUID," +
                 "level INT," +
                 "class_id VARCHAR(255)," +
-                "playerdata BLOB," +
+                "playerdata BYTEA," +
                 "created_at TIMESTAMP," +
                 "locked_by TEXT," +
                 "skills TEXT," +
                 "UNIQUE (character_id))";
 
+        String createPlayersTable = "CREATE TABLE IF NOT EXISTS Players (" +
+                "player_id UUID PRIMARY KEY," +
+                "last_online TIMESTAMP," +
+                "last_character UUID)";
+
         String createCompletedQuestsTable = "CREATE TABLE IF NOT EXISTS Completed_Quests (" +
-                "character_id CHAR(36) REFERENCES Characters(character_id)," +
+                "character_id UUID," +
                 "quest_id VARCHAR(255)," +
                 "completed_at TIMESTAMP," +
                 "PRIMARY KEY (character_id, quest_id))";
 
-        return executeUpdate(createPlayersTable)
-                .thenCompose(v -> executeUpdate(createCharactersTable))
-                .thenCompose(v -> executeUpdate(createCompletedQuestsTable));
+        String addForeignKeyToPlayers = "DO $$ BEGIN " +
+                "IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_last_character') THEN " +
+                "ALTER TABLE Players ADD CONSTRAINT fk_last_character FOREIGN KEY (last_character) REFERENCES Characters(character_id); " +
+                "END IF; " +
+                "END $$;";
+
+        String addForeignKeyToCharacters = "DO $$ BEGIN " +
+                "IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_player_id') THEN " +
+                "ALTER TABLE Characters ADD CONSTRAINT fk_player_id FOREIGN KEY (player_id) REFERENCES Players(player_id); " +
+                "END IF; " +
+                "END $$;";
+
+        String addForeignKeyToCompletedQuests = "DO $$ BEGIN " +
+                "IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_character_id') THEN " +
+                "ALTER TABLE Completed_Quests ADD CONSTRAINT fk_character_id FOREIGN KEY (character_id) REFERENCES Characters(character_id); " +
+                "END IF; " +
+                "END $$;";
+
+        return executeUpdate(createCharactersTable)
+                .thenCompose(v -> executeUpdate(createPlayersTable))
+                .thenCompose(v -> executeUpdate(createCompletedQuestsTable))
+                .thenCompose(v -> executeUpdate(addForeignKeyToPlayers))
+                .thenCompose(v -> executeUpdate(addForeignKeyToCharacters))
+                .thenCompose(v -> executeUpdate(addForeignKeyToCompletedQuests))
+                .thenAccept(v -> MessageUtil.log("Database initialization complete"))
+                .exceptionally(ex -> {
+                    MessageUtil.log("Error creating tables or adding foreign keys: " + ex.getMessage());
+                    ex.printStackTrace();
+                    return null;
+                });
     }
 
     private CompletableFuture<Void> executeUpdate(String query) {
         return CompletableFuture.runAsync(() -> {
             try (Connection connection = dataSource.getConnection();
                  Statement stmt = connection.createStatement()) {
+                MessageUtil.log("Executing update: " + query);
                 stmt.executeUpdate(query);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -88,23 +120,17 @@ public class DatabaseManager implements Listener {
 
     public CompletableFuture<Boolean> createOrUpdateCharacter(HCharacter character) {
         String query = "INSERT INTO Characters (character_id, player_id, level, class_id, playerdata, created_at, skills) " +
-                "VALUES (?, ?, ?, ?, ?, NOW(), ?) ON DUPLICATE KEY UPDATE " +
-                "level = VALUES(level), class_id = VALUES(class_id), playerdata = VALUES(playerdata), skills = VALUES(skills)";
+                "VALUES (?, ?, ?, ?, ?, NOW(), ?) ON CONFLICT (character_id) DO UPDATE SET " +
+                "level = EXCLUDED.level, class_id = EXCLUDED.class_id, playerdata = EXCLUDED.playerdata, skills = EXCLUDED.skills";
         byte[] playerData = character.serializePlayerDataToBlob(false);
-        return executeUpdateWithParams(query, character.getCharacterID().toString(), character.getHPlayer().getPlayerId().toString(),
+        return executeUpdateWithParams(query, character.getCharacterID(), character.getHPlayer().getPlayerId(),
                 character.getLevel(), character.getClassId(), playerData, String.join(",", character.getSkills()))
-                .thenApply(rowsAffected -> {
-                    if (rowsAffected > 0) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+                .thenApply(rowsAffected -> rowsAffected > 0);
     }
 
     private CompletableFuture<HPlayer> loadPlayerData(UUID uuid) {
         String query = "SELECT player_id FROM Players WHERE player_id = ?";
-        return executeQuery(query, uuid.toString())
+        return executeQuery(query, uuid)
                 .thenCompose(results -> {
                     if (results == null || results.isEmpty()) {
                         return CompletableFuture.completedFuture(null);
@@ -113,6 +139,7 @@ public class DatabaseManager implements Listener {
                     MessageUtil.log("Loaded player data for " + uuid);
                     uuidToHPlayerMap.put(hPlayer.getPlayerId(), hPlayer);
                     return getCharactersForPlayer(uuid).thenApply(characters -> {
+                        MessageUtil.log("Loaded " + characters.size() + " characters for player " + uuid);
                         hPlayer.setCharacters(characters);
                         return hPlayer;
                     });
@@ -121,18 +148,18 @@ public class DatabaseManager implements Listener {
 
     public CompletableFuture<Boolean> saveCharacterPlayerData(UUID characterId, byte[] playerData) {
         String query = "UPDATE Characters SET playerdata = ? WHERE character_id = ?";
-        return executeUpdateWithParams(query, playerData, characterId.toString())
+        return executeUpdateWithParams(query, playerData, characterId)
                 .thenApply(v -> v == 1);
     }
 
     public CompletableFuture<byte[]> loadCharacterPlayerData(UUID characterId) {
         String query = "SELECT playerdata FROM Characters WHERE character_id = ?";
-        return executeQuery(query, characterId.toString())
+        return executeQuery(query, characterId)
                 .thenApply(results -> {
                     if (results == null || results.isEmpty()) {
                         return null;
                     }
-                    return (byte[]) results.getFirst().get("playerdata");
+                    return (byte[]) results.get(0).get("playerdata");
                 });
     }
 
@@ -157,6 +184,7 @@ public class DatabaseManager implements Listener {
     }
 
     public CompletableFuture<List<HCharacter>> getCharactersForPlayer(UUID playerId) {
+        MessageUtil.log("Querying characters for player " + playerId);
         HPlayer hPlayer = uuidToHPlayerMap.get(playerId);
         if (hPlayer == null) {
             MessageUtil.log("Player " + playerId + " not found in cache. Skipping character load.");
@@ -164,18 +192,29 @@ public class DatabaseManager implements Listener {
         }
 
         String query = "SELECT character_id, level, class_id, playerdata, created_at, skills FROM Characters WHERE player_id = ?";
-        return executeQuery(query, playerId.toString())
+        return executeQuery(query, playerId)
                 .thenApply(results -> {
+                    if (results == null || results.isEmpty()) {
+                        MessageUtil.log("No characters found for player " + playerId);
+                        return new ArrayList<>();
+                    }
                     List<HCharacter> characters = new ArrayList<>();
                     for (Map<String, Object> row : results) {
-                        UUID characterId = UUID.fromString((String) row.get("character_id"));
-                        int level = (int) row.get("level");
-                        String classId = (String) row.get("class_id");
-                        Timestamp createdAt = (Timestamp) row.get("created_at");
-                        String skillsString = (String) row.get("skills");
-                        List<String> skills = List.of(skillsString.split(","));
-                        characters.add(new HCharacter(characterId, hPlayer, level, classId, createdAt, skills));
+                        try {
+                            UUID characterId = (UUID) row.get("character_id");
+                            int level = (int) row.get("level");
+                            String classId = (String) row.get("class_id");
+                            Timestamp createdAt = (Timestamp) row.get("created_at");
+                            String skillsString = (String) row.get("skills");
+                            List<String> skills = List.of(skillsString.split(","));
+                            characters.add(new HCharacter(characterId, hPlayer, level, classId, createdAt, skills));
+                            MessageUtil.log("Loaded character " + characterId + " for player " + playerId);
+                        } catch (Exception e) {
+                            MessageUtil.log("Error processing row: " + row + " for player " + playerId + ": " + e.getMessage());
+                            e.printStackTrace();
+                        }
                     }
+                    MessageUtil.log("Loaded " + characters.size() + " characters for player " + playerId);
                     return characters;
                 });
     }
@@ -185,13 +224,7 @@ public class DatabaseManager implements Listener {
                 .thenCompose(lockSuccess -> {
                     if (lockSuccess) {
                         return getCharacterData(characterId)
-                                .thenApply(characterData -> {
-                                    if (characterData != null) {
-                                        System.out.println("Character Data: " + characterData);
-                                        return true;
-                                    }
-                                    return false;
-                                });
+                                .thenApply(characterData -> characterData != null);
                     }
                     return CompletableFuture.completedFuture(false);
                 });
@@ -199,8 +232,8 @@ public class DatabaseManager implements Listener {
 
     public CompletableFuture<Void> savePlayerData(HPlayer hPlayer) {
         String query = "INSERT INTO Players (player_id, last_online) VALUES (?, NOW()) " +
-                "ON DUPLICATE KEY UPDATE last_online = NOW()";
-        return executeUpdateWithParams(query, hPlayer.getPlayerId().toString())
+                "ON CONFLICT (player_id) DO UPDATE SET last_online = EXCLUDED.last_online";
+        return executeUpdateWithParams(query, hPlayer.getPlayerId())
                 .exceptionally(ex -> {
                     if (ex.getCause() instanceof SQLIntegrityConstraintViolationException) {
                         return 0;
@@ -211,24 +244,24 @@ public class DatabaseManager implements Listener {
 
     public CompletableFuture<Boolean> lockPlayerData(UUID characterId, String lockOwner) {
         String lockQuery = "UPDATE Characters SET locked_by = ? WHERE character_id = ? AND locked_by IS NULL";
-        return executeUpdateWithParams(lockQuery, lockOwner, characterId.toString())
+        return executeUpdateWithParams(lockQuery, lockOwner, characterId)
                 .thenApply(v -> v == 1);
     }
 
     public CompletableFuture<Void> unlockPlayerData(UUID characterId) {
         String unlockQuery = "UPDATE Characters SET locked_by = NULL WHERE character_id = ?";
-        return executeUpdateWithParams(unlockQuery, characterId.toString()).thenApply(result -> null);
+        return executeUpdateWithParams(unlockQuery, characterId).thenApply(result -> null);
     }
 
     public CompletableFuture<HCharacter> getCharacterData(UUID characterId) {
         String query = "SELECT character_id, level, class_id, playerdata, created_at, locked_by, skills FROM Characters WHERE character_id = ?";
-        return executeQuery(query, characterId.toString())
+        return executeQuery(query, characterId)
                 .thenApply(results -> {
                     if (results == null || results.isEmpty()) {
                         return null;
                     }
                     Map<String, Object> row = results.get(0);
-                    UUID id = UUID.fromString((String) row.get("character_id"));
+                    UUID id = (UUID) row.get("character_id");
                     int level = (int) row.get("level");
                     String classId = (String) row.get("class_id");
                     Timestamp createdAt = (Timestamp) row.get("created_at");
@@ -266,6 +299,7 @@ public class DatabaseManager implements Listener {
                 for (int i = 0; i < params.length; i++) {
                     stmt.setObject(i + 1, params[i]);
                 }
+                MessageUtil.log("Executing query: " + query + " with params: " + Arrays.toString(params));
                 try (ResultSet resultSet = stmt.executeQuery()) {
                     List<Map<String, Object>> results = new ArrayList<>();
                     ResultSetMetaData metaData = resultSet.getMetaData();
@@ -277,6 +311,7 @@ public class DatabaseManager implements Listener {
                         }
                         results.add(row);
                     }
+                    MessageUtil.log("Query executed successfully, number of rows: " + results.size());
                     return results;
                 }
             } catch (SQLException e) {
