@@ -30,15 +30,16 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-val papyrusVersion = "1.21.4-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.5-R0.1-SNAPSHOT"
 
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true}
+    paperweight.devBundle("de.erethon.papyrus", papyrusVersion)
     implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
     implementation("com.zaxxer:HikariCP:6.2.1")
     implementation("org.postgresql:postgresql:42.7.5")
     implementation(project(":SpellbookSpells"))
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT") // For correct nametags
+    compileOnly("de.erethon.hephaestus:Hephaestus:1.0.3-SNAPSHOT") { isChanging = true }
 }
 
 
@@ -49,8 +50,9 @@ tasks {
             project.buildDir.mkdir()
         }
         val f = File(project.buildDir,  "server.jar");
-        //uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
+        runDirectory.set(file("C:\\Dev\\Erethon"))
     }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
@@ -71,9 +73,9 @@ tasks {
             include(dependency("org.postgresql:postgresql:42.7.5"))
         }
         // Comment relocations out for hotswapping
-        /*relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
+        relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
         relocate("com.elmakers.mine.bukkit", "de.erethon.hecate.effectlib")
-        relocate("com.zaxxer.hikari", "de.erethon.hecate.hikari")*/
+        relocate("com.zaxxer.hikari", "de.erethon.hecate.hikari")
     }
     jar {
         manifest {
@@ -81,6 +83,7 @@ tasks {
                 "paperweight-mappings-namespace" to "mojang"
             )
         }
+        dependsOn(shadowJar)
     }
     bukkit {
         load = BukkitPluginDescription.PluginLoadOrder.STARTUP
@@ -97,3 +100,13 @@ tasks {
         }
     }
 }
+
+tasks.register<Copy>("deployToSharedServer") {
+    group = "Erethon"
+    description = "Used for deploying the plugin to the shared server. runServer will do this automatically." +
+            "This task is only for manual deployment when running runServer from another plugin."
+    dependsOn(":jar")
+    from(layout.buildDirectory.file("libs/Hecate-$version-all.jar"))
+    into("C:\\Dev\\Erethon\\plugins")
+}
+
