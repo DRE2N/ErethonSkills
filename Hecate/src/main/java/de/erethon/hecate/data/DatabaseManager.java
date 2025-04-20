@@ -29,12 +29,25 @@ import java.util.concurrent.CompletionException;
 
 public class DatabaseManager implements Listener {
 
-    private final HikariDataSource dataSource;
+    private HikariDataSource dataSource;
     private final HashMap<Player, HPlayer> playerToHPlayerMap = new HashMap<>();
     private final HashMap<UUID, HPlayer> uuidToHPlayerMap = new HashMap<>();
 
     public DatabaseManager() {
         File configFile = new File("environment.yml");
+        if (!configFile.exists()) {
+            MessageUtil.log("--------------------------------------------------");
+            MessageUtil.log(" ");
+            MessageUtil.log(" ");
+            MessageUtil.log("Please create a file named 'environment.yml' in the root directory of the server.");
+            MessageUtil.log("This file should contain the database connection information.");
+            MessageUtil.log("Shutting server down...");
+            MessageUtil.log(" ");
+            MessageUtil.log(" ");
+            MessageUtil.log("--------------------------------------------------");
+            Bukkit.getServer().shutdown();
+            return;
+        }
         FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         String dbUrl = config.getString("dbUrl");
         String dbUser = config.getString("dbUser");
@@ -61,6 +74,8 @@ public class DatabaseManager implements Listener {
                 "created_at TIMESTAMP," +
                 "locked_by TEXT," +
                 "skills TEXT," +
+                "traitline VARCHAR(255)," +
+                "selected_traits INTEGER[]," +
                 "UNIQUE (character_id))";
 
         String createPlayersTable = "CREATE TABLE IF NOT EXISTS Players (" +
@@ -92,12 +107,25 @@ public class DatabaseManager implements Listener {
                 "END IF; " +
                 "END $$;";
 
+        // Upgrade tables if we add new columns. Never remove those, we might have old data.
+        List<String> alterTableStatements = Arrays.asList(
+                "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS traitline VARCHAR(255)",
+                "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS selected_traits INTEGER[]"
+        );
+
         return executeUpdate(createCharactersTable)
                 .thenCompose(v -> executeUpdate(createPlayersTable))
                 .thenCompose(v -> executeUpdate(createCompletedQuestsTable))
                 .thenCompose(v -> executeUpdate(addForeignKeyToPlayers))
                 .thenCompose(v -> executeUpdate(addForeignKeyToCharacters))
                 .thenCompose(v -> executeUpdate(addForeignKeyToCompletedQuests))
+                .thenCompose(v -> {
+                    CompletableFuture<Void> future = CompletableFuture.completedFuture(null);
+                    for (String statement : alterTableStatements) {
+                        future = future.thenCompose(v2 -> executeUpdate(statement));
+                    }
+                    return future;
+                })
                 .thenAccept(v -> MessageUtil.log("Database initialization complete"))
                 .exceptionally(ex -> {
                     MessageUtil.log("Error creating tables or adding foreign keys: " + ex.getMessage());
@@ -119,12 +147,15 @@ public class DatabaseManager implements Listener {
     }
 
     public CompletableFuture<Boolean> createOrUpdateCharacter(HCharacter character) {
-        String query = "INSERT INTO Characters (character_id, player_id, level, class_id, playerdata, created_at, skills) " +
-                "VALUES (?, ?, ?, ?, ?, NOW(), ?) ON CONFLICT (character_id) DO UPDATE SET " +
-                "level = EXCLUDED.level, class_id = EXCLUDED.class_id, playerdata = EXCLUDED.playerdata, skills = EXCLUDED.skills";
+        String query = "INSERT INTO Characters (character_id, player_id, level, class_id, playerdata, created_at, skills, traitline, selected_traits) " +
+                "VALUES (?, ?, ?, ?, ?, NOW(), ?, ?, ?) ON CONFLICT (character_id) DO UPDATE SET " +
+                "level = EXCLUDED.level, class_id = EXCLUDED.class_id, playerdata = EXCLUDED.playerdata, skills = EXCLUDED.skills, " +
+                "traitline = EXCLUDED.traitline, selected_traits = EXCLUDED.selected_traits";
         byte[] playerData = character.serializePlayerDataToBlob(false);
+        String traitline = character.getTraitline().getId();
         return executeUpdateWithParams(query, character.getCharacterID(), character.getHPlayer().getPlayerId(),
-                character.getLevel(), character.getClassId(), playerData, String.join(",", character.getSkills()))
+                character.getLevel(), character.getClassId(), playerData, String.join(",", character.getSkills()),
+                traitline, character.getSelectedTraits())
                 .thenApply(rowsAffected -> rowsAffected > 0);
     }
 
@@ -254,7 +285,7 @@ public class DatabaseManager implements Listener {
     }
 
     public CompletableFuture<HCharacter> getCharacterData(UUID characterId) {
-        String query = "SELECT character_id, level, class_id, playerdata, created_at, locked_by, skills FROM Characters WHERE character_id = ?";
+        String query = "SELECT character_id, level, class_id, playerdata, created_at, locked_by, skills, traitline, selected_traits FROM Characters WHERE character_id = ?";
         return executeQuery(query, characterId)
                 .thenApply(results -> {
                     if (results == null || results.isEmpty()) {
@@ -268,11 +299,13 @@ public class DatabaseManager implements Listener {
                     String lockedBy = (String) row.get("locked_by");
                     String skillsString = (String) row.get("skills");
                     List<String> skills = List.of(skillsString.split(","));
+                    String traitline = (String) row.get("traitline");
+                    Integer[] selectedTraitsArray = (Integer[]) row.get("selected_traits");
                     HPlayer hPlayer = playerToHPlayerMap.values().stream()
                             .filter(p -> p.getCharacters().stream().anyMatch(c -> c.getCharacterID().equals(id)))
                             .findFirst()
                             .orElse(null);
-                    return new HCharacter(id, hPlayer, level, classId, createdAt, lockedBy, skills);
+                    return new HCharacter(id, hPlayer, level, classId, createdAt, lockedBy, skills, traitline, selectedTraitsArray);
                 });
     }
 
@@ -365,7 +398,8 @@ public class DatabaseManager implements Listener {
 
     @EventHandler
     public void onPlayerDataSave(PlayerDataSaveEvent event) {
-        //savePlayerData(hPlayer); Needs the player too lol
+        HPlayer hPlayer = uuidToHPlayerMap.get(event.getPlayer().getUniqueId());
+        savePlayerData(hPlayer);
     }
 
 }
