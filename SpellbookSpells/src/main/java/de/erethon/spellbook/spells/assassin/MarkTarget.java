@@ -30,6 +30,15 @@ public class MarkTarget extends AssassinBaseSpell {
     }
 
     @Override
+    public boolean onCast() {
+        if (target == null) {
+            return false;
+        }
+        target.getTags().add("assassin.target_marked");
+        return super.onCast();
+    }
+
+    @Override
     protected void onTick() {
         caster.getWorld().spawnParticle(Particle.SCULK_CHARGE_POP, target.getLocation().add(0, 2, 0), 5);
     }
@@ -49,6 +58,12 @@ public class MarkTarget extends AssassinBaseSpell {
         spellAddedPlaceholders.add(Component.text(caster.getAttribute(Attribute.STAT_CRIT_DAMAGE).getValue() + critDmgBonus, VALUE_COLOR));
         placeholderNames.add("critDmg");
         return super.getPlaceholders(caster);
+    }
+
+    @Override
+    protected void cleanup() {
+        target.getTags().remove("assassin.target_marked");
+        super.cleanup();
     }
 }
 

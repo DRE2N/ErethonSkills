@@ -1,14 +1,13 @@
-package de.erethon.spellbook.spells.ranger;
+package de.erethon.spellbook.spells.ranger.hawkeye;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.spells.ranger.ProjectileRelatedSkill;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -18,8 +17,8 @@ import java.util.List;
 
 public class CripplingShot extends ProjectileRelatedSkill {
 
-    private final int effectDuration = data.getInt("effectDuration", 20);
-    private final int stacks = data.getInt("effectStacks", 1);
+    private int effectDuration = data.getInt("effectDuration", 20);
+    private int stacks = data.getInt("effectStacks", 1);
     private final int projectileSpeed = data.getInt("projectileSpeed", 2);
     private final EffectData effectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
 
@@ -52,6 +51,11 @@ public class CripplingShot extends ProjectileRelatedSkill {
     @Override
     protected void onDamage(EntityDamageByEntityEvent event, Projectile projectile) {
         if (event.getEntity() instanceof LivingEntity living) {
+            if (inFlowState()) {
+                effectDuration *= 2;
+                stacks *= 2;
+                removeFlow();
+            }
             living.addEffect(caster, effectData, effectDuration, stacks);
         }
     }

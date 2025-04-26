@@ -71,6 +71,18 @@ public class RangerBaseSpell extends SpellbookBaseSpell implements Targeted {
         this.target = target;
     }
 
+    protected void addFlow() {
+        caster.getTags().add("spellbook.ranger.flow");
+    }
+
+    protected void removeFlow() {
+        caster.getTags().remove("spellbook.ranger.flow");
+    }
+
+    protected boolean inFlowState() {
+        return caster.getTags().contains("spellbook.ranger.flow");
+    }
+
     @Override
     public List<Component> getPlaceholders(SpellCaster c) {
         spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));

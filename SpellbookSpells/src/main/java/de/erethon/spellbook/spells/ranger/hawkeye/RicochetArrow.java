@@ -20,7 +20,7 @@ import java.util.List;
 
 public class RicochetArrow extends RangerBaseSpell implements Listener {
 
-    private final int ricochetRange = data.getInt("ricochetRange", 7);
+    private int ricochetRange = data.getInt("ricochetRange", 7);
     public int maxRicochets = data.getInt("maxRicochets", 8);
     public double damageReductionPerRicochet = data.getDouble("damageReductionPerRicochet", 1);
     private final int projectileSpeed = data.getInt("projectileSpeed", 2);
@@ -42,6 +42,11 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
     public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         initialProjectile = RangerUtils.sendProjectile(caster, target, caster,  projectileSpeed, Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADVANTAGE_MAGICAL), PDamageType.MAGIC);
+        if (inFlowState()) {
+            maxRicochets *= 2;
+            ricochetRange *= 2;
+            removeFlow();
+        }
         return true;
     }
 
