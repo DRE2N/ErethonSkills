@@ -65,51 +65,58 @@ public class HPlayer {
         MessageUtil.log("Loaded " + characters.size() + " characters for player " + player.getName());
     }
 
-    public void setSelectedCharacter(HCharacter selectedCharacter, boolean dontSave) {
+    public void  setSelectedCharacter(HCharacter selectedCharacter, boolean dontSave) {
         if (selectedCharacter == null) {
+            MessageUtil.log("Selected character is null for player " + player.getName());
             this.selectedCharacter = null; // Player is most likely in character selection screen and has no character selected yet
             return;
         }
         lock.lock();
         try {
-            if (this.selectedCharacter != null) {
-                if (!dontSave) {
-                    this.selectedCharacter.saveCharacterPlayerData(false)
-                            .thenCompose(v -> {
-                                this.selectedCharacter = selectedCharacter;
-                                return selectedCharacter.loadCharacterPlayerData();
-                            })
-                            .thenRun(() -> {
-                                MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
-                            })
-                            .exceptionally(ex -> {
-                                ex.printStackTrace();
-                                return null;
-                            });
-                } else {
+            try {
+                if (this.selectedCharacter != null) {
+                        if (!dontSave) {
+                            this.selectedCharacter.saveCharacterPlayerData(false)
+                                    .thenCompose(v -> {
+                                        this.selectedCharacter = selectedCharacter;
+                                        return selectedCharacter.loadCharacterPlayerData();
+                                    })
+                                    .thenRun(() -> {
+                                        MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
+                                    })
+                                    .exceptionally(ex -> {
+                                        ex.printStackTrace();
+                                        return null;
+                                    });
+                        } else {
+                            this.selectedCharacter = selectedCharacter;
+                            selectedCharacter.loadCharacterPlayerData()
+                                    .thenRun(() -> {
+                                        MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
+                                    })
+                                    .exceptionally(ex -> {
+                                        ex.printStackTrace();
+                                        return null;
+                                    });
+                        }
+                } else{
                     this.selectedCharacter = selectedCharacter;
                     selectedCharacter.loadCharacterPlayerData()
                             .thenRun(() -> {
+                                if (!dontSave) {
+                                    selectedCharacter.saveCharacterPlayerData(false);
+                                }
                                 MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                             })
                             .exceptionally(ex -> {
                                 ex.printStackTrace();
                                 return null;
                             });
+                    }
                 }
-            } else {
-                this.selectedCharacter = selectedCharacter;
-                selectedCharacter.loadCharacterPlayerData()
-                        .thenRun(() -> {
-                            if (!dontSave) {
-                                selectedCharacter.saveCharacterPlayerData(false);
-                            }
-                            MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
-                        })
-                        .exceptionally(ex -> {
-                            ex.printStackTrace();
-                            return null;
-                        });
+            catch (Exception e) {
+                MessageUtil.log("Failed to switch to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
+                e.printStackTrace();
             }
         } finally {
             lock.unlock();

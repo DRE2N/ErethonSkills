@@ -5,7 +5,9 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.CharacterCastingManager;
 import de.erethon.hecate.classes.HClass;
+import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.events.CombatModeReason;
+import io.papermc.paper.configuration.type.fallback.FallbackValue;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.FloatTag;
@@ -16,6 +18,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.datafix.DataFixers;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -40,16 +43,27 @@ public class HCharacter {
     private int level;
     private String classId;
     private HClass hClass;
-    private Timestamp createdAt;
+    private Traitline traitline;
+    private Integer[] selectedTraits; /* Traits selected, in the format of [row, column], from the top left of the traitline
+    Example for the Assassin's Shadow traitline:
+       ----Shadow-----
+       |  0   X   0  |
+       |  X   0   0  |
+       |  0   0   X  |
+       ---------------
+    with X being the selected trait, would be selectedTraits[0] = 1, selectedTraits[1] = 0, selectedTraits[2] = 2
+    This means that the second, first and third traits are selected. -1 means no trait selected.
+    */
+    private final Timestamp createdAt;
     private String lockedBy;
-    private List<String> skills;
+    private final List<String> skills;
     private CompoundTag playerData;
     private boolean saveInventory = true;
     private boolean shouldSaveHotbarSeparately = false;
 
     private CharacterCastingManager castingManager;
     private boolean isInCastMode = false;
-    private ItemStack[] hotbar = new ItemStack[9];
+    private final ItemStack[] hotbar = new ItemStack[9];
     ListTag hotbarTag = new ListTag();
 
     public HCharacter(UUID characterID, HPlayer hPlayer, int level, String classId, Timestamp createdAt, List<String> skills) {
@@ -59,14 +73,13 @@ public class HCharacter {
         this.classId = classId;
         this.createdAt = createdAt;
         this.skills = skills;
-        hClass = plugin.getHClass(classId);
-        if (hClass == null) {
-            MessageUtil.log("Failed to load class for character " + characterID + ": " + classId + ", defaulting to assassin");
-            hClass = plugin.getHClass("assassin");
+        if (classId == null) {
+            return;
         }
+        hClass = plugin.getHClass(classId);
     }
 
-    public HCharacter(UUID characterID, HPlayer hPlayer, int level, String classId, Timestamp createdAt, String lockedBy, List<String> skills) {
+    public HCharacter(UUID characterID, HPlayer hPlayer, int level, String classId, Timestamp createdAt, String lockedBy, List<String> skills, String traitline, Integer[] traits) {
         this.characterID = characterID;
         this.hPlayer = hPlayer;
         this.level = level;
@@ -74,10 +87,24 @@ public class HCharacter {
         this.createdAt = createdAt;
         this.lockedBy = lockedBy;
         this.skills = skills;
+        this.selectedTraits = traits;
+        if (classId == null) {
+            MessageUtil.log("Class ID is null for character " + characterID);
+            return;
+        }
         hClass = plugin.getHClass(classId);
         if (hClass == null) {
-            MessageUtil.log("Failed to load class for character " + characterID + ": " + classId + ", defaulting to assassin");
-            hClass = plugin.getHClass("assassin");
+            MessageUtil.log("Class " + classId + " not found for character " + characterID);
+            return;
+        }
+        if (traitline != null) {
+            this.traitline = plugin.getTraitline(traitline);
+            this.selectedTraits = traits;
+        }
+        if (this.traitline == null) {
+            MessageUtil.log("Traitline " + traitline + " not found for character " + characterID);
+            this.traitline = hClass.getStarterTraitline();
+            this.selectedTraits = new Integer[]{-1, -1, -1};
         }
     }
 
@@ -143,6 +170,18 @@ public class HCharacter {
         return hClass;
     }
 
+    public void setHClass(HClass hClass) {
+        this.hClass = hClass;
+    }
+
+    public Traitline getTraitline() {
+        return traitline;
+    }
+
+    public void setTraitline(Traitline traitline) {
+        this.traitline = traitline;
+    }
+
     public Timestamp getCreatedAt() {
         return createdAt;
     }
@@ -153,6 +192,10 @@ public class HCharacter {
 
     public List<String> getSkills() {
         return skills;
+    }
+
+    public Integer[] getSelectedTraits() {
+        return selectedTraits;
     }
 
     public Player getPlayer() {
@@ -254,15 +297,16 @@ public class HCharacter {
                 public void run() {
                     // Run data through DFU
                     int dataVersion = NbtUtils.getDataVersion(tag, -1);
-                    ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, tag, dataVersion, net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion());
+                    //ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, tag, dataVersion, net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion());
+
                     // Load the player data
                     boolean wasInCastMode = tag.contains("HecateHotbar");
                     if (wasInCastMode) { // If the player was in cast mode, we need to ensure positions match the current player's
                         try { // Don't fail completely if we can't update the player's position
                             ServerPlayer sp = player.getHandle();
-                            ListTag pos = tag.getList("Pos", 6); // 6 -> DoubleTag
-                            ListTag motion = tag.getList("Motion", 6); // 6 -> DoubleTag
-                            ListTag rotation = tag.getList("Rotation", 6); // 6 -> DoubleTag
+                            ListTag pos = tag.getList("Pos").get(); // 6 -> DoubleTag
+                            ListTag motion = tag.getList("Motion").get(); // 6 -> DoubleTag
+                            ListTag rotation = tag.getList("Rotation").get(); // 6 -> DoubleTag
                             if (pos.size() == 3) {
                                 pos.set(0, DoubleTag.valueOf(sp.getX()));
                                 pos.set(1, DoubleTag.valueOf(sp.getY()));
@@ -277,7 +321,7 @@ public class HCharacter {
                                 rotation.set(0, DoubleTag.valueOf(sp.getYRot()));
                                 rotation.set(1, DoubleTag.valueOf(sp.getXRot()));
                             }
-                            tag.put("FallDistance", FloatTag.valueOf(sp.fallDistance)); // We don't want players to cheat by switching to cast mode in mid-air
+                            tag.put("FallDistance", FloatTag.valueOf((float) sp.fallDistance)); // We don't want players to cheat by switching to cast mode in mid-air
                         } catch (Exception e) {
                             MessageUtil.log("Failed to update player position for character " + characterID + " of player " + hPlayer.getPlayer().getName() + ": " + e.getMessage());
                         }
@@ -286,14 +330,14 @@ public class HCharacter {
                     // If the player was in cast mode, the items should be restored
                     if (wasInCastMode) {
                         MessageUtil.log("Player disconnected in cast mode, restoring hotbar");
-                        ListTag listTag = tag.getList("HecateHotbar", 8); // 8 -> StringTag
+                        ListTag listTag = tag.getList("HecateHotbar").get(); // 8 -> StringTag
                         for (int i = 0; i < 9; i++) {
                             if (listTag.getString(i).equals("empty")) {
                                 hotbar[i] = null;
                                 player.getInventory().setItem(i, null);
                                 continue;
                             }
-                            byte[] bytes = Base64.getDecoder().decode(listTag.getString(i));
+                            byte[] bytes = Base64.getDecoder().decode(listTag.getString(i).get());
                             if (bytes.length == 0) { // Something went wrong, probably an empty slot
                                 player.getInventory().setItem(i, null);
                                 continue;

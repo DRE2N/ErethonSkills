@@ -35,12 +35,29 @@ public class HClass extends YamlConfiguration {
     private final HashMap<Integer, HashMap<Attribute, Double>> baseAttributesPerLevel = new HashMap<>();
     private final HashMap<Integer, Double> xpPerLevel = new HashMap<>();
 
+    // Equipment
+    private final HashSet<String> armorTags = new HashSet<>();
+    private final HashSet<String> accessoryTags = new HashSet<>();
+    private final HashSet<String> weaponTags = new HashSet<>();
+
     public HClass(File file) {
         try {
             load(file);
         } catch (IOException | InvalidConfigurationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Set<String> getArmorTags() {
+        return armorTags;
+    }
+
+    public Set<String> getAccessoryTags() {
+        return accessoryTags;
+    }
+
+    public Set<String> getWeaponTags() {
+        return weaponTags;
     }
 
     public Set<SpellData> getSpellsUnlockedAtLevel(int level) {
@@ -59,7 +76,11 @@ public class HClass extends YamlConfiguration {
         return traitlines;
     }
 
-    public Traitline getDefaultTraitline() {
+    public Traitline getStarterTraitline() {
+        if (defaultTraitline == null) {
+            MessageUtil.log("Class " + getId() + " has no default traitline configured");
+            return null;
+        }
         return defaultTraitline;
     }
 
@@ -69,6 +90,10 @@ public class HClass extends YamlConfiguration {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public TextColor getColor() {
@@ -83,6 +108,15 @@ public class HClass extends YamlConfiguration {
         displayName = getString("displayName");
         defaultTraitline = Hecate.getInstance().getTraitline(getString("defaultTraitline"));
         color = TextColor.fromHexString(getString("color", "#ffffff"));
+        if (contains("armorTags")) {
+            armorTags.addAll(getStringList("armorTags"));
+        }
+        if (contains("accessoryTags")) {
+            accessoryTags.addAll(getStringList("accessoryTags"));
+        }
+        if (contains("weaponTags")) {
+            weaponTags.addAll(getStringList("weaponTags"));
+        }
         ConfigurationSection spellLevelSection = getConfigurationSection("spellLevels");
         if (spellLevelSection == null) {
             MessageUtil.log("Class " + getId()+ " has no spell levels configured!");
