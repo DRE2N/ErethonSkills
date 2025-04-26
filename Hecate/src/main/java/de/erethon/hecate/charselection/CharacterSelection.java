@@ -1,8 +1,6 @@
 package de.erethon.hecate.charselection;
 
 import de.erethon.bedrock.chat.MessageUtil;
-import de.erethon.hecate.Hecate;
-import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
@@ -18,8 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -35,33 +31,27 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class CharacterSelection implements Listener {
+public class CharacterSelection extends BaseSelection {
 
-    private final Hecate plugin = Hecate.getInstance();
-    private final DatabaseManager databaseManager = plugin.getDatabaseManager();
-
-    private final Player player;
     private final HPlayer hPlayer;
     private final CharacterLobby lobby;
-    private List<CharacterDisplay> displayedCharacters = new ArrayList<>();
     private final Set<TextDisplay> emptySlotDisplays = new HashSet<>();
     private final Interaction[] interactions = new Interaction[9];
     private boolean confirmed = false;
     private boolean playerIsDone = false;
 
     public CharacterSelection(Player player, CharacterLobby lobby) {
-        this.player = player;
+        super(player);
         this.lobby = lobby;
         this.hPlayer = plugin.getDatabaseManager().getHPlayer(player);
         if (hPlayer.getSelectedCharacter() != null && hPlayer.getSelectedCharacter().isInCastMode()) {
             MessageUtil.sendMessage(player, "<red>You can't select a character while in combat mode.");
             return;
         }
-        Bukkit.getPluginManager().registerEvents(this, plugin);
         List<HCharacter> characters = hPlayer.getCharacters();
         for (HCharacter character : characters) {
             CharacterDisplay display = new CharacterDisplay(character, this);
-            displayedCharacters.add(display);
+            displayed.add(display);
         }
         if (hPlayer.getSelectedCharacter() == null) {
             setup();
@@ -74,7 +64,7 @@ public class CharacterSelection implements Listener {
 
     }
 
-    private void setup() {
+    protected void setup() {
         player.teleportAsync(lobby.getOrigin()).thenAccept(a -> {
             List<Location> locations = lobby.getPedestalLocations();
             for (int i = 0; i < locations.size(); i++) {
@@ -82,9 +72,11 @@ public class CharacterSelection implements Listener {
                     spawnLockedSlotDisplay(locations.get(i));
                     Interaction interaction = spawnInteractionEntity(locations.get(i));
                     interactions[i] = interaction;
-                } else if (i < displayedCharacters.size()) {
-                    displayedCharacters.get(i).display(player, locations.get(i));
-                    spawnCharacterInfoDisplay(displayedCharacters.get(i).getCharacter(), locations.get(i));
+                } else if (i < displayed.size()) {
+                    if (displayed.get(i) instanceof CharacterDisplay characterDisplay) {
+                        characterDisplay.display(player, locations.get(i));
+                        spawnCharacterInfoDisplay(characterDisplay.getCharacter(), locations.get(i));
+                    }
                 } else {
                     spawnEmptySlotDisplay(locations.get(i));
                     Interaction interaction = spawnInteractionEntity(locations.get(i));
@@ -95,7 +87,7 @@ public class CharacterSelection implements Listener {
     }
 
     private void leaveCharacterSelection(boolean newCharacter) {
-        for (CharacterDisplay characterDisplay : displayedCharacters) {
+        for (BaseDisplay characterDisplay : displayed) {
             characterDisplay.remove(player);
         }
         for (TextDisplay emptySlotDisplay : emptySlotDisplays) {
@@ -106,21 +98,23 @@ public class CharacterSelection implements Listener {
             interaction.remove();
         }
         player.setInvisible(false);
-        HandlerList.unregisterAll(this);
         if (newCharacter) {
-            player.teleportAsync(new Location(player.getWorld(), 0, 100, 0)); // Temp
-            hPlayer.getSelectedCharacter().saveCharacterPlayerData(false); // Do a first save, just in case
-            MessageUtil.sendMessage(player, "<green>Character created! Welcome to Erethon!");
+            player.showTitle(Title.title(Component.empty(), Component.text("New character created!", NamedTextColor.GREEN)));
+            ClassSelection classSelection = new ClassSelection(player, lobby);
         }
+        done();
     }
 
-    public void onCharacterLeftClick(CharacterDisplay display) {
+    public void onLeftClick(BaseDisplay display) {
         if (playerIsDone) {
+            return;
+        }
+        if (!(display instanceof CharacterDisplay characterDisplay)) {
             return;
         }
         leaveCharacterSelection(false);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 9999, 1, true, false, false));
-        HCharacter character = display.getCharacter();
+        HCharacter character = characterDisplay.getCharacter();
         plugin.getDatabaseManager().getHPlayer(player).setSelectedCharacter(character, true);
         playerIsDone = true;
         MessageUtil.sendMessage(player, "<green>Selected character " + character.getCharacterID());
@@ -129,7 +123,7 @@ public class CharacterSelection implements Listener {
         HandlerList.unregisterAll(this);
     }
 
-    public void onCharacterRightClick(CharacterDisplay display) {
+    public void onRightClick(BaseDisplay display) {
 
     }
 
@@ -144,7 +138,7 @@ public class CharacterSelection implements Listener {
         if (event.getRightClicked() instanceof Interaction interaction) {
             for (int i = 0; i < interactions.length; i++) {
                 if (interactions[i] == interaction) {
-                    if (i < displayedCharacters.size()) {
+                    if (i < displayed.size()) {
                         return; // the interaction is in the wrong place somehow
                     }
                     if (i >= hPlayer.getMaximumCharacters()) {
@@ -153,7 +147,7 @@ public class CharacterSelection implements Listener {
                         MessageUtil.sendMessage(player, "<gray><italic>by purchasing them at <gold>store.erethon.net");
                         return; // the slot is locked
                     }
-                    if (i >= displayedCharacters.size()) {
+                    if (i >= displayed.size()) {
                         if (!confirmed) {
                             MessageUtil.sendMessage(player, "<red>This character slot is empty.");
                             MessageUtil.sendMessage(player, "<gray>Click again to create a new character.");
@@ -179,21 +173,6 @@ public class CharacterSelection implements Listener {
                     }
                 }
             }
-        }
-    }
-
-    @EventHandler
-    private void onPreCommand(PlayerCommandPreprocessEvent event) {
-        if (playerIsDone) {
-            return;
-        }
-        if (event.getPlayer() != player) {
-            return;
-        }
-        String message = event.getMessage();
-        if (message.startsWith("/")) {
-            event.setCancelled(true);
-            MessageUtil.sendMessage(player, "<red>You can't use commands while in character selection.");
         }
     }
 

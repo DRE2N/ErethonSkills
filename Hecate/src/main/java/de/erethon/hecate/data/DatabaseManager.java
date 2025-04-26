@@ -289,6 +289,7 @@ public class DatabaseManager implements Listener {
         return executeQuery(query, characterId)
                 .thenApply(results -> {
                     if (results == null || results.isEmpty()) {
+                        MessageUtil.log("No character found with ID " + characterId);
                         return null;
                     }
                     Map<String, Object> row = results.get(0);
@@ -305,7 +306,13 @@ public class DatabaseManager implements Listener {
                             .filter(p -> p.getCharacters().stream().anyMatch(c -> c.getCharacterID().equals(id)))
                             .findFirst()
                             .orElse(null);
-                    return new HCharacter(id, hPlayer, level, classId, createdAt, lockedBy, skills, traitline, selectedTraitsArray);
+                    try {
+                        return new HCharacter(id, hPlayer, level, classId, createdAt, lockedBy, skills, traitline, selectedTraitsArray);
+                    } catch (Exception e) {
+                        MessageUtil.log("Error processing character data for ID " + characterId + ": " + e.getMessage());
+                        e.printStackTrace();
+                        return null;
+                    }
                 });
     }
 

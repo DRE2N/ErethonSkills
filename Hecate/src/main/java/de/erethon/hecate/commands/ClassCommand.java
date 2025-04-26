@@ -5,6 +5,7 @@ import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.classes.HClass;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -25,7 +26,7 @@ public class ClassCommand extends ECommand {
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
-        /*HCharacter hCharacter = plugin.getHPlayerCache().getCharacter(player);
+        HCharacter hCharacter = plugin.getDatabaseManager().getCurrentCharacter(player);
         if (args.length < 2) {
             MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /h class <class/list>");
             return;
@@ -43,16 +44,17 @@ public class ClassCommand extends ECommand {
             return;
         }
         if (args.length < 3) {
-            hCharacter.sethClass(hClass);
+            hCharacter.setHClass(hClass);
             MessageUtil.sendMessage(player, "<green>Class " + hClass.getDisplayName() + " set.");
             return;
         }
-        HCharacter target = plugin.getHPlayerCache().getCharacter(args[2]);
+        Player targetPlayer = Bukkit.getPlayer(args[2]);
+        HCharacter target = plugin.getDatabaseManager().getCurrentCharacter(targetPlayer);
         if (target == null) {
             MessageUtil.sendMessage(player, "<red>Player " + args[2] + " not found.");
             return;
         }
-        target.sethClass(hClass);
-        MessageUtil.sendMessage(player, "<green>Class " + hClass.getDisplayName() + " set for " + target.getPlayer().getName() + ".");*/
+        target.setHClass(hClass);
+        MessageUtil.sendMessage(player, "<green>Class " + hClass.getDisplayName() + " set for " + target.getPlayer().getName() + ".");
     }
 }

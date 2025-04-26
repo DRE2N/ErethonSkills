@@ -4,6 +4,8 @@ package de.erethon.hecate.commands;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
+import de.erethon.hecate.classes.HClass;
+import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.data.DatabaseManager;
@@ -14,6 +16,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -56,13 +59,24 @@ public class CharacterCommand extends ECommand implements TabCompleter {
                     MessageUtil.sendMessage(commandSender, "<green>- " + character.getCharacterID());
                 }
             }
-        } else if (args.length == 2 && args[1].equalsIgnoreCase("create")) {
+        } else if (args.length == 4 && args[1].equalsIgnoreCase("create")) {
             // Create a new character
             UUID characterId = UUID.randomUUID();
-            HCharacter newCharacter = new HCharacter(characterId, hPlayer, 1, "default", new Timestamp(System.currentTimeMillis()), new ArrayList<>());
+            Traitline traitline = Hecate.getInstance().getTraitline(args[3]);
+            HClass hClass = Hecate.getInstance().getHClass(args[2]);
+            if (hClass == null) {
+                MessageUtil.sendMessage(commandSender, "<red>Class not found.");
+                return;
+            }
+            if (traitline == null) {
+                MessageUtil.sendMessage(commandSender, "<red>Traitline not found.");
+                return;
+            }
+            HCharacter newCharacter = new HCharacter(characterId, hPlayer, 1, args[2], new Timestamp(System.currentTimeMillis()), new ArrayList<>());
+            newCharacter.setTraitline(traitline);
             hPlayer.getCharacters().add(newCharacter);
             newCharacter.saveToDatabase(databaseManager);
-            MessageUtil.sendMessage(commandSender, "<green>Character created with ID " + characterId + ".");
+            MessageUtil.sendMessage(commandSender, "<green>Character created with ID " + characterId + "." + " Class: " + hClass.getId() + ", Traitline: " + traitline.getId());
             PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(hPlayer, newCharacter, true);
             Bukkit.getPluginManager().callEvent(event);
         } else if (args.length == 3 && args[1].equalsIgnoreCase("switch")) {
@@ -76,10 +90,22 @@ public class CharacterCommand extends ECommand implements TabCompleter {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 9999, 1, true, false, false));
             characterFuture.thenAccept(character -> {
                 if (character != null) {
-                    hPlayer.setSelectedCharacter(character, false);
-                    PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(hPlayer, character, false);
-                    Bukkit.getPluginManager().callEvent(event);
-                    MessageUtil.sendMessage(commandSender, "<green>Switched to character with ID " + characterId + ".");
+                    try {
+                        hPlayer.setSelectedCharacter(character, false);
+                        BukkitRunnable mainTask = new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(hPlayer, character, false);
+                                Bukkit.getPluginManager().callEvent(event);
+                            }
+                        };
+                        mainTask.runTaskLater(Hecate.getInstance(), 1);
+                        MessageUtil.sendMessage(commandSender, "<green>Switched to character with ID " + characterId + ".");
+                    }
+                    catch (Exception e) {
+                        MessageUtil.sendMessage(commandSender, "<red>Error switching character: " + e.getMessage());
+                        e.printStackTrace();
+                    }
                 } else {
                     MessageUtil.sendMessage(commandSender, "<red>Character not found.");
                 }
