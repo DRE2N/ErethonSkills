@@ -7,6 +7,7 @@ import de.erethon.spellbook.api.TraitData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -49,6 +50,9 @@ public class HawkeyeBasicAttack extends SpellTrait implements Listener {
 
         if (boundingBox.contains(event.getEntity().getLocation().toVector())) {
             damage *= headshotMultiplier;
+            caster.getWorld().spawnParticle(Particle.CRIT, event.getHitEntity().getLocation(), 3, 0.5, 0.5, 0.5);
+            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_ANVIL_HIT, 1, 1);
+            caster.getWorld().playSound(event.getHitEntity(), Sound.ENTITY_ARROW_HIT_PLAYER, 1, 1);
             caster.getTags().add("spellbook.ranger.flow");
         }
 
