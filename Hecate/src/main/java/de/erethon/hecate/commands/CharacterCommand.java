@@ -75,7 +75,7 @@ public class CharacterCommand extends ECommand implements TabCompleter {
             HCharacter newCharacter = new HCharacter(characterId, hPlayer, 1, args[2], new Timestamp(System.currentTimeMillis()), new ArrayList<>());
             newCharacter.setTraitline(traitline);
             hPlayer.getCharacters().add(newCharacter);
-            newCharacter.saveToDatabase(databaseManager);
+            newCharacter.saveToDatabase();
             MessageUtil.sendMessage(commandSender, "<green>Character created with ID " + characterId + "." + " Class: " + hClass.getId() + ", Traitline: " + traitline.getId());
             PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(hPlayer, newCharacter, true);
             Bukkit.getPluginManager().callEvent(event);
@@ -101,6 +101,7 @@ public class CharacterCommand extends ECommand implements TabCompleter {
                         };
                         mainTask.runTaskLater(Hecate.getInstance(), 1);
                         MessageUtil.sendMessage(commandSender, "<green>Switched to character with ID " + characterId + ".");
+                        player.removePotionEffect(PotionEffectType.BLINDNESS);
                     }
                     catch (Exception e) {
                         MessageUtil.sendMessage(commandSender, "<red>Error switching character: " + e.getMessage());

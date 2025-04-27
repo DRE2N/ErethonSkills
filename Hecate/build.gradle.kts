@@ -34,9 +34,7 @@ val papyrusVersion = "1.21.5-R0.1-SNAPSHOT"
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion)
-    implementation("de.erethon:bedrock:1.4.0") { isTransitive = false }
-    implementation("com.zaxxer:HikariCP:6.2.1")
-    implementation("org.postgresql:postgresql:42.7.5")
+    implementation("de.erethon:bedrock:1.5.7") { isTransitive = false }
     implementation(project(":SpellbookSpells"))
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT") // For correct nametags
     compileOnly("de.erethon.hephaestus:Hephaestus:1.0.3-SNAPSHOT") { isChanging = true }
@@ -66,16 +64,13 @@ tasks {
 
     shadowJar {
         dependencies {
-            include(dependency("de.erethon:bedrock:1.4.0"))
-            include(dependency("com.zaxxer:HikariCP:6.2.1"))
+            include(dependency("de.erethon:bedrock:1.5.7"))
             include(project(":SpellbookSpells"))
             include(dependency("com.elmakers.mine.bukkit:EffectLib:10.3"))
-            include(dependency("org.postgresql:postgresql:42.7.5"))
         }
         // Comment relocations out for hotswapping
         relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
         relocate("com.elmakers.mine.bukkit", "de.erethon.hecate.effectlib")
-        relocate("com.zaxxer.hikari", "de.erethon.hecate.hikari")
     }
     jar {
         manifest {

@@ -2,6 +2,7 @@ package de.erethon.hecate;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
+import de.erethon.bedrock.database.BedrockDBConnection;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
 import de.erethon.hecate.charselection.CharacterLobby;
@@ -25,6 +26,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Pig;
 import org.bukkit.event.HandlerList;
@@ -74,8 +76,19 @@ public final class Hecate extends EPlugin {
 
     public void loadCore() {
         spellbook = new Spellbook(this);
-        databaseManager = new DatabaseManager();
-        databaseManager.createTables().join();
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(Bukkit.getWorldContainer(), "environment.yml"));
+        try {
+            BedrockDBConnection connection = new BedrockDBConnection(config.getString("dbUrl"),
+                    config.getString("dbUser"),
+                    config.getString("dbPassword"),
+                    "de.erethon.bedrock.postgresql.ds.PGSimpleDataSource");
+            databaseManager = new DatabaseManager(connection);
+        }
+        catch (Exception e) {
+            MessageUtil.log("Failed to connect to database. Hecate will not work.");
+            e.printStackTrace();
+            return;
+        }
         initFolders();
         instantiate();
         registerCommands();
