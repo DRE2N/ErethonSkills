@@ -6,7 +6,6 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.SphereEffect;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -22,7 +21,7 @@ public class WhirlingBlades extends AssassinBaseSpell {
 
     private final double radius = data.getDouble("radius", 3);
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.5);
-    private final EffectData bleedEffectIdentifier = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Bleeding");
+    private final EffectData bleedEffectIdentifier = Spellbook.getEffectData("Bleeding");
 
     public WhirlingBlades(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);

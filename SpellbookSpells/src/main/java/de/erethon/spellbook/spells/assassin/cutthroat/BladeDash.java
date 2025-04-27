@@ -1,6 +1,7 @@
 package de.erethon.spellbook.spells.assassin.cutthroat;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import de.slikey.effectlib.EffectManager;
@@ -17,9 +18,22 @@ import java.util.Set;
 
 public class BladeDash extends AssassinBaseSpell {
 
+    // The Cutthroat dashes forward, dealing damage to all enemies in its path.
+    // Affected enemies are slowed.
+    // After dashing, the Cutthroat gains power and fury based on the enemies hit.
+
     private final double dashDistance = data.getDouble("distance", 6.0);
     private final double dashSpeedMultiplier = data.getDouble("speedMultiplier", 1.8);
     private final double damageWidth = data.getDouble("damageWidth", 1.5);
+    private final int powerStacksPerHit = data.getInt("powerStacksPerHit", 1);
+    private final int powerDuration = data.getInt("powerDuration", 120);
+    private final int furyStacksPerHit = data.getInt("furyStacksPerHit", 1);
+    private final int furyDuration = data.getInt("furyDuration", 120);
+    private final int slowDuration = data.getInt("slowDuration", 40);
+
+    private final EffectData slowEffect = Spellbook.getEffectData("Slow");
+    private final EffectData powerEffect = Spellbook.getEffectData("Power");
+    private final EffectData furyEffect = Spellbook.getEffectData("Fury");
 
     public BladeDash(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -43,6 +57,7 @@ public class BladeDash extends AssassinBaseSpell {
             if (entity instanceof LivingEntity && !entity.equals(caster) && Spellbook.canAttack(caster, target)) {
                 double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
                 target.damage(damage, caster);
+                target.addEffect(caster, slowEffect, slowDuration, 1);
                 affectedTargets.add(target);
                 playHitEffect(target.getEyeLocation());
             }
@@ -50,6 +65,13 @@ public class BladeDash extends AssassinBaseSpell {
 
         Vector velocity = direction.multiply(dashSpeedMultiplier);
         caster.setVelocity(velocity);
+        int powerStacks = affectedTargets.size() * powerStacksPerHit;
+        int furyStacks = affectedTargets.size() * furyStacksPerHit;
+        if (powerStacks > 0) {
+            caster.addEffect(caster, powerEffect, powerDuration, powerStacks);
+            caster.addEffect(caster, furyEffect, furyDuration, furyStacks);
+            caster.getWorld().playSound(caster, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 1, 1);
+        }
 
         playVisualEffect(startLocation, direction);
         playSoundEffect(startLocation);

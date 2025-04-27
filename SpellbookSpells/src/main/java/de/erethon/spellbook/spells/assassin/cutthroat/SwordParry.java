@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 
 public class SwordParry extends AssassinBaseSpell  {
@@ -41,6 +42,7 @@ public class SwordParry extends AssassinBaseSpell  {
         attacker.damage(damage * damageMultiplier, caster, type);
         attacker.addEffect(caster, stun, effectDuration, 1);
         attacker.interrupt();
+        caster.getWorld().playSound(caster.getLocation(), Sound.ITEM_SHIELD_BLOCK, 1, 1);
         caster.getTags().remove("assassin.parrying");
         return 0;
     }

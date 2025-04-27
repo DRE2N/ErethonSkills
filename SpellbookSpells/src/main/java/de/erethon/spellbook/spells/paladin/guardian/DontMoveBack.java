@@ -1,9 +1,10 @@
-package de.erethon.spellbook.spells.paladin;
+package de.erethon.spellbook.spells.paladin.guardian;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;

@@ -18,6 +18,7 @@ public class SpearThrust extends InquisitorBaseSpell {
     private final int slowDuration = data.getInt("slowDuration", 120);
     private final int burnDuration = data.getInt("burnDuration", 120);
     private final int burnStacks = data.getInt("burnStacks", 1);
+    public int minimumJudgementStacks = data.getInt("minimumJudgementStacks", 3); // Trait: Not yet
 
     private final EffectData weaknessEffect = Spellbook.getEffectData("Weakness");
     private final EffectData burnEffect = Spellbook.getEffectData("Burning");
@@ -39,7 +40,7 @@ public class SpearThrust extends InquisitorBaseSpell {
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_ATTACK_SWEEP, Sound.Source.RECORD, 0.8f, 1));
         target.addEffect(caster, weaknessEffect, weaknessDuration, weaknessStacks);
         addJudgement(target);
-        if (getJudgementStacksOnTarget(target) > 3) {
+        if (getJudgementStacksOnTarget(target) > minimumJudgementStacks) {
             target.addEffect(caster, slowEffect, slowDuration, 1);
             target.addEffect(caster, burnEffect, burnDuration, burnStacks);
             target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_BLAZE_SHOOT, Sound.Source.RECORD, 1, 1));

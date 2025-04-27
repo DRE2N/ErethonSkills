@@ -1,10 +1,11 @@
-package de.erethon.spellbook.spells.paladin.inquisitor;
+package de.erethon.spellbook.spells.paladin.guardian;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
+import de.erethon.spellbook.spells.paladin.inquisitor.InquisitorBaseSpell;
 import de.slikey.effectlib.effect.CircleEffect;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
@@ -17,12 +18,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ComprehensiveBlessing extends PaladinBaseSpell {
+public class GuardianAid extends PaladinBaseSpell {
 
     private final int range = data.getInt("range", 10);
+    private final int resistanceDuration = data.getInt("resistanceDuration", 120);
+    private final int stabilityDuration = data.getInt("stabilityDuration", 120);
+    private final int resistanceStacks = data.getInt("resistanceStacks", 1);
+    private final int stabilityStacks = data.getInt("stabilityStacks", 1);
+
+    private final EffectData resistance = Spellbook.getEffectData("Resistance");
+    private final EffectData stability = Spellbook.getEffectData("Stability");
+
     private final Set<CircleEffect> circleEffects = new HashSet<>();
 
-    public ComprehensiveBlessing(LivingEntity caster, SpellData spellData) {
+
+    public GuardianAid(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 
@@ -36,7 +46,6 @@ public class ComprehensiveBlessing extends PaladinBaseSpell {
             living.getEffects().forEach(e -> {
                 if (!e.data.isPositive()) {
                     living.removeEffect(e.data);
-                    MessageUtil.log("Removed negative " + e.data.getName() + " from " + living.getName());
                 }
             });
             Location livingLocation = living.getLocation().clone();
@@ -60,6 +69,10 @@ public class ComprehensiveBlessing extends PaladinBaseSpell {
                 }
             }
         };
+        for (LivingEntity living : entities) {
+            living.addEffect(caster, resistance, resistanceDuration, resistanceStacks);
+            living.addEffect(caster, stability, stabilityDuration, stabilityStacks);
+        }
         moveCircles.runTaskTimer(Spellbook.getInstance().getImplementer(), 0, 1);
         return super.onCast();
     }

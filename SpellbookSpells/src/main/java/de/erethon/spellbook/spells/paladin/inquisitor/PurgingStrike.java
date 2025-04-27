@@ -14,7 +14,7 @@ public class PurgingStrike extends InquisitorBaseSpell {
 
     // Strike an enemy with your spear, removing a positive effect from them per stack of Judgement.
     // The effect is removed from the target and applied to the caster.
-    // Additionally, the target is stunned for 1 second per stack of Judgement.
+    // Additionally, the target is stunned per stack of Judgement.
 
     private final int range = data.getInt("range", 3);
     private final int stunDuration =  data.getInt("stunDuration", 20);
@@ -51,7 +51,8 @@ public class PurgingStrike extends InquisitorBaseSpell {
                 triggerTraits(target);
             }
         }
-        target.addEffect(caster, stun, stunDuration, 1);
+        int stunStacks = stacks * stunDuration;
+        target.addEffect(caster, stun, stunStacks, 1);
         return super.onCast();
     }
 }

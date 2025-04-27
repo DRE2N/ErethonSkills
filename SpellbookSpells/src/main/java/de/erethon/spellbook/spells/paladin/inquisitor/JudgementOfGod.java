@@ -25,7 +25,7 @@ import java.util.Set;
 
 public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
 
-    // Massive AoE damage spell that deals damage to all enemies in a radius around the caster.
+    // AoE damage spell that deals massive damage to all enemies in a radius around the caster.
     // Can only be used if the target has maximum judgement stacks.
     // If an enemy dies, it will deal additional damage to all enemies in a smaller radius around the corpse and apply weakness.
     // The initial damage is distributed among all enemies in the radius.
@@ -36,6 +36,7 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
     private final int effectStacks = data.getInt("effectStacks", 5);
     public double deathDamageRange = data.getDouble("deathDamageRange", 5); // Trait: SuppressionOfTheHeretics
     public double deathDamageMultiplier = data.getDouble("deathDamageMultiplier", 0.1); // Trait: SuppressionOfTheHeretics
+
     private final EffectData weakness = Spellbook.getEffectData("Weakness");
 
     private int ticks = 0;

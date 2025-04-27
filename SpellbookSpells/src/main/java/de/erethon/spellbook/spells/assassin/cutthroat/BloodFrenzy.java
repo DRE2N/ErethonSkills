@@ -1,6 +1,7 @@
 package de.erethon.spellbook.spells.assassin.cutthroat;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -21,13 +22,13 @@ public class BloodFrenzy extends AssassinBaseSpell {
     private final double attackSpeedBonus = data.getDouble("attackSpeedBonus", 0.2);
     private final double movementSpeedBonus = data.getDouble("movementSpeedBonus", 0.1);
     private final double defenseMalusPercent = data.getDouble("defenseMalusPercent", -0.2);
-    private final int effectDuration = data.getInt("effectDuration", 10);
+    private final int effectDuration = data.getInt("effectDuration", 19);
     private final int effectStacksPerSecond = data.getInt("effectStacksPerSecond", 1);
     private final AttributeModifier attackSpeedModifier = new AttributeModifier(NamespacedKey.fromString("spellbook:blood_frenzy_attack_speed"), attackSpeedBonus, AttributeModifier.Operation.ADD_NUMBER);
     private final AttributeModifier movementSpeedModifier = new AttributeModifier(NamespacedKey.fromString("spellbook:blood_frenzy_movement_speed"), movementSpeedBonus, AttributeModifier.Operation.ADD_NUMBER);
     private final AttributeModifier defenseMalus = new AttributeModifier(NamespacedKey.fromString("spellbook:blood_frenzy_defense_malus"), defenseMalusPercent, AttributeModifier.Operation.ADD_SCALAR);
 
-    private EffectData bleeding = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Bleeding");
+    private final EffectData bleeding = Spellbook.getEffectData("Bleeding");
     private int ticks = 0;
 
     public BloodFrenzy(LivingEntity caster, SpellData spellData) {

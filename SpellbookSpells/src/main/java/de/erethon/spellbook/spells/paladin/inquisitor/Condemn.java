@@ -12,7 +12,7 @@ import org.bukkit.util.BoundingBox;
 
 public class Condemn extends InquisitorBaseSpell {
 
-    // RMB. Slam down the spear, dealing damage and weakness to all enemies in a cone in front of you. Consumes all judgements on enemies and
+    // RMB. Slam down the spear, dealing damage and weakness to all enemies in a cone in front of you. Consumes all judgement on enemies and
     // applies burning for each stack of judgement consumed. Heals allies in a small radius per judgement consumed.
 
     private final int burningStacksPerJudgement = data.getInt("burningStacksPerJudgement", 1);
