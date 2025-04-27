@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.paladin.inquisitor;
+package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
@@ -7,7 +7,7 @@ import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.spells.SpellbookBaseSpell;
-import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
+import de.erethon.spellbook.spells.paladin.inquisitor.InquisitorBaseSpell;
 import de.slikey.effectlib.effect.LineEffect;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ChainsOfPain extends PaladinBaseSpell implements Listener {
+public class ChainsOfPain extends InquisitorBaseSpell implements Listener {
 
     private final double maxDistance = data.getDouble("maxDistance", 7);
     private final double lookForSecondTargetRange = data.getDouble("lookForSecondTargetRange", 5);

@@ -17,11 +17,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class HolyFire extends PaladinBaseSpell {
+public class HolyFire extends InquisitorBaseSpell {
+
+    // Creates an expanding circle of fire that damages enemies and heals allies
+    // Does bonus healing based on judgment stacks on the enemies it has dealt damage to
 
     private final int duration = data.getInt("duration", 10);
     private final float range = (float) data.getDouble("range", 0.8);
     private final double healAmount = data.getDouble("baseFinishHeal", 15);
+    private final double bonusHealPerJudgementStack = data.getDouble("bonusHealPerJudgementStack", 25);
 
     private CircleEffect circleEffect;
 
@@ -79,6 +83,7 @@ public class HolyFire extends PaladinBaseSpell {
         explode.setLocation(loc);
         explode.start();
         Set<LivingEntity> enemies = new HashSet<>();
+        Set<LivingEntity> friends = new HashSet<>();
         loc.getWorld().playSound(Sound.sound(org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, Sound.Source.RECORD, 1, 1), loc.getX(), loc.getY(), loc.getZ());
         BukkitRunnable explodeTask = new BukkitRunnable() {
             @Override
@@ -88,6 +93,7 @@ public class HolyFire extends PaladinBaseSpell {
                     loc.getNearbyLivingEntities(explode.radius).forEach(e -> {
                         if (!Spellbook.canAttack(caster, e)) {
                             e.setHealth(e.getHealth() + healAmount + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER));
+                            friends.add(e);
                         } else {
                             enemies.add(e);
                         }
@@ -98,7 +104,20 @@ public class HolyFire extends PaladinBaseSpell {
         };
         triggerTraits(enemies, 1);
         explodeTask.runTaskTimer(Spellbook.getInstance().getImplementer(), 0, 1);
-
+        if (explode.isDone()) {
+            int totalJudgementStacks = 0;
+            for (LivingEntity living : enemies) {
+                int judgementStacks = getJudgementStacksOnTarget(living);
+                totalJudgementStacks += judgementStacks;
+                for (int i = 0; i <= judgementStacks; i++) {
+                    removeJudgement(living);
+                }
+            }
+            int bonusHeal = (int) (bonusHealPerJudgementStack * totalJudgementStacks);
+            for (LivingEntity living : friends) {
+                living.setHealth(living.getHealth() + bonusHeal);
+            }
+        }
     }
 
     @Override
