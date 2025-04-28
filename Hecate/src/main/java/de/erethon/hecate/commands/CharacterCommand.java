@@ -10,6 +10,9 @@ import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class CharacterCommand extends ECommand implements TabCompleter {
 
@@ -88,7 +92,9 @@ public class CharacterCommand extends ECommand implements TabCompleter {
             }
             CompletableFuture<HCharacter> characterFuture = databaseManager.getCharacterData(characterId);
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 9999, 1, true, false, false));
-            characterFuture.thenAccept(character -> {
+            Title title = Title.title(Component.empty(), Component.text("Switching...", NamedTextColor.YELLOW));
+            player.showTitle(title);
+            characterFuture.thenApply(character -> {
                 if (character != null) {
                     try {
                         hPlayer.setSelectedCharacter(character, false);
@@ -97,11 +103,13 @@ public class CharacterCommand extends ECommand implements TabCompleter {
                             public void run() {
                                 PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(hPlayer, character, false);
                                 Bukkit.getPluginManager().callEvent(event);
+                                player.removePotionEffect(PotionEffectType.BLINDNESS);
+                                Title title = Title.title(Component.empty(), Component.empty());
+                                player.showTitle(title);
                             }
                         };
-                        mainTask.runTaskLater(Hecate.getInstance(), 1);
+                        mainTask.runTaskLater(Hecate.getInstance(), 20);
                         MessageUtil.sendMessage(commandSender, "<green>Switched to character with ID " + characterId + ".");
-                        player.removePotionEffect(PotionEffectType.BLINDNESS);
                     }
                     catch (Exception e) {
                         MessageUtil.sendMessage(commandSender, "<red>Error switching character: " + e.getMessage());
@@ -110,6 +118,7 @@ public class CharacterCommand extends ECommand implements TabCompleter {
                 } else {
                     MessageUtil.sendMessage(commandSender, "<red>Character not found.");
                 }
+                return null;
             });
         } else {
             MessageUtil.sendMessage(commandSender, "<red>Invalid command usage.");

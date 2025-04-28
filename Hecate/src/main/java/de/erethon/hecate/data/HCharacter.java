@@ -7,15 +7,23 @@ import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.events.CombatModeReason;
+import de.erethon.spellbook.api.SpellData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.craftbukkit.util.CraftLocation;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -189,6 +197,7 @@ public class HCharacter {
                 MessageUtil.log("Failed to update player data for character " + characterID + ": Character not found in DB (0 rows affected).");
             } else {
                 MessageUtil.log("Saved player data blob for character " + characterID + " (" + rows + " rows affected).");
+                MessageUtil.log("Location: " + hPlayer.getPlayer().getLocation());
             }
         }).exceptionally(ex -> {
             MessageUtil.log("Failed to save character player data for " + characterID + ": " + ex.getMessage());
@@ -199,8 +208,8 @@ public class HCharacter {
 
     public byte[] serializePlayerDataToBlob(boolean castModeSwitch) {
         Player bukkitPlayer = hPlayer.getPlayer();
-        if (bukkitPlayer == null || !bukkitPlayer.isOnline()) {
-            MessageUtil.log("Cannot serialize player data for character " + characterID + ": Player is null or offline.");
+        if (bukkitPlayer == null) {
+            MessageUtil.log("Cannot serialize player data for character " + characterID + ": Player is null");
             return null;
         }
         CraftPlayer craftPlayer = (CraftPlayer) bukkitPlayer;
@@ -209,8 +218,6 @@ public class HCharacter {
             CompoundTag tag = new CompoundTag();
             craftPlayer.getHandle().saveWithoutId(tag);
 
-            tag.remove("WorldUUIDLeast");
-            tag.remove("WorldUUIDMost");
             tag.remove("Paper.OriginWorld");
             tag.remove("UUID");
 
@@ -250,8 +257,12 @@ public class HCharacter {
 
     private void deserializePlayerDataFromBlob(byte[] blob) {
         Player bukkitPlayer = hPlayer.getPlayer();
-        if (bukkitPlayer == null || !bukkitPlayer.isOnline()) {
-            MessageUtil.log("Cannot deserialize player data for character " + characterID + ": Player is null or offline.");
+        if (bukkitPlayer == null) {
+            MessageUtil.log("Cannot deserialize player data for character " + characterID + ": Player is null.");
+            return;
+        }
+        if  (!bukkitPlayer.isConnected()) {
+            MessageUtil.log("Cannot deserialize player data for character " + characterID + ": Player is offline.");
             return;
         }
         CraftPlayer craftPlayer = (CraftPlayer) bukkitPlayer;
@@ -266,6 +277,7 @@ public class HCharacter {
                 public void run() {
                     try {
                         ServerPlayer serverPlayer = craftPlayer.getHandle();
+                        Level serverLevel = serverPlayer.level();
 
                         // Todo: Readd Leafs DataFixer here
                         boolean wasInCastMode = tag.contains("HecateHotbar");
@@ -277,6 +289,7 @@ public class HCharacter {
                             tag.remove("Motion");
                             tag.remove("Rotation");
                             tag.remove("FallDistance"); // Don't restore old fall distance
+                            MessageUtil.log("Player " + characterID + " was in cast mode, not restoring position/rotation.");
                         }
                         // Remove UUID to prevent issues
                         tag.remove("UUID");
@@ -333,10 +346,24 @@ public class HCharacter {
 
 
                         if (!wasInCastMode) {
-                            serverPlayer.connection.teleport(serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), serverPlayer.getYRot(), serverPlayer.getXRot());
+                            serverPlayer.setDeltaMovement(Vec3.ZERO);
+                            craftPlayer.teleport(CraftLocation.toBukkit(serverPlayer.position(), serverLevel.getWorld(), serverPlayer.getYRot(), serverPlayer.getXRot()).add(0, 2, 0));
+                            //serverPlayer.connection.teleport(serverPlayer.getX(), yToTeleport + 2, serverPlayer.getZ(), serverPlayer.getYRot(), serverPlayer.getXRot(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+                        }
+
+                        // Spellbook:
+                        craftPlayer.getUnlockedSpells().clear();
+                        craftPlayer.getPassiveSpells().clear(); // Not used anymore, I think
+                        craftPlayer.getActiveSpells().clear(); // Same
+                        for (String spellId : skills) {
+                            if (spellId != null && !spellId.isEmpty()) {
+                                SpellData sData = Bukkit.getServer().getSpellbookAPI().getLibrary().getSpellByID(spellId);
+                                craftPlayer.getUnlockedSpells().add(sData);
+                            }
                         }
 
                         MessageUtil.log("Successfully applied deserialized player data for character " + characterID);
+                        MessageUtil.log("Location: " + craftPlayer.getLocation());
 
                     } catch (Exception e) {
                         MessageUtil.log("Critical error applying deserialized player data for character " + characterID + " on main thread:");

@@ -7,8 +7,10 @@ import de.erethon.bedrock.jdbi.v3.core.Handle;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.data.dao.PlayerDao;
+import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
 import de.erethon.papyrus.events.PlayerDataSaveEvent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,6 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -26,8 +30,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 public class DatabaseManager extends EDatabaseManager implements Listener {
@@ -38,7 +45,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     private final CharacterDao characterDao;
 
     public DatabaseManager(BedrockDBConnection connection) {
-        super(connection, runnable -> Bukkit.getScheduler().runTaskAsynchronously(Hecate.getInstance(), runnable));
+        super(connection, new ThreadPoolExecutor(2, 4, 60L, java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<>()));
 
         this.playerDao = getDao(PlayerDao.class);
         this.characterDao = getDao(CharacterDao.class);
@@ -132,7 +139,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
                     MessageUtil.log("Schema setup: All statements executed successfully.");
                 } catch (Exception e) {
-                    MessageUtil.log("!!! Critical error INSIDE schema setup async task !!!");
+                    MessageUtil.log("!!! Critical error with schema setup async task !!!");
                     e.printStackTrace();
                     throw new RuntimeException("Error during async schema execution", e);
                 }
@@ -151,18 +158,16 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         String traitlineId = character.getTraitline() != null ? character.getTraitline().getId() : null;
         Integer[] selectedTraitsArray = character.getSelectedTraits();
 
-        return queryAsync(handle -> {
-            return characterDao.upsertCharacter(
-                    character.getCharacterID(),
-                    character.getHPlayer().getPlayerId(),
-                    character.getLevel(),
-                    character.getClassId(),
-                    playerData,
-                    skillsString,
-                    traitlineId,
-                    selectedTraitsArray
-            ) > 0;
-        })
+        return queryAsync(handle -> characterDao.upsertCharacter(
+                character.getCharacterID(),
+                character.getHPlayer().getPlayerId(),
+                character.getLevel(),
+                character.getClassId(),
+                playerData,
+                skillsString,
+                traitlineId,
+                selectedTraitsArray
+        ) > 0)
         .exceptionally(ex -> {
             MessageUtil.log("Error saving character " + character.getCharacterID() + " for player " + character.getHPlayer().getPlayerId() + ": " + ex.getMessage());
             ex.printStackTrace();
@@ -192,6 +197,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 }
             }
             hPlayer.setCharacters(characters);
+            hPlayer.setLastCharacter(playerDao.findLastCharacterId(playerId).orElse(null));
             MessageUtil.log("Loaded player data and " + characters.size() + " characters for " + playerId);
             return hPlayer;
         }).exceptionally(ex -> {
@@ -332,7 +338,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         if (hPlayer == null) {
             return CompletableFuture.completedFuture(null);
         }
-        UUID lastCharId = (hPlayer.getSelectedCharacter() != null) ? hPlayer.getSelectedCharacter().getCharacterID() : null;
+        UUID lastCharId = hPlayer.getLastCharacter();
         Timestamp now = Timestamp.from(Instant.now());
 
         return executeAsync(handle -> playerDao.upsertPlayer(hPlayer.getPlayerId(), now, lastCharId))
@@ -444,29 +450,23 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         UUID uuid = event.getUniqueId();
         MessageUtil.log("AsyncPlayerPreLoginEvent for " + uuid);
 
-        loadPlayerData(uuid).thenAcceptAsync(hPlayer -> {
-                    if (hPlayer == null) {
-                        HPlayer newHPlayer = new HPlayer(uuid);
-                        uuidToHPlayerMap.put(uuid, newHPlayer);
-                        savePlayerData(newHPlayer)
-                                .thenRun(() -> MessageUtil.log("Created new player entry for " + uuid))
-                                .exceptionally(ex -> {
-                                    MessageUtil.log("Failed to save new player entry for " + uuid + ": " + ex.getMessage());
-                                    return null;
-                                });
-                        MessageUtil.log("Created shell HPlayer for new player " + uuid);
-                    } else {
-                        // Player loaded successfully, store in cache
-                        uuidToHPlayerMap.put(uuid, hPlayer);
-                        MessageUtil.log("Cached loaded HPlayer for " + uuid);
-                    }
-                }, runnable -> Bukkit.getScheduler().runTask(Hecate.getInstance(), runnable))
-                .exceptionally(ex -> {
-                    MessageUtil.log("Critical error loading player data for " + uuid + " during pre-login: " + ex.getMessage());
-                    ex.printStackTrace();
-                    event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, Component.text("An error occurred while loading your data. Please try again later."));
-                    return null;
-                });
+        try {
+            HPlayer hPlayer = loadPlayerData(uuid).join(); // Block here, we need to wait until the data is loaded to proceed.
+            if (hPlayer == null) {
+                MessageUtil.log("No data found for " + uuid + ". Creating new entry.");
+                HPlayer newHPlayer = new HPlayer(uuid);
+                uuidToHPlayerMap.put(uuid, newHPlayer);
+                MessageUtil.log("Created shell HPlayer for new player " + uuid);
+
+            } else {
+                // Player data loaded successfully, cache it
+                uuidToHPlayerMap.put(uuid, hPlayer);
+                MessageUtil.log("Cached loaded HPlayer for " + uuid);
+            }
+        } catch (Exception e) {
+            MessageUtil.log("Error loading HPlayer for " + uuid + ": " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @EventHandler
@@ -486,7 +486,33 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         hPlayer.setPlayer(player);
         MessageUtil.log("Associated Player object with HPlayer for " + uuid);
 
-        // loadLastCharacterForPlayer(hPlayer);
+        if (hPlayer.getLastCharacter() != null) {
+            CompletableFuture<HCharacter> characterFuture = getCharacterData(hPlayer.getLastCharacter());
+            HPlayer finalHPlayer = hPlayer;
+            MessageUtil.log("Found last character ID " + hPlayer.getLastCharacter() + " for player " + uuid);
+            characterFuture.thenAccept(character -> {
+                if (character != null) {
+                    try {
+                        finalHPlayer.setSelectedCharacter(character, false);
+                        BukkitRunnable mainTask = new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(finalHPlayer, character, false);
+                                Bukkit.getPluginManager().callEvent(event);
+                                player.removePotionEffect(PotionEffectType.BLINDNESS);
+                                Title title = Title.title(Component.empty(), Component.empty());
+                                player.showTitle(title);
+                            }
+                        };
+                        mainTask.runTaskLater(Hecate.getInstance(), 20);
+                        MessageUtil.sendMessage(finalHPlayer.getPlayer(), "<green>Switched to last selected character.");
+                    } catch (Exception e) {
+                        MessageUtil.sendMessage(finalHPlayer.getPlayer(), "<red>Error switching character: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
     @EventHandler
@@ -504,24 +530,14 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     @Override
     public void close() {
         MessageUtil.log("Performing final saves before shutdown...");
-        CompletableFuture<?>[] saveFutures = getLoadedPlayers().stream()
-                .map(hPlayer -> {
-                    CompletableFuture<Boolean> saveCharacterFuture = null;
-                    if (hPlayer.getSelectedCharacter() != null) {
-                        saveCharacterFuture = createOrUpdateCharacter(hPlayer.getSelectedCharacter());
-                    }
-                    return saveCharacterFuture;
-                })
-                .toArray(CompletableFuture<?>[]::new);
-
-        try {
-            CompletableFuture.allOf(saveFutures).join(); // Wait for saves to complete
-            MessageUtil.log("Final saves completed.");
-        } catch(Exception e) {
-            MessageUtil.log("Error during final saves: " + e.getMessage());
-            e.printStackTrace();
-        }
-
+        getLoadedPlayers().forEach(hPlayer -> {
+            try {
+                savePlayerData(hPlayer).join();
+            } catch (Exception e) {
+                MessageUtil.log("Error during final save for " + hPlayer.getPlayerId() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
         super.close();
     }
 }

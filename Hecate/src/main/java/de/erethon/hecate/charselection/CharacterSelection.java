@@ -57,7 +57,7 @@ public class CharacterSelection extends BaseSelection {
             setup();
             return;
         }
-        hPlayer.getSelectedCharacter().saveToDatabase(databaseManager).thenAccept(v -> { // make sure the current character is saved first
+        hPlayer.getSelectedCharacter().saveToDatabase().thenAccept(v -> { // make sure the current character is saved first
             setup();
             hPlayer.setSelectedCharacter(null, false);
         });
@@ -157,7 +157,7 @@ public class CharacterSelection extends BaseSelection {
                         HCharacter newCharacter = new HCharacter(UUID.randomUUID(), hPlayer, 1, "default", new Timestamp(System.currentTimeMillis()), new ArrayList<>());
                         hPlayer.getCharacters().add(newCharacter);
                         playerIsDone = true;
-                        newCharacter.saveToDatabase(databaseManager).thenAccept(v -> {
+                        newCharacter.saveToDatabase().thenAccept(v -> {
                             hPlayer.setSelectedCharacter(newCharacter, true);
                             player.showTitle(Title.title(Component.empty(), Component.text("Initializing new character...", NamedTextColor.GREEN)));
                             BukkitRunnable runLater = new BukkitRunnable() {
