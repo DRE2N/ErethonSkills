@@ -1,27 +1,17 @@
 package de.erethon.hecate.listeners;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
-import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.hecate.events.CombatModeReason;
-import de.erethon.hecate.ui.CharacterSelection;
 import de.erethon.hecate.ui.DamageColor;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
-import de.erethon.hecate.util.ResourcepackHandler;
 import de.erethon.papyrus.PDamageType;
-import de.erethon.papyrus.PlayerSwitchProfileEvent;
-import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.ranger.pet.RangerPet;
+import de.erethon.spellbook.spells.ranger.beastmaster.pet.RangerPet;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -29,26 +19,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import java.io.File;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -78,21 +56,8 @@ public class PlayerCastListener implements Listener {
         }
     };
 
-    BukkitRunnable castModeUIUpdater = new BukkitRunnable() {
-        @Override
-        public void run() {
-            for (HPlayer player : cache.getPlayers()) {
-                HCharacter character = player.getSelectedCharacter();
-                /*if (character.isInCastmode()) {
-                    character.update();
-                }*/
-            }
-        }
-    };
-
     public PlayerCastListener() {
         remover.runTaskTimer(plugin, 0, 20);
-        castModeUIUpdater.runTaskTimer(plugin, 0, 10);
     }
 
     @EventHandler

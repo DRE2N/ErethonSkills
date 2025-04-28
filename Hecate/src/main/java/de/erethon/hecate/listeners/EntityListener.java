@@ -55,8 +55,10 @@ public class EntityListener implements Listener {
         if (displayManager.hasStatusDisplay(event.getEntity())) {
             return;
         }
-        displayManager.addStatusDisplay(event.getEntity(), new EntityStatusDisplay((LivingEntity) event.getEntity()));
-        event.getEntity().setCustomNameVisible(true);
+        if (event.getEntity() instanceof LivingEntity living) {
+            displayManager.addStatusDisplay(living, new EntityStatusDisplay(living));
+            event.getEntity().setCustomNameVisible(true);
+        }
     }
     @EventHandler
     public void onEntityAdd(EntityAddToWorldEvent event) {

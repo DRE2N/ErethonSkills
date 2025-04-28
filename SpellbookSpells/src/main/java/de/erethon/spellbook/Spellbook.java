@@ -2,6 +2,7 @@ package de.erethon.spellbook;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.TraitData;
@@ -38,6 +39,10 @@ public class Spellbook {
     private static final Random random = new Random();
 
     private final Set<EffectData> ccEffects = new HashSet<>();
+
+    private final EffectData stability = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Stability");
+    private final EffectData resistance = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Resistance");
+    private final EffectData silence = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Silence");
 
     /**
      * Damage is divided by this value, and the result is the maximum variance.
@@ -86,6 +91,27 @@ public class Spellbook {
      */
     public Set<EffectData> getCCEffects() {
         return ccEffects;
+    }
+
+    public boolean isCCImmune(SpellCaster caster) {
+        if (caster == null) {
+            return false;
+        }
+        return caster.hasEffect(stability);
+    }
+
+    public boolean isSilenced(SpellCaster caster) {
+        if (caster == null) {
+            return false;
+        }
+        return caster.hasEffect(silence);
+    }
+
+    public boolean isResistant(SpellCaster caster) {
+        if (caster == null) {
+            return false;
+        }
+        return caster.hasEffect(resistance);
     }
 
     /** Toggles debug mode. In debug mode, teams are ignored and additional debug messages are printed to the console.

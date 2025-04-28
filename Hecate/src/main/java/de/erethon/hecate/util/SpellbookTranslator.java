@@ -16,19 +16,6 @@ import java.util.Map;
 
 public class SpellbookTranslator extends MiniMessageTranslator {
 
-    public static final Material[] SPELL_ICONS = new Material[] {
-            Material.BLACK_DYE,
-            Material.BLUE_DYE,
-            Material.BROWN_DYE,
-            Material.CYAN_DYE,
-            Material.GRAY_DYE,
-            Material.GREEN_DYE,
-            Material.LIGHT_BLUE_DYE,
-            Material.LIGHT_GRAY_DYE,
-            Material.LIME_DYE,
-            Material.MAGENTA_DYE,
-    };
-
     private final Map<String, Map<Locale, String>> translations = new HashMap<>();
 
     public void registerTranslation(String key, String translation, Locale locale) {
@@ -44,8 +31,6 @@ public class SpellbookTranslator extends MiniMessageTranslator {
     public @NotNull TriState hasAnyTranslations() {
         return TriState.TRUE;
     }
-
-
 
     @Override
     protected @Nullable String getMiniMessageString(@NotNull String key, @NotNull Locale locale) {
