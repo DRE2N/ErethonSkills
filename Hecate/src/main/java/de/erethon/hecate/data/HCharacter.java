@@ -425,6 +425,7 @@ public class HCharacter {
 
 
     public boolean isInCastMode() { return isInCastMode; }
+    public CharacterCastingManager getCastingManager() { return castingManager; }
     public UUID getCharacterID() { return characterID; }
     public HPlayer getHPlayer() { return hPlayer; }
     public int getLevel() { return level; }

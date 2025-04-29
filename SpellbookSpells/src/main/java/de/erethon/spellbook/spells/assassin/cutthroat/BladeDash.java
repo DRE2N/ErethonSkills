@@ -31,9 +31,9 @@ public class BladeDash extends AssassinBaseSpell {
     private final int powerDuration = data.getInt("powerDuration", 120);
     private final int furyStacksPerHit = data.getInt("furyStacksPerHit", 1);
     private final int furyDuration = data.getInt("furyDuration", 120);
-    private final int slowDuration = data.getInt("slowDuration", 40);
+    private final int weaknessDuration = data.getInt("weaknessDuration", 80);
 
-    private final EffectData slowEffect = Spellbook.getEffectData("Slow");
+    private final EffectData weakness = Spellbook.getEffectData("Weakness");
     private final EffectData powerEffect = Spellbook.getEffectData("Power");
     private final EffectData furyEffect = Spellbook.getEffectData("Fury");
 
@@ -75,7 +75,7 @@ public class BladeDash extends AssassinBaseSpell {
             if (entity instanceof LivingEntity && !entity.equals(caster) && Spellbook.canAttack(caster, target)) {
                 double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
                 target.damage(damage, caster);
-                target.addEffect(caster, slowEffect, slowDuration, 1);
+                target.addEffect(caster, weakness, weaknessDuration, 1);
                 affectedTargets.add(target);
                 playHitEffect(target.getEyeLocation());
             }

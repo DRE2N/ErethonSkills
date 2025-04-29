@@ -530,14 +530,18 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     @Override
     public void close() {
         MessageUtil.log("Performing final saves before shutdown...");
-        getLoadedPlayers().forEach(hPlayer -> {
+        int players = getLoadedPlayers().size();
+        int saved = 0;
+        for (HPlayer hPlayer : getLoadedPlayers()) {
             try {
                 savePlayerData(hPlayer).join();
+                saved++;
             } catch (Exception e) {
                 MessageUtil.log("Error during final save for " + hPlayer.getPlayerId() + ": " + e.getMessage());
                 e.printStackTrace();
             }
-        });
+        }
+        MessageUtil.log("Saved " + saved + "/" + players + " players before shutdown.");
         super.close();
     }
 }

@@ -1,17 +1,25 @@
 package de.erethon.hecate.listeners;
 
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
+import de.erethon.hecate.casting.SpecialActionKey;
+import de.erethon.hecate.charselection.CharacterSelection;
 import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.DamageColor;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
+import de.erethon.hecate.util.ResourcepackHandler;
 import de.erethon.papyrus.PDamageType;
+import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.beastmaster.pet.RangerPet;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Color;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -19,7 +27,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -120,38 +138,37 @@ public class PlayerCastListener implements Listener {
 
     }
 
-    /*@EventHandler
+    @EventHandler
     public void onItemSwitch(PlayerItemHeldEvent event) {
-        HCharacter hCharacter = cache.getCharacter(event.getPlayer());
-        if (!hCharacter.isInCastmode()) {
+        HCharacter hCharacter = cache.getCurrentCharacter(event.getPlayer());
+        if (!hCharacter.isInCastMode()) {
             return;
         }
         event.setCancelled(true);
-        SpellData spell = hCharacter.getSpellAt(event.getNewSlot());
+        SpellData spell = hCharacter.getCastingManager().getSpellAtSlot(event.getNewSlot());
         if (spell != null && event.getPlayer().canCast(spell)) {
             spell.queue(event.getPlayer());
-            hCharacter.update();
         }
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        HCharacter hCharacter = cache.getCharacter((Player) event.getWhoClicked());
+        HCharacter hCharacter = cache.getCurrentCharacter((Player) event.getWhoClicked());
         if (hCharacter == null) {
             return;
         }
-        if (hCharacter.isInCastmode()) {
+        if (hCharacter.isInCastMode()) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
-        HCharacter hCharacter = cache .getCharacter(event.getPlayer());
-        if (hCharacter.isInCastmode()) {
+        HCharacter hCharacter = cache.getCurrentCharacter(event.getPlayer());
+        if (hCharacter.isInCastMode()) {
             event.setCancelled(true);
-            if (hCharacter.getSelectedTraitline() != null && hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.Q) != null) {
-                hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.Q).queue(event.getPlayer());
+            if (hCharacter.getTraitline() != null && hCharacter.getTraitline().getSpecialAction(SpecialActionKey.Q) != null) {
+                hCharacter.getTraitline().getSpecialAction(SpecialActionKey.Q).queue(event.getPlayer());
             }
         }
     }
@@ -195,70 +212,35 @@ public class PlayerCastListener implements Listener {
         Player player = event.getPlayer();
         player.setInvisible(false);
         player.setWalkSpeed(0.2f);
-        HPlayer hPlayer = cache.getByPlayer(player);
-        new ResourcepackHandler(player, player1 -> {
-            finishResourcepack(player, hPlayer);
-        });
     }
 
     @EventHandler
     public void onDisconnect(PlayerQuitEvent event) {
-        if (cache.getCharacter(event.getPlayer()).isInCastmode()) {
-            cache.getCharacter(event.getPlayer()).switchMode(CombatModeReason.PLUGIN);
+        if (cache.getCurrentCharacter(event.getPlayer()).isInCastMode()) {
+            cache.getCurrentCharacter(event.getPlayer()).switchCastMode(CombatModeReason.PLUGIN, false);
         }
-        cache.getByPlayer(event.getPlayer()).saveUser();
-        event.getPlayer().saveData();
-        cache.remove(cache.getByPlayer(event.getPlayer()));
         MessageUtil.log("Disconnected " + event.getPlayer().getName() + " (" + event.getPlayer().getUniqueId() + ")");
-    }
-
-    @EventHandler
-    public void onSwitch(PlayerSwitchProfileEvent event) {
-        Player player = event.getPlayer();
-        int id = event.getNewProfileID();
-        File file = new File(Hecate.getInstance().getDataFolder(), "inventories/" + player.getUniqueId() + "_" + id + ".yml");
-        if (!file.exists()) {
-            return;
-        }
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-        if (config.getBoolean("active")) {
-            HCharacter hCharacter = cache.getCharacter(player);
-            hCharacter.loadInventory().thenAccept(bool -> {
-                if (!bool) {
-                    MessageUtil.sendMessage(player, "&cThere was an error while loading your inventory. Please report this issue.");
-                }
-            });
-        }
-    }
-
-    @EventHandler
-    public void preCommand(PlayerCommandPreprocessEvent event) {
-        Player player = event.getPlayer();
-        HPlayer hPlayer = cache.getByPlayer(player);
-        if (hPlayer.getSelectedCharacter() == null && !event.getMessage().equals("/h character")) {
-            MessageUtil.sendMessage(player, "&cYou need to select a character first.");
-            event.setCancelled(true);
-        }
     }
 
 
     private void castRightclickAction(Player player) {
-        HCharacter hCharacter = cache.getCharacter(player);
-        if (hCharacter == null || !hCharacter.isInCastmode()) return;
-        if (hCharacter.getSelectedTraitline() != null && hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
-            hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK).queue(player);
+        HCharacter hCharacter = cache.getCurrentCharacter(player);
+        if (hCharacter == null || !hCharacter.isInCastMode()) return;
+        if (hCharacter.getTraitline() != null && hCharacter.getTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
+            hCharacter.getTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK).queue(player);
         }
     }
 
     private void castLeftclickAction(Player player) {
-        HCharacter hCharacter = cache.getCharacter(player);
-        if (hCharacter == null || !hCharacter.isInCastmode()) return;
-        if (hCharacter.getSelectedTraitline() != null && hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.LEFT_CLICK) != null) {
-            hCharacter.getSelectedTraitline().getSpecialAction(SpecialActionKey.LEFT_CLICK).queue(player);
+        HCharacter hCharacter = cache.getCurrentCharacter(player);
+        if (hCharacter == null || !hCharacter.isInCastMode()) return;
+        if (hCharacter.getTraitline() != null && hCharacter.getTraitline().getSpecialAction(SpecialActionKey.LEFT_CLICK) != null) {
+            hCharacter.getTraitline().getSpecialAction(SpecialActionKey.LEFT_CLICK).queue(player);
         }
     }
 
-    private void finishResourcepack(Player player, HPlayer hPlayer) {
+    // Lets handle resourcepacks on the proxy in the config phase instead.
+    /*private void finishResourcepack(Player player, HPlayer hPlayer) {
         if (hPlayer.isAutoJoinWithLastCharacter() && hPlayer.getSelectedCharacterID() != 0) {
             MessageUtil.log("Auto-joining with last character for " + player.getName() + ".");
             CraftPlayer craftPlayer = (CraftPlayer) player;
