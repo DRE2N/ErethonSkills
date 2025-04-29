@@ -10,6 +10,7 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
@@ -24,6 +25,7 @@ public class BladeDash extends AssassinBaseSpell {
 
     private final double dashDistance = data.getDouble("distance", 6.0);
     private final double dashSpeedMultiplier = data.getDouble("speedMultiplier", 1.8);
+    private final double sideDashStrength = data.getDouble("sideDashStrength", 1.5);
     private final double damageWidth = data.getDouble("damageWidth", 1.5);
     private final int powerStacksPerHit = data.getInt("powerStacksPerHit", 1);
     private final int powerDuration = data.getInt("powerDuration", 120);
@@ -45,9 +47,25 @@ public class BladeDash extends AssassinBaseSpell {
             return false;
         }
 
-        Location startLocation = caster.getLocation();
-        Vector direction = startLocation.getDirection().normalize();
-        Vector dashVector = direction.clone().multiply(dashDistance);
+        Location location = caster.getLocation();
+        location.setPitch(-10);
+        Vector direction = location.getDirection().normalize();
+        Vector inputOffset = new Vector();
+        // Add dash to the left/right based on player input
+        if (caster instanceof Player player ) {
+            Input input = player.getCurrentInput();
+            Vector right = direction.clone().crossProduct(new Vector(0, 1, 0)).normalize();
+            if (input.isLeft()) {
+                inputOffset.add(right.clone().multiply(-sideDashStrength));
+            }
+            if (input.isRight()) {
+                inputOffset.add(right.clone().multiply(sideDashStrength));
+            }
+        }
+        Vector forwardDash = direction.multiply(dashDistance);
+        // Combine forward dash and side dash (inputOffset)
+        Vector dashVector = forwardDash.add(inputOffset);
+        Location startLocation = location.clone().add(0, 0.5, 0);
         Location endLocation = startLocation.clone().add(dashVector);
 
         Set<LivingEntity> affectedTargets = new HashSet<>();
