@@ -125,6 +125,46 @@ public class Spellbook {
         return DEBUG;
     }
 
+
+    /**
+     * A value, limited to a range, based on the attribute of the caster.
+     */
+    public static double getRangedValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, double min, double max) {
+        double value = getScaledValue(data, caster, target, attribute);
+        if (value < min) {
+            value = min;
+        }
+        if (value > max) {
+            value = max;
+        }
+        return value;
+    }
+
+    public static double getRangedValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, double min, double max, String id) {
+        double value = getScaledValue(data, caster, target, attribute, id);
+        if (value < min) {
+            value = min;
+        }
+        if (value > max) {
+            value = max;
+        }
+        return value;
+    }
+
+    /**
+     * A value, limited to a range, based on the attribute of the caster.
+     */
+    public static double getRangedValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, double min, double max, double attributeMultiplier) {
+        double value = getScaledValue(data, caster, target, attribute, attributeMultiplier);
+        if (value < min) {
+            value = min;
+        }
+        if (value > max) {
+            value = max;
+        }
+        return value;
+    }
+
     /**
      * Get the scaled value of an attribute.
      * <b>Only use this method if the spell can not have a target.</b>
@@ -136,6 +176,10 @@ public class Spellbook {
      */
     public static double getScaledValue(YamlConfiguration data, LivingEntity caster, Attribute attribute) {
         return getScaledValue(data, caster, null, attribute, 1.0);
+    }
+
+    public static double getScaledValue(YamlConfiguration data, LivingEntity caster, Attribute attribute, String id) {
+        return getScaledValue(data, caster, null, attribute, id);
     }
 
     /**
@@ -169,6 +213,16 @@ public class Spellbook {
         return getScaledValue(data, caster, false, attribute, multiplier);
     }
 
+    public static double getScaledValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, String id) {
+        if (getInstance().DEBUG) {
+            //MessageUtil.log("Caster: " + (caster == null ? "null" : caster.getName())  + " Target: " + (target == null ? "null" : target.getName()) + " Attribute: " + attribute.name() + " Multiplier: " + multiplier);
+        }
+        if (target instanceof Player) {
+            return getScaledValue(data, caster, true, attribute, id);
+        }
+        return getScaledValue(data, caster, false, attribute, id);
+    }
+
     private static double getScaledValue(YamlConfiguration data, LivingEntity caster, boolean pvp, Attribute attribute, double multiplier) {
         if (pvp) {
             if (!data.contains("coefficients.players." + attribute.getKey())) {
@@ -184,6 +238,23 @@ public class Spellbook {
             //MessageUtil.log("Scaled value for entity damage " + attribute.name() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + attribute.name().toUpperCase(), 1.0));
         }
         return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + attribute.getKey(), 1.0)) * multiplier;
+    }
+
+    private static double getScaledValue(YamlConfiguration data, LivingEntity caster, boolean pvp, Attribute attribute, String id) {
+        if (pvp) {
+            if (!data.contains("coefficients.players." + id + "." + attribute.getKey())) {
+                return getScaledValue(data, caster, true, attribute, 1.0);
+            }
+        }
+        else {
+            if (!data.contains("coefficients.entities." + id + "." + attribute.getKey())) {
+                return getScaledValue(data, caster, false, attribute, 1.0);
+            }
+        }
+        if (getInstance().DEBUG) {
+            //MessageUtil.log("Scaled value for entity damage " + attribute.name() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + attribute.name().toUpperCase(), 1.0));
+        }
+        return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + id + "." + attribute.getKey(), 1.0));
     }
 
     /**
