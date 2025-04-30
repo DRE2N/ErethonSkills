@@ -59,7 +59,7 @@ public class AegisOfDivinity extends PaladinBaseSpell implements Listener {
         sphereEffect.yOffset = radius / 2; // Center the sphere below the caster
         sphereEffect.particle = Particle.DUST;
         sphereEffect.particleCount = 128;
-        sphereEffect.color = Color.AQUA;
+        sphereEffect.color = Color.YELLOW;
         sphereEffect.duration = duration * 20;
         sphereEffect.start();
         return super.onCast();
@@ -113,7 +113,7 @@ public class AegisOfDivinity extends PaladinBaseSpell implements Listener {
             lineEffect.setTarget(center);
             lineEffect.particle = Particle.DUST;
             lineEffect.particleCount = (int) distance;
-            lineEffect.color = Color.WHITE;
+            lineEffect.color = Color.ORANGE;
             lineEffect.duration = 1;
             lineEffect.start();
         }

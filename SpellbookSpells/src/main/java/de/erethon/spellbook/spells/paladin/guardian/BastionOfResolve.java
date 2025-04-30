@@ -10,16 +10,19 @@ import org.bukkit.entity.LivingEntity;
 
 public class BastionOfResolve extends PaladinBaseSpell {
 
-    // The Guardian creates a protective barrier, granting nearby allies increased resistance and power.
+    // The Guardian creates a protective barrier, granting nearby allies increased resistance, stability and power.
 
     private final int range = data.getInt("range", 10);
     private final int powerDurationMin = data.getInt("powerDurationMin", 60);
     private final int powerDurationMax = data.getInt("powerDurationMax", 240);
     private final int resistanceDurationMin = data.getInt("resistanceDurationMin", 60);
     private final int resistanceDurationMax = data.getInt("resistanceDurationMax", 240);
+    private final int stabilityDurationMin = data.getInt("stabilityDurationMin", 60);
+    private final int stabilityDurationMax = data.getInt("stabilityDurationMax", 240);
 
     private final EffectData resistanceEffect = Spellbook.getEffectData("Resistance");
     private final EffectData powerEffect = Spellbook.getEffectData("Power");
+    private final EffectData stabilityEffect = Spellbook.getEffectData("Stability");
 
     private int applyTicks = 20;
 
@@ -51,6 +54,9 @@ public class BastionOfResolve extends PaladinBaseSpell {
                     }
                     if (!living.hasEffect(powerEffect)) {
                         living.addEffect(living, powerEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.RESISTANCE_MAGICAL, powerDurationMin, powerDurationMax, "powerDuration"), 1);
+                    }
+                    if (!living.hasEffect(stabilityEffect)) {
+                        living.addEffect(living, stabilityEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.RESISTANCE_MAGICAL, stabilityDurationMin, stabilityDurationMax, "stabilityDuration"), 1);
                     }
                 }
             }

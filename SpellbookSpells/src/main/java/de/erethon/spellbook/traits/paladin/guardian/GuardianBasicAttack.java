@@ -8,6 +8,9 @@ import org.bukkit.entity.LivingEntity;
 public class GuardianBasicAttack extends SpellTrait {
 
     private final int devotionPerAttack = data.getInt("devotionPerAttack", 5);
+    private final int devotionPerHeal = data.getInt("devotionPerHeal", 15);
+
+    private int currentDevotion = 0;
 
     public GuardianBasicAttack(TraitData data, LivingEntity caster) {
         super(data, caster);
@@ -15,7 +18,14 @@ public class GuardianBasicAttack extends SpellTrait {
 
     @Override
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
-        caster.setEnergy(caster.getEnergy() + devotionPerAttack);
+        if (target != null) {
+            caster.setEnergy(caster.getEnergy() + devotionPerAttack);
+            currentDevotion += devotionPerAttack;
+            if (currentDevotion >= devotionPerHeal) {
+                currentDevotion = 0;
+                caster.heal(devotionPerHeal);
+            }
+        }
         return super.onAttack(target, damage, type);
     }
 }
