@@ -6,20 +6,27 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.BoundingBox;
 
 public class Condemn extends InquisitorBaseSpell {
 
-    // RMB. Slam down the spear, dealing damage and weakness to all enemies in a cone in front of you. Consumes all judgement on enemies and
-    // applies burning for each stack of judgement consumed. Heals allies in a small radius per judgement consumed.
+    // RMB.
+    // Slam down the spear, dealing damage and weakness to all enemies in a cone in front of you.
+    // Consumes all judgement on enemies and
+    // applies burning for each stack of judgement consumed.
+    // Heals allies in a small radius per judgement consumed.
 
     private final int burningStacksPerJudgement = data.getInt("burningStacksPerJudgement", 1);
-    private final int burningDuration = data.getInt("burningDuration", 40);
-    private final int weaknessDuration = data.getInt("weaknessDuration", 120);
+    private final int burningDurationMin = data.getInt("burningDurationMin", 40);
+    private final int burningDurationMax = data.getInt("burningDurationMax", 80);
+    private final int weaknessDurationMin = data.getInt("weaknessDuration", 120);
+    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 200);
     private final int weaknessStacks = data.getInt("weaknessStacks", 1);
-    private final int healRadius = data.getInt("healRadius", 3);
+    private final int healRadiusMin = data.getInt("healRadiusMin", 3);
+    private final int healRadiusMax = data.getInt("healRadiusMax", 5);
     private final int healingPerJudgement = data.getInt("healingPerJudgement", 20);
 
     private final EffectData burning = Spellbook.getEffectData("Burning");
@@ -39,6 +46,8 @@ public class Condemn extends InquisitorBaseSpell {
                 int judgementStacks = getJudgementStacksOnTarget(living);
                 totalJudgement += judgementStacks;
                 int stacksToApply = judgementStacks * burningStacksPerJudgement;
+                int burningDuration = (int) Spellbook.getRangedValue(data, caster, living, Attribute.ADVANTAGE_MAGICAL, burningDurationMin, burningDurationMax, "burningDuration");
+                int weaknessDuration = (int) Spellbook.getRangedValue(data, caster, living, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration");
                 living.addEffect(caster, burning, burningDuration, stacksToApply);
                 living.addEffect(caster, weakness, weaknessDuration, weaknessStacks);
                 removeJudgement(living);
@@ -48,9 +57,10 @@ public class Condemn extends InquisitorBaseSpell {
             caster.getWorld().playSound(caster, Sound.BLOCK_AMETHYST_BLOCK_STEP, 1, 1);
             caster.getWorld().spawnParticle(Particle.FLAME, caster.getLocation(), 10, 2, 0.5, 2);
             caster.getWorld().spawnParticle(Particle.WITCH, caster.getLocation(), 10, 2, 0.5, 2);
+            int healRadius = (int) Spellbook.getRangedValue(data, caster, null, Attribute.ADVANTAGE_MAGICAL, healRadiusMin, healRadiusMax, "healRadius");
             for (LivingEntity living : caster.getWorld().getNearbyLivingEntities(caster.getLocation(), healRadius)) {
                 if (living != caster && Spellbook.canAttack(caster, living)) {
-                    double healAmount = totalJudgement * healingPerJudgement;
+                    double healAmount = (totalJudgement * healingPerJudgement) + Spellbook.getRangedValue(data, caster, living, Attribute.STAT_HEALINGPOWER, 5, 25, "healAmount");
                     living.heal(healAmount);
                     living.getWorld().spawnParticle(Particle.HEART, living.getLocation(), 4, 0.5, 0.5, 0.5);
                     living.getWorld().playSound(living, Sound.BLOCK_BEEHIVE_DRIP, 1, 1);

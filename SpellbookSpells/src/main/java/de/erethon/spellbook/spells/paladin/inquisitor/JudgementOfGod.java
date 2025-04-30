@@ -30,7 +30,8 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
     // If an enemy dies, it will deal additional damage to all enemies in a smaller radius around the corpse and apply weakness.
     // The initial damage is distributed among all enemies in the radius.
 
-    public int range = data.getInt("range", 24); // Trait: SuppressionOfTheHeretics
+    public int rangeMin = data.getInt("rangeMin", 24); // Trait: SuppressionOfTheHeretics
+    public int rangeMax = data.getInt("rangeMax", 36); // Trait: SuppressionOfTheHeretics
     private final int warmupTicks = data.getInt("warmupTicks", 100);
     private final int effectDuration = data.getInt("effectDuration", 200);
     private final int effectStacks = data.getInt("effectStacks", 5);
@@ -42,6 +43,7 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
     private int ticks = 0;
     private final World world = caster.getWorld();
     private final Set<LivingEntity> targets = new HashSet<>();
+    private int range;
 
     public JudgementOfGod(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -50,6 +52,7 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
 
     @Override
     protected boolean onPrecast() {
+        range = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, rangeMin, rangeMax, "range");
         lookForTarget(range);
         if (target == null) {
             return false;

@@ -5,6 +5,7 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.HashSet;
@@ -18,7 +19,8 @@ public class PurgingStrike extends InquisitorBaseSpell {
 
     private final int range = data.getInt("range", 3);
     private final int stunDuration =  data.getInt("stunDuration", 20);
-    private final int effectDuration = data.getInt("effectDuration", 20);
+    private final int effectDurationMin = data.getInt("effectDurationMin", 20);
+    private final int effectDurationMax = data.getInt("effectDurationMax", 40);
 
     private final EffectData stun = Spellbook.getEffectData("Stun");
 
@@ -46,6 +48,7 @@ public class PurgingStrike extends InquisitorBaseSpell {
                 EffectData effect = effects.iterator().next();
                 effects.remove(effect);
                 target.removeEffect(effect);
+                int effectDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, effectDurationMin, effectDurationMax, "effectDuration");
                 caster.addEffect(target, effect, effectDuration, 1);
                 target.getWorld().playSound(target, Sound.ENTITY_WANDERING_TRADER_DISAPPEARED, 0.7f, 1f);
                 triggerTraits(target);

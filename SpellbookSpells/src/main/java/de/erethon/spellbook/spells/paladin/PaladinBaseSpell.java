@@ -13,8 +13,9 @@ import java.util.List;
 public class PaladinBaseSpell extends SpellbookBaseSpell {
 
     protected final int duration = data.getInt("duration", 10);
+    protected final int energyCost = data.getInt("energyCost", 0);
 
-    LivingEntity target;
+    protected LivingEntity target;
 
     public PaladinBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -54,6 +55,14 @@ public class PaladinBaseSpell extends SpellbookBaseSpell {
         }
         this.target = (LivingEntity) target;
         return true;
+    }
+
+    public boolean hasEnergy(LivingEntity caster, SpellData data) {
+        boolean canCast = energyCost <= caster.getEnergy();
+        if (!canCast) {
+            caster.sendParsedActionBar("<color:#ff0000>Nicht genug Energie!");
+        }
+        return canCast;
     }
 
     @Override

@@ -3,8 +3,8 @@ package de.erethon.spellbook.spells.paladin.inquisitor;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.paladin.PaladinSpearSpell;
 import net.kyori.adventure.sound.Sound;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
 public class SpearThrust extends InquisitorBaseSpell {
@@ -14,10 +14,12 @@ public class SpearThrust extends InquisitorBaseSpell {
 
     private final double velocity = data.getDouble("velocity", 1.5);
     private final int weaknessDuration = data.getInt("weaknessDuration", 120);
-    private final int weaknessStacks = data.getInt("weaknessStacks", 1);
+    private final int weaknessStacksMin = data.getInt("weaknessStacksMin", 1);
+    private final int weaknessStacksMax = data.getInt("weaknessStacksMax", 3);
     private final int slowDuration = data.getInt("slowDuration", 120);
     private final int burnDuration = data.getInt("burnDuration", 120);
-    private final int burnStacks = data.getInt("burnStacks", 1);
+    private final int burnStacksMin = data.getInt("burnStacksMin", 1);
+    private final int burnStacksMax = data.getInt("burnStacksMax", 3);
     public int minimumJudgementStacks = data.getInt("minimumJudgementStacks", 3); // Trait: Not yet
 
     private final EffectData weaknessEffect = Spellbook.getEffectData("Weakness");
@@ -38,10 +40,12 @@ public class SpearThrust extends InquisitorBaseSpell {
         target.setVelocity(caster.getLocation().getDirection().multiply(velocity));
         target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_ATTACK_SWEEP, Sound.Source.RECORD, 1, 1));
         caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_PLAYER_ATTACK_SWEEP, Sound.Source.RECORD, 0.8f, 1));
+        int weaknessStacks = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, weaknessStacksMin, weaknessStacksMax, "weaknessStacks");
         target.addEffect(caster, weaknessEffect, weaknessDuration, weaknessStacks);
         addJudgement(target);
         if (getJudgementStacksOnTarget(target) > minimumJudgementStacks) {
             target.addEffect(caster, slowEffect, slowDuration, 1);
+            int burnStacks = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, burnStacksMin, burnStacksMax, "burnStacks");
             target.addEffect(caster, burnEffect, burnDuration, burnStacks);
             target.playSound(Sound.sound(org.bukkit.Sound.ENTITY_BLAZE_SHOOT, Sound.Source.RECORD, 1, 1));
         }

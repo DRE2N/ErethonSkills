@@ -5,6 +5,7 @@ import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.CircleEffect;
+import de.slikey.effectlib.effect.ParticleEffect;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
@@ -23,11 +24,13 @@ public class HolyFire extends InquisitorBaseSpell {
     // Does bonus healing based on judgment stacks on the enemies it has dealt damage to
 
     private final int duration = data.getInt("duration", 10);
-    private final float range = (float) data.getDouble("range", 0.8);
+    private final float rangeMin = (float) data.getDouble("rangeMin", 0.8);
+    private final float rangeMax = (float) data.getDouble("rangeMax", 3.0);
     private final double healAmount = data.getDouble("baseFinishHeal", 15);
     private final double bonusHealPerJudgementStack = data.getDouble("bonusHealPerJudgementStack", 25);
 
     private CircleEffect circleEffect;
+    private float range;
 
     public HolyFire(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -54,6 +57,7 @@ public class HolyFire extends InquisitorBaseSpell {
     @Override
     protected void onTick() {
         Set<LivingEntity> entities = new HashSet<>();
+        range = (float) Spellbook.getRangedValue(data, caster,Attribute.ADVANTAGE_MAGICAL, rangeMin, rangeMax, "range");
         caster.getNearbyEntities(range, 2, range).forEach(e -> {
             if (e instanceof LivingEntity living && Spellbook.canAttack(caster, living)) {
                 living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, false, Attribute.ADVANTAGE_MAGICAL));
