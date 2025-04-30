@@ -66,6 +66,13 @@ public class CharacterCastingManager {
         }
     }
 
+    public SpellData getSpellAtSlot(int slot) {
+        if (slot < 0 || slot >= slotSpells.length) {
+            return null;
+        }
+        return slotSpells[slot];
+    }
+
     private void startCastMode() {
         updateTask = new BukkitRunnable() {
             @Override
@@ -194,6 +201,8 @@ public class CharacterCastingManager {
             }
             player.getAttribute(entry.getKey()).setBaseValue(entry.getValue());
         }
+        player.setHealthScaled(true);
+        player.getCurrentInput();
     }
 
 
