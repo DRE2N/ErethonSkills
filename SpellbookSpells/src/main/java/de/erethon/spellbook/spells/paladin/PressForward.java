@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.paladin.guardian;
+package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;

@@ -5,12 +5,13 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
-import de.erethon.spellbook.spells.paladin.inquisitor.InquisitorBaseSpell;
 import de.slikey.effectlib.effect.CircleEffect;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -18,31 +19,39 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class GuardianAid extends PaladinBaseSpell {
+public class WaveOfHealing extends PaladinBaseSpell {
 
-    private final int range = data.getInt("range", 10);
-    private final int resistanceDuration = data.getInt("resistanceDuration", 120);
-    private final int stabilityDuration = data.getInt("stabilityDuration", 120);
-    private final int resistanceStacks = data.getInt("resistanceStacks", 1);
-    private final int stabilityStacks = data.getInt("stabilityStacks", 1);
+    // The Guardian creates a wave of healing that heals all allies in a radius around the caster.
+    // Heal is increased based on the current devotion of the caster.
+    // Range scales with advantage_magical, while healing scales with stat_healingpower.
 
-    private final EffectData resistance = Spellbook.getEffectData("Resistance");
-    private final EffectData stability = Spellbook.getEffectData("Stability");
+    private final int rangeMin = data.getInt("rangeMin", 3);
+    private final int rangeMax = data.getInt("rangeMax", 8);
+    private final double baseHealing = data.getDouble("baseHealing", 5);
+    private final double healPerDevotionMin = data.getDouble("healPerDevotionMin", 1);
+    private final double healPerDevotionMax = data.getDouble("healPerDevotionMax", 5);
 
     private final Set<CircleEffect> circleEffects = new HashSet<>();
+    private BukkitRunnable moveCircles;
 
-
-    public GuardianAid(LivingEntity caster, SpellData spellData) {
+    public WaveOfHealing(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
+        keepAliveTicks = 20 * 5;
     }
+
+    @Override
+    protected boolean onPrecast() {
+        return super.onPrecast() && hasEnergy(caster, data); // 10
+    }
+
 
     @Override
     public boolean onCast() {
         Set<LivingEntity> entities = new HashSet<>();
+        double range = Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, rangeMin, rangeMax, "range");
         for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
             if (Spellbook.canAttack(caster, living)) continue;
             entities.add(living);
-            living.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ELDER_GUARDIAN_CURSE, Sound.Source.RECORD, 1, 1));
             living.getEffects().forEach(e -> {
                 if (!e.data.isPositive()) {
                     living.removeEffect(e.data);
@@ -61,7 +70,7 @@ public class GuardianAid extends PaladinBaseSpell {
             circleEffects.add(circle);
         }
         triggerTraits(entities);
-        BukkitRunnable moveCircles = new BukkitRunnable() {
+        moveCircles = new BukkitRunnable() {
             @Override
             public void run() {
                 for (CircleEffect circle : circleEffects) {
@@ -70,16 +79,27 @@ public class GuardianAid extends PaladinBaseSpell {
             }
         };
         for (LivingEntity living : entities) {
-            living.addEffect(caster, resistance, resistanceDuration, resistanceStacks);
-            living.addEffect(caster, stability, stabilityDuration, stabilityStacks);
+            double healing = baseHealing + (caster.getEnergy() * Spellbook.getRangedValue(data, caster, living, Attribute.STAT_HEALINGPOWER, healPerDevotionMin, healPerDevotionMax, "healPerDevotion"));
+            living.heal(healing);
+            caster.heal(healing);
+            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.BLOCKS, 1, 1);
+            caster.getWorld().spawnParticle(Particle.END_ROD, caster.getLocation(), 10, 3, 3, 3);
+            caster.setEnergy(0);
         }
         moveCircles.runTaskTimer(Spellbook.getInstance().getImplementer(), 0, 1);
         return super.onCast();
     }
 
     @Override
+    protected void cleanup() {
+        super.cleanup();
+        if (moveCircles != null) {
+            moveCircles.cancel();
+        }
+    }
+
+    @Override
     public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
         placeholderNames.add("range");
         return super.getPlaceholders(c);
     }
