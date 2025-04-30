@@ -1,4 +1,4 @@
-package de.erethon.spellbook.spells.assassin.shadow;
+package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;

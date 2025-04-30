@@ -19,6 +19,9 @@ import java.util.Set;
 
 public class WhirlingBlades extends AssassinBaseSpell {
 
+    // The Cutthroat spins around, dealing damage to all enemies in a radius.
+    // If the enemy is bleeding, the damage is increased.
+
     private final double radius = data.getDouble("radius", 3);
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.5);
     private final EffectData bleedEffectIdentifier = Spellbook.getEffectData("Bleeding");

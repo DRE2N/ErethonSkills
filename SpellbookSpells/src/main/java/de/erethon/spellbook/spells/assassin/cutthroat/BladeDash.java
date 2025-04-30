@@ -20,22 +20,20 @@ import java.util.Set;
 public class BladeDash extends AssassinBaseSpell {
 
     // The Cutthroat dashes forward, dealing damage to all enemies in its path.
-    // Affected enemies are slowed.
-    // After dashing, the Cutthroat gains power and fury based on the enemies hit.
+    // Affected enemies are weakened.
+    // After dashing, the Cutthroat gains energy based on the number of enemies hit.
 
     private final double dashDistance = data.getDouble("distance", 6.0);
     private final double dashSpeedMultiplier = data.getDouble("speedMultiplier", 1.8);
     private final double sideDashStrength = data.getDouble("sideDashStrength", 1.5);
     private final double damageWidth = data.getDouble("damageWidth", 1.5);
-    private final int powerStacksPerHit = data.getInt("powerStacksPerHit", 1);
-    private final int powerDuration = data.getInt("powerDuration", 120);
-    private final int furyStacksPerHit = data.getInt("furyStacksPerHit", 1);
-    private final int furyDuration = data.getInt("furyDuration", 120);
-    private final int weaknessDuration = data.getInt("weaknessDuration", 80);
+    private final double energyPerTarget = data.getDouble("energyPerTarget", 5.0);
+    private final int weaknessDurationMin = data.getInt("weaknessDurationMin", 20);
+    private final int weaknessStacksMin = data.getInt("weaknessStacksMin", 1);
+    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 100);
+    private final int weaknessStacksMax = data.getInt("weaknessStacksMax", 3);
 
-    private final EffectData weakness = Spellbook.getEffectData("Weakness");
-    private final EffectData powerEffect = Spellbook.getEffectData("Power");
-    private final EffectData furyEffect = Spellbook.getEffectData("Fury");
+    private final EffectData weaknessEffectData = Spellbook.getEffectData("Weakness");
 
     public BladeDash(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -75,21 +73,19 @@ public class BladeDash extends AssassinBaseSpell {
             if (entity instanceof LivingEntity && !entity.equals(caster) && Spellbook.canAttack(caster, target)) {
                 double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
                 target.damage(damage, caster);
-                target.addEffect(caster, weakness, weaknessDuration, 1);
+                int weaknessDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration");
+                int weaknessStacks = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, weaknessStacksMin, weaknessStacksMax, "weaknessStacks");
+                target.addEffect(caster, weaknessEffectData, weaknessDuration, weaknessStacks);
                 affectedTargets.add(target);
                 playHitEffect(target.getEyeLocation());
             }
         }
 
+        int energyGain = affectedTargets.size() * (int) energyPerTarget;
+        caster.setEnergy(caster.getEnergy() + energyGain);
+
         Vector velocity = direction.multiply(dashSpeedMultiplier);
         caster.setVelocity(velocity);
-        int powerStacks = affectedTargets.size() * powerStacksPerHit;
-        int furyStacks = affectedTargets.size() * furyStacksPerHit;
-        if (powerStacks > 0) {
-            caster.addEffect(caster, powerEffect, powerDuration, powerStacks);
-            caster.addEffect(caster, furyEffect, furyDuration, furyStacks);
-            caster.getWorld().playSound(caster, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 1, 1);
-        }
 
         playVisualEffect(startLocation, direction);
         playSoundEffect(startLocation);
