@@ -29,11 +29,16 @@ import java.util.List;
 public class DaggerThrow extends AssassinBaseSpell implements Listener {
 
     // Throws a dagger at the target, dealing physical damage and applying a slow effect. Marks the target for a short duration.
+    // Slow scales with advantage_magical.
 
     private final float speed = (float) data.getDouble("speed", 2.0);
     private final int divergence = data.getInt("divergence", 1);
-    private final int effectDuration = data.getInt("effectDuration", 30);
-    private final int effectStacks = data.getInt("effectStacks", 5);
+    private final int effectDurationMin = data.getInt("slowDurationMin", 30);
+    private final int effectDurationMax = data.getInt("slowDurationMax", 60);
+    private final int effectStacksMin = data.getInt("slowStacksMin", 5);
+    private final int effectStacksMax = data.getInt("slowStacksMax", 8);
+
+    private final EffectData slowEffect = Spellbook.getEffectData("Slow");
 
     private LivingEntity hitEntity = null;
 
@@ -61,11 +66,11 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
                 }
                 entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADVANTAGE_PHYSICAL), caster, PDamageType.PHYSICAL);
                 triggerTraits(target);
-                EffectData effect = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
-                if (effect != null) {
-                    entity.addEffect(caster, effect, effectDuration, effectStacks);
-                }
-                keepAliveTicks = 0;
+
+                double slowDuration = Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, effectDurationMin, effectDurationMax, "slowDuration");
+                double slowStacks = Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, effectStacksMin, effectStacksMax, "slowStacks");
+                entity.addEffect(caster, slowEffect, (int) slowDuration, (int) slowStacks);
+
                 caster.playSound(Sound.sound(Key.key("entity.arrow.hit_player"), Sound.Source.RECORD, 1, 0.9f));
                 event.getArrow().remove();
                 entity.getTags().add("assassin.daggerthrow.marked");

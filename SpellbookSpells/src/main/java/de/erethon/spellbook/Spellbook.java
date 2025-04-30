@@ -151,6 +151,28 @@ public class Spellbook {
         return value;
     }
 
+    public static double getRangedValue(YamlConfiguration data, LivingEntity caster,Attribute attribute, double min, double max) {
+        double value = getScaledValue(data, caster, attribute);
+        if (value < min) {
+            value = min;
+        }
+        if (value > max) {
+            value = max;
+        }
+        return value;
+    }
+
+    public static double getRangedValue(YamlConfiguration data, LivingEntity caster,Attribute attribute, double min, double max, String id) {
+        double value = getScaledValue(data, caster, attribute, id);
+        if (value < min) {
+            value = min;
+        }
+        if (value > max) {
+            value = max;
+        }
+        return value;
+    }
+
     /**
      * A value, limited to a range, based on the attribute of the caster.
      */

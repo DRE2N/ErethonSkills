@@ -1,9 +1,8 @@
-package de.erethon.spellbook.spells.assassin.cutthroat;
+package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -12,6 +11,8 @@ import org.bukkit.entity.LivingEntity;
 public class SwordParry extends AssassinBaseSpell  {
 
     // RMB. For a short time, the assassin can parry incoming attacks, dealing damage to the attacker and stunning them for a short time.
+    // TODO: This might be better for the Warrior? But BladeDash is a big too strong for a right-click ability. Hmm
+
     private final double damageMultiplier = data.getDouble("damageMultiplier", 1.0);
     private final int effectDuration = data.getInt("effectDuration", 10);
 

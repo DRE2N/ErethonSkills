@@ -23,10 +23,13 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Backstab extends AssassinBaseSpell implements Listener {
 
-    // Teleports behind the target and deals a powerful attack, granting energy if the target dies within a short time. Deals bonus damage if the target is marked.
+    // Teleports behind the target and deals a powerful attack, granting energy if the target dies within a short time.
+    // Deals bonus damage if the target is marked and refunds energy if the target dies.
+    // Bonus damage scales with advantage_physical.
 
-    private final int energyBonus = data.getInt("energyBonus", 25);
-    private final double markedDamageMultiplier = data.getDouble("markedDamageMultiplier", 1.5);
+    private final int energyBonus = data.getInt("energyBonus", 50);
+    private final double markedMinDamage = data.getDouble("markedMinDamage", 1.0);
+    private final double markedMaxDamage = data.getDouble("markedMaxDamage", 2.0);
 
     private Location location = null;
     private int ticks = 0;
@@ -96,7 +99,7 @@ public class Backstab extends AssassinBaseSpell implements Listener {
         caster.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
         AttributeModifier bonus;
         if (target.getTags().contains("assassin.daggerthrow.marked")) {
-            bonus = new AttributeModifier(new NamespacedKey("spellbook", "backstab"), Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL) * markedDamageMultiplier, AttributeModifier.Operation.ADD_NUMBER);
+            bonus = new AttributeModifier(new NamespacedKey("spellbook", "backstab"), Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL, markedMinDamage, markedMaxDamage, "marked"), AttributeModifier.Operation.ADD_NUMBER);
             target.getTags().remove("assassin.daggerthrow.marked");
         } else {
             bonus = new AttributeModifier(new NamespacedKey("spellbook", "backstab"), Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER);
