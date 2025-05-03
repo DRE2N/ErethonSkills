@@ -4,6 +4,7 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.Component;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
@@ -13,11 +14,11 @@ public class SpearThrust extends InquisitorBaseSpell {
     // If the target has more than 3 stacks of judgement, they are additionally slowed and burnt.
 
     private final double velocity = data.getDouble("velocity", 1.5);
-    private final int weaknessDuration = data.getInt("weaknessDuration", 120);
+    private final int weaknessDuration = data.getInt("weaknessDuration", 12) * 20;
     private final int weaknessStacksMin = data.getInt("weaknessStacksMin", 1);
     private final int weaknessStacksMax = data.getInt("weaknessStacksMax", 3);
-    private final int slowDuration = data.getInt("slowDuration", 120);
-    private final int burnDuration = data.getInt("burnDuration", 120);
+    private final int slowDuration = data.getInt("slowDuration", 12) * 20;
+    private final int burnDuration = data.getInt("burnDuration", 12) * 20;
     private final int burnStacksMin = data.getInt("burnStacksMin", 1);
     private final int burnStacksMax = data.getInt("burnStacksMax", 3);
     public int minimumJudgementStacks = data.getInt("minimumJudgementStacks", 3); // Trait: Not yet
@@ -51,5 +52,13 @@ public class SpearThrust extends InquisitorBaseSpell {
         }
         triggerTraits(target);
         return super.onCast();
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessStacksMin, weaknessStacksMax, "weaknessStacks")));
+        placeholderNames.add("weaknessStacks");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, burnStacksMin, burnStacksMax, "burnStacks")));
+        placeholderNames.add("burnStacks");
     }
 }
