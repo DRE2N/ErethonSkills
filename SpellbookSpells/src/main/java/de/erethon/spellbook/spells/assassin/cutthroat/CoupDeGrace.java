@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -73,5 +74,11 @@ public class CoupDeGrace extends AssassinBaseSpell {
             }
             currentTicks = keepAliveTicks;
         }
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, bonusPerBleedingMin, bonusPerBleedingMax, "bleedingBonus"), VALUE_COLOR));
+        placeholderNames.add("bleedingBonus");
     }
 }

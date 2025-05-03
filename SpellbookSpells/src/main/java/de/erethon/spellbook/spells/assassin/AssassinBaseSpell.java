@@ -35,6 +35,9 @@ public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
 
     public boolean hasEnergy(LivingEntity caster, SpellData data) {
         boolean canCast = energyCost <= caster.getEnergy();
+        if (Spellbook.getInstance().isDebug()) {
+            return true;
+        }
         if (!canCast) {
             caster.sendParsedActionBar("<color:#ff0000>Nicht genug Energie!");
         }
@@ -81,14 +84,4 @@ public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
         this.target = target;
     }
 
-    @Override
-    public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
-        placeholderNames.add("range");
-        spellAddedPlaceholders.add(Component.text(energyCost, VALUE_COLOR));
-        placeholderNames.add("energyCost");
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
-        placeholderNames.add("duration");
-        return super.getPlaceholders(caster);
-    }
 }

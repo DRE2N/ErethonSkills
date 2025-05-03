@@ -5,6 +5,7 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -31,7 +32,18 @@ public class Mangle extends AssassinBaseSpell {
 
     @Override
     protected boolean onPrecast() {
-        return super.onPrecast() && lookForTarget(range);
+        lookForTarget(range);
+        int bleedingOnTarget = 0;
+        for (SpellEffect effect : target.getEffects()) {
+            if (effect.data == bleedingEffectData) {
+                bleedingOnTarget += effect.getStacks();
+            }
+        }
+        if (bleedingOnTarget < bleedStacksRequired) {
+            caster.sendParsedActionBar("<color:#ff0000>Das Ziel blutet nicht genug!");
+            return false;
+        }
+        return super.onPrecast();
     }
 
     @Override
@@ -58,5 +70,14 @@ public class Mangle extends AssassinBaseSpell {
             caster.getWorld().spawnParticle(Particle.ITEM_SLIME, target.getLocation(), 3, 0.5, 0.5, 0.5);
         }
         return super.onCast();
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, silenceMinDuration, silenceMaxDuration, "silenceDuration"), VALUE_COLOR));
+        placeholderNames.add("silenceDuration");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessMinDuration, weaknessMaxDuration, "weaknessDuration"), VALUE_COLOR));
+        placeholderNames.add("weaknessDuration");
+        super.addSpellPlaceholders();
     }
 }

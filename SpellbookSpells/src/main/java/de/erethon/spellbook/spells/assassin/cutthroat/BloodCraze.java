@@ -4,6 +4,7 @@ import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
@@ -26,6 +27,7 @@ public class BloodCraze extends AssassinBaseSpell {
 
     public BloodCraze(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
+        keepAliveTicks = duration * 20;
     }
 
     @Override
@@ -63,5 +65,11 @@ public class BloodCraze extends AssassinBaseSpell {
             }
         }
         return super.onAttack(target, damage, type);
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, damageAsHealingMultiplierMin, damageAsHealingMultiplierMax, "healing"), VALUE_COLOR));
+        placeholderNames.add("healing");
     }
 }

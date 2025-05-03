@@ -3,7 +3,7 @@ package de.erethon.spellbook.traits.assassin;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
-import de.erethon.spellbook.spells.assassin.SwordStorm;
+import de.erethon.spellbook.spells.warrior.duelist.SwordStorm;
 import org.bukkit.entity.LivingEntity;
 
 public class LightBlade extends SpellTrait {
@@ -17,7 +17,6 @@ public class LightBlade extends SpellTrait {
     @Override
     protected SpellbookSpell onSpellCast(SpellbookSpell cast) {
         if (cast instanceof SwordStorm storm) {
-            storm.attacks += bonusAttacks;
         }
         return super.onSpellCast(cast);
     }

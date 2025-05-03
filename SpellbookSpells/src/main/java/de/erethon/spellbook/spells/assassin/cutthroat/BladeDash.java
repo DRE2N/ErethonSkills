@@ -2,10 +2,12 @@ package de.erethon.spellbook.spells.assassin.cutthroat;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
+import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LineEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -15,6 +17,7 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class BladeDash extends AssassinBaseSpell {
@@ -34,6 +37,7 @@ public class BladeDash extends AssassinBaseSpell {
     private final int weaknessStacksMax = data.getInt("weaknessStacksMax", 3);
 
     private final EffectData weaknessEffectData = Spellbook.getEffectData("Weakness");
+    private final Set<LivingEntity> affected = new HashSet<>();
 
     public BladeDash(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -70,15 +74,20 @@ public class BladeDash extends AssassinBaseSpell {
         BoundingBox dashPathBox = BoundingBox.of(startLocation, endLocation).expand(damageWidth / 2.0, 0.5, damageWidth / 2.0);
 
         for (Entity entity : caster.getWorld().getNearbyEntities(dashPathBox)) {
-            if (entity instanceof LivingEntity && !entity.equals(caster) && Spellbook.canAttack(caster, target)) {
-                double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
-                target.damage(damage, caster);
-                int weaknessDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration");
-                int weaknessStacks = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, weaknessStacksMin, weaknessStacksMax, "weaknessStacks");
-                target.addEffect(caster, weaknessEffectData, weaknessDuration, weaknessStacks);
-                affectedTargets.add(target);
-                playHitEffect(target.getEyeLocation());
+            if (entity instanceof LivingEntity living && !entity.equals(caster) && Spellbook.canAttack(caster, living)) {
+                affected.add((living));
+                living.getCollidableExemptions().add(caster.getUniqueId());
+                double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_PHYSICAL);
+                living.damage(damage, caster);
+                int weaknessDuration = (int) Spellbook.getRangedValue(data, caster, living, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration");
+                int weaknessStacks = (int) Spellbook.getRangedValue(data, caster, living, Attribute.ADVANTAGE_MAGICAL, weaknessStacksMin, weaknessStacksMax, "weaknessStacks");
+                living.addEffect(caster, weaknessEffectData, weaknessDuration, weaknessStacks);
+                affectedTargets.add(living);
+                playHitEffect(living.getEyeLocation());
             }
+        }
+        for (LivingEntity target : affected) {
+            target.getCollidableExemptions().remove(caster.getUniqueId());
         }
 
         int energyGain = affectedTargets.size() * (int) energyPerTarget;
@@ -123,4 +132,13 @@ public class BladeDash extends AssassinBaseSpell {
         location.getWorld().playSound(location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.5f);
         location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.8f);
     }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration"), VALUE_COLOR));
+        placeholderNames.add("weaknessDuration");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessStacksMin, weaknessStacksMax, "weaknessStacks"), VALUE_COLOR));
+        placeholderNames.add("weaknessStacks");
+    }
+
 }

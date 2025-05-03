@@ -1,14 +1,19 @@
 package de.erethon.spellbook.spells.assassin.cutthroat;
 
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class PreciseStab extends AssassinBaseSpell {
 
@@ -42,6 +47,8 @@ public class PreciseStab extends AssassinBaseSpell {
                 bleedingEffect = effect;
             }
         }
+        double physicalDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
+        target.damage(physicalDamage, caster, PDamageType.PHYSICAL);
         if (bleedingOnTarget >= bleedStacksRequired && bleedingEffect != null) {
             int stacks = bleedingOnTarget - bleedStacksRequired;
             if (stacks <= 0) {
@@ -54,5 +61,11 @@ public class PreciseStab extends AssassinBaseSpell {
             caster.getWorld().spawnParticle(Particle.ENCHANTED_HIT, target.getLocation(), 3, 0.5, 0.5, 0.5);
         }
         return super.onCast();
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, furyMinDuration, furyMaxDuration, "furyDuration"), VALUE_COLOR));
+        placeholderNames.add("furyDuration");
     }
 }
