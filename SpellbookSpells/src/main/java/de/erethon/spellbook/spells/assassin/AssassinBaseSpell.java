@@ -57,7 +57,7 @@ public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
     }
 
     protected boolean lookForTarget(boolean friendly, int range) {
-        Entity target = caster.getTargetEntity(range);
+        Entity target = caster.getTargetEntity(range, true);
         if (target == null) {
             caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
@@ -67,6 +67,10 @@ public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
             return false;
         }
         if (friendly && Spellbook.canAttack(caster, (LivingEntity) target)) {
+            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
+            return false;
+        }
+        if (!caster.hasLineOfSight(target)) {
             caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
             return false;
         }
