@@ -8,12 +8,14 @@ import de.erethon.spellbook.spells.ranger.RangerBaseSpell;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -22,14 +24,19 @@ import java.util.Random;
 public class ArrowRain extends RangerBaseSpell implements Listener {
 
     // Shoots a hail of arrows in front of the caster, dealing damage and applying slowness to all entities hit
+    // If in flow, the final wave will apply a stun to all entities hit
 
     private final int radius = data.getInt("radius", 5);
-    private final int effectDuration = data.getInt("effectDuration", 100);
-    private final int effectStacks = data.getInt("effectStacks", 1);
+    private final int slownessDurationMin = data.getInt("slownessDurationMin", 60);
+    private final int slownessDurationMax = data.getInt("slownessDurationMax", 120);
+    private final int stunDurationMin = data.getInt("stunDurationMin", 20);
+    private final int stunDurationMax = data.getInt("stunDurationMax", 40);
 
-    private final EffectData slowness = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Slow");
+    private final EffectData slowness = Spellbook.getEffectData("Slow");
+    private final EffectData stun = Spellbook.getEffectData("Stun");
 
     private Random random;
+    private boolean isFinalWave = false;
 
     public ArrowRain(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -44,7 +51,7 @@ public class ArrowRain extends RangerBaseSpell implements Listener {
     public boolean onCast() {
         random = new Random();
         tickInterval = 5;
-        keepAliveTicks = 100;
+        keepAliveTicks = 20;
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
         return true;
     }
@@ -56,7 +63,14 @@ public class ArrowRain extends RangerBaseSpell implements Listener {
             return;
         }
         triggerTraits(hit);
-        hit.addEffect(caster, slowness, effectDuration, effectStacks);
+        int slownessDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, slownessDurationMin, slownessDurationMax, "slownessDuration");
+        hit.addEffect(caster, slowness, slownessDuration, 1);
+        if (isFinalWave && inFlowState()) {
+            int stunDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, stunDurationMin, stunDurationMax, "stunDuration");
+            hit.addEffect(caster, Spellbook.getEffectData("Stun"), stunDuration, 1);
+            isFinalWave = false;
+            removeFlow();
+        }
     }
 
     @Override
@@ -65,8 +79,13 @@ public class ArrowRain extends RangerBaseSpell implements Listener {
         Arrow arrow = castLocation.getWorld().spawn(castLocation, Arrow.class);
         arrow.setShooter(caster);
         arrow.setSilent(true);
+        arrow.setPickupStatus(Arrow.PickupStatus.DISALLOWED);
+        arrow.setPersistent(false);
         Vector direction = caster.getLocation().getDirection().clone().multiply(0.5).add(new Vector(0, 0.5, 0));
         arrow.setVelocity(direction);
+        if (keepAliveTicks - currentTicks <= 5) {
+            isFinalWave = true;
+        }
     }
 
     private Location getOffsetLocation(int yOffset) {

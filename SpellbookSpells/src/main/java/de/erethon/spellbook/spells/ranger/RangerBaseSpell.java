@@ -76,6 +76,9 @@ public class RangerBaseSpell extends SpellbookBaseSpell implements Targeted {
     }
 
     protected void removeFlow() {
+        if (caster.getTags().contains("spellbook.ranger.lethalfocus")) {
+            return;
+        }
         caster.getTags().remove("spellbook.ranger.flow");
     }
 

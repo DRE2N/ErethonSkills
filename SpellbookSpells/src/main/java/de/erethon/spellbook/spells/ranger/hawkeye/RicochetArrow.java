@@ -2,6 +2,7 @@ package de.erethon.spellbook.spells.ranger.hawkeye;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.RangerBaseSpell;
@@ -20,10 +21,18 @@ import java.util.List;
 
 public class RicochetArrow extends RangerBaseSpell implements Listener {
 
+    // The Hawkeye sends a projectile that ricochets off of the first target and hits a second target.
+
     private int ricochetRange = data.getInt("ricochetRange", 7);
     public int maxRicochets = data.getInt("maxRicochets", 8);
     public double damageReductionPerRicochet = data.getDouble("damageReductionPerRicochet", 1);
     private final int projectileSpeed = data.getInt("projectileSpeed", 2);
+    private final int bonusRicochets = data.getInt("bonusRicochets", 2);
+    private final int bonusRicochetRange = data.getInt("bonusRicochetRange", 2);
+    private final int weaknessDurationMin = data.getInt("weaknessDurationMin", 60);
+    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 240);
+
+    private final EffectData weaknessEffect = Spellbook.getEffectData("Weakness");
 
     private Projectile initialProjectile;
     private int ricochets = 0;
@@ -55,6 +64,12 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
         if (event.getEntity() != initialProjectile) {
             return;
         }
+        boolean wasInFlowState = inFlowState();
+        if (inFlowState()) {
+            maxRicochets += bonusRicochets;
+            ricochetRange += bonusRicochetRange;
+            removeFlow();
+        }
         for (LivingEntity living : event.getHitEntity().getLocation().getNearbyLivingEntities(ricochetRange)) {
             if (living == caster || living == event.getHitEntity()) {
                 continue;
@@ -64,6 +79,10 @@ public class RicochetArrow extends RangerBaseSpell implements Listener {
             }
             RangerUtils.sendProjectile((LivingEntity) event.getHitEntity(), living, caster,  projectileSpeed,
                     Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADVANTAGE_MAGICAL) - (ricochets * damageReductionPerRicochet) , PDamageType.MAGIC);
+            if (wasInFlowState) {
+                int weaknessDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration");
+                living.addEffect(caster, weaknessEffect, weaknessDuration, 1);
+            }
             ricochets++;
         }
     }

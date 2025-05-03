@@ -2,7 +2,7 @@ package de.erethon.spellbook.utils;
 
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.spells.ranger.pet.RangerPet;
+import de.erethon.spellbook.spells.ranger.beastmaster.pet.RangerPet;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;

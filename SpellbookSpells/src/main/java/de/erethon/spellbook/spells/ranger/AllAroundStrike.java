@@ -1,9 +1,8 @@
-package de.erethon.spellbook.spells.ranger.pathfinder;
+package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.ranger.RangerBaseSpell;
 import de.slikey.effectlib.effect.CircleEffect;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Color;

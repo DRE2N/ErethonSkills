@@ -39,8 +39,6 @@ public class MagicBolt extends ProjectileRelatedSkill {
                 break;
             }
             Projectile projectile = RangerUtils.sendProjectile(caster, living, caster, 2, Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_MAGICAL), PDamageType.MAGIC);
-            EntityShootBowEvent event = new EntityShootBowEvent(caster, caster.getEquipment().getItemInMainHand(), projectile, 2);
-            Bukkit.getPluginManager().callEvent(event);
 
         }
         if (targets == 0) {

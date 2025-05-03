@@ -1,9 +1,8 @@
-package de.erethon.spellbook.spells.ranger.hawkeye;
+package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.ranger.ProjectileRelatedSkill;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;

@@ -1,6 +1,6 @@
 package de.erethon.spellbook.events;
 
-import de.erethon.spellbook.spells.ranger.pet.RangerPet;
+import de.erethon.spellbook.spells.ranger.beastmaster.pet.RangerPet;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;

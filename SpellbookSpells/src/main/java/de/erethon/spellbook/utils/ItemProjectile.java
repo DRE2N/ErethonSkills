@@ -62,12 +62,6 @@ public class ItemProjectile extends Arrow {
     }
 
     @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
-        super.lerpTo(x, y, z, yaw, pitch, interpolationSteps);
-        updateArmorstand();
-    }
-
-    @Override
     public void lerpMotion(double x, double y, double z) {
         super.lerpMotion(x, y, z);
         updateArmorstand();
@@ -86,38 +80,8 @@ public class ItemProjectile extends Arrow {
     }
 
     @Override
-    public void absMoveTo(double x, double y, double z, float yaw, float pitch) {
-        super.absMoveTo(x, y, z, yaw, pitch);
-        updateArmorstand();
-    }
-
-    @Override
-    public void absMoveTo(double x, double y, double z) {
-        super.absMoveTo(x, y, z);
-        updateArmorstand();
-    }
-
-    @Override
-    public void moveTo(Vec3 pos) {
-        super.moveTo(pos);
-        updateArmorstand();
-    }
-
-    @Override
-    public void moveTo(double x, double y, double z) {
-        super.moveTo(x, y, z);
-        updateArmorstand();
-    }
-
-    @Override
-    public void moveTo(BlockPos pos, float yaw, float pitch) {
-        super.moveTo(pos, yaw, pitch);
-        updateArmorstand();
-    }
-
-    @Override
-    public void moveTo(double x, double y, double z, float yaw, float pitch) {
-        super.moveTo(x, y, z, yaw, pitch);
+    public void setPos(double x, double y, double z) {
+        super.setPos(x, y, z);
         updateArmorstand();
     }
 

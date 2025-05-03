@@ -4,7 +4,7 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.events.PetSpawnEvent;
-import de.erethon.spellbook.spells.ranger.pet.RangerPet;
+import de.erethon.spellbook.spells.ranger.beastmaster.pet.RangerPet;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;

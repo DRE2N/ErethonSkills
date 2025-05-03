@@ -1,9 +1,7 @@
 package de.erethon.spellbook.spells.ranger;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
