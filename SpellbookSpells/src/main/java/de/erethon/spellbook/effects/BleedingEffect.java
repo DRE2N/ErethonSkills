@@ -22,8 +22,7 @@ public class BleedingEffect extends SpellEffect {
         tick++;
         if (tick >= 20) {
             tick = 0;
-            //target.damage(Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL), PDamageType.PHYSICAL); Missing method
-            target.playEffect(EntityEffect.HURT);
+            target.damage(Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL), PDamageType.PHYSICAL);
         }
     }
 }

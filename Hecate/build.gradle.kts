@@ -37,7 +37,7 @@ dependencies {
     implementation("de.erethon:bedrock:1.5.7") { isTransitive = false }
     implementation(project(":SpellbookSpells"))
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT") // For correct nametags
-    compileOnly("de.erethon.hephaestus:Hephaestus:1.0.3-SNAPSHOT") { isChanging = true }
+    compileOnly("de.erethon.hephaestus:Hephaestus:1.0.3-SNAPSHOT")
 }
 
 
