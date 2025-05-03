@@ -208,7 +208,11 @@ public final class Hecate extends EPlugin {
                 spell.getPlaceholders(pig);
                 if (spell instanceof SpellbookBaseSpell baseSpell) {
                     List<String> placeholders = new ArrayList<>(baseSpell.getPlaceholderNames());
-                    data.set("availablePlaceholders", placeholders);
+                    int num = 0;
+                    for (String placeholder : placeholders) {
+                        data.set("availablePlaceholders." + num, placeholder);
+                        num++;
+                    }
                     data.setComments("availablePlaceholders", List.of("This list contains all placeholders that can be used in this spell.",
                             "You can use those placeholders in the description with",
                             "<arg:(index of placeholder)>. Example: <arg:1> for the first placeholder."));
