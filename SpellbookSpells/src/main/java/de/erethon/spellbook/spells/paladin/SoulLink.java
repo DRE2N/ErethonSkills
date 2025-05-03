@@ -1,9 +1,8 @@
-package de.erethon.spellbook.spells.paladin.hierophant;
+package de.erethon.spellbook.spells.paladin;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.LineEffect;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
