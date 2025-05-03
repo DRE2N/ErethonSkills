@@ -4,6 +4,7 @@ package de.erethon.spellbook.spells.paladin.inquisitor;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -20,10 +21,10 @@ public class Condemn extends InquisitorBaseSpell {
     // Heals allies in a small radius per judgement consumed.
 
     private final int burningStacksPerJudgement = data.getInt("burningStacksPerJudgement", 1);
-    private final int burningDurationMin = data.getInt("burningDurationMin", 40);
-    private final int burningDurationMax = data.getInt("burningDurationMax", 80);
-    private final int weaknessDurationMin = data.getInt("weaknessDuration", 120);
-    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 200);
+    private final int burningDurationMin = data.getInt("burningDurationMin", 4) * 20;
+    private final int burningDurationMax = data.getInt("burningDurationMax", 8) * 20;
+    private final int weaknessDurationMin = data.getInt("weaknessDuration", 12) * 20;
+    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 20) * 20;
     private final int weaknessStacks = data.getInt("weaknessStacks", 1);
     private final int healRadiusMin = data.getInt("healRadiusMin", 3);
     private final int healRadiusMax = data.getInt("healRadiusMax", 5);
@@ -71,5 +72,15 @@ public class Condemn extends InquisitorBaseSpell {
             caster.getWorld().playSound(caster, Sound.BLOCK_BEEHIVE_DRIP, 1, 1);
         }
         return super.onCast();
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, burningDurationMin, burningDurationMax, "burningDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("burningDuration");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("weaknessDuration");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.STAT_HEALINGPOWER, healRadiusMin, healRadiusMax, "healRadius"), VALUE_COLOR));
+        placeholderNames.add("healRadius");
     }
 }

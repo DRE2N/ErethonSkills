@@ -5,6 +5,7 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.CircleEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
@@ -13,12 +14,12 @@ public class BastionOfResolve extends PaladinBaseSpell {
     // The Guardian creates a protective barrier, granting nearby allies increased resistance, stability and power.
 
     private final int range = data.getInt("range", 10);
-    private final int powerDurationMin = data.getInt("powerDurationMin", 60);
-    private final int powerDurationMax = data.getInt("powerDurationMax", 240);
-    private final int resistanceDurationMin = data.getInt("resistanceDurationMin", 60);
-    private final int resistanceDurationMax = data.getInt("resistanceDurationMax", 240);
-    private final int stabilityDurationMin = data.getInt("stabilityDurationMin", 60);
-    private final int stabilityDurationMax = data.getInt("stabilityDurationMax", 240);
+    private final int powerDurationMin = data.getInt("powerDurationMin", 6) * 20;
+    private final int powerDurationMax = data.getInt("powerDurationMax", 24) * 20;
+    private final int resistanceDurationMin = data.getInt("resistanceDurationMin", 6) * 20;
+    private final int resistanceDurationMax = data.getInt("resistanceDurationMax", 24) * 20;
+    private final int stabilityDurationMin = data.getInt("stabilityDurationMin", 6) * 20;
+    private final int stabilityDurationMax = data.getInt("stabilityDurationMax", 24) * 20;
 
     private final EffectData resistanceEffect = Spellbook.getEffectData("Resistance");
     private final EffectData powerEffect = Spellbook.getEffectData("Power");
@@ -53,7 +54,7 @@ public class BastionOfResolve extends PaladinBaseSpell {
                         living.addEffect(living, resistanceEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.RESISTANCE_MAGICAL, resistanceDurationMin, resistanceDurationMax, "resistanceDuration"), 1);
                     }
                     if (!living.hasEffect(powerEffect)) {
-                        living.addEffect(living, powerEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.RESISTANCE_MAGICAL, powerDurationMin, powerDurationMax, "powerDuration"), 1);
+                        living.addEffect(living, powerEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.ADVANTAGE_MAGICAL, powerDurationMin, powerDurationMax, "powerDuration"), 1);
                     }
                     if (!living.hasEffect(stabilityEffect)) {
                         living.addEffect(living, stabilityEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.RESISTANCE_MAGICAL, stabilityDurationMin, stabilityDurationMax, "stabilityDuration"), 1);
@@ -72,5 +73,15 @@ public class BastionOfResolve extends PaladinBaseSpell {
         circleEffect.wholeCircle = true;
         circleEffect.enableRotation = false;
         circleEffect.start();
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, resistanceDurationMin, resistanceDurationMax, "resistanceDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("resistanceDuration");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, powerDurationMin, powerDurationMax, "powerDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("powerDuration");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, stabilityDurationMin, stabilityDurationMax, "stabilityDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("stabilityDuration");
     }
 }

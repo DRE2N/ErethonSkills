@@ -19,7 +19,7 @@ public class HierophantsVerdict extends PaladinBaseSpell {
 
     private final double radius = data.getDouble("radius", 4.0);
     private final double damageFalloffPerBlock = data.getDouble("damageFalloffPerBlock", 20);
-    private final int weaknessDuration = data.getInt("weaknessDuration", 5);
+    private final int weaknessDuration = data.getInt("weaknessDuration", 5) * 20;
     private final int weaknessStacks = data.getInt("weaknessStacks", 1);
     private final int minWrathForWeakness = data.getInt("minWrathForWeakness", 50);
 

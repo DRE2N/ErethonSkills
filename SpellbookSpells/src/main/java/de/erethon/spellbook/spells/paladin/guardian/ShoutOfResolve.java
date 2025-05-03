@@ -7,6 +7,7 @@ import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.EffectType;
 import de.slikey.effectlib.effect.CylinderEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -89,7 +90,7 @@ public class ShoutOfResolve extends PaladinBaseSpell implements Listener {
                 double reflectMultiplier = Spellbook.getRangedValue(data, caster, livingTarget, Attribute.ADVANTAGE_PHYSICAL, allyDamageReflectMin, allyDamageReflectMax, "allyDamageReflect");
                 double reflectDamage = event.getDamage() * reflectMultiplier;
                 livingDamager.damage(reflectDamage, caster, PDamageType.MAGIC);
-                double healPerDevotion = Spellbook.getRangedValue(data, caster, livingTarget, Attribute.RESISTANCE_PHYSICAL, allyHealPerDevotionMin, allyHealPerDevotionMax, "allyHealPerDevotion");
+                double healPerDevotion = Spellbook.getRangedValue(data, caster, livingTarget, Attribute.STAT_HEALINGPOWER, allyHealPerDevotionMin, allyHealPerDevotionMax, "allyHealPerDevotion");
                 double healAmount = (reflectDamage * allyHealDamageMultiplier) * (caster.getEnergy() * healPerDevotion);
                 livingTarget.heal(healAmount);
                 caster.heal(healAmount); // This is likely very strong, let's see
@@ -110,5 +111,19 @@ public class ShoutOfResolve extends PaladinBaseSpell implements Listener {
     protected void cleanup() {
         super.cleanup();
         HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_PHYSICAL, allyDamageMultiplierMin, allyDamageMultiplierMax, "allyDamageMultiplier"), VALUE_COLOR));
+        placeholderNames.add("allyDamageMultiplier");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, allyDamageReflectMin, allyDamageReflectMax, "allyDamageReflect"), VALUE_COLOR));
+        placeholderNames.add("allyDamageReflect");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_PHYSICAL, guardianDamageMultiplierMin, guardianDamageMultiplierMax, "guardianDamageMultiplier"), VALUE_COLOR));
+        placeholderNames.add("guardianDamageMultiplier");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, guardianDamageReflectMin, guardianDamageReflectMax, "guardianDamageReflect"), VALUE_COLOR));
+        placeholderNames.add("guardianDamageReflect");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.STAT_HEALINGPOWER, allyHealPerDevotionMin, allyHealPerDevotionMax, "allyHealPerDevotion"), VALUE_COLOR));
+        placeholderNames.add("allyHealPerDevotion");
     }
 }

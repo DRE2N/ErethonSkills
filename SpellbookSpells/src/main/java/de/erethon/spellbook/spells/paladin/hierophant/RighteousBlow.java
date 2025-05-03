@@ -17,7 +17,7 @@ public class RighteousBlow extends PaladinBaseSpell {
     private final int wrathOnHit = data.getInt("wrathOnHit", 10);
     private final double minimumCleaveWrath = data.getDouble("minimumCleaveWrath", 50);
     private final double cleaveRadius = data.getDouble("cleaveRadius", 3);
-    private final double cleaveDamageModifier = data.getDouble("cleaveDamageModifier", 0.5);
+    private final double cleaveDamageModifier = data.getDouble("cleaveDamageMultiplier", 0.5);
     private final int maxCleaveTargets = data.getInt("maxCleaveTargets", 1);
 
     public RighteousBlow(LivingEntity caster, SpellData spellData) {

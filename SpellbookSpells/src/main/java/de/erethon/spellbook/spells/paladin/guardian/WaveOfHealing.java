@@ -99,8 +99,10 @@ public class WaveOfHealing extends PaladinBaseSpell {
     }
 
     @Override
-    public List<Component> getPlaceholders(SpellCaster c) {
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.STAT_HEALINGPOWER, healPerDevotionMin, healPerDevotionMax, "healPerDevotion"), VALUE_COLOR));
+        placeholderNames.add("healPerDevotion");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, rangeMin, rangeMax, "range"), VALUE_COLOR));
         placeholderNames.add("range");
-        return super.getPlaceholders(c);
     }
 }

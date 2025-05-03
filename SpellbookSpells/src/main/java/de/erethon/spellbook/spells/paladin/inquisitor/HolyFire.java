@@ -130,11 +130,8 @@ public class HolyFire extends InquisitorBaseSpell {
     }
 
     @Override
-    public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(range, VALUE_COLOR));
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, rangeMin, rangeMax, "range"), VALUE_COLOR));
         placeholderNames.add("range");
-        spellAddedPlaceholders.add(Component.text(healAmount + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER), ATTR_HEALING_POWER_COLOR));
-        placeholderNames.add("healing");
-        return super.getPlaceholders(c);
     }
 }

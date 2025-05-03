@@ -22,8 +22,8 @@ public class PreciseStab extends AssassinBaseSpell {
 
     private final int range = data.getInt("range", 3);
     private final int bleedStacksRequired = data.getInt("bleedStacksRequired", 3);
-    private final int furyMinDuration = data.getInt("furyMinDuration", 60);
-    private final int furyMaxDuration = data.getInt("furyMaxDuration", 120);
+    private final int furyMinDuration = data.getInt("furyMinDuration", 6) * 20;
+    private final int furyMaxDuration = data.getInt("furyMaxDuration", 12) * 20;
 
     private final EffectData bleedingEffectData = Spellbook.getEffectData("Bleeding");
     private final EffectData furyEffectData = Spellbook.getEffectData("Fury");
@@ -65,7 +65,7 @@ public class PreciseStab extends AssassinBaseSpell {
 
     @Override
     protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, furyMinDuration, furyMaxDuration, "furyDuration"), VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, furyMinDuration, furyMaxDuration, "furyDuration") / 20, VALUE_COLOR));
         placeholderNames.add("furyDuration");
     }
 }

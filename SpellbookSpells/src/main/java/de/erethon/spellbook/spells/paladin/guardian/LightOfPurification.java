@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.CircleEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -23,8 +24,8 @@ public class LightOfPurification extends PaladinBaseSpell {
     private final int range = data.getInt("range", 5);
     private final int effectsToRemove = data.getInt("effectsToRemove", 3);
     private final int devotionPerEffect = data.getInt("devotionPerEffect", 5);
-    private final int resistanceDurationMin = data.getInt("resistanceDurationMin", 120);
-    private final int resistanceDurationMax = data.getInt("resistanceDurationMax", 300);
+    private final int resistanceDurationMin = data.getInt("resistanceDurationMin", 12) * 20;
+    private final int resistanceDurationMax = data.getInt("resistanceDurationMax", 30) * 20;
 
     private final EffectData resistanceEffect = Spellbook.getEffectData("Resistance");
 
@@ -69,5 +70,11 @@ public class LightOfPurification extends PaladinBaseSpell {
         }
         caster.setEnergy(caster.getEnergy() + devotionGained);
         return super.onCast();
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, resistanceDurationMin, resistanceDurationMax, "resistanceDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("resistanceDuration");
     }
 }

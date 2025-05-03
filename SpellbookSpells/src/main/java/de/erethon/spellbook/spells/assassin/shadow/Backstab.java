@@ -5,6 +5,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -113,5 +114,11 @@ public class Backstab extends AssassinBaseSpell implements Listener {
     @Override
     protected void cleanup() {
         HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, markedMinDamage, markedMaxDamage, "marked"), VALUE_COLOR));
+        placeholderNames.add("marked");
     }
 }

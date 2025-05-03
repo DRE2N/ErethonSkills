@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LineEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -20,8 +21,8 @@ public class HolySmite extends InquisitorBaseSpell {
     private final int range = data.getInt("range", 10);
     private final int bonusDamagePerStack = data.getInt("bonusDamagePerStack", 25);
     private final int furyStacksPerStack = data.getInt("furyStacksPerStack", 1);
-    private final int furyDurationMin = data.getInt("furyDurationMin", 10);
-    private final int furyDurationMax = data.getInt("furyDurationMax", 20);
+    private final int furyDurationMin = data.getInt("furyDurationMin", 5) * 20;
+    private final int furyDurationMax = data.getInt("furyDurationMax", 15) * 20;
 
     private final EffectManager effectManager = Spellbook.getInstance().getEffectManager();
     private final EffectData fury = Spellbook.getEffectData("Fury");
@@ -63,5 +64,11 @@ public class HolySmite extends InquisitorBaseSpell {
             triggerTraits(2);
         }
         return super.onCast();
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, furyDurationMin, furyDurationMax, "furyDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("furyDuration");
     }
 }

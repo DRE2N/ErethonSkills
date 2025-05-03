@@ -1,7 +1,9 @@
 package de.erethon.spellbook.spells.assassin.shadow;
 
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Input;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -63,5 +65,4 @@ public class ShadowJump extends AssassinBaseSpell {
     protected void onTickFinish() {
         caster.setInvisible(false);
     }
-
 }

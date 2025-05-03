@@ -33,8 +33,8 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
 
     private final float speed = (float) data.getDouble("speed", 2.0);
     private final int divergence = data.getInt("divergence", 1);
-    private final int effectDurationMin = data.getInt("slowDurationMin", 30);
-    private final int effectDurationMax = data.getInt("slowDurationMax", 60);
+    private final int effectDurationMin = data.getInt("slowDurationMin", 3) * 20;
+    private final int effectDurationMax = data.getInt("slowDurationMax", 6) * 20;
     private final int effectStacksMin = data.getInt("slowStacksMin", 5);
     private final int effectStacksMax = data.getInt("slowStacksMax", 8);
 
@@ -94,13 +94,10 @@ public class DaggerThrow extends AssassinBaseSpell implements Listener {
     }
 
     @Override
-    public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(speed, VALUE_COLOR));
-        placeholderNames.add("speed");
-        spellAddedPlaceholders.add(Component.text(divergence, VALUE_COLOR));
-        placeholderNames.add("divergence");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getVariedAttributeBasedDamage(data, caster, caster, false, Attribute.ADVANTAGE_PHYSICAL), VALUE_COLOR));
-        placeholderNames.add("damage");
-        return super.getPlaceholders(caster);
+    public void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, effectDurationMin, effectDurationMax, "slowDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("slowDuration");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, effectStacksMin, effectStacksMax, "slowStacks"), VALUE_COLOR));
+        placeholderNames.add("slowStacks");
     }
 }

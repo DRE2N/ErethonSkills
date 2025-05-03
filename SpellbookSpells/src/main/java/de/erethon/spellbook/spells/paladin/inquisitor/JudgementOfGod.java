@@ -33,10 +33,12 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
     public int rangeMin = data.getInt("rangeMin", 24); // Trait: SuppressionOfTheHeretics
     public int rangeMax = data.getInt("rangeMax", 36); // Trait: SuppressionOfTheHeretics
     private final int warmupTicks = data.getInt("warmupTicks", 100);
-    private final int effectDuration = data.getInt("effectDuration", 200);
+    private final int effectDuration = data.getInt("effectDuration", 20) * 20;
     private final int effectStacks = data.getInt("effectStacks", 5);
     public double deathDamageRange = data.getDouble("deathDamageRange", 5); // Trait: SuppressionOfTheHeretics
     public double deathDamageMultiplier = data.getDouble("deathDamageMultiplier", 0.1); // Trait: SuppressionOfTheHeretics
+    private final double deathHealingMin = data.getDouble("deathHealingMin", 5);
+    private final double deathHealingMax = data.getDouble("deathHealingMax", 50);
 
     private final EffectData weakness = Spellbook.getEffectData("Weakness");
 
@@ -134,7 +136,13 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
             world.spawnParticle(Particle.EXPLOSION_EMITTER, deathLocation, 1, 0, 0, 0);
             for (LivingEntity livingEntity : event.getEntity().getLocation().getNearbyLivingEntities(deathDamageRange)) {
                 if (livingEntity == caster) continue;
-                if (!Spellbook.canAttack(caster, livingEntity)) continue;
+                if (!Spellbook.canAttack(caster, livingEntity)) {
+                    double deathHeal = Spellbook.getRangedValue(data, caster, livingEntity, Attribute.STAT_HEALINGPOWER, deathHealingMin, deathHealingMax, "deathHealing");
+                    livingEntity.heal(deathHeal);
+                    world.playSound(livingEntity, Sound.BLOCK_BELL_USE, 0.7f, 1.5f);
+                    world.spawnParticle(Particle.HEART, livingEntity.getLocation(), 2, 0.5, 1, 0.5);
+                    continue;
+                }
                 rayOfGod(livingEntity, 30, 30);
                 livingEntity.addEffect(caster, weakness, effectDuration, effectStacks);
                 livingEntity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, livingEntity, true, Attribute.ADVANTAGE_MAGICAL) * deathDamageMultiplier, caster, PDamageType.MAGIC);
@@ -160,9 +168,10 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
     }
 
     @Override
-    public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
-        placeholderNames.add("duration");
-        return super.getPlaceholders(c);
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, rangeMin, rangeMax, "range"), VALUE_COLOR));
+        placeholderNames.add("range");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, deathHealingMin, deathHealingMax, "deathHealing"), VALUE_COLOR));
+        placeholderNames.add("deathHealing");
     }
 }

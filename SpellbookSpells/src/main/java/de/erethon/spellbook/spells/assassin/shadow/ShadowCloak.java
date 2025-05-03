@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -26,8 +27,8 @@ public class ShadowCloak extends AssassinBaseSpell {
     // Blindness scales with advantage_magical.
 
     private final int bonusDamage = data.getInt("bonusDamage", 100);
-    private final int blindnessMinDuration = data.getInt("blindnessMinDuration", 100);
-    private final int blindnessMaxDuration = data.getInt("blindnessMaxDuration", 200);
+    private final int blindnessMinDuration = data.getInt("blindnessMinDuration", 10) * 20;
+    private final int blindnessMaxDuration = data.getInt("blindnessMaxDuration", 20) * 20;
 
     private final AttributeModifier speedBoost = new AttributeModifier(new NamespacedKey("spellbook", "shadow_cloak"), 0.2, AttributeModifier.Operation.ADD_NUMBER);
     private final EffectData blindness = Spellbook.getEffectData("Blindness");
@@ -55,7 +56,7 @@ public class ShadowCloak extends AssassinBaseSpell {
         if (caster instanceof Player casterPlayer) {
             casterPlayer.playSound(caster, Sound.ITEM_SHIELD_BREAK, 1, 1);
         }
-        target.addEffect(caster, blindness, (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, blindnessMinDuration, blindnessMaxDuration, "blindness"), 1);
+        target.addEffect(caster, blindness, (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, blindnessMinDuration, blindnessMaxDuration, "blindnessDuration"), 1);
         return super.onAttack(target, damage + bonusDamage, type);
     }
 
@@ -68,5 +69,11 @@ public class ShadowCloak extends AssassinBaseSpell {
     private void endCloak() {
         caster.setInvisible(false);
         caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedBoost);
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, blindnessMinDuration, blindnessMaxDuration, "blindnessDuration:"), VALUE_COLOR));
+        placeholderNames.add("blindness");
     }
 }

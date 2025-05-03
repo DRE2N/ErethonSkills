@@ -4,6 +4,7 @@ import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -29,8 +30,8 @@ public class SealOfDeath extends AssassinBaseSpell implements Listener {
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.3);
     private final double executionThreshold = data.getDouble("executionThreshold", 0.15);
     private final float visionDebuffRadius = (float) data.getDouble("visionDebuffRadius", 5.0);
-    private final int visionDebuffDurationMin = data.getInt("visionDebuffDurationMin", 60);
-    private final int visionDebuffDurationMax = data.getInt("visionDebuffDurationMax", 240);
+    private final int visionDebuffDurationMin = data.getInt("visionDebuffDurationMin", 6) * 20;
+    private final int visionDebuffDurationMax = data.getInt("visionDebuffDurationMax", 24) * 20;
 
     private int visualTick = 20;
     private AreaEffectCloud effectCloud;
@@ -72,7 +73,7 @@ public class SealOfDeath extends AssassinBaseSpell implements Listener {
         double health = target.getHealth();
         double maxHealth = target.getAttribute(Attribute.MAX_HEALTH).getValue();
         if (health <= maxHealth * executionThreshold) {
-            int debuffDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, visionDebuffDurationMin, visionDebuffDurationMax, "debuff");
+            int debuffDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, visionDebuffDurationMin, visionDebuffDurationMax, "debuffDuration");
             target.damage(1000000, caster, PDamageType.PHYSICAL);
             target.getWorld().spawnParticle(Particle.SMOKE, target.getLocation(), 8, 5, 5, 5, 0.1);
             target.getWorld().playSound(target.getLocation(), org.bukkit.Sound.ENTITY_WITHER_DEATH, 1.0f, 1.0f);
@@ -99,5 +100,11 @@ public class SealOfDeath extends AssassinBaseSpell implements Listener {
     protected void cleanup() {
         super.cleanup();
         HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, visionDebuffDurationMin, visionDebuffDurationMax, "debuffDuration"), VALUE_COLOR));
+        placeholderNames.add("debuff");
     }
 }

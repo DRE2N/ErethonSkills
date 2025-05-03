@@ -7,6 +7,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.CircleEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
@@ -24,10 +25,10 @@ public class AvatarOfWrath extends PaladinBaseSpell {
     private final double attackRangeBonus = data.getDouble("attackRangeBonus", 4.0f);
     private final double cleaveDamageMultiplier = data.getDouble("cleaveDamageMultiplier", 1.5f);
     private final double cleaveRadius = data.getDouble("cleaveRadius", 3.0);
-    private final int weaknessDurationMin = data.getInt("weaknessDurationMin", 40);
-    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 200);
-    private final int burningDurationMin = data.getInt("burningDurationMin", 40);
-    private final int burningDurationMax = data.getInt("burningDurationMax", 200);
+    private final int weaknessDurationMin = data.getInt("weaknessDurationMin", 4) * 20;
+    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 20) * 20;
+    private final int burningDurationMin = data.getInt("burningDurationMin", 4) * 20;
+    private final int burningDurationMax = data.getInt("burningDurationMax", 20) * 20;
     private final int burningStacksMin = data.getInt("burningStacksMin", 1);
     private final int burningStacksMax = data.getInt("burningStacksMax", 3);
     private final double sizeIncrease = data.getDouble("sizeIncrease", 1.2f);
@@ -72,6 +73,7 @@ public class AvatarOfWrath extends PaladinBaseSpell {
         circleEffect.particleOffsetY = 0.5f;
         circleEffect.duration = 40;
         circleEffect.start();
+        damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_MAGICAL);
         for (LivingEntity livingEntity : caster.getLocation().getNearbyLivingEntities(cleaveRadius)) {
             if (Spellbook.canAttack(caster, livingEntity)) {
                 double cleaveDamage = damage * cleaveDamageMultiplier;
@@ -97,5 +99,15 @@ public class AvatarOfWrath extends PaladinBaseSpell {
         caster.getAttribute(Attribute.SCALE).removeModifier(sizeModifier);
         caster.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).removeModifier(attackRangeModifier);
         super.cleanup();
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("weaknessDuration");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, burningDurationMin, burningDurationMax, "burningDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("burningDuration");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, burningStacksMin, burningStacksMax, "burningStacks"), VALUE_COLOR));
+        placeholderNames.add("burningStacks");
     }
 }

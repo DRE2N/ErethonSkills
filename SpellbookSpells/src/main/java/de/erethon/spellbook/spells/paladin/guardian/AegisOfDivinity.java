@@ -5,6 +5,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.LineEffect;
 import de.slikey.effectlib.effect.SphereEffect;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -145,5 +146,11 @@ public class AegisOfDivinity extends PaladinBaseSpell implements Listener {
     protected void cleanup() {
         super.cleanup();
         HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.STAT_HEALINGPOWER, healMin, healMax, "heal"), VALUE_COLOR));
+        placeholderNames.add("heal");
     }
 }

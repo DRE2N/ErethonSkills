@@ -31,9 +31,9 @@ public class BladeDash extends AssassinBaseSpell {
     private final double sideDashStrength = data.getDouble("sideDashStrength", 1.5);
     private final double damageWidth = data.getDouble("damageWidth", 1.5);
     private final double energyPerTarget = data.getDouble("energyPerTarget", 5.0);
-    private final int weaknessDurationMin = data.getInt("weaknessDurationMin", 20);
-    private final int weaknessStacksMin = data.getInt("weaknessStacksMin", 1);
-    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 100);
+    private final int weaknessDurationMin = data.getInt("weaknessDurationMin", 2) * 20;
+    private final int weaknessStacksMin = data.getInt("weaknessStacksMin", 1) * 20;
+    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 5);
     private final int weaknessStacksMax = data.getInt("weaknessStacksMax", 3);
 
     private final EffectData weaknessEffectData = Spellbook.getEffectData("Weakness");
@@ -135,7 +135,7 @@ public class BladeDash extends AssassinBaseSpell {
 
     @Override
     protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration"), VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin * 20, weaknessDurationMax * 20, "weaknessDuration") / 20, VALUE_COLOR));
         placeholderNames.add("weaknessDuration");
         spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessStacksMin, weaknessStacksMax, "weaknessStacks"), VALUE_COLOR));
         placeholderNames.add("weaknessStacks");

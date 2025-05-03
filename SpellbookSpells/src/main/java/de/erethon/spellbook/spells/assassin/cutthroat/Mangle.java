@@ -17,10 +17,10 @@ public class Mangle extends AssassinBaseSpell {
 
     private final int range = data.getInt("range", 3);
     private final int bleedStacksRequired = data.getInt("bleedStacksRequired", 3);
-    private final int silenceMinDuration = data.getInt("silenceMinDuration", 100);
-    private final int silenceMaxDuration = data.getInt("silenceMaxDuration", 200);
-    private final int weaknessMinDuration = data.getInt("weaknessMinDuration", 100);
-    private final int weaknessMaxDuration = data.getInt("weaknessMaxDuration", 200);
+    private final int silenceMinDuration = data.getInt("silenceMinDuration", 8) * 20;
+    private final int silenceMaxDuration = data.getInt("silenceMaxDuration", 16) * 20;
+    private final int weaknessMinDuration = data.getInt("weaknessMinDuration", 10) * 20;
+    private final int weaknessMaxDuration = data.getInt("weaknessMaxDuration", 25) * 20;
 
     private final EffectData bleedingEffectData = Spellbook.getEffectData("Bleeding");
     private final EffectData silenceEffectData = Spellbook.getEffectData("Silence");
@@ -74,9 +74,9 @@ public class Mangle extends AssassinBaseSpell {
 
     @Override
     protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, silenceMinDuration, silenceMaxDuration, "silenceDuration"), VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, silenceMinDuration, silenceMaxDuration, "silenceDuration") / 20, VALUE_COLOR));
         placeholderNames.add("silenceDuration");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessMinDuration, weaknessMaxDuration, "weaknessDuration"), VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessMinDuration, weaknessMaxDuration, "weaknessDuration") / 20, VALUE_COLOR));
         placeholderNames.add("weaknessDuration");
         super.addSpellPlaceholders();
     }

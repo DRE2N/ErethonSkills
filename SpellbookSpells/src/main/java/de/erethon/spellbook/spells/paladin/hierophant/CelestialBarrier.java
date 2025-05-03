@@ -21,7 +21,7 @@ public class CelestialBarrier extends PaladinBaseSpell implements Listener {
 
     // The Hierophant creates a celestial barrier of light that absorbs damage for a short duration.
     // When the barrier expires or breaks, it explodes, dealing damage to nearby enemies equal to 100 % of the damage absorbed.
-    // If cast while you have more than 50 % wrath, the barrier reflects 150% damage.
+    // If cast while you have more than 50 % wrath, the barrier reflects150% damage.
 
     private final double radius = data.getDouble("radius", 5.0);
     private final double explosionRadius = data.getDouble("explosionRadius", 7.0);
