@@ -8,19 +8,27 @@ import de.erethon.hecate.events.CombatModeEnterEvent;
 import de.erethon.hecate.events.CombatModeLeaveEvent;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +47,7 @@ public class CharacterCastingManager {
     private final Set<TraitData> combatOnlyTraits = new HashSet<>();
     private final SpellData[] slotSpells = new SpellData[8];
     private final SpellbookSpell[] cachedActiveSpells = new SpellbookSpell[8];
+    private final HashMap<Attribute, Double> cachedAttributes = new HashMap<>();
 
     public CharacterCastingManager(HCharacter character) {
         this.character = character;
@@ -85,7 +94,14 @@ public class CharacterCastingManager {
         for (TraitData trait : combatOnlyTraits) {
             player.addTrait(trait);
         }
+        for (TraitData innate : character.getTraitline().getInnateTraits()) {
+            if (player.hasTrait(innate)) {
+                continue;
+            }
+            player.addTrait(innate);
+        }
         populateSlots();
+        updateSkillUI();
     }
 
     private void stopCastMode() {
@@ -97,6 +113,109 @@ public class CharacterCastingManager {
     }
 
     private void updateUI() {
+        // Only do the expensive skill UI update if any attributes have changed.
+        for (Attribute attribute : Registry.ATTRIBUTE) {
+            if (player.getAttribute(attribute) == null) {
+                continue;
+            }
+            if (cachedAttributes.containsKey(attribute)) {
+                double value = player.getAttribute(attribute).getValue();
+                if (cachedAttributes.get(attribute) != value) {
+                    cachedAttributes.put(attribute, value);
+                    updateSkillUI();
+                }
+            } else {
+                cachedAttributes.put(attribute, player.getAttribute(attribute).getValue());
+                updateSkillUI();
+            }
+        }
+        // Always update cooldowns
+        for (int i = 0; i < slotSpells.length; i++) {
+            SpellbookSpell activeSpell = cachedActiveSpells[i];
+            if (activeSpell == null || slotSpells[i] == null) {
+                continue;
+            }
+            ItemStack stack = player.getInventory().getItem(i);
+            int cooldown = activeSpell.getData().getCooldown();
+            if (!player.getUsedSpells().containsKey(activeSpell.getData())) {
+                continue;
+            }
+            int current = getCooldownFromTimeStamp(player.getUsedSpells().get(activeSpell.getData()));
+            stack.setAmount(getCooldownPercentage(cooldown, current));
+            player.setCooldown(stack, cooldown);
+        }
+        // Always update HUD
+        int energy = player.getEnergy();
+        int maxEnergy = player.getMaxEnergy();
+        double health = player.getHealth();
+        double maxHealth = player.getMaxHealth();
+
+        Component healthIcon = Component.text("\u2665", NamedTextColor.RED);
+        Component healthNumbers = Component.text(String.format("%.1f", health) + "/" + String.format("%.1f", maxHealth), NamedTextColor.RED);
+        Component healthText = healthIcon.append(Component.space()).append(healthNumbers);
+
+        NamedTextColor energyColor = NamedTextColor.YELLOW;
+        String energyIconUnicode = "\u26A1";
+        if (character.getClassId().equalsIgnoreCase("Paladin") || character.getClassId().equalsIgnoreCase("Ranger")) {
+            energyColor = NamedTextColor.BLUE;
+            energyIconUnicode = "\u26A1";
+        }
+        Component energyIcon = Component.text(energyIconUnicode, energyColor);
+        Component energyNumbers = Component.text(energy + "/" + maxEnergy, energyColor);
+        Component energyText = energyIcon.append(Component.space()).append(energyNumbers);
+
+        StringBuilder positiveEffectsBuilder = new StringBuilder();
+        StringBuilder negativeEffectsBuilder = new StringBuilder();
+
+        for (SpellEffect effect : player.getEffects()) {
+            if (effect.data.isPositive()) {
+                positiveEffectsBuilder.append("+").append(effect.data.getIcon()).append(" ");
+            } else {
+                negativeEffectsBuilder.append("-").append(effect.data.getIcon()).append(" ");
+            }
+        }
+        Component positiveEffectsComponent = Component.text(positiveEffectsBuilder.toString().trim(), NamedTextColor.GREEN);
+        Component negativeEffectsComponent = Component.text(negativeEffectsBuilder.toString().trim(), NamedTextColor.RED);
+
+        // Separators
+        Component centerSpacer = Component.text(" | ", NamedTextColor.DARK_GRAY);
+        Component betweenSpacer = Component.text("     ");
+
+        // --- Calculate Content Widths on Each Side of the Separator ---
+
+        // Left side content: Health + BetweenSpacer + Positive Effects
+        PlainTextComponentSerializer pt = PlainTextComponentSerializer.plainText();
+        int healthWidth = pt.serialize(healthText).length();
+        int posEffectsWidth = pt.serialize(positiveEffectsComponent).length();
+        int betweenSpacerWidth = pt.serialize(betweenSpacer).length();
+
+        int leftContentWidth = healthWidth + betweenSpacerWidth + posEffectsWidth;
+
+        // Right side content: Negative Effects + BetweenSpacer + Energy
+        int negEffectsWidth = pt.serialize(negativeEffectsComponent).length();
+        int energyWidth = pt.serialize(energyText).length();
+
+        int rightContentWidth = negEffectsWidth + betweenSpacerWidth + energyWidth;
+        int requiredSideWidth = Math.max(leftContentWidth, rightContentWidth);
+        int leftPaddingSpaces = Math.max(0, requiredSideWidth - leftContentWidth);
+        int rightPaddingSpaces = Math.max(0, requiredSideWidth - rightContentWidth);
+
+        Component leftPadding = Component.text(" ".repeat(leftPaddingSpaces));
+        Component rightPadding = Component.text(" ".repeat(rightPaddingSpaces));
+
+        Component actionbar = leftPadding
+                .append(healthText)
+                .append(betweenSpacer)
+                .append(positiveEffectsComponent)
+                .append(centerSpacer) // The anchor point that should appear in the screen center
+                .append(negativeEffectsComponent)
+                .append(betweenSpacer)
+                .append(energyText)
+                .append(rightPadding);
+        player.sendActionBar(actionbar);
+    }
+
+    private void updateSkillUI() {
         for (int i = 0; i < slotSpells.length; i++) {
             if (cachedActiveSpells[i] == null || slotSpells[i] == null) {
                 continue;
@@ -113,11 +232,6 @@ public class CharacterCastingManager {
                 continue;
             }
             updateLoreFromActiveSpell(stack, activeSpell);
-            // Update cooldown
-            int cooldown = activeSpell.getData().getCooldown();
-            int current = getCooldownFromTimeStamp(player.getUsedSpells().get(activeSpell.getData()));
-            stack.setAmount(getCooldownPercentage(cooldown, current));
-            player.setCooldown(stack, cooldown);
         }
     }
 
@@ -149,7 +263,7 @@ public class CharacterCastingManager {
 
     private ItemStack getItemStackFromSpellData(int slot, SpellData spellData) {
         ItemStack item = new ItemStack(CastingStatics.SLOT_DYES[slot]);
-        item.setData(DataComponentTypes.CUSTOM_NAME, Component.translatable("spellbook.spell.name" + spellData.getId()));
+        item.setData(DataComponentTypes.CUSTOM_NAME, Component.translatable("spellbook.spell.name." + spellData.getId()));
         List<Component> placeholders = spellData.getActiveSpell(player).getPlaceholders(player);
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < spellData.getDescriptionLineCount(); i++) {

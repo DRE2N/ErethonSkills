@@ -140,7 +140,7 @@ public class Traitline extends YamlConfiguration {
         for (String id : getStringList("innateTraits")) {
             TraitData trait = spellbookAPI.getLibrary().getTraitByID(id);
             if (trait == null) {
-                MessageUtil.log("Unknown trait '" + id + "' found for 'innateTraits' in traitline file " + id);
+                MessageUtil.log("Unknown trait '" + id + "' found for 'innateTraits' in traitline file " + getId());
                 continue;
             }
             innateTraits.add(trait);

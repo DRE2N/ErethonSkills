@@ -331,6 +331,7 @@ public final class Hecate extends EPlugin {
                 return traitline;
             }
         }
+        MessageUtil.log("Traitline " + id + " not found.");
         return null;
     }
 
