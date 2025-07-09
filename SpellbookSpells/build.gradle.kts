@@ -21,8 +21,14 @@ repositories {
     maven("https://repo.erethon.de/snapshots")
 }
 
+configurations.all {
+    resolutionStrategy {
+        resolutionStrategy.cacheChangingModulesFor(60, "seconds") // Force-redownload Papyrus
+    }
+}
+
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", "1.21.5-R0.1-SNAPSHOT")
+    paperweight.devBundle("de.erethon.papyrus", "1.21.7-R0.1-SNAPSHOT") { isChanging = true }
     implementation("com.elmakers.mine.bukkit:EffectLib:10.3")
     compileOnly("de.erethon:bedrock:1.4.0")
 }

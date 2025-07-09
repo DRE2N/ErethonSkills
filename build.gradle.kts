@@ -1,6 +1,7 @@
 plugins {
     id("java")
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.16" apply false
+    `maven-publish`
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17" apply false
 }
 
 repositories {
@@ -26,6 +27,4 @@ tasks {
         targetCompatibility = JavaVersion.VERSION_21.name
         sourceCompatibility = JavaVersion.VERSION_21.name
     }
-
-
 }

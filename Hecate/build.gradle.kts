@@ -1,5 +1,4 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
-import java.io.FileInputStream
 
 repositories {
     mavenLocal()
@@ -22,6 +21,12 @@ plugins {
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
 }
 
+configurations.all {
+    resolutionStrategy {
+        resolutionStrategy.cacheChangingModulesFor(60, "seconds") // Force-redownload Papyrus
+    }
+}
+
 group = "de.erethon"
 version = "1.0-SNAPSHOT"
 description = "Spell plugin for Erethon"
@@ -30,10 +35,11 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-val papyrusVersion = "1.21.5-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.7-R0.1-SNAPSHOT"
 
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", papyrusVersion)
+    paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
+
     implementation("de.erethon:bedrock:1.5.7") { isTransitive = false }
     implementation(project(":SpellbookSpells"))
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT") // For correct nametags
@@ -83,7 +89,7 @@ tasks {
     bukkit {
         load = BukkitPluginDescription.PluginLoadOrder.STARTUP
         main = "de.erethon.hecate.Hecate"
-        apiVersion = "1.18"
+        apiVersion = "1.21"
         authors = listOf("Malfrador", "Fyreum")
         commands {
             register("hecate") {
@@ -97,11 +103,24 @@ tasks {
 }
 
 tasks.register<Copy>("deployToSharedServer") {
+    doNotTrackState("")
     group = "Erethon"
     description = "Used for deploying the plugin to the shared server. runServer will do this automatically." +
             "This task is only for manual deployment when running runServer from another plugin."
     dependsOn(":jar")
     from(layout.buildDirectory.file("libs/Hecate-$version-all.jar"))
     into("C:\\Dev\\Erethon\\plugins")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "de.erethon.hecate"
+            artifactId = "Hecate"
+            version = "1.0-SNAPSHOT"
+            artifactId = "Hecate"
+            from(components["java"])
+        }
+    }
 }
 
