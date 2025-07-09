@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.Nullable;
 
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class HPlayer {
 
     private final UUID playerId;
     private Player player;
+    private Timestamp lastSeen;
     private @Nullable HCharacter selectedCharacter;
     private final List<HCharacter> characters;
     private @Nullable UUID lastCharacter;
@@ -157,5 +159,13 @@ public class HPlayer {
 
     public @Nullable UUID getLastCharacter() {
         return lastCharacter;
+    }
+
+    public void setLastSeen(Timestamp lastSeen) {
+        this.lastSeen = lastSeen;
+    }
+
+    public Timestamp getLastSeen() {
+        return lastSeen;
     }
 }

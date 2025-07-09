@@ -8,9 +8,13 @@ import de.erethon.hecate.Hecate;
 import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.data.dao.PlayerDao;
 import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
+import de.erethon.papyrus.events.PlayerDataRequestEvent;
 import de.erethon.papyrus.events.PlayerDataSaveEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
+import net.minecraft.nbt.NbtIo;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +25,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.ByteArrayInputStream;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -29,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -248,6 +254,24 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 });
     }
 
+    public CompoundTag getPlayerDataTag(UUID characterId) {
+        byte[] data = loadCharacterPlayerData(characterId).join();
+        if (data == null) {
+            MessageUtil.log("No player data found for character " + characterId);
+            return null;
+        }
+        CompoundTag tag = new CompoundTag();
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
+            tag = NbtIo.readCompressed(inputStream, NbtAccounter.create(20 * 1024 * 1024));
+            inputStream.close();
+        } catch (Exception e) {
+            MessageUtil.log("Error converting player data to CompoundTag for character " + characterId + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        return tag;
+    }
+
     public HPlayer getHPlayer(Player player) {
         return uuidToHPlayerMap.get(player.getUniqueId());
     }
@@ -416,12 +440,13 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     // --- Event Handlers ---
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    private void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         HPlayer hPlayer = uuidToHPlayerMap.get(uuid);
 
         if (hPlayer != null) {
+            hPlayer.setLastSeen(Timestamp.from(Instant.now()));
             HCharacter character = hPlayer.getSelectedCharacter();
             CompletableFuture<Void> saveFuture = savePlayerData(hPlayer);
 
@@ -446,7 +471,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     }
 
     @EventHandler
-    public void onLogin(AsyncPlayerPreLoginEvent event) {
+    private void onLogin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
         MessageUtil.log("AsyncPlayerPreLoginEvent for " + uuid);
 
@@ -470,7 +495,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     }
 
     @EventHandler
-    public void onLogin(PlayerJoinEvent event) {
+    private void onLogin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
         HPlayer hPlayer = uuidToHPlayerMap.get(uuid);
@@ -515,8 +540,9 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         }
     }
 
+    // This handles the vanilla auto-save of player data.
     @EventHandler
-    public void onPlayerDataSave(PlayerDataSaveEvent event) { // Your custom event
+    private void onPlayerDataSave(PlayerDataSaveEvent event) {
         HPlayer hPlayer = uuidToHPlayerMap.get(event.getPlayer().getUniqueId());
         if (hPlayer != null) {
             MessageUtil.log("PlayerDataSaveEvent triggered for " + hPlayer.getPlayerId());
@@ -526,6 +552,35 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             }
         }
     }
+
+    // This mostly handles plugins requesting player data via the API, for example, for lastSeen values.
+    @EventHandler
+    private void onPlayerDataRequest(PlayerDataRequestEvent event) {
+        UUID uuid = UUID.fromString(event.getUUID());
+        HPlayer hPlayer = getHPlayer(uuid);
+        UUID lastCharacterId = hPlayer != null ? hPlayer.getLastCharacter() : null;
+        MessageUtil.log("PlayerDataRequestEvent triggered for " + uuid);
+        if (lastCharacterId != null) {
+            CompoundTag playerDataTag = getPlayerDataTag(lastCharacterId);
+            if (playerDataTag != null) {
+                event.setData(Optional.of(playerDataTag));
+            } else {
+                event.setData(Optional.empty());
+            }
+        }
+    }
+
+    // --- Util methods ---
+
+    public long getLastSeen(UUID playerId) {
+        HPlayer hPlayer = getHPlayer(playerId);
+        if (hPlayer != null) {
+            return hPlayer.getLastSeen().getTime();
+        }
+        return 0;
+    }
+
+    // --- Shutdown handling ---
 
     @Override
     public void close() {

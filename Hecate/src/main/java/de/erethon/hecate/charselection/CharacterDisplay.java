@@ -8,7 +8,9 @@ import de.erethon.hecate.data.HCharacter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.ValueInput;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -64,17 +66,12 @@ public class CharacterDisplay extends BaseDisplay implements Listener {
         ListTag inventoryItems = nbt.getList("Inventory").get();
         selectedSlot = character.getPlayerDataNBT().getInt("SelectedItemSlot").get();
         // Copied from Inventory#load
-        for (int i = 0; i < inventoryItems.size(); i++) {
-            CompoundTag compound = inventoryItems.getCompound(i).get();
-            int slot = compound.getByte("Slot").get() & 255;
-            ItemStack itemStack = ItemStack.parse(MinecraftServer.getServer().registryAccess(), compound).orElse(ItemStack.EMPTY);
-            if (slot < items.size()) {
-                items.set(slot, itemStack);
-            } else if (slot >= 100 && slot < armor.size() + 100) {
-                armor.set(slot - 100, itemStack);
-            } else if (slot >= 150 && slot < offhand.size() + 150) {
-                offhand.set(slot - 150, itemStack);
+        this.items.clear();
+        /* TODO: Mojang changed the way inventories are loaded, this needs to be updated
+        for(ItemStackWithSlot itemStackWithSlot : input) {
+            if (itemStackWithSlot.isValidInContainer(0)) {
+                items.set(itemStackWithSlot.slot(), itemStackWithSlot.stack());
             }
-        }
+        }*/
     }
 }

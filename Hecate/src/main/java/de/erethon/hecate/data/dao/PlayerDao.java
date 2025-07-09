@@ -30,4 +30,6 @@ public interface PlayerDao {
 
     @SqlUpdate("UPDATE Players SET last_character = :lastCharacter WHERE player_id = :playerId")
     int updateLastCharacter(@Bind("playerId") UUID playerId, @Bind("lastCharacter") UUID lastCharacter);
+
+    Timestamp getLastOnline(@Bind("playerId") UUID playerId);
 }

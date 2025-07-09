@@ -80,7 +80,7 @@ public class NMSUtils {
 
     public static void addEntity(net.minecraft.world.entity.Entity entity, Location location) {
         entity.getBukkitEntity().teleport(location);
-        Level world = entity.getCommandSenderWorld();
+        Level world = entity.level();
         world.addFreshEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
     }
 }
