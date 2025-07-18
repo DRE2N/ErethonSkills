@@ -103,7 +103,7 @@ tasks.register<Copy>("deployToSharedServer") {
     group = "Erethon"
     description = "Used for deploying the plugin to the shared server. runServer will do this automatically." +
             "This task is only for manual deployment when running runServer from another plugin."
-    dependsOn(":shadowJar")
+    dependsOn(":jar")
     from(layout.buildDirectory.file("libs/Hecate-$version-all.jar"))
     into("C:\\Dev\\Erethon\\plugins")
 }
