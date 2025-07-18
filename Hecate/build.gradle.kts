@@ -15,7 +15,7 @@ repositories {
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
+    id("io.papermc.paperweight.userdev")
     id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
     id("io.github.goooler.shadow") version "8.1.5"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
@@ -39,8 +39,6 @@ val papyrusVersion = "1.21.7-R0.1-SNAPSHOT"
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
-
-    implementation("de.erethon:bedrock:1.5.7") { isTransitive = false }
     implementation(project(":SpellbookSpells"))
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT") // For correct nametags
     compileOnly("de.erethon.hephaestus:Hephaestus:1.0.3-SNAPSHOT")
@@ -70,12 +68,10 @@ tasks {
 
     shadowJar {
         dependencies {
-            include(dependency("de.erethon:bedrock:1.5.7"))
             include(project(":SpellbookSpells"))
             include(dependency("com.elmakers.mine.bukkit:EffectLib:10.3"))
         }
         // Comment relocations out for hotswapping
-        relocate("de.erethon.bedrock", "de.erethon.hecate.bedrock")
         relocate("com.elmakers.mine.bukkit", "de.erethon.hecate.effectlib")
     }
     jar {
@@ -107,7 +103,7 @@ tasks.register<Copy>("deployToSharedServer") {
     group = "Erethon"
     description = "Used for deploying the plugin to the shared server. runServer will do this automatically." +
             "This task is only for manual deployment when running runServer from another plugin."
-    dependsOn(":jar")
+    dependsOn(":shadowJar")
     from(layout.buildDirectory.file("libs/Hecate-$version-all.jar"))
     into("C:\\Dev\\Erethon\\plugins")
 }
