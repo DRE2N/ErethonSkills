@@ -11,6 +11,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -62,7 +63,10 @@ public class AegisOfDivinity extends PaladinBaseSpell implements Listener {
         sphereEffect.particleCount = 128;
         sphereEffect.color = Color.YELLOW;
         sphereEffect.duration = duration * 20;
+        sphereEffect.iterations = -1; // Infinite iterations
         sphereEffect.start();
+        caster.getWorld().playSound(center, Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.RECORDS, 1, 0.5f);
+        caster.getWorld().playSound(center, Sound.BLOCK_BEACON_AMBIENT, SoundCategory.RECORDS, 1, 1.2f);
         return super.onCast();
     }
 
@@ -136,6 +140,7 @@ public class AegisOfDivinity extends PaladinBaseSpell implements Listener {
                 double distance = center.distance(living.getLocation());
                 if (distance < radius) {
                     double pushStrength = (radius - distance) / radius;
+                    pushStrength = Math.min(pushStrength, 1);
                     living.setVelocity(living.getLocation().toVector().subtract(center.toVector()).normalize().multiply(pushStrength));
                 }
             }

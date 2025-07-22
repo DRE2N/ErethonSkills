@@ -323,6 +323,11 @@ public class Spellbook {
         return getVariedDamage(damage, caster, canCrit);
     }
 
+    public static double getVariedAttributeBasedDamage(YamlConfiguration data, LivingEntity caster, LivingEntity target, boolean canCrit, Attribute attribute, String id) {
+        double damage = getScaledValue(data, caster, target, attribute, id);
+        return getVariedDamage(damage, caster, canCrit);
+    }
+
     public static boolean canAttack(LivingEntity attacker, LivingEntity target) {
         if (getInstance().DEBUG) {
             return true;

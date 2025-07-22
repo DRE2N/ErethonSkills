@@ -1,5 +1,6 @@
 package de.erethon.hecate.data;
 
+import com.mojang.logging.LogUtils;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.CharacterCastingManager;
@@ -14,7 +15,12 @@ import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -57,7 +63,6 @@ public class HCharacter {
     private CharacterCastingManager castingManager;
     private boolean isInCastMode = false;
     private final ItemStack[] hotbar = new ItemStack[9];
-    ListTag hotbarTag = new ListTag();
 
     public HCharacter(UUID characterID, HPlayer hPlayer, int level, String classId, Timestamp createdAt, List<String> skills) {
         this.characterID = characterID;
@@ -213,40 +218,42 @@ public class HCharacter {
             return null;
         }
         CraftPlayer craftPlayer = (CraftPlayer) bukkitPlayer;
+        net.minecraft.world.entity.player.Player nmsPlayer = craftPlayer.getHandle();
 
-        try {
-            CompoundTag tag = new CompoundTag();
+        try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(nmsPlayer.problemPath(), LogUtils.getLogger())) {
+            TagValueOutput tag = TagValueOutput.createWithContext(scopedCollector, nmsPlayer.registryAccess());
             craftPlayer.getHandle().saveWithoutId(tag);
 
-            tag.remove("Paper.OriginWorld");
-            tag.remove("UUID");
+            tag.discard("Paper.OriginWorld");
+            tag.discard("UUID");
 
+            String serializedHotbar = "";
             if (shouldSaveHotbarSeparately || castModeSwitch) {
-                hotbarTag = new ListTag();
                 for (int i = 0; i < 9; i++) {
                     ItemStack item = hotbar[i];
                     if (item == null || item.getType().isAir()) {
-                        hotbarTag.add(StringTag.valueOf("empty"));
+                        serializedHotbar += "empty;";
                     } else {
                         byte[] itemBytes = item.serializeAsBytes();
                         if (itemBytes != null && itemBytes.length > 0) {
-                            hotbarTag.add(StringTag.valueOf(Base64.getEncoder().encodeToString(itemBytes)));
+                            String serialized = Base64.getEncoder().encodeToString(itemBytes);
+                            serializedHotbar += serialized + ";";
                         } else {
-                            hotbarTag.add(StringTag.valueOf("empty"));
+                            serializedHotbar += "empty;";
                             MessageUtil.log("Failed to serialize hotbar item at index " + i + " for character " + characterID);
                         }
                     }
                 }
-                MessageUtil.log("Serialized hotbar separately for " + characterID + ": " + hotbarTag.size() + " items.");
+                MessageUtil.log("Serialized hotbar separately for " + characterID + ": " + serializedHotbar.length() + " length.");
                 shouldSaveHotbarSeparately = false;
             }
 
-            if (!hotbarTag.isEmpty()) {
-                tag.put("HecateHotbar", hotbarTag);
+            if (!serializedHotbar.isEmpty()) {
+                tag.putString("hotbar", serializedHotbar);
             }
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            NbtIo.writeCompressed(tag, outputStream);
+            NbtIo.writeCompressed(tag.buildResult(), outputStream);
             return outputStream.toByteArray();
         } catch (Exception e) {
             MessageUtil.log("Failed to serialize player data for character " + characterID + " of player " + hPlayer.getPlayerId());
@@ -270,6 +277,7 @@ public class HCharacter {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(blob);
             CompoundTag tag = NbtIo.readCompressed(inputStream, NbtAccounter.create(20 * 1024 * 1024));
             this.playerData = tag;
+            inputStream.close();
 
             // Apply data on the main thread
             new BukkitRunnable() {
@@ -293,8 +301,10 @@ public class HCharacter {
                         }
                         // Remove UUID to prevent issues
                         tag.remove("UUID");
-
-                        serverPlayer.load(tag);
+                        try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(serverPlayer.problemPath(), LogUtils.getLogger())) {
+                            ValueInput tagInput = TagValueInput.create(scopedCollector, serverPlayer.registryAccess(), tag);
+                            serverPlayer.load(tagInput);
+                        }
 
                         if (wasInCastMode) {
                             MessageUtil.log("Player " + characterID + " was in cast mode, restoring hotbar...");
@@ -330,7 +340,7 @@ public class HCharacter {
                         }
 
                         serverPlayer.onUpdateAbilities();
-                        serverPlayer.server.getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket(serverPlayer.getId(), serverPlayer.getEntityData().getNonDefaultValues()));
+                        serverPlayer.getServer().getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket(serverPlayer.getId(), serverPlayer.getEntityData().getNonDefaultValues()));
                         serverPlayer.containerMenu.broadcastChanges();
                         serverPlayer.inventoryMenu.broadcastChanges();
 
@@ -340,7 +350,7 @@ public class HCharacter {
                             serverPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket(serverPlayer.getId(), mobEffect, false));
                         }
 
-                        serverPlayer.server.getPlayerList().sendAllPlayerInfo(serverPlayer);
+                        serverPlayer.getServer().getPlayerList().sendAllPlayerInfo(serverPlayer);
 
                         serverPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundSetHealthPacket(serverPlayer.getHealth(), serverPlayer.getFoodData().getFoodLevel(), serverPlayer.getFoodData().getSaturationLevel()));
 

@@ -14,11 +14,24 @@ public class PaladinBaseSpell extends SpellbookBaseSpell {
 
     protected final int duration = data.getInt("duration", 10);
     protected final int energyCost = data.getInt("energyCost", 0);
+    protected final int cooldown = data.getInt("cooldown", 5) * 1000;
 
     protected LivingEntity target;
 
     public PaladinBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
+    }
+
+    @Override
+    protected boolean onPrecast() {
+        if (caster.getUsedSpells().containsKey(data)) {
+            long lastCast = caster.getUsedSpells().get(data);
+            if (System.currentTimeMillis() - lastCast < cooldown) {
+                caster.sendParsedActionBar("<color:#ff0000>Spell ist noch auf Cooldown!");
+                return false;
+            }
+        }
+        return super.onPrecast();
     }
 
     @Override
@@ -62,6 +75,9 @@ public class PaladinBaseSpell extends SpellbookBaseSpell {
     }
 
     public boolean hasEnergy(LivingEntity caster, SpellData data) {
+        if (Spellbook.getInstance().isDebug()) {
+            return true;
+        }
         boolean canCast = energyCost <= caster.getEnergy();
         if (!canCast) {
             caster.sendParsedActionBar("<color:#ff0000>Nicht genug Energie!");
