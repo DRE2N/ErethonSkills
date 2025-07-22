@@ -6,6 +6,8 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.CircleEffect;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
@@ -39,6 +41,7 @@ public class BastionOfResolve extends PaladinBaseSpell {
 
     @Override
     public boolean onCast() {
+        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.RECORDS, 1.0f, 0.5f);
         return super.onCast();
     }
 
@@ -51,13 +54,13 @@ public class BastionOfResolve extends PaladinBaseSpell {
             for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(range)) {
                 if (!Spellbook.canAttack(caster, living)) {
                     if (!living.hasEffect(resistanceEffect)) {
-                        living.addEffect(living, resistanceEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.RESISTANCE_MAGICAL, resistanceDurationMin, resistanceDurationMax, "resistanceDuration"), 1);
+                        living.addEffect(living, resistanceEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.RESISTANCE_MAGICAL, resistanceDurationMin, resistanceDurationMax, "resistanceDuration") + caster.getEnergy(), 1);
                     }
                     if (!living.hasEffect(powerEffect)) {
-                        living.addEffect(living, powerEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.ADVANTAGE_MAGICAL, powerDurationMin, powerDurationMax, "powerDuration"), 1);
+                        living.addEffect(living, powerEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.ADVANTAGE_MAGICAL, powerDurationMin, powerDurationMax, "powerDuration") + caster.getEnergy(), 1);
                     }
                     if (!living.hasEffect(stabilityEffect)) {
-                        living.addEffect(living, stabilityEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.RESISTANCE_MAGICAL, stabilityDurationMin, stabilityDurationMax, "stabilityDuration"), 1);
+                        living.addEffect(living, stabilityEffect, (int) Spellbook.getRangedValue(data, caster, living, Attribute.RESISTANCE_MAGICAL, stabilityDurationMin, stabilityDurationMax, "stabilityDuration") + caster.getEnergy(), 1);
                     }
                 }
             }
