@@ -4,6 +4,7 @@ import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.World;
@@ -33,7 +34,7 @@ public class WrathfulBurst extends PaladinBaseSpell {
     @Override
     public boolean onCast() {
         World world = caster.getWorld();
-        if (caster.getEnergy() < minWrathForBurst) {
+        if (caster.getEnergy() > minWrathForBurst) {
             for (LivingEntity livingEntity : caster.getLocation().getNearbyLivingEntities(radius)) {
                 if (livingEntity != null && Spellbook.canAttack(caster, livingEntity)) {
                     double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
@@ -52,6 +53,8 @@ public class WrathfulBurst extends PaladinBaseSpell {
                     world.spawnParticle(Particle.FLAME, livingEntity.getLocation(), 8, 0.5, 0.5, 0.5);
                     world.spawnParticle(Particle.SOUL_FIRE_FLAME, livingEntity.getLocation(), 8, 0.5, 0.5, 0.5);
                     world.playSound(livingEntity.getLocation(), org.bukkit.Sound.ENTITY_BLAZE_SHOOT, 1, 2);
+                    caster.sendMessage(Component.text("Hello").font(Key.key("namespace:key")));
+                    caster.sendRichMessage(String.format("<font:%s>Hello</font>", "namespace:key"));
                 }
             }
         }

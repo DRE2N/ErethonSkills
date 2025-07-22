@@ -102,17 +102,17 @@ public class PlayerCastListener implements Listener {
     private void addDisplayDamage(Player player, LivingEntity entity, double damage, PDamageType type) {
         double rounded = Math.round(damage * 100.0) / 100.0;
         TextDisplay display = entity.getWorld().spawn(entity.getLocation().add(0, 0,0), TextDisplay.class, textDisplay -> {
-            for (Player p : textDisplay.getTrackedBy()) { // TODO: Dmg numbers for party member would be cool
-                p.hideEntity(Hecate.getInstance(), textDisplay);
-            }
-            player.showEntity(Hecate.getInstance(), textDisplay);
             entity.addPassenger(textDisplay);
-            textDisplay.setBillboard(Display.Billboard.VERTICAL);
+            textDisplay.setVisibleByDefault(false);
+            textDisplay.setBillboard(Display.Billboard.CENTER);
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
-            textDisplay.text(Component.text("-" + rounded + "❤").color(DamageColor.getColorForDamageType(type)));
+            textDisplay.text(Component.text(rounded + "❤").color(DamageColor.getColorForDamageType(type)));
+            textDisplay.setInterpolationDuration(10);
+            textDisplay.setInterpolationDelay(0);
             textDisplay.setPersistent(false);
         });
         displays.put(display, System.currentTimeMillis());
+        player.showEntity(Hecate.getInstance(), display);
         updateTransforms(entity);
     }
 
@@ -131,7 +131,7 @@ public class PlayerCastListener implements Listener {
         float offset = 0.2f;
         for (Display display : sorted) {
             float sideOffset = (float) (entity.getWidth() / 2 + 0.4);
-            display.setTransformation(new Transformation(new Vector3f(sideOffset, offset, 0), new AxisAngle4f(0,0,0,0), new Vector3f(1, 1, 1), new AxisAngle4f(0,0,0,0)));
+            display.setTransformation(new Transformation(new Vector3f(sideOffset, offset, 0), new AxisAngle4f(0,0,0,0), new Vector3f(0.66f, 0.66f, 0.66f), new AxisAngle4f(0,0,0,0)));
             offset += 0.2f;
         }
 
