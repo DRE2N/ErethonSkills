@@ -13,17 +13,37 @@ import java.util.List;
 
 public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
 
+    protected final int duration = data.getInt("duration", 0);
+    public int rageCost = data.getInt("rageCost", 0);
+
     public LivingEntity target;
-    protected int duration = data.getInt("duration", 20);
 
     public WarriorBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 
+
+    @Override
+    protected boolean onPrecast() {
+        return hasEnergy(caster, data);
+    }
+
     @Override
     public boolean onCast() {
+        caster.setEnergy(caster.getEnergy() - rageCost);
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         return super.onCast();
+    }
+
+    public boolean hasEnergy(LivingEntity caster, SpellData data) {
+        boolean canCast = rageCost <= caster.getEnergy();
+        if (Spellbook.getInstance().isDebug()) {
+            return true;
+        }
+        if (!canCast) {
+            caster.sendParsedActionBar("<color:#ff0000>Nicht genug Rage!");
+        }
+        return canCast;
     }
 
     protected boolean lookForTarget() {
@@ -66,10 +86,4 @@ public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
         this.target = target;
     }
 
-    @Override
-    public List<Component> getPlaceholders(SpellCaster c) {
-        spellAddedPlaceholders.add(Component.text(duration, VALUE_COLOR));
-        placeholderNames.add("duration");
-        return super.getPlaceholders(c);
-    }
 }
