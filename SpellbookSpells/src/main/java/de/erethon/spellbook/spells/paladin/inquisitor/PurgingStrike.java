@@ -19,9 +19,9 @@ public class PurgingStrike extends InquisitorBaseSpell {
     // Additionally, the target is stunned per stack of Judgement.
 
     private final int range = data.getInt("range", 3);
-    private final int stunDuration =  data.getInt("stunDuration", 20);
-    private final int effectDurationMin = data.getInt("stunDurationMin", 1) * 20;
-    private final int effectDurationMax = data.getInt("stunDurationMax", 4) * 20;
+    private final int baseStunDuration =  data.getInt("baseStunDuration", 20);
+    private final int effectDurationMin = data.getInt("stunDurationMin", 1);
+    private final int effectDurationMax = data.getInt("stunDurationMax", 4) ;
 
     private final EffectData stun = Spellbook.getEffectData("Stun");
 
@@ -49,20 +49,20 @@ public class PurgingStrike extends InquisitorBaseSpell {
                 EffectData effect = effects.iterator().next();
                 effects.remove(effect);
                 target.removeEffect(effect);
-                int effectDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, effectDurationMin, effectDurationMax, "stunDuration");
+                int effectDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, effectDurationMin, effectDurationMax, "stunDuration") * 20;
                 caster.addEffect(target, effect, effectDuration, 1);
                 target.getWorld().playSound(target, Sound.ENTITY_WANDERING_TRADER_DISAPPEARED, 0.7f, 1f);
                 triggerTraits(target);
             }
         }
-        int stunStacks = stacks * stunDuration;
+        int stunStacks = stacks * baseStunDuration * 20;
         target.addEffect(caster, stun, stunStacks, 1);
         return super.onCast();
     }
 
     @Override
     protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, effectDurationMin, effectDurationMax, "stunDuration") / 20));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, effectDurationMin, effectDurationMax, "stunDuration")));
         placeholderNames.add("stunDuration");
     }
 }

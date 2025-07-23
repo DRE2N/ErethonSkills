@@ -20,7 +20,8 @@ public class ShadowBasicAttack extends SpellTrait implements Listener {
     // Additionally, the shadow gains a double jump ability.
 
     private final double backAngleForBonus = data.getInt("backAngleForBonus", 40);
-    private final int bonusEnergy = data.getInt("bonusEnergy", 5);
+    private final int normalEnergy = data.getInt("normalEnergy", 20);
+    private final int bonusEnergy = data.getInt("bonusEnergy", 50);
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.2);
     private final double doubleJumpMultiplier = data.getDouble("doubleJumpMultiplier", 0.4);
     private final double doubleJumpVelocity = data.getDouble("doubleJumpVelocity", 0.8);
@@ -35,6 +36,7 @@ public class ShadowBasicAttack extends SpellTrait implements Listener {
     protected void onAdd() {
         super.onAdd();
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
+        caster.setMaxEnergy(100);
     }
 
     @Override
@@ -48,6 +50,7 @@ public class ShadowBasicAttack extends SpellTrait implements Listener {
         double angle = Math.abs(caster.getLocation().getYaw() - target.getLocation().getYaw());
         // If the caster is not behind the target, just return the damage
         if (angle > backAngleForBonus) {
+            caster.addEnergy(normalEnergy);
             return super.onAttack(target, damage, type);
         }
         caster.addEnergy(bonusEnergy);

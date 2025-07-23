@@ -33,7 +33,7 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
     public int rangeMin = data.getInt("rangeMin", 24); // Trait: SuppressionOfTheHeretics
     public int rangeMax = data.getInt("rangeMax", 36); // Trait: SuppressionOfTheHeretics
     private final int warmupTicks = data.getInt("warmupTicks", 100);
-    private final int effectDuration = data.getInt("effectDuration", 20) * 20;
+    private final int effectDuration = data.getInt("effectDuration", 20);
     private final int effectStacks = data.getInt("effectStacks", 5);
     public double deathDamageRange = data.getDouble("deathDamageRange", 5); // Trait: SuppressionOfTheHeretics
     public double deathDamageMultiplier = data.getDouble("deathDamageMultiplier", 0.1); // Trait: SuppressionOfTheHeretics
@@ -144,7 +144,7 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
                     continue;
                 }
                 rayOfGod(livingEntity, 30, 30);
-                livingEntity.addEffect(caster, weakness, effectDuration, effectStacks);
+                livingEntity.addEffect(caster, weakness, effectDuration * 20, effectStacks);
                 livingEntity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, livingEntity, true, Attribute.ADVANTAGE_MAGICAL) * deathDamageMultiplier, caster, PDamageType.MAGIC);
                 world.playSound(livingEntity, Sound.BLOCK_BELL_USE, 1.0f, 0.5f);
             }

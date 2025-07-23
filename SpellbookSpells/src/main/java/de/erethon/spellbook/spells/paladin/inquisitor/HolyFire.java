@@ -96,7 +96,7 @@ public class HolyFire extends InquisitorBaseSpell {
                 if (explode.isDone()) {
                     loc.getNearbyLivingEntities(explode.radius).forEach(e -> {
                         if (!Spellbook.canAttack(caster, e)) {
-                            e.setHealth(e.getHealth() + healAmount + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER));
+                            e.setHealth(Math.max(e.getMaxHealth(), (e.getHealth() + healAmount + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER))));
                             friends.add(e);
                         } else {
                             enemies.add(e);

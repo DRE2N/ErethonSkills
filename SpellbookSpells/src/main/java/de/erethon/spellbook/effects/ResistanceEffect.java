@@ -1,22 +1,20 @@
 package de.erethon.spellbook.effects;
 
 import de.erethon.papyrus.PDamageType;
-import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
-import de.erethon.spellbook.api.SpellTrait;
-import de.erethon.spellbook.api.TraitData;
 import org.bukkit.entity.LivingEntity;
 
-public class ResistanceEffect extends SpellTrait {
+public class ResistanceEffect extends SpellEffect {
 
     private final double damageModifier = data.getDouble("damageModifier", 0.8);
 
-    public ResistanceEffect(TraitData data, LivingEntity caster) {
-        super(data, caster);
+    public ResistanceEffect(EffectData data, LivingEntity caster, LivingEntity target, int duration, int stacks) {
+        super(data, caster, target, duration, stacks);
     }
 
     @Override
-    protected boolean onAddEffect(SpellEffect effect, boolean isNew) {
+    public boolean onAddEffect(SpellEffect effect, boolean isNew) {
         if (!effect.data.isPositive()) {
             return false;
         }
