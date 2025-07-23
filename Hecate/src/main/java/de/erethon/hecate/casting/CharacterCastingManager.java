@@ -3,6 +3,7 @@ package de.erethon.hecate.casting;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.HClass;
+import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.events.CombatModeEnterEvent;
 import de.erethon.hecate.events.CombatModeLeaveEvent;
@@ -15,14 +16,17 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -48,6 +52,8 @@ public class CharacterCastingManager {
     private final SpellData[] slotSpells = new SpellData[8];
     private final SpellbookSpell[] cachedActiveSpells = new SpellbookSpell[8];
     private final HashMap<Attribute, Double> cachedAttributes = new HashMap<>();
+
+    private final NamespacedKey castingMarker = new NamespacedKey(plugin, "casting_marker");
 
     public CharacterCastingManager(HCharacter character) {
         this.character = character;
@@ -136,13 +142,28 @@ public class CharacterCastingManager {
                 continue;
             }
             ItemStack stack = player.getInventory().getItem(i);
-            int cooldown = activeSpell.getData().getCooldown();
-            if (!player.getUsedSpells().containsKey(activeSpell.getData())) {
-                continue;
+            if (stack == null || !stack.getPersistentDataContainer().has(castingMarker)) {
+                continue; // Skip if the item is not a casting item
             }
-            int current = getCooldownFromTimeStamp(player.getUsedSpells().get(activeSpell.getData()));
-            stack.setAmount(getCooldownPercentage(cooldown, current));
-            player.setCooldown(stack, cooldown);
+            SpellData spellData = activeSpell.getData();
+            int cooldown = spellData.getCooldown();
+
+            if (player.getUsedSpells().containsKey(spellData)) {
+                int current = getCooldownFromTimeStamp(player.getUsedSpells().get(spellData));
+                int remaining = cooldown - current;
+                stack.setAmount(Math.max(1, remaining));
+
+                if (!player.hasCooldown(stack.getType())) {
+                    player.setCooldown(stack, getRemainingCooldownTicks(current, cooldown));
+                }
+            } else {
+                if (stack.getAmount() != 1) {
+                    stack.setAmount(1);
+                }
+                if (player.hasCooldown(stack.getType())) {
+                    player.setCooldown(stack, 0);
+                }
+            }
         }
         // Always update HUD
         int energy = player.getEnergy();
@@ -154,12 +175,9 @@ public class CharacterCastingManager {
         Component healthNumbers = Component.text(String.format("%.1f", health) + "/" + String.format("%.1f", maxHealth), NamedTextColor.RED);
         Component healthText = healthIcon.append(Component.space()).append(healthNumbers);
 
-        NamedTextColor energyColor = NamedTextColor.YELLOW;
-        String energyIconUnicode = "\u26A1";
-        if (character.getClassId().equalsIgnoreCase("Paladin") || character.getClassId().equalsIgnoreCase("Ranger")) {
-            energyColor = NamedTextColor.BLUE;
-            energyIconUnicode = "\u26A1";
-        }
+        Traitline traitline = character.getTraitline();
+        TextColor energyColor = traitline.getEnergyColor();
+        String energyIconUnicode = traitline.getEnergySymbol();
         Component energyIcon = Component.text(energyIconUnicode, energyColor);
         Component energyNumbers = Component.text(energy + "/" + maxEnergy, energyColor);
         Component energyText = energyIcon.append(Component.space()).append(energyNumbers);
@@ -255,6 +273,7 @@ public class CharacterCastingManager {
                 continue;
             }
             ItemStack item = getItemStackFromSpellData(i, spellData);
+            item.editPersistentDataContainer(pdc -> pdc.set(castingMarker, PersistentDataType.BYTE, (byte) 1)); // To be 100% sure that we only modify our own items
             player.getInventory().setItem(i, item);
             slotSpells[i] = spellData;
             cachedActiveSpells[i] = spellData.getActiveSpell(player);
@@ -274,7 +293,7 @@ public class CharacterCastingManager {
     }
 
     private void updateLoreFromActiveSpell(ItemStack stack, SpellbookSpell spell) {
-        if (stack == null || spell == null) {
+        if (stack == null || spell == null || !stack.getPersistentDataContainer().has(castingMarker)) {
             return;
         }
         List<Component> lore = new ArrayList<>();
@@ -284,11 +303,15 @@ public class CharacterCastingManager {
         stack.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
     }
 
-    private int getCooldownPercentage(int current, int cooldown) {
+    private int getRemainingCooldownTicks(int current, int cooldown) {
         if (current <= 0 || cooldown <= 0) {
             return 0;
         }
-        return (int) ((double) current / cooldown * 100);
+        int remainingSeconds = cooldown - current;
+        if (remainingSeconds <= 0) {
+            return 0;
+        }
+        return remainingSeconds * 20; // Convert remaining seconds to ticks
     }
 
     private int getCooldownFromTimeStamp(long timestamp) {

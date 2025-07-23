@@ -8,10 +8,13 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.TraitData;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +40,8 @@ public class Traitline extends YamlConfiguration {
     public List<SpellData> defaultSpellSlots = new ArrayList<>();
     private final Map<SpecialActionKey, SpellData> specialActionMap = new HashMap<>();
     private final Set<TraitData> innateTraits = new HashSet<>();
+    private TextColor energyColor = TextColor.fromHexString("#0xFF00");
+    private @Nullable String energySymbol = "\u26A1"; // Symbol for energy in the UI
 
     public Traitline(File file) throws IOException, InvalidConfigurationException {
         load(file);
@@ -78,6 +83,14 @@ public class Traitline extends YamlConfiguration {
         return innateTraits;
     }
 
+    public TextColor getEnergyColor() {
+        return energyColor;
+    }
+
+    public String getEnergySymbol() {
+        return energySymbol;
+    }
+
     public void onSwitchTo(HCharacter character) {
         for (TraitData trait : innateTraits) {
             character.getPlayer().addTrait(trait);
@@ -99,6 +112,8 @@ public class Traitline extends YamlConfiguration {
         inactiveModelData = getInt("inactiveModelData", 0);
         activeModelData = getInt("activeModelData", 0);
         initialLevelRequirement = getInt("initialLevelRequirement", 0);
+        energyColor = TextColor.fromCSSHexString(getString("energyColor", "#0xFF00"));
+        energySymbol = getString("energySymbol", "\u26A1");
         for (String id : getStringList("spells")) {
             SpellData spell = spellbookAPI.getLibrary().getSpellByID(id);
             if (spell == null) {
@@ -145,25 +160,27 @@ public class Traitline extends YamlConfiguration {
             }
             innateTraits.add(trait);
         }
-        for (String key : getConfigurationSection("traitLine").getKeys(false)) {
-            int level = Integer.parseInt(key);
-            List<TraitLineEntry> traits = new ArrayList<>();
-            for (String traitId : getConfigurationSection("traitLine." + level).getKeys(false)) {
-                ConfigurationSection traitSection = getConfigurationSection("traitLine." + level + "." + traitId);
-                TraitData traitData = spellbookAPI.getLibrary().getTraitByID(traitId);
-                if (traitData == null) {
-                    MessageUtil.log("Unknown trait '" + traitId + "' found in traitline file " + id);
-                    continue;
+        if (getConfigurationSection("traitLine") != null) {
+            for (String key : getConfigurationSection("traitLine").getKeys(false)) {
+                int level = Integer.parseInt(key);
+                List<TraitLineEntry> traits = new ArrayList<>();
+                for (String traitId : getConfigurationSection("traitLine." + level).getKeys(false)) {
+                    ConfigurationSection traitSection = getConfigurationSection("traitLine." + level + "." + traitId);
+                    TraitData traitData = spellbookAPI.getLibrary().getTraitByID(traitId);
+                    if (traitData == null) {
+                        MessageUtil.log("Unknown trait '" + traitId + "' found in traitline file " + id);
+                        continue;
+                    }
+                    int levelRequirement = traitSection.getInt("levelRequirement", 0);
+                    int cost = traitSection.getInt("cost", 0);
+                    boolean combatOnly = traitSection.getBoolean("combatOnly", false);
+                    int activeModelData = traitSection.getInt("activeModelData", 0);
+                    int inactiveModelData = traitSection.getInt("inactiveModelData", 0);
+                    TraitLineEntry traitLineEntry = new TraitLineEntry(traitData, levelRequirement, cost, combatOnly, activeModelData, inactiveModelData);
+                    traits.add(traitLineEntry);
                 }
-                int levelRequirement = traitSection.getInt("levelRequirement", 0);
-                int cost = traitSection.getInt("cost", 0);
-                boolean combatOnly = traitSection.getBoolean("combatOnly", false);
-                int activeModelData = traitSection.getInt("activeModelData", 0);
-                int inactiveModelData = traitSection.getInt("inactiveModelData", 0);
-                TraitLineEntry traitLineEntry = new TraitLineEntry(traitData, levelRequirement, cost, combatOnly, activeModelData, inactiveModelData);
-                traits.add(traitLineEntry);
+                traitMap.put(level, traits);
             }
-            traitMap.put(level, traits);
         }
         MessageUtil.log("Loaded traitline " + id + " from " + file.getName() + " with " + traitMap.size() + " levels and " + traitMap.values().stream().mapToInt(List::size).sum() + " traits.");
     }

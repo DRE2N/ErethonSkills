@@ -30,7 +30,6 @@ configurations.all {
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", "1.21.7-R0.1-SNAPSHOT") { isChanging = true }
     implementation("com.elmakers.mine.bukkit:EffectLib:10.3")
-    compileOnly("de.erethon:bedrock:1.4.0")
 }
 
 tasks {

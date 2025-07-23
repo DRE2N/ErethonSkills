@@ -23,7 +23,7 @@ public class SwordstormBasicAttack extends SpellTrait {
     private final int ragePerAttack = data.getInt("ragePerAttack", 1);
     private final int consecutiveAttacksForBonus = data.getInt("consecutiveAttacksForBonus", 3);
     private final int maxTicksBetweenAttacks = data.getInt("maxTicksBetweenAttacks", 20);
-    private final int furyDuration = data.getInt("furyDuration", 40);
+    private final int furyDuration = data.getInt("furyDuration", 3);
     private final double airDamageMultiplier = data.getDouble("airDamageMultiplier", 1.1);
     private final EffectData fury = Spellbook.getEffectData("Fury");
 
@@ -32,6 +32,12 @@ public class SwordstormBasicAttack extends SpellTrait {
 
     public SwordstormBasicAttack(TraitData data, LivingEntity caster) {
         super(data, caster);
+    }
+
+    @Override
+    protected void onAdd() {
+        super.onAdd();
+        caster.setMaxEnergy(100);
     }
 
     @Override
@@ -44,7 +50,7 @@ public class SwordstormBasicAttack extends SpellTrait {
         caster.setEnergy(caster.getEnergy() + ragePerAttack);
         if (attackCounter >= consecutiveAttacksForBonus) {
             attackCounter = 0;
-            caster.addEffect(caster, fury, furyDuration, 1);
+            caster.addEffect(caster, fury, furyDuration * 20, 1);
             World world = caster.getWorld();
             Location location = caster.getLocation();
             world.spawnParticle(Particle.GLOW, caster.getLocation(), 4, 0.5, 0.5, 0.5);

@@ -48,6 +48,10 @@ public class ClassCommand extends ECommand {
             MessageUtil.sendMessage(player, "<green>Class " + hClass.getDisplayName() + " set.");
             return;
         }
+        if (args.length < 4) {
+            MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /h class <class/list> [player]");
+            return;
+        }
         Player targetPlayer = Bukkit.getPlayer(args[2]);
         HCharacter target = plugin.getDatabaseManager().getCurrentCharacter(targetPlayer);
         if (target == null) {
