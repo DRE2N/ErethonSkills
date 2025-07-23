@@ -17,9 +17,15 @@ public class HierophantBasicAttack extends SpellTrait {
     }
 
     @Override
+    protected void onAdd() {
+        super.onAdd();
+        caster.setMaxEnergy(100);
+    }
+
+    @Override
     public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
         if (attacker != null) {
-            caster.setEnergy((int) (attacker.getEnergy() + (damage * wrathPerDamageTaken)));
+            caster.addEnergy((int) (damage * wrathPerDamageTaken));
             caster.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, caster.getLocation(), 3, 0.5, 0.5, 0.5);
         }
         return super.onDamage(attacker, damage, type);
@@ -28,7 +34,7 @@ public class HierophantBasicAttack extends SpellTrait {
     @Override
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
         if (target != null) {
-            caster.setEnergy((int) (caster.getEnergy() + (damage * wrathPerDamageDealt)));
+            caster.addEnergy((int) (damage * wrathPerDamageDealt));
             damage += magicDamageBonusPerWrath * caster.getEnergy();
             caster.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, caster.getLocation(), 3, 0.5, 0.5, 0.5);
         }

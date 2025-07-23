@@ -75,7 +75,7 @@ public class AvatarOfWrath extends PaladinBaseSpell {
         circleEffect.start();
         damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_MAGICAL);
         for (LivingEntity livingEntity : caster.getLocation().getNearbyLivingEntities(cleaveRadius)) {
-            if (Spellbook.canAttack(caster, livingEntity)) {
+            if (Spellbook.canAttack(caster, livingEntity) && livingEntity != caster && livingEntity != target) {
                 double cleaveDamage = damage * cleaveDamageMultiplier;
                 livingEntity.damage(cleaveDamage, caster, PDamageType.MAGIC);
                 int weaknessDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration");

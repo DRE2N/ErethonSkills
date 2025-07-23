@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -102,6 +103,10 @@ public class CelestialBarrier extends PaladinBaseSpell implements Listener {
                 barrierLocation.getWorld().spawnParticle(Particle.EXPLOSION, livingEntity.getLocation(), 1, 0.5, 0.5, 0.5);
                 barrierLocation.getWorld().playSound(livingEntity.getLocation(), Sound.BLOCK_GLASS_BREAK, 1, 1.0f);
             }
+        }
+        if (caster.getEnergy() > minWrathForReflect) {
+            caster.setEnergy(0);
+            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 0.8f, 0.8f);
         }
         super.onTickFinish();
     }

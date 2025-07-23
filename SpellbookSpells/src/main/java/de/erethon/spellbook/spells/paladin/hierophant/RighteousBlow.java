@@ -5,6 +5,8 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
@@ -46,6 +48,8 @@ public class RighteousBlow extends PaladinBaseSpell {
                     cleaveTargets++;
                 }
             }
+            caster.setEnergy(0);
+            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 0.8f, 0.8f);
         }
         return super.onCast();
     }

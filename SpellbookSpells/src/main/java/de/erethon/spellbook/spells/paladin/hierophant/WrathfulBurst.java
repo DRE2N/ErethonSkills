@@ -7,6 +7,8 @@ import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
@@ -36,25 +38,25 @@ public class WrathfulBurst extends PaladinBaseSpell {
         World world = caster.getWorld();
         if (caster.getEnergy() > minWrathForBurst) {
             for (LivingEntity livingEntity : caster.getLocation().getNearbyLivingEntities(radius)) {
-                if (livingEntity != null && Spellbook.canAttack(caster, livingEntity)) {
+                if (livingEntity != null && Spellbook.canAttack(caster, livingEntity) && livingEntity != caster) {
                     double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
                     livingEntity.damage(damage, caster, PDamageType.PHYSICAL);
                     world.spawnParticle(Particle.FLAME, livingEntity.getLocation(), 5, 0.5, 0.5, 0.5);
                     world.playSound(livingEntity.getLocation(), org.bukkit.Sound.ENTITY_BLAZE_SHOOT, 1, 0.2f);
                 }
             }
+            caster.setEnergy(0);
+            world.playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 0.8f, 0.8f);
             return true;
         } else {
             for (LivingEntity livingEntity : caster.getLocation().getNearbyLivingEntities(radius)) {
-                if (livingEntity != null && Spellbook.canAttack(caster, livingEntity)) {
+                if (livingEntity != null && Spellbook.canAttack(caster, livingEntity) && livingEntity != caster) {
                     double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL) * burstDamageMultiplier;
                     livingEntity.damage(damage, caster, PDamageType.PHYSICAL);
                     livingEntity.addEffect(livingEntity, Spellbook.getEffectData("Burning"), (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, burningMinDuration, burningMaxDuration, "burningDuration"), 1);
                     world.spawnParticle(Particle.FLAME, livingEntity.getLocation(), 8, 0.5, 0.5, 0.5);
                     world.spawnParticle(Particle.SOUL_FIRE_FLAME, livingEntity.getLocation(), 8, 0.5, 0.5, 0.5);
                     world.playSound(livingEntity.getLocation(), org.bukkit.Sound.ENTITY_BLAZE_SHOOT, 1, 2);
-                    caster.sendMessage(Component.text("Hello").font(Key.key("namespace:key")));
-                    caster.sendRichMessage(String.format("<font:%s>Hello</font>", "namespace:key"));
                 }
             }
         }

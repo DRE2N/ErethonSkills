@@ -8,6 +8,8 @@ import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.CircleEffect;
 import org.bukkit.Color;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
@@ -58,6 +60,8 @@ public class HierophantsVerdict extends PaladinBaseSpell {
             target.damage(magicDamage, caster, PDamageType.MAGIC);
             if (caster.getEnergy() > minWrathForWeakness) {
                 target.addEffect(target, weaknessEffect, weaknessDuration, weaknessStacks);
+                caster.setEnergy(0);
+                caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 0.8f, 0.8f);
             }
         }
         return super.onCast();

@@ -5,6 +5,8 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.LineEffect;
 import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.BoundingBox;
@@ -16,6 +18,7 @@ public class ChainOfPurification extends PaladinBaseSpell {
     // If the wrath is above 50, the chain also pulls additional enemies in a 3-block radius to the target.
 
     private final int range = data.getInt("range", 20);
+    private final double pullSpeed = data.getDouble("pullSpeed", 3.0);
     private final int minimumEnergyForBonus = data.getInt("minimumEnergyForBonus", 50);
     private final int bonusEnemyCount = data.getInt("bonusEnemyCount", 2);
 
@@ -60,7 +63,7 @@ public class ChainOfPurification extends PaladinBaseSpell {
             onTickFinish();
             return;
         }
-        Vector direction = target.getLocation().getDirection();
+        Vector direction = caster.getEyeLocation().getDirection();
         direction.multiply(0.5);
         chainEndLocation.add(direction);
         lineEffect.setTarget(chainEndLocation);
@@ -75,6 +78,8 @@ public class ChainOfPurification extends PaladinBaseSpell {
         int entityLimit = 1;
         if (caster.getEnergy() > minimumEnergyForBonus) {
             entityLimit += bonusEnemyCount;
+            caster.setEnergy(0);
+            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 0.8f, 0.8f);
         }
         int entities = 0;
         for (Entity entity : caster.getWorld().getNearbyEntities(chainEndBoundingBox)) {
@@ -85,7 +90,7 @@ public class ChainOfPurification extends PaladinBaseSpell {
                     break;
                 }
                 Vector pullDirection = chainEndLocation.toVector().subtract(entity.getLocation().toVector()).normalize();
-                living.setVelocity(pullDirection.multiply(0.5));
+                living.setVelocity(pullDirection.multiply(pullSpeed));
             }
         }
         super.onTick();
