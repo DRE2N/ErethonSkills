@@ -16,7 +16,8 @@ public class CutthroatBasicAttack extends SpellTrait {
     // The target is also inflicted with a bleeding effect that lasts between 5 and 10 seconds, scaling with advantage_magical.
 
     private final int attacksForBonus = data.getInt("attacksForBonus", 3);
-    private final int bonusEnergy = data.getInt("bonusEnergy", 5);
+    private final int normalEnergy = data.getInt("normalEnergy", 5);
+    private final int bonusEnergy = data.getInt("bonusEnergy", 15);
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.2);
     private final int bleedMinDuration = data.getInt("bleedMinDuration", 5);
     private final int bleedMaxDuration = data.getInt("bleedMaxDuration", 10);
@@ -30,7 +31,14 @@ public class CutthroatBasicAttack extends SpellTrait {
     }
 
     @Override
+    protected void onAdd() {
+        super.onAdd();
+        caster.setMaxEnergy(100);
+    }
+
+    @Override
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
+        caster.addEnergy(normalEnergy);
         if (this.target == null) {
             this.target = target;
         }
@@ -45,7 +53,7 @@ public class CutthroatBasicAttack extends SpellTrait {
             damage *= bonusDamageMultiplier;
             caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.6f, 2.0f);
             caster.getWorld().spawnParticle(Particle.DRIPPING_LAVA, target.getLocation(), 3, 0.5, 0.5, 0.5);
-            target.addEffect(caster, bleedEffectData, (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, bleedMinDuration, bleedMaxDuration, "bleed"), 1);
+            target.addEffect(caster, bleedEffectData, (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, bleedMinDuration, bleedMaxDuration, "bleed") * 20, 1);
         }
         return super.onAttack(target, damage, type);
     }

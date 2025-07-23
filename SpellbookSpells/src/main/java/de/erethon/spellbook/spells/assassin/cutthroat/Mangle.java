@@ -33,6 +33,10 @@ public class Mangle extends AssassinBaseSpell {
     @Override
     protected boolean onPrecast() {
         lookForTarget(range);
+        if (target == null) {
+            caster.sendParsedActionBar("<color:#ff0000>Kein Ziel gefunden!");
+            return false;
+        }
         int bleedingOnTarget = 0;
         for (SpellEffect effect : target.getEffects()) {
             if (effect.data == bleedingEffectData) {
