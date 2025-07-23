@@ -20,6 +20,11 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 public class ShoutOfResolve extends PaladinBaseSpell implements Listener {
 
     // For several seconds, the Guardian is immune to all negative effects and reflects a portion of damage back to the attacker.
@@ -39,6 +44,8 @@ public class ShoutOfResolve extends PaladinBaseSpell implements Listener {
     private final double allyHealDamageMultiplier = data.getDouble("allyHealDamageMultiplier", 0.33);
     private final double allyHealPerDevotionMin = data.getDouble("allyHealPerDevotionMin", 0.5);
     private final double allyHealPerDevotionMax = data.getDouble("allyHealPerDevotionMax", 2);
+
+    private final Map<LivingEntity, Double> toDamageOnNextTick = new HashMap<>();
 
     public ShoutOfResolve(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -89,7 +96,7 @@ public class ShoutOfResolve extends PaladinBaseSpell implements Listener {
                 event.setDamage(damage);
                 double reflectMultiplier = Spellbook.getRangedValue(data, caster, livingTarget, Attribute.ADVANTAGE_PHYSICAL, allyDamageReflectMin, allyDamageReflectMax, "allyDamageReflect");
                 double reflectDamage = event.getDamage() * reflectMultiplier;
-                livingDamager.damage(reflectDamage, caster, PDamageType.MAGIC);
+                toDamageOnNextTick.put(livingDamager, reflectDamage);
                 double healPerDevotion = Spellbook.getRangedValue(data, caster, livingTarget, Attribute.STAT_HEALINGPOWER, allyHealPerDevotionMin, allyHealPerDevotionMax, "allyHealPerDevotion");
                 double healAmount = (reflectDamage * allyHealDamageMultiplier) * (caster.getEnergy() * healPerDevotion);
                 livingTarget.heal(healAmount);
@@ -102,9 +109,22 @@ public class ShoutOfResolve extends PaladinBaseSpell implements Listener {
                 event.setDamage(damage);
                 double reflectMultiplier = Spellbook.getRangedValue(data, caster, livingDamager, Attribute.ADVANTAGE_PHYSICAL, guardianDamageReflectMin, guardianDamageReflectMax, "guardianDamageReflect");
                 double reflectDamage = event.getDamage() * reflectMultiplier;
-                livingDamager.damage(reflectDamage, caster, PDamageType.MAGIC);
+                toDamageOnNextTick.put(livingDamager, reflectDamage);
             }
         }
+    }
+
+    @Override
+    protected void onTick() {
+        for (Map.Entry<LivingEntity, Double> entry : toDamageOnNextTick.entrySet()) {
+            LivingEntity entity = entry.getKey();
+            double damage = entry.getValue();
+            if (entity.isValid() && entity.getWorld() == caster.getWorld() && entity.getLocation().distance(caster.getLocation()) <= range) {
+                entity.damage(damage, caster, PDamageType.MAGIC);
+                entity.getWorld().spawnParticle(Particle.GLOW, entity.getLocation(), 3, 0.5, 0.5, 0.5);
+            }
+        }
+        toDamageOnNextTick.clear();
     }
 
     @Override

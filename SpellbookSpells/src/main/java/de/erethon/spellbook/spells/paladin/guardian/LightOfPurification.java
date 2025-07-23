@@ -48,8 +48,10 @@ public class LightOfPurification extends PaladinBaseSpell {
         circleEffect.duration = 20;
         circleEffect.start();
         int devotionGained = 0;
+        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.RECORDS, 1.0f, 0.5f);
         for (LivingEntity target : caster.getLocation().getNearbyLivingEntities(range)) {
             if (Spellbook.canAttack(caster, target)) continue;
+            if (target == caster) continue;
             int effectsToRemove = this.effectsToRemove;
             Set<EffectData> toRemove = new HashSet<>();
             for (SpellEffect effect : target.getEffects()) {
@@ -65,7 +67,7 @@ public class LightOfPurification extends PaladinBaseSpell {
             }
             int resistanceDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.RESISTANCE_MAGICAL, resistanceDurationMin, resistanceDurationMax, "resistanceDuration");
             target.addEffect(caster, resistanceEffect, resistanceDuration, 1);
-            target.getWorld().spawnParticle(Particle.DUST, target.getLocation(), 3, 0.5, 0.5, 0.5);
+            target.getWorld().spawnParticle(Particle.ENCHANTED_HIT, target.getLocation(), 3, 0.5, 0.5, 0.5);
             target.getWorld().playSound(target.getLocation(), Sound.BLOCK_BUBBLE_COLUMN_UPWARDS_INSIDE, SoundCategory.RECORDS, 1.0f, 1.0f);
         }
         caster.setEnergy(caster.getEnergy() + devotionGained);

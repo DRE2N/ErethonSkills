@@ -17,9 +17,15 @@ public class GuardianBasicAttack extends SpellTrait {
     }
 
     @Override
+    protected void onAdd() {
+        super.onAdd();
+        caster.setMaxEnergy(100);
+    }
+
+    @Override
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
         if (target != null) {
-            caster.setEnergy(caster.getEnergy() + devotionPerAttack);
+            caster.addEnergy(devotionPerAttack);
             currentDevotion += devotionPerAttack;
             if (currentDevotion >= devotionPerHeal) {
                 currentDevotion = 0;
