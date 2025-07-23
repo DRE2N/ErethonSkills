@@ -14,12 +14,15 @@ import org.bukkit.util.Vector;
 public class ShadowJump extends AssassinBaseSpell {
 
     // RMB. Dashes forward, becoming invisible for a short time if passing through an entity.
+    private final int durationTicks = data.getInt("durationTicks", 20);
     private final double dashMultiplier = data.getDouble("dashMultiplier", 2.0);
     private final double sideDashStrength = data.getDouble("sideDashStrength", 1.5);
 
+    private boolean invisible = false;
+
     public ShadowJump(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = duration * 20;
+        keepAliveTicks = durationTicks;
     }
 
     @Override
@@ -49,6 +52,9 @@ public class ShadowJump extends AssassinBaseSpell {
 
     @Override
     protected void onTick() {
+        if (invisible) {
+            return;
+        }
         caster.getWorld().spawnParticle(Particle.WHITE_ASH, caster.getLocation(), 1);
         for (LivingEntity entity : caster.getLocation().getNearbyLivingEntities(2)) {
             if (entity == caster) {
@@ -56,6 +62,7 @@ public class ShadowJump extends AssassinBaseSpell {
             }
             if (entity.getBoundingBox().overlaps(caster.getBoundingBox())) {
                 caster.setInvisible(true);
+                invisible = true;
                 break;
             }
         }

@@ -5,6 +5,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CylinderEffect;
+import io.papermc.paper.entity.TeleportFlag;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -34,6 +35,7 @@ public class Backstab extends AssassinBaseSpell implements Listener {
 
     private Location location = null;
     private int ticks = 0;
+    private boolean teleported = false;
 
     public Backstab(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -88,16 +90,17 @@ public class Backstab extends AssassinBaseSpell implements Listener {
 
     @Override
     protected void onTick() {
-        if (ticks > 0) {
+        if (ticks > 0 || teleported) {
             ticks--;
             return;
         }
+        teleported = true;
         float yaw = target.getLocation().getYaw();
         float pitch = caster.getLocation().getPitch();
         location.setYaw(yaw);
         location.setPitch(pitch);
         caster.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1));
-        caster.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+        caster.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
         AttributeModifier bonus;
         if (target.getTags().contains("assassin.daggerthrow.marked")) {
             bonus = new AttributeModifier(new NamespacedKey("spellbook", "backstab"), Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL, markedMinDamage, markedMaxDamage, "marked"), AttributeModifier.Operation.ADD_NUMBER);

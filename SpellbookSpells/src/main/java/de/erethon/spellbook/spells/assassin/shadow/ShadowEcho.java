@@ -7,12 +7,14 @@ import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import de.erethon.spellbook.traits.assassin.shadow.ShadowEchoReturnTrait;
+import io.papermc.paper.entity.TeleportFlag;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class ShadowEcho extends AssassinBaseSpell {
 
@@ -24,7 +26,7 @@ public class ShadowEcho extends AssassinBaseSpell {
     private final int resistanceMaxDuration = data.getInt("resistanceMaxDuration", 16) * 20;
 
     private ShadowEchoReturnTrait echo = null;
-    private final TraitData echoTraitData = Bukkit.getServer().getSpellbookAPI().getLibrary().getTraitByID("ShadowEchoReturn");
+    private final TraitData echoTraitData = Bukkit.getServer().getSpellbookAPI().getLibrary().getTraitByID("ShadowEchoReturnTrait");
     private final EffectData resistanceData = Spellbook.getEffectData("Resistance");
     private int visualTicks = 20;
 
@@ -37,12 +39,14 @@ public class ShadowEcho extends AssassinBaseSpell {
     protected boolean onPrecast() {
         getOrAddEchoTrait();
         if (echo.isWaitingForReturn()) {
-            caster.teleport(echo.getReturnLocation());
+            caster.teleport(echo.getReturnLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
             caster.addEffect(caster, resistanceData, (int) Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, resistanceMinDuration, resistanceMaxDuration,"resistanceDuration"), 1);
             if (echo.hasDamagedMarkedTarget()) {
                 caster.setEnergy(caster.getEnergy() + energyRestoreOnMarkedDamage);
             }
             caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, Sound.Source.RECORD, 0.8f, 1));
+            currentTicks = keepAliveTicks;
+            onTickFinish();
             return false;
         }
         return super.onPrecast();
@@ -51,6 +55,7 @@ public class ShadowEcho extends AssassinBaseSpell {
     @Override
     public boolean onCast() {
         echo.setReturnLocation(caster.getLocation());
+        caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, Sound.Source.RECORD, 0.8f, 0.5f));
         return super.onCast();
     }
 
@@ -66,8 +71,9 @@ public class ShadowEcho extends AssassinBaseSpell {
 
     @Override
     protected void onTickFinish() {
+        super.onTickFinish();
         caster.removeTrait(echoTraitData);
-        caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, Sound.Source.RECORD, 0.8f, 0));
+        caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, Sound.Source.RECORD, 0.7f, 0));
     }
 
     private void getOrAddEchoTrait() {

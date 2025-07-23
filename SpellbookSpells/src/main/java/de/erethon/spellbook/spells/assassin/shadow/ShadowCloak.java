@@ -33,6 +33,8 @@ public class ShadowCloak extends AssassinBaseSpell {
     private final AttributeModifier speedBoost = new AttributeModifier(new NamespacedKey("spellbook", "shadow_cloak"), 0.2, AttributeModifier.Operation.ADD_NUMBER);
     private final EffectData blindness = Spellbook.getEffectData("Blindness");
 
+    private boolean alreadyAttacked = false;
+
     public ShadowCloak(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         keepAliveTicks = duration * 20;
@@ -50,6 +52,9 @@ public class ShadowCloak extends AssassinBaseSpell {
     @Override
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
         endCloak();
+        if (alreadyAttacked) {
+            return super.onAttack(target, damage, type);
+        }
         if (target instanceof Player player) {
             player.playSound(caster, Sound.ITEM_SHIELD_BREAK, 1, 1);
         }
@@ -57,18 +62,20 @@ public class ShadowCloak extends AssassinBaseSpell {
             casterPlayer.playSound(caster, Sound.ITEM_SHIELD_BREAK, 1, 1);
         }
         target.addEffect(caster, blindness, (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, blindnessMinDuration, blindnessMaxDuration, "blindnessDuration"), 1);
+        alreadyAttacked = true;
         return super.onAttack(target, damage + bonusDamage, type);
     }
 
     @Override
-    protected void onTickFinish() {
-        super.onTickFinish();
-        endCloak();
+    protected void cleanup() {
+        super.cleanup();
+        caster.setInvisible(false);
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedBoost);
     }
 
     private void endCloak() {
-        caster.setInvisible(false);
-        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedBoost);
+        currentTicks = keepAliveTicks;
+        onTickFinish();
     }
 
     @Override

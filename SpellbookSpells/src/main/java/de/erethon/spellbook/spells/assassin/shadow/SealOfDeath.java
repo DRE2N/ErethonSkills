@@ -3,11 +3,15 @@ package de.erethon.spellbook.spells.assassin.shadow;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.fx.cues.ExpandingCircleEffectCue;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import de.slikey.effectlib.effect.CircleEffect;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.LivingEntity;
@@ -30,8 +34,8 @@ public class SealOfDeath extends AssassinBaseSpell implements Listener {
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.3);
     private final double executionThreshold = data.getDouble("executionThreshold", 0.15);
     private final float visionDebuffRadius = (float) data.getDouble("visionDebuffRadius", 5.0);
-    private final int visionDebuffDurationMin = data.getInt("visionDebuffDurationMin", 6) * 20;
-    private final int visionDebuffDurationMax = data.getInt("visionDebuffDurationMax", 24) * 20;
+    private final int visionDebuffDurationMin = data.getInt("visionDebuffDurationMin", 6);
+    private final int visionDebuffDurationMax = data.getInt("visionDebuffDurationMax", 24);
 
     private int visualTick = 20;
     private AreaEffectCloud effectCloud;
@@ -54,6 +58,14 @@ public class SealOfDeath extends AssassinBaseSpell implements Listener {
     @Override
     public boolean onCast() {
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
+        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.RECORDS, 0.7f, 1.5f);
+        CircleEffect effect = new CircleEffect(Spellbook.getInstance().getEffectManager());
+        effect.radius = 1.5f;
+        effect.particle = Particle.WITCH;
+        effect.particleCount = 10;
+        effect.duration = 100;
+        effect.setLocation(target.getLocation().clone().add(0, -0.5, 0));
+        effect.start();
         return super.onCast();
     }
 
@@ -64,19 +76,23 @@ public class SealOfDeath extends AssassinBaseSpell implements Listener {
         if (visualTick <= 0) {
             Location loc = target.getLocation().clone().add(0,1.5,0);
             loc.getWorld().spawnParticle(Particle.WITCH, loc, 10, 1.5, 0.5, 1.5);
+            visualTick = 20;
         }
     }
 
     @Override
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
+        if (target != this.target || !target.getTags().contains("assassin.daggerthrow.marked")) {
+            return damage;
+        }
         damage = damage * bonusDamageMultiplier;
         double health = target.getHealth();
         double maxHealth = target.getAttribute(Attribute.MAX_HEALTH).getValue();
         if (health <= maxHealth * executionThreshold) {
-            int debuffDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, visionDebuffDurationMin, visionDebuffDurationMax, "debuffDuration");
+            int debuffDuration = (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, visionDebuffDurationMin, visionDebuffDurationMax, "debuffDuration") * 20;
             target.damage(1000000, caster, PDamageType.PHYSICAL);
             target.getWorld().spawnParticle(Particle.SMOKE, target.getLocation(), 8, 5, 5, 5, 0.1);
-            target.getWorld().playSound(target.getLocation(), org.bukkit.Sound.ENTITY_WITHER_DEATH, 1.0f, 1.0f);
+            target.getWorld().playSound(target.getLocation(), org.bukkit.Sound.ENTITY_WITHER_DEATH, SoundCategory.RECORDS, 0.3f, 1.0f);
             AreaEffectCloud areaEffectCloud = target.getWorld().spawn(target.getLocation(), AreaEffectCloud.class);
             areaEffectCloud.setDuration(debuffDuration);
             areaEffectCloud.setRadius(visionDebuffRadius);
@@ -84,6 +100,8 @@ public class SealOfDeath extends AssassinBaseSpell implements Listener {
             areaEffectCloud.setParticle(Particle.ASH);
             areaEffectCloud.setRadiusPerTick(visionDebuffRadius / debuffDuration);
             effectCloud = areaEffectCloud;
+            currentTicks = keepAliveTicks;
+            onTickFinish();
         }
         return super.onAttack(target, damage, type);
     }
