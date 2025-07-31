@@ -33,7 +33,6 @@ public class ArrowRain extends RangerBaseSpell implements Listener {
     private final int stunDurationMax = data.getInt("stunDurationMax", 40);
 
     private final EffectData slowness = Spellbook.getEffectData("Slow");
-    private final EffectData stun = Spellbook.getEffectData("Stun");
 
     private Random random;
     private boolean isFinalWave = false;

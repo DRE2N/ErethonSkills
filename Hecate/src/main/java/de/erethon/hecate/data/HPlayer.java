@@ -74,12 +74,12 @@ public class HPlayer {
         if (!characters.isEmpty()) {
             this.selectedCharacter = null;
         }
-        MessageUtil.log("Loaded " + characters.size() + " characters for player " + playerId);
+        Hecate.log("Loaded " + characters.size() + " characters for player " + playerId);
     }
 
     public void setSelectedCharacter(HCharacter selectedCharacter, boolean dontSave) {
         if (selectedCharacter == null) {
-            MessageUtil.log("Selected character is null for player " + player.getName());
+            Hecate.log("Selected character is null for player " + player.getName());
             this.selectedCharacter = null; // Player is most likely in character selection screen and has no character selected yet
             return;
         }
@@ -97,7 +97,7 @@ public class HPlayer {
                                         return selectedCharacter.loadCharacterPlayerData();
                                     })
                                     .thenRun(() -> {
-                                        MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
+                                        Hecate.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                                         setLastCharacter(selectedCharacter.getCharacterID());
                                     })
                                     .exceptionally(ex -> {
@@ -108,7 +108,7 @@ public class HPlayer {
                             this.selectedCharacter = selectedCharacter;
                             selectedCharacter.loadCharacterPlayerData()
                                     .thenRun(() -> {
-                                        MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
+                                        Hecate.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                                         setLastCharacter(selectedCharacter.getCharacterID());
                                     })
                                     .exceptionally(ex -> {
@@ -123,7 +123,7 @@ public class HPlayer {
                                 if (!dontSave) {
                                     selectedCharacter.saveCharacterPlayerData(false);
                                 }
-                                MessageUtil.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
+                                Hecate.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                                 setLastCharacter(selectedCharacter.getCharacterID());
                             })
                             .exceptionally(ex -> {
@@ -133,7 +133,7 @@ public class HPlayer {
                     }
                 }
             catch (Exception e) {
-                MessageUtil.log("Failed to switch to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
+                Hecate.log("Failed to switch to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                 e.printStackTrace();
             }
         } finally {

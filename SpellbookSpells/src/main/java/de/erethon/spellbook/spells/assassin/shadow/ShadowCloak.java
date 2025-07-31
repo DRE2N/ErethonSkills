@@ -46,6 +46,7 @@ public class ShadowCloak extends AssassinBaseSpell {
         caster.getAttribute(Attribute.MOVEMENT_SPEED).addModifier(speedBoost);
         Set<EffectData> toRemove = caster.getEffects().stream().filter(effect -> !effect.data.isPositive()).map(effect -> effect.data).collect(Collectors.toSet());
         toRemove.forEach(caster::removeEffect);
+        caster.getTags().add("shadow_cloak");
         return super.onCast();
     }
 
@@ -74,6 +75,7 @@ public class ShadowCloak extends AssassinBaseSpell {
     }
 
     private void endCloak() {
+        caster.getTags().remove("shadow_cloak");
         currentTicks = keepAliveTicks;
         onTickFinish();
     }

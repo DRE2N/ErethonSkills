@@ -12,6 +12,8 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
@@ -26,12 +28,13 @@ import org.bukkit.potion.PotionEffectType;
 public class Backstab extends AssassinBaseSpell implements Listener {
 
     // Teleports behind the target and deals a powerful attack, granting energy if the target dies within a short time.
-    // Deals bonus damage if the target is marked and refunds energy if the target dies.
+    // Deals bonus damage if the target is marked and refunds energy if the target dies. Deals bonus damage if the caster is cloaked.
     // Bonus damage scales with advantage_physical.
 
     private final int energyBonus = data.getInt("energyBonus", 50);
     private final double markedMinDamage = data.getDouble("markedMinDamage", 1.0);
     private final double markedMaxDamage = data.getDouble("markedMaxDamage", 2.0);
+    private final double damageMultiplierWhenCloaked = data.getDouble("damageMultiplierWhenCloaked", 1.2);
 
     private Location location = null;
     private int ticks = 0;
@@ -102,11 +105,24 @@ public class Backstab extends AssassinBaseSpell implements Listener {
         caster.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 1));
         caster.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
         AttributeModifier bonus;
+        double cloakedBonus = 1.0;
+        if (caster.getTags().contains("shadow_cloak")) {
+            cloakedBonus = damageMultiplierWhenCloaked;
+            caster.getTags().remove("shadow_cloak");
+            caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation(), 4, 0.5, 0.5, 0.5, 0.1);
+            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_ANCIENT_DEBRIS_BREAK, SoundCategory.RECORDS, 0.8f, 1.2f);
+        } else {
+            caster.getWorld().spawnParticle(Particle.SMOKE, caster.getLocation(), 4, 0.5, 0.5, 0.5, 0.1);
+        }
         if (target.getTags().contains("assassin.daggerthrow.marked")) {
-            bonus = new AttributeModifier(new NamespacedKey("spellbook", "backstab"), Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL, markedMinDamage, markedMaxDamage, "marked"), AttributeModifier.Operation.ADD_NUMBER);
+            bonus = new AttributeModifier(new NamespacedKey("spellbook", "backstab"),
+                    Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL, markedMinDamage, markedMaxDamage, "marked") * cloakedBonus,
+                    AttributeModifier.Operation.ADD_NUMBER);
             target.getTags().remove("assassin.daggerthrow.marked");
         } else {
-            bonus = new AttributeModifier(new NamespacedKey("spellbook", "backstab"), Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL), AttributeModifier.Operation.ADD_NUMBER);
+            bonus = new AttributeModifier(new NamespacedKey("spellbook", "backstab"),
+                    Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL) * cloakedBonus,
+                    AttributeModifier.Operation.ADD_NUMBER);
         }
         caster.getAttribute(Attribute.ADVANTAGE_PHYSICAL).addTransientModifier(bonus);
         caster.attack(target);

@@ -65,7 +65,7 @@ public class CharacterCastingManager {
             return;
         }
         if (!Bukkit.isPrimaryThread()) {
-            MessageUtil.log("Attempted to switch combat mode on non-primary thread.");
+            Hecate.log("Attempted to switch combat mode on non-primary thread.");
             return;
         }
         isInCastMode = newMode;
@@ -331,9 +331,9 @@ public class CharacterCastingManager {
             return;
         }
         for (Map.Entry<Attribute, Double> entry : hClass.getAttributesPerLevel(level).entrySet()) {
-            MessageUtil.log("Setting " + entry.getKey().getKey() + " to " + entry.getValue() + " for " + player.getName());
+            Hecate.log("Setting " + entry.getKey().getKey() + " to " + entry.getValue() + " for " + player.getName());
             if (player.getAttribute(entry.getKey()) == null) {
-                MessageUtil.log("Attribute " + entry.getKey().getKey() + " not found on Player class. Check Papyrus.");
+                Hecate.log("Attribute " + entry.getKey().getKey() + " not found on Player class. Check Papyrus.");
                 continue;
             }
             player.getAttribute(entry.getKey()).setBaseValue(entry.getValue());

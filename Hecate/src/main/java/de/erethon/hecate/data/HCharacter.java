@@ -93,19 +93,19 @@ public class HCharacter {
         if (classId != null) {
             this.hClass = plugin.getHClass(classId);
             if (this.hClass == null) {
-                MessageUtil.log("Class " + classId + " not found for character " + characterID);
+                Hecate.log("Class " + classId + " not found for character " + characterID);
             } else {
                 if (traitlineId != null) {
                     this.traitline = plugin.getTraitline(traitlineId);
                 }
                 if (this.traitline == null) {
-                    MessageUtil.log("Traitline " + traitlineId + " not found or null for character " + characterID + ", using class default.");
+                    Hecate.log("Traitline " + traitlineId + " not found or null for character " + characterID + ", using class default.");
                     this.traitline = hClass.getStarterTraitline();
                     this.selectedTraits = new Integer[]{-1, -1, -1};
                 }
             }
         } else {
-            MessageUtil.log("Class ID is null for character " + characterID);
+            Hecate.log("Class ID is null for character " + characterID);
         }
     }
 
@@ -119,7 +119,7 @@ public class HCharacter {
     public CompletableFuture<Void> saveToDatabase() {
         byte[] playerDataBytes = serializePlayerDataToBlob(false);
         if (playerDataBytes == null) {
-            MessageUtil.log("Failed to serialize player data for character " + characterID + ". Aborting saveToDatabase.");
+            Hecate.log("Failed to serialize player data for character " + characterID + ". Aborting saveToDatabase.");
             return CompletableFuture.failedFuture(new RuntimeException("Player data serialization failed"));
         }
 
@@ -140,12 +140,12 @@ public class HCharacter {
                     currentSelectedTraits
             );
             if (rows == 0) {
-                MessageUtil.log("Warning: upsertCharacter affected 0 rows for " + characterID);
+                Hecate.log("Warning: upsertCharacter affected 0 rows for " + characterID);
             }
         }).thenRun(() -> {
-            MessageUtil.log("Successfully saved core data and player NBT for character: " + characterID);
+            Hecate.log("Successfully saved core data and player NBT for character: " + characterID);
         }).exceptionally(ex -> {
-            MessageUtil.log("Failed to save character " + characterID + " to database: " + ex.getMessage());
+            Hecate.log("Failed to save character " + characterID + " to database: " + ex.getMessage());
             ex.printStackTrace();
             return null;
         });
@@ -164,14 +164,14 @@ public class HCharacter {
                 }).thenAcceptAsync(optionalData -> {
                     if (optionalData.isPresent() && optionalData.get().length > 0) {
                         deserializePlayerDataFromBlob(optionalData.get());
-                        MessageUtil.log("Loaded character player data from DB for: " + getCharacterID());
+                        Hecate.log("Loaded character player data from DB for: " + getCharacterID());
                     } else {
-                        MessageUtil.log("No character player data found in DB for: " + getCharacterID() + ". Player might need initial setup.");
+                        Hecate.log("No character player data found in DB for: " + getCharacterID() + ". Player might need initial setup.");
                         this.playerData = new CompoundTag();
                     }
                 }, runnable -> Bukkit.getScheduler().runTask(plugin, runnable))
                 .exceptionally(ex -> {
-                    MessageUtil.log("Failed to load character player data for " + characterID + ": " + ex.getMessage());
+                    Hecate.log("Failed to load character player data for " + characterID + ": " + ex.getMessage());
                     ex.printStackTrace();
                     return null;
                 });
@@ -185,13 +185,13 @@ public class HCharacter {
      */
     public CompletableFuture<Void> saveCharacterPlayerData(boolean castModeSwitch) {
         if (!saveInventory && !castModeSwitch) { // Don't save if inventory saving is off AND it's not a cast mode switch
-            MessageUtil.log("Skipping player data save for " + characterID + " (saveInventory=false, not castModeSwitch)");
+            Hecate.log("Skipping player data save for " + characterID + " (saveInventory=false, not castModeSwitch)");
             return CompletableFuture.completedFuture(null);
         }
 
         byte[] blobData = serializePlayerDataToBlob(castModeSwitch);
         if (blobData == null || blobData.length == 0) {
-            MessageUtil.log("Skipping save of null or empty player data blob for " + characterID);
+            Hecate.log("Skipping save of null or empty player data blob for " + characterID);
             return CompletableFuture.completedFuture(null);
         }
 
@@ -199,13 +199,13 @@ public class HCharacter {
             CharacterDao dao = handle.attach(CharacterDao.class);
             int rows = dao.updateCharacterPlayerData(characterID, blobData);
             if (rows == 0) {
-                MessageUtil.log("Failed to update player data for character " + characterID + ": Character not found in DB (0 rows affected).");
+                Hecate.log("Failed to update player data for character " + characterID + ": Character not found in DB (0 rows affected).");
             } else {
-                MessageUtil.log("Saved player data blob for character " + characterID + " (" + rows + " rows affected).");
-                MessageUtil.log("Location: " + hPlayer.getPlayer().getLocation());
+                Hecate.log("Saved player data blob for character " + characterID + " (" + rows + " rows affected).");
+                Hecate.log("Location: " + hPlayer.getPlayer().getLocation());
             }
         }).exceptionally(ex -> {
-            MessageUtil.log("Failed to save character player data for " + characterID + ": " + ex.getMessage());
+            Hecate.log("Failed to save character player data for " + characterID + ": " + ex.getMessage());
             ex.printStackTrace();
             return null;
         });
@@ -214,7 +214,7 @@ public class HCharacter {
     public byte[] serializePlayerDataToBlob(boolean castModeSwitch) {
         Player bukkitPlayer = hPlayer.getPlayer();
         if (bukkitPlayer == null) {
-            MessageUtil.log("Cannot serialize player data for character " + characterID + ": Player is null");
+            Hecate.log("Cannot serialize player data for character " + characterID + ": Player is null");
             return null;
         }
         CraftPlayer craftPlayer = (CraftPlayer) bukkitPlayer;
@@ -240,11 +240,11 @@ public class HCharacter {
                             serializedHotbar += serialized + ";";
                         } else {
                             serializedHotbar += "empty;";
-                            MessageUtil.log("Failed to serialize hotbar item at index " + i + " for character " + characterID);
+                            Hecate.log("Failed to serialize hotbar item at index " + i + " for character " + characterID);
                         }
                     }
                 }
-                MessageUtil.log("Serialized hotbar separately for " + characterID + ": " + serializedHotbar.length() + " length.");
+                Hecate.log("Serialized hotbar separately for " + characterID + ": " + serializedHotbar.length() + " length.");
                 shouldSaveHotbarSeparately = false;
             }
 
@@ -256,7 +256,7 @@ public class HCharacter {
             NbtIo.writeCompressed(tag.buildResult(), outputStream);
             return outputStream.toByteArray();
         } catch (Exception e) {
-            MessageUtil.log("Failed to serialize player data for character " + characterID + " of player " + hPlayer.getPlayerId());
+            Hecate.log("Failed to serialize player data for character " + characterID + " of player " + hPlayer.getPlayerId());
             e.printStackTrace();
             return null;
         }
@@ -265,11 +265,11 @@ public class HCharacter {
     private void deserializePlayerDataFromBlob(byte[] blob) {
         Player bukkitPlayer = hPlayer.getPlayer();
         if (bukkitPlayer == null) {
-            MessageUtil.log("Cannot deserialize player data for character " + characterID + ": Player is null.");
+            Hecate.log("Cannot deserialize player data for character " + characterID + ": Player is null.");
             return;
         }
         if  (!bukkitPlayer.isConnected()) {
-            MessageUtil.log("Cannot deserialize player data for character " + characterID + ": Player is offline.");
+            Hecate.log("Cannot deserialize player data for character " + characterID + ": Player is offline.");
             return;
         }
         CraftPlayer craftPlayer = (CraftPlayer) bukkitPlayer;
@@ -297,7 +297,7 @@ public class HCharacter {
                             tag.remove("Motion");
                             tag.remove("Rotation");
                             tag.remove("FallDistance"); // Don't restore old fall distance
-                            MessageUtil.log("Player " + characterID + " was in cast mode, not restoring position/rotation.");
+                            Hecate.log("Player " + characterID + " was in cast mode, not restoring position/rotation.");
                         }
                         // Remove UUID to prevent issues
                         tag.remove("UUID");
@@ -307,7 +307,7 @@ public class HCharacter {
                         }
 
                         if (wasInCastMode) {
-                            MessageUtil.log("Player " + characterID + " was in cast mode, restoring hotbar...");
+                            Hecate.log("Player " + characterID + " was in cast mode, restoring hotbar...");
                             ListTag loadedHotbarTag = tag.getList("HecateHotbar").get();
                             for (int i = 0; i < Math.min(9, loadedHotbarTag.size()); i++) {
                                 String encodedItem = loadedHotbarTag.getString(i).get();
@@ -325,18 +325,18 @@ public class HCharacter {
                                             bukkitPlayer.getInventory().setItem(i, null);
                                         }
                                     } catch (IllegalArgumentException e) {
-                                        MessageUtil.log("Failed to decode Base64 hotbar item at index " + i + " for " + characterID + ": " + e.getMessage());
+                                        Hecate.log("Failed to decode Base64 hotbar item at index " + i + " for " + characterID + ": " + e.getMessage());
                                         hotbar[i] = null;
                                         bukkitPlayer.getInventory().setItem(i, null);
                                     } catch (Exception e) { // Catch potential deserialization errors
-                                        MessageUtil.log("Failed to deserialize hotbar item at index " + i + " for " + characterID + ": " + e.getMessage());
+                                        Hecate.log("Failed to deserialize hotbar item at index " + i + " for " + characterID + ": " + e.getMessage());
                                         hotbar[i] = null;
                                         bukkitPlayer.getInventory().setItem(i, null);
                                     }
                                 }
                             }
                             tag.remove("HecateHotbar");
-                            MessageUtil.log("Hotbar restoration attempt finished for " + characterID + ".");
+                            Hecate.log("Hotbar restoration attempt finished for " + characterID + ".");
                         }
 
                         serverPlayer.onUpdateAbilities();
@@ -372,18 +372,18 @@ public class HCharacter {
                             }
                         }
 
-                        MessageUtil.log("Successfully applied deserialized player data for character " + characterID);
-                        MessageUtil.log("Location: " + craftPlayer.getLocation());
+                        Hecate.log("Successfully applied deserialized player data for character " + characterID);
+                        Hecate.log("Location: " + craftPlayer.getLocation());
 
                     } catch (Exception e) {
-                        MessageUtil.log("Critical error applying deserialized player data for character " + characterID + " on main thread:");
+                        Hecate.log("Critical error applying deserialized player data for character " + characterID + " on main thread:");
                         e.printStackTrace();
                     }
                 }
             }.runTask(plugin);
 
         } catch (Exception e) {
-            MessageUtil.log("Failed to deserialize player data blob for character " + characterID);
+            Hecate.log("Failed to deserialize player data blob for character " + characterID);
             e.printStackTrace();
         }
     }
@@ -411,10 +411,10 @@ public class HCharacter {
                                     isInCastMode = true;
                                     MessageUtil.sendMessage(player, "Entered cast mode");
                                 } else {
-                                    MessageUtil.log("Player logged off before cast mode switch could complete for " + characterID);
+                                    Hecate.log("Player logged off before cast mode switch could complete for " + characterID);
                                 }
                             } catch (Exception e) {
-                                MessageUtil.log("Error switching to cast mode for " + characterID);
+                                Hecate.log("Error switching to cast mode for " + characterID);
                                 e.printStackTrace();
                             }
                         });

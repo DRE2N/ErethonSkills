@@ -3,17 +3,13 @@ package de.erethon.spellbook.spells.assassin.shadow;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
-import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.events.ItemProjectileHitEvent;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
-import de.erethon.spellbook.utils.ItemProjectile;
 import de.slikey.effectlib.effect.CircleEffect;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
@@ -23,10 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
-
-import java.util.List;
 
 /**
  * @author Fyreum

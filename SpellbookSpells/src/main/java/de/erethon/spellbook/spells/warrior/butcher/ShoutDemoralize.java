@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ShoutDemoralize extends AbstractWarriorShout {
+
+    // Removes all positive effects from the target.
+
     public ShoutDemoralize(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }

@@ -117,7 +117,7 @@ public class Traitline extends YamlConfiguration {
         for (String id : getStringList("spells")) {
             SpellData spell = spellbookAPI.getLibrary().getSpellByID(id);
             if (spell == null) {
-                MessageUtil.log("Unknown spell '" + id + "' found for 'spells' in traitline file " + id);
+                Hecate.log("Unknown spell '" + id + "' found for 'spells' in traitline file " + id);
                 continue;
             }
             spells.add(spell);
@@ -125,7 +125,7 @@ public class Traitline extends YamlConfiguration {
         for (String id : getStringList("defaultSpellSlots")) {
             SpellData spell = spellbookAPI.getLibrary().getSpellByID(id);
             if (spell == null) {
-                MessageUtil.log("Unknown spell '" + id + "' found for 'defaultSpellSlots' in traitline file " + id);
+                Hecate.log("Unknown spell '" + id + "' found for 'defaultSpellSlots' in traitline file " + id);
                 continue;
             }
             defaultSpellSlots.add(spell);
@@ -135,18 +135,18 @@ public class Traitline extends YamlConfiguration {
             for (String key : specialActionSection.getKeys(false)) {
                 ConfigurationSection actionSection = specialActionSection.getConfigurationSection(key);
                 if (actionSection == null) {
-                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getId());
+                    Hecate.log("Invalid special action key '" + key + "' found in class file " + getId());
                     continue;
                 }
                 SpecialActionKey actionKey = SpecialActionKey.valueOf(key.toUpperCase());
                 String spellId = actionSection.getString("spell");
                 if (spellId == null) {
-                    MessageUtil.log("Invalid special action key '" + key + "' found in class file " + getId());
+                    Hecate.log("Invalid special action key '" + key + "' found in class file " + getId());
                     continue;
                 }
                 SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
                 if (spellData == null) {
-                    MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getId());
+                    Hecate.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getId());
                     continue;
                 }
                 specialActionMap.put(actionKey, spellData);
@@ -155,7 +155,7 @@ public class Traitline extends YamlConfiguration {
         for (String id : getStringList("innateTraits")) {
             TraitData trait = spellbookAPI.getLibrary().getTraitByID(id);
             if (trait == null) {
-                MessageUtil.log("Unknown trait '" + id + "' found for 'innateTraits' in traitline file " + getId());
+                Hecate.log("Unknown trait '" + id + "' found for 'innateTraits' in traitline file " + getId());
                 continue;
             }
             innateTraits.add(trait);
@@ -168,7 +168,7 @@ public class Traitline extends YamlConfiguration {
                     ConfigurationSection traitSection = getConfigurationSection("traitLine." + level + "." + traitId);
                     TraitData traitData = spellbookAPI.getLibrary().getTraitByID(traitId);
                     if (traitData == null) {
-                        MessageUtil.log("Unknown trait '" + traitId + "' found in traitline file " + id);
+                        Hecate.log("Unknown trait '" + traitId + "' found in traitline file " + id);
                         continue;
                     }
                     int levelRequirement = traitSection.getInt("levelRequirement", 0);
@@ -182,6 +182,6 @@ public class Traitline extends YamlConfiguration {
                 traitMap.put(level, traits);
             }
         }
-        MessageUtil.log("Loaded traitline " + id + " from " + file.getName() + " with " + traitMap.size() + " levels and " + traitMap.values().stream().mapToInt(List::size).sum() + " traits.");
+        Hecate.log("Loaded traitline " + id + " from " + file.getName() + " with " + traitMap.size() + " levels and " + traitMap.values().stream().mapToInt(List::size).sum() + " traits.");
     }
 }

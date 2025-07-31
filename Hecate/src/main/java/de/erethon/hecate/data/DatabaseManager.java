@@ -110,42 +110,42 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
         return CompletableFuture.runAsync(() -> { // Use our own future here as the normal one is not ready yet
             jdbi.useHandle(handle -> {
-                MessageUtil.log("Schema setup: Starting...");
+                Hecate.log("Schema setup: Starting...");
                 try {
-                    MessageUtil.log("Schema setup: Executing createPlayersTable...");
+                    Hecate.log("Schema setup: Executing createPlayersTable...");
                     handle.execute(createPlayersTable);
-                    MessageUtil.log("Schema setup: Finished createPlayersTable.");
+                    Hecate.log("Schema setup: Finished createPlayersTable.");
 
-                    MessageUtil.log("Schema setup: Executing createCharactersTable...");
+                    Hecate.log("Schema setup: Executing createCharactersTable...");
                     handle.execute(createCharactersTable);
-                    MessageUtil.log("Schema setup: Finished createCharactersTable.");
+                    Hecate.log("Schema setup: Finished createCharactersTable.");
 
-                    MessageUtil.log("Schema setup: Executing createCompletedQuestsTable...");
+                    Hecate.log("Schema setup: Executing createCompletedQuestsTable...");
                     handle.execute(createCompletedQuestsTable);
-                    MessageUtil.log("Schema setup: Finished createCompletedQuestsTable.");
+                    Hecate.log("Schema setup: Finished createCompletedQuestsTable.");
 
-                    MessageUtil.log("Schema setup: Executing alter table statements...");
+                    Hecate.log("Schema setup: Executing alter table statements...");
                     alterTableStatements.forEach(statement -> {
-                        MessageUtil.log("Schema setup: Altering -> " + statement);
+                        Hecate.log("Schema setup: Altering -> " + statement);
                         handle.execute(statement);
                     });
-                    MessageUtil.log("Schema setup: Finished alter table statements.");
+                    Hecate.log("Schema setup: Finished alter table statements.");
 
-                    MessageUtil.log("Schema setup: Executing addForeignKeyToCharacters...");
+                    Hecate.log("Schema setup: Executing addForeignKeyToCharacters...");
                     handle.execute(addForeignKeyToCharacters);
-                    MessageUtil.log("Schema setup: Finished addForeignKeyToCharacters.");
+                    Hecate.log("Schema setup: Finished addForeignKeyToCharacters.");
 
-                    MessageUtil.log("Schema setup: Executing addForeignKeyToPlayers...");
+                    Hecate.log("Schema setup: Executing addForeignKeyToPlayers...");
                     handle.execute(addForeignKeyToPlayers);
-                    MessageUtil.log("Schema setup: Finished addForeignKeyToPlayers.");
+                    Hecate.log("Schema setup: Finished addForeignKeyToPlayers.");
 
-                    MessageUtil.log("Schema setup: Executing addForeignKeyToCompletedQuests...");
+                    Hecate.log("Schema setup: Executing addForeignKeyToCompletedQuests...");
                     handle.execute(addForeignKeyToCompletedQuests);
-                    MessageUtil.log("Schema setup: Finished addForeignKeyToCompletedQuests.");
+                    Hecate.log("Schema setup: Finished addForeignKeyToCompletedQuests.");
 
-                    MessageUtil.log("Schema setup: All statements executed successfully.");
+                    Hecate.log("Schema setup: All statements executed successfully.");
                 } catch (Exception e) {
-                    MessageUtil.log("!!! Critical error with schema setup async task !!!");
+                    Hecate.log("!!! Critical error with schema setup async task !!!");
                     e.printStackTrace();
                     throw new RuntimeException("Error during async schema execution", e);
                 }
@@ -175,7 +175,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 selectedTraitsArray
         ) > 0)
         .exceptionally(ex -> {
-            MessageUtil.log("Error saving character " + character.getCharacterID() + " for player " + character.getHPlayer().getPlayerId() + ": " + ex.getMessage());
+            Hecate.log("Error saving character " + character.getCharacterID() + " for player " + character.getHPlayer().getPlayerId() + ": " + ex.getMessage());
             ex.printStackTrace();
             return false;
         });
@@ -185,7 +185,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         return queryAsync(handle -> {
             // Check if player exists first
             if (!playerDao.playerExists(playerId)) {
-                MessageUtil.log("Player " + playerId + " not found in DB. Will create on demand.");
+                Hecate.log("Player " + playerId + " not found in DB. Will create on demand.");
                 return null;
             }
 
@@ -196,18 +196,18 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             for (CharacterDao.FlatData flatData : charDataList) {
                 try {
                     characters.add(mapFlatDataToHCharacter(flatData, hPlayer, handle)); // Pass handle for array conversion
-                    MessageUtil.log("Loaded character " + flatData.getCharacterId() + " for player " + playerId);
+                    Hecate.log("Loaded character " + flatData.getCharacterId() + " for player " + playerId);
                 } catch (Exception e) {
-                    MessageUtil.log("Error mapping character data for " + flatData.getCharacterId() + ": " + e.getMessage());
+                    Hecate.log("Error mapping character data for " + flatData.getCharacterId() + ": " + e.getMessage());
                     e.printStackTrace();
                 }
             }
             hPlayer.setCharacters(characters);
             hPlayer.setLastCharacter(playerDao.findLastCharacterId(playerId).orElse(null));
-            MessageUtil.log("Loaded player data and " + characters.size() + " characters for " + playerId);
+            Hecate.log("Loaded player data and " + characters.size() + " characters for " + playerId);
             return hPlayer;
         }).exceptionally(ex -> {
-            MessageUtil.log("Error loading player data for " + playerId + ": " + ex.getMessage());
+            Hecate.log("Error loading player data for " + playerId + ": " + ex.getMessage());
             ex.printStackTrace();
             return null;
         });
@@ -238,7 +238,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         return executeAsync(handle -> characterDao.updateCharacterPlayerData(characterId, playerData))
                 .thenApply(v -> true)
                 .exceptionally(ex -> {
-                    MessageUtil.log("Error saving playerdata for character " + characterId + ": " + ex.getMessage());
+                    Hecate.log("Error saving playerdata for character " + characterId + ": " + ex.getMessage());
                     ex.printStackTrace();
                     return false;
                 });
@@ -248,7 +248,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         return queryAsync(handle -> characterDao.findCharacterPlayerData(characterId))
                 .thenApply(optionalData -> optionalData.orElse(null))
                 .exceptionally(ex -> {
-                    MessageUtil.log("Error loading playerdata for character " + characterId + ": " + ex.getMessage());
+                    Hecate.log("Error loading playerdata for character " + characterId + ": " + ex.getMessage());
                     ex.printStackTrace();
                     return null;
                 });
@@ -257,7 +257,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     public CompoundTag getPlayerDataTag(UUID characterId) {
         byte[] data = loadCharacterPlayerData(characterId).join();
         if (data == null) {
-            MessageUtil.log("No player data found for character " + characterId);
+            Hecate.log("No player data found for character " + characterId);
             return null;
         }
         CompoundTag tag = new CompoundTag();
@@ -266,7 +266,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             tag = NbtIo.readCompressed(inputStream, NbtAccounter.create(20 * 1024 * 1024));
             inputStream.close();
         } catch (Exception e) {
-            MessageUtil.log("Error converting player data to CompoundTag for character " + characterId + ": " + e.getMessage());
+            Hecate.log("Error converting player data to CompoundTag for character " + characterId + ": " + e.getMessage());
             e.printStackTrace();
         }
         return tag;
@@ -303,7 +303,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                             try {
                                 return mapFlatDataToHCharacter(flatData, tempHPlayer, handle);
                             } catch (Exception e) {
-                                MessageUtil.log("Error mapping character data for player " + playerId + ": " + e.getMessage());
+                                Hecate.log("Error mapping character data for player " + playerId + ": " + e.getMessage());
                                 e.printStackTrace();
                                 return null;
                             }
@@ -323,10 +323,10 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                         })
                                 .thenApply(found -> {
                                     if (found) {
-                                        MessageUtil.log("Character " + characterId + " confirmed locked by " + lockOwner + " and exists.");
+                                        Hecate.log("Character " + characterId + " confirmed locked by " + lockOwner + " and exists.");
                                         return true;
                                     } else {
-                                        MessageUtil.log("Character " + characterId + " was locked by " + lockOwner + " but NOT found! Releasing lock.");
+                                        Hecate.log("Character " + characterId + " was locked by " + lockOwner + " but NOT found! Releasing lock.");
                                         unlockCharacter(characterId);
                                         return false;
                                     }
@@ -336,11 +336,11 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     }
                 })
                 .exceptionally(ex -> {
-                    MessageUtil.log("Error during select/lock process for character " + characterId + ": " + ex.getMessage());
+                    Hecate.log("Error during select/lock process for character " + characterId + ": " + ex.getMessage());
                     ex.printStackTrace();
                     checkIfLockedBy(characterId, lockOwner).thenAccept(isLockedByMe -> {
                         if(isLockedByMe) {
-                            MessageUtil.log("Unlocking character " + characterId + " due to exception during selectAndUseCharacter.");
+                            Hecate.log("Unlocking character " + characterId + " due to exception during selectAndUseCharacter.");
                             unlockCharacter(characterId);
                         }
                     });
@@ -353,7 +353,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         return queryAsync(handle -> handle.attach(CharacterDao.class).getLockOwner(characterId))
                 .thenApply(optionalOwner -> optionalOwner.map(owner -> owner.equals(expectedOwner)).orElse(false))
                 .exceptionally(ex -> {
-                    MessageUtil.log("Failed to check lock status for " + characterId + ": " + ex.getMessage());
+                    Hecate.log("Failed to check lock status for " + characterId + ": " + ex.getMessage());
                     return false;
                 });
     }
@@ -367,7 +367,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
         return executeAsync(handle -> playerDao.upsertPlayer(hPlayer.getPlayerId(), now, lastCharId))
                 .exceptionally(ex -> {
-                    MessageUtil.log("Error saving player data for " + hPlayer.getPlayerId() + ": " + ex.getMessage());
+                    Hecate.log("Error saving player data for " + hPlayer.getPlayerId() + ": " + ex.getMessage());
                     ex.printStackTrace();
                     return null;
                 }).thenApply(v -> null);
@@ -382,14 +382,14 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 .thenApply(rowsAffected -> {
                     boolean success = rowsAffected > 0;
                     if (success) {
-                        MessageUtil.log("Character " + characterId + " locked successfully by " + lockOwner);
+                        Hecate.log("Character " + characterId + " locked successfully by " + lockOwner);
                     } else {
-                        MessageUtil.log("Failed to acquire lock for character " + characterId + " by " + lockOwner + " (already locked or not found).");
+                        Hecate.log("Failed to acquire lock for character " + characterId + " by " + lockOwner + " (already locked or not found).");
                     }
                     return success;
                 })
                 .exceptionally(ex -> {
-                    MessageUtil.log("Error locking character " + characterId + " by " + lockOwner + ": " + ex.getMessage());
+                    Hecate.log("Error locking character " + characterId + " by " + lockOwner + ": " + ex.getMessage());
                     ex.printStackTrace();
                     return false;
                 });
@@ -400,14 +400,14 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             CharacterDao dao = handle.attach(CharacterDao.class);
             int rowsAffected = dao.unlockCharacter(characterId);
             if (rowsAffected == 0) {
-                MessageUtil.log("Unlock command for character " + characterId + " affected 0 rows (was likely already unlocked or not found).");
+                Hecate.log("Unlock command for character " + characterId + " affected 0 rows (was likely already unlocked or not found).");
             } else {
-                MessageUtil.log("Character " + characterId + " unlocked successfully.");
+                Hecate.log("Character " + characterId + " unlocked successfully.");
             }
         })
                 // No .thenApply needed here, executeAsync already returns CompletableFuture<Void>
                 .exceptionally(ex -> {
-                    MessageUtil.log("Error unlocking character " + characterId + ": " + ex.getMessage());
+                    Hecate.log("Error unlocking character " + characterId + ": " + ex.getMessage());
                     ex.printStackTrace();
                     return null;
                 });
@@ -417,7 +417,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         return queryAsync(handle -> characterDao.findCharacterById(characterId))
                 .thenApply(optionalFlatData -> {
                     if (optionalFlatData.isEmpty()) {
-                        MessageUtil.log("No character found with ID " + characterId);
+                        Hecate.log("No character found with ID " + characterId);
                         return null;
                     }
                     CharacterDao.FlatData flatData = optionalFlatData.get();
@@ -425,13 +425,13 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     try(Handle handle = jdbi.open()) { // Need a handle for array mapping
                         return mapFlatDataToHCharacter(flatData, hPlayer, handle);
                     } catch (Exception e) {
-                        MessageUtil.log("Error mapping character data for ID " + characterId + ": " + e.getMessage());
+                        Hecate.log("Error mapping character data for ID " + characterId + ": " + e.getMessage());
                         e.printStackTrace();
                         return null;
                     }
                 })
                 .exceptionally(ex -> {
-                    MessageUtil.log("Error retrieving character data for ID " + characterId + ": " + ex.getMessage());
+                    Hecate.log("Error retrieving character data for ID " + characterId + ": " + ex.getMessage());
                     ex.printStackTrace();
                     return null;
                 });
@@ -457,39 +457,39 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
             saveFuture.whenComplete((result, throwable) -> {
                 if (throwable != null) {
-                    MessageUtil.log("Error during quit save/unlock for " + uuid + ": " + throwable.getMessage());
+                    Hecate.log("Error during quit save/unlock for " + uuid + ": " + throwable.getMessage());
                     throwable.printStackTrace();
                 } else {
-                    MessageUtil.log("Saved and unlocked data for player " + uuid + " on quit.");
+                    Hecate.log("Saved and unlocked data for player " + uuid + " on quit.");
                 }
                 uuidToHPlayerMap.remove(uuid);
-                MessageUtil.log("Removed player " + uuid + " from cache.");
+                Hecate.log("Removed player " + uuid + " from cache.");
             });
         } else {
-            MessageUtil.log("Player " + uuid + " not found in cache during quit event.");
+            Hecate.log("Player " + uuid + " not found in cache during quit event.");
         }
     }
 
     @EventHandler
     private void onLogin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
-        MessageUtil.log("AsyncPlayerPreLoginEvent for " + uuid);
+        Hecate.log("AsyncPlayerPreLoginEvent for " + uuid);
 
         try {
             HPlayer hPlayer = loadPlayerData(uuid).join(); // Block here, we need to wait until the data is loaded to proceed.
             if (hPlayer == null) {
-                MessageUtil.log("No data found for " + uuid + ". Creating new entry.");
+                Hecate.log("No data found for " + uuid + ". Creating new entry.");
                 HPlayer newHPlayer = new HPlayer(uuid);
                 uuidToHPlayerMap.put(uuid, newHPlayer);
-                MessageUtil.log("Created shell HPlayer for new player " + uuid);
+                Hecate.log("Created shell HPlayer for new player " + uuid);
 
             } else {
                 // Player data loaded successfully, cache it
                 uuidToHPlayerMap.put(uuid, hPlayer);
-                MessageUtil.log("Cached loaded HPlayer for " + uuid);
+                Hecate.log("Cached loaded HPlayer for " + uuid);
             }
         } catch (Exception e) {
-            MessageUtil.log("Error loading HPlayer for " + uuid + ": " + e.getMessage());
+            Hecate.log("Error loading HPlayer for " + uuid + ": " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -502,19 +502,19 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
         if (hPlayer == null) {
             // This *shouldn't* happen if AsyncPlayerPreLoginEvent worked correctly
-            MessageUtil.log("HPlayer not found in cache for " + uuid + " during PlayerJoinEvent! Creating new.");
+            Hecate.log("HPlayer not found in cache for " + uuid + " during PlayerJoinEvent! Creating new.");
             hPlayer = new HPlayer(uuid);
             uuidToHPlayerMap.put(uuid, hPlayer);
             savePlayerData(hPlayer);
         }
 
         hPlayer.setPlayer(player);
-        MessageUtil.log("Associated Player object with HPlayer for " + uuid);
+        Hecate.log("Associated Player object with HPlayer for " + uuid);
 
         if (hPlayer.getLastCharacter() != null) {
             CompletableFuture<HCharacter> characterFuture = getCharacterData(hPlayer.getLastCharacter());
             HPlayer finalHPlayer = hPlayer;
-            MessageUtil.log("Found last character ID " + hPlayer.getLastCharacter() + " for player " + uuid);
+            Hecate.log("Found last character ID " + hPlayer.getLastCharacter() + " for player " + uuid);
             characterFuture.thenAccept(character -> {
                 if (character != null) {
                     try {
@@ -545,7 +545,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     private void onPlayerDataSave(PlayerDataSaveEvent event) {
         HPlayer hPlayer = uuidToHPlayerMap.get(event.getPlayer().getUniqueId());
         if (hPlayer != null) {
-            MessageUtil.log("PlayerDataSaveEvent triggered for " + hPlayer.getPlayerId());
+            Hecate.log("PlayerDataSaveEvent triggered for " + hPlayer.getPlayerId());
             savePlayerData(hPlayer);
             if (hPlayer.getSelectedCharacter() != null) {
                 createOrUpdateCharacter(hPlayer.getSelectedCharacter());
@@ -559,7 +559,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         UUID uuid = UUID.fromString(event.getUUID());
         HPlayer hPlayer = getHPlayer(uuid);
         UUID lastCharacterId = hPlayer != null ? hPlayer.getLastCharacter() : null;
-        MessageUtil.log("PlayerDataRequestEvent triggered for " + uuid);
+        Hecate.log("PlayerDataRequestEvent triggered for " + uuid);
         if (lastCharacterId != null) {
             CompoundTag playerDataTag = getPlayerDataTag(lastCharacterId);
             if (playerDataTag != null) {
@@ -584,7 +584,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
     @Override
     public void close() {
-        MessageUtil.log("Performing final saves before shutdown...");
+        Hecate.log("DatabaseManager is closing. Saving all player data...");
         int players = getLoadedPlayers().size();
         int saved = 0;
         for (HPlayer hPlayer : getLoadedPlayers()) {
@@ -592,11 +592,11 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 savePlayerData(hPlayer).join();
                 saved++;
             } catch (Exception e) {
-                MessageUtil.log("Error during final save for " + hPlayer.getPlayerId() + ": " + e.getMessage());
+                Hecate.log("Error saving player " + hPlayer.getPlayerId() + " data during shutdown: " + e.getMessage());
                 e.printStackTrace();
             }
         }
-        MessageUtil.log("Saved " + saved + "/" + players + " players before shutdown.");
+        Hecate.log("Saved " + saved + "/" + players + " players before shutdown.");
         super.close();
     }
 }

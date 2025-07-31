@@ -1,6 +1,7 @@
 package de.erethon.spellbook.teams;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.spellbook.Spellbook;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
@@ -22,7 +23,7 @@ public class TeamManager {
 
     public void createTeam(String id, String name, Color color) {
         existingTeams.add(new SpellbookTeam(id, name, color));
-        MessageUtil.log("Registered team " + id + " with name " + name + " and color " + color.toString() + ".");
+        Spellbook.log("Registered team " + id + " with name " + name + " and color " + color.toString() + ".");
     }
 
     public void removeTeam(String id) {

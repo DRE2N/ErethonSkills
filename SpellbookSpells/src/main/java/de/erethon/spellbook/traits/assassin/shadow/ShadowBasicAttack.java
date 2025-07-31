@@ -5,8 +5,11 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -17,7 +20,7 @@ import org.bukkit.util.Vector;
 public class ShadowBasicAttack extends SpellTrait implements Listener {
 
     // Basic attack trait for the Shadow class. Grants bonus energy and damage when attacking from behind.
-    // Additionally, the shadow gains a double jump ability.
+    // Additionally, the shadow gains a double jump ability. The Shadow only takes fall damage above 16 blocks.
 
     private final double backAngleForBonus = data.getInt("backAngleForBonus", 40);
     private final int normalEnergy = data.getInt("normalEnergy", 20);
@@ -25,6 +28,8 @@ public class ShadowBasicAttack extends SpellTrait implements Listener {
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.2);
     private final double doubleJumpMultiplier = data.getDouble("doubleJumpMultiplier", 0.4);
     private final double doubleJumpVelocity = data.getDouble("doubleJumpVelocity", 0.8);
+
+    private final AttributeModifier noFallDamageModifier = new AttributeModifier(NamespacedKey.fromString("spellbook:shadow_basic_attack"), 16, AttributeModifier.Operation.ADD_NUMBER);
 
     private int lastJumpTick = 0;
 
@@ -37,12 +42,14 @@ public class ShadowBasicAttack extends SpellTrait implements Listener {
         super.onAdd();
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
         caster.setMaxEnergy(100);
+        caster.getAttribute(Attribute.SAFE_FALL_DISTANCE).addTransientModifier(noFallDamageModifier);
     }
 
     @Override
     protected void onRemove() {
         super.onRemove();
         HandlerList.unregisterAll(this);
+        caster.getAttribute(Attribute.SAFE_FALL_DISTANCE).removeModifier(noFallDamageModifier);
     }
 
     @Override

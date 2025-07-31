@@ -13,6 +13,8 @@ import java.util.List;
 
 public class ShoutFearMe extends AbstractWarriorShout {
 
+    // Applies a fear effect to all entities in front of the caster, causing them to flee in terror.
+
     private EffectData fearEffect = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Fear");
     public int effectDuration = data.getInt("effectDuration", 10);
 

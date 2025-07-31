@@ -13,6 +13,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,10 +21,13 @@ import java.util.Set;
 public class WhirlingBlades extends AssassinBaseSpell {
 
     // The Cutthroat spins around, dealing damage to all enemies in a radius.
-    // If the enemy is bleeding, the damage is increased.
+    // If the enemy is bleeding, the damage is increased and the bleeding effect is spread to nearby enemies.
 
     private final double radius = data.getDouble("radius", 3);
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.5);
+    private final double bleedingSpreadRadius = data.getDouble("bleedingSpreadRadius", 2);
+    private final int bleedingMinDuration = data.getInt("bleedingMinDuration", 5);
+    private final int bleedingMaxDuration = data.getInt("bleedingMaxDuration", 10);
     private final EffectData bleedEffectIdentifier = Spellbook.getEffectData("Bleeding");
 
     public WhirlingBlades(LivingEntity caster, SpellData spellData) {
@@ -38,7 +42,7 @@ public class WhirlingBlades extends AssassinBaseSpell {
 
         Location center = caster.getLocation();
         Set<LivingEntity> affectedTargets = new HashSet<>();
-
+        int bleedingDuration = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, bleedingMinDuration, bleedingMaxDuration, "bleedingDuration");
         List<Entity> nearbyEntities = caster.getNearbyEntities(radius, radius, radius);
         for (Entity entity : nearbyEntities) {
             if (entity instanceof LivingEntity target && !entity.equals(caster) && Spellbook.canAttack(caster, (LivingEntity) entity)) {
@@ -46,6 +50,14 @@ public class WhirlingBlades extends AssassinBaseSpell {
                 boolean isBleeding = caster.hasEffect(bleedEffectIdentifier);
                 if (isBleeding) {
                     damage *= bonusDamageMultiplier;
+                    // Spread the bleeding effect to nearby targets
+                    Collection<Entity> nearbyBleedingEntities = target.getLocation().getNearbyEntities(bleedingSpreadRadius, bleedingSpreadRadius, bleedingSpreadRadius);
+                    for (Entity bleedingEntity : nearbyBleedingEntities) {
+                        if (bleedingEntity instanceof LivingEntity bleedingTarget && !bleedingTarget.equals(caster) && Spellbook.canAttack(caster, bleedingTarget)) {
+                            bleedingTarget.addEffect(caster, bleedEffectIdentifier, bleedingDuration,1);
+                            caster.getWorld().spawnParticle(Particle.DUST , bleedingTarget.getLocation(), 3, 0.5, 0.5, 0.5, 0);
+                        }
+                    }
                 }
                 target.damage(damage, caster);
                 affectedTargets.add(target);

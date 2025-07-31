@@ -207,7 +207,7 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        MessageUtil.log("Joined " + event.getPlayer().getName() + " (" + event.getPlayer().getUniqueId() + ")");
+        Hecate.log("Joined " + event.getPlayer().getName() + " (" + event.getPlayer().getUniqueId() + ")");
         // Fixes for spell effects after server crash
         Player player = event.getPlayer();
         player.setInvisible(false);
@@ -219,7 +219,7 @@ public class PlayerCastListener implements Listener {
         if (cache.getCurrentCharacter(event.getPlayer()).isInCastMode()) {
             cache.getCurrentCharacter(event.getPlayer()).switchCastMode(CombatModeReason.PLUGIN, false);
         }
-        MessageUtil.log("Disconnected " + event.getPlayer().getName() + " (" + event.getPlayer().getUniqueId() + ")");
+        Hecate.log("Disconnected " + event.getPlayer().getName() + " (" + event.getPlayer().getUniqueId() + ")");
     }
 
 
@@ -242,7 +242,7 @@ public class PlayerCastListener implements Listener {
     // Lets handle resourcepacks on the proxy in the config phase instead.
     /*private void finishResourcepack(Player player, HPlayer hPlayer) {
         if (hPlayer.isAutoJoinWithLastCharacter() && hPlayer.getSelectedCharacterID() != 0) {
-            MessageUtil.log("Auto-joining with last character for " + player.getName() + ".");
+            Hecate.log("Auto-joining with last character for " + player.getName() + ".");
             CraftPlayer craftPlayer = (CraftPlayer) player;
             ServerPlayer serverPlayer = craftPlayer.getHandle();
             serverPlayer.server.getPlayerList().switchProfile(serverPlayer, hPlayer.getSelectedCharacterID());

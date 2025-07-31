@@ -18,11 +18,13 @@ import java.util.Set;
 
 public class StickyBomb extends AssassinBaseSpell {
 
+    // Throws a sticky bomb at the target, dealing damage and applying a vulnerability effect.
+
     private final int range = data.getInt("range", 15);
     private final int delayTicks = data.getInt("delay", 60);
     private final double explosionRadius = data.getDouble("radius", 4.0);
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.5);
-    private final EffectData vulnerabilityEffectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Vulnerability");
+    private final EffectData vulnerabilityEffectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Weakness");
     private Location lastTargetLocation;
     private Effect attachedBombEffect;
 

@@ -49,10 +49,10 @@ public class ResourcepackHandler implements Listener {
                 "<br><gray><i>You will only have to do this once every update.");
         pack.thenAccept(info -> {
             player.sendResourcePacks(ResourcePackRequest.resourcePackRequest().required(false).replace(true).packs(info).prompt(message));
-            MessageUtil.log("Sending resource pack to " + player.getName() + " with hash " + info.hash() + " and UUID " + info.id());
+            Hecate.log("Sending resource pack to " + player.getName() + " with hash " + info.hash() + " and UUID " + info.id());
         });
         pack.orTimeout(10, java.util.concurrent.TimeUnit.SECONDS).exceptionally(throwable -> {
-            MessageUtil.log("Failed to send resource pack to " + player.getName() + ". Timed out. Did the GitHub action fail?");
+            Hecate.log("Failed to send resource pack to " + player.getName() + ". Timed out. Did the GitHub action fail?");
             finishApply();
             return null;
         });
@@ -62,7 +62,7 @@ public class ResourcepackHandler implements Listener {
     public void onResourcepackChange(PlayerResourcePackStatusEvent event) {
         if (player == event.getPlayer()) {
             if (declineCount > 3) {
-                MessageUtil.log("Player " + player.getName() + " declined the resource pack too many times. Kicking.");
+                Hecate.log("Player " + player.getName() + " declined the resource pack too many times. Kicking.");
                 Component kickMessage = MiniMessage.miniMessage().deserialize(ERETHON_MM +
                         "<br><br><b><red>Please ensure resource packs are enabled to play on Erethon.</b>" +
                         "<br><dark_gray><i>You have been kicked for declining the resource pack too many times.</i>" +
@@ -79,13 +79,13 @@ public class ResourcepackHandler implements Listener {
                 || event.getStatus() == PlayerResourcePackStatusEvent.Status.FAILED_RELOAD
                 || event.getStatus() == PlayerResourcePackStatusEvent.Status.DISCARDED
                 || event.getStatus() == PlayerResourcePackStatusEvent.Status.INVALID_URL) {
-                MessageUtil.log("Resource pack download failed for " + player.getName() + ". Trying again. Reason: " + event.getStatus().name());
+                Hecate.log("Resource pack download failed for " + player.getName() + ". Trying again. Reason: " + event.getStatus().name());
                 sendPack(player);
                 declineCount++;
                 return;
             }
             if (event.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) {
-                MessageUtil.log("Resource pack applied successfully for " + player.getName());
+                Hecate.log("Resource pack applied successfully for " + player.getName());
                 finishApply();
                 return;
             }

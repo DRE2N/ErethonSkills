@@ -27,7 +27,7 @@ public class CharacterLobby {
     public CharacterLobby(String id) {
         File file = new File(plugin.getDataFolder(), "lobbies/" + id + ".yml");
         if (!file.exists()) {
-            MessageUtil.log("Character lobby " + id + " does not exist.");
+            Hecate.log("Character lobby " + id + " does not exist.");
             return;
         }
         this.id = id;

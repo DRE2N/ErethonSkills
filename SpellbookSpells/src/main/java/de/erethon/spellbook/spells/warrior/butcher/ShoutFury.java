@@ -11,6 +11,8 @@ import java.util.List;
 
 public class ShoutFury extends AbstractWarriorShout {
 
+    // Applies a fury effect to all entities nearby
+
     private final int effectDuration = data.getInt("duration", 200);
     private final int stacks = data.getInt("stacks", 1);
     private final EffectData effectData = Spellbook.getEffectData("Fury");

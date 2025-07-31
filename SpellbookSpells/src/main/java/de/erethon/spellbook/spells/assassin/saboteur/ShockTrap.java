@@ -20,8 +20,10 @@ import java.util.UUID;
 
 public class ShockTrap extends AssassinBaseTrap {
 
+    // The Saboteur sets a trap that explodes when an enemy steps on it, dealing damage and stunning the target.
+
     private final EffectData stunEffectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Stun");
-    private final EffectData vulnerabilityEffectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Vulnerability");
+    private final EffectData vulnerabilityEffectData = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Weakness");
     private final int stunDuration = data.getInt("stunDuration", 2);
     private final double bonusDamage = data.getDouble("bonusDamage", 15.0);
 

@@ -18,6 +18,7 @@ repositories {
     maven("https://repo.md-5.net/content/repositories/releases/")
     maven("https://hub.spigotmc.org/nexus/content/groups/public/")
     maven("https://jitpack.io")
+    maven("https://maven.elmakers.com/repository/")
     maven("https://repo.erethon.de/snapshots")
 }
 
@@ -29,7 +30,7 @@ configurations.all {
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", "1.21.7-R0.1-SNAPSHOT") { isChanging = true }
-    implementation("com.elmakers.mine.bukkit:EffectLib:10.3")
+    implementation("com.elmakers.mine.bukkit:EffectLib:10.10")
 }
 
 tasks {

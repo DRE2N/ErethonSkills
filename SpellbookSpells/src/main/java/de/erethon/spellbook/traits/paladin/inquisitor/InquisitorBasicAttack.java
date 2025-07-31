@@ -11,6 +11,8 @@ import org.bukkit.entity.LivingEntity;
 
 public class InquisitorBasicAttack extends SpellTrait {
 
+    // The Inquisitor's basic attack applies a "Judgement" effect to the target, stacking up to a maximum number of stacks.
+
     private final int maximumJudgementStacks = data.getInt("maximumJudgementStacks", 7);
 
     protected final EffectData judgementData = Spellbook.getEffectData("Judgement");

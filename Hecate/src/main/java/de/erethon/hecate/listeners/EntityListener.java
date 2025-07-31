@@ -77,9 +77,7 @@ public class EntityListener implements Listener {
     public void onEntityRemove(EntityRemoveFromWorldEvent event) {
         if (event.getEntity() instanceof LivingEntity living) {
             living.getEffects().forEach(SpellEffect::onRemove);
-            for (SpellTrait trait : living.getActiveTraits()) {
-                living.removeTrait(trait.getData());
-            }
+            living.getActiveTraits().stream().map(SpellTrait::getData).forEach(living::removeTrait);
             if (displayManager.hasStatusDisplay(living)) {
                 displayManager.removeStatusDisplay(living);
             }

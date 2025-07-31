@@ -13,6 +13,8 @@ import java.util.List;
 
 public class ShoutRoar extends AbstractWarriorShout {
 
+    // Applies a debuff to all entities nearby, reducing their damage output.
+
     private final EffectData effect = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("RoarDebuff");
     private final int effectDuration = data.getInt("effectDuration", 40);
 

@@ -38,7 +38,7 @@ public class SkillCommand extends ECommand {
             return;
         }
         SpellbookSpell spellbookSpell = spellData.queue(player.getPlayer());
-        MessageUtil.log("Spell " + spellbookSpell.getData().getId() + " (" + spellbookSpell.getUuid() + ") queued.");
+        Hecate.log("Spell " + spellbookSpell.getData().getId() + " (" + spellbookSpell.getUuid() + ") queued.");
     }
 
     @Override

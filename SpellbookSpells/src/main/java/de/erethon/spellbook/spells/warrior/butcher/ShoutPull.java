@@ -5,6 +5,8 @@ import org.bukkit.entity.LivingEntity;
 
 public class ShoutPull extends AbstractWarriorShout {
 
+    // Pulls the target towards the caster
+
     public ShoutPull(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }

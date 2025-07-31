@@ -12,6 +12,8 @@ import org.bukkit.entity.LivingEntity;
 
 public class ShieldOfFaithTrait extends SpellTrait {
 
+    // The Guardian can raise a shield that reduces incoming damage and heals nearby allies when the shield is up and he is hit.
+
     private final double damageModifier = data.getDouble("damageModifier", 0.25);
     private final double healRadius = data.getDouble("healRadius", 2.5);
     private final double healMin = data.getDouble("healMin", 20);

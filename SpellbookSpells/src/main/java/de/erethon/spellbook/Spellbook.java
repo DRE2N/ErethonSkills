@@ -231,7 +231,7 @@ public class Spellbook {
      */
     public static double getScaledValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, double multiplier) {
         if (getInstance().DEBUG) {
-            //MessageUtil.log("Caster: " + (caster == null ? "null" : caster.getName())  + " Target: " + (target == null ? "null" : target.getName()) + " Attribute: " + attribute.getKey() + " Multiplier: " + multiplier);
+            //Spellbook.log("Caster: " + (caster == null ? "null" : caster.getName())  + " Target: " + (target == null ? "null" : target.getName()) + " Attribute: " + attribute.getKey() + " Multiplier: " + multiplier);
         }
         if (target instanceof Player) {
             return getScaledValue(data, caster, true, attribute, multiplier);
@@ -241,7 +241,7 @@ public class Spellbook {
 
     public static double getScaledValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, String id) {
         if (getInstance().DEBUG) {
-            //MessageUtil.log("Caster: " + (caster == null ? "null" : caster.getName())  + " Target: " + (target == null ? "null" : target.getName()) + " Attribute: " + attribute.getKey() + " Multiplier: " + id);
+            //Spellbook.log("Caster: " + (caster == null ? "null" : caster.getName())  + " Target: " + (target == null ? "null" : target.getName()) + " Attribute: " + attribute.getKey() + " Multiplier: " + id);
         }
         if (target instanceof Player) {
             return getScaledValue(data, caster, true, attribute, id);
@@ -253,7 +253,7 @@ public class Spellbook {
         if (pvp) {
             if (!data.contains("coefficients.players." + attribute.getKey())) {
                 if (getInstance().DEBUG) {
-                    MessageUtil.log("Coefficients for " + attribute.getKey() + " not found. Using default values.");
+                    Spellbook.log("Coefficients for " + attribute.getKey() + " not found. Using default values.");
                 }
                 return caster.getAttribute(attribute).getValue() * multiplier;
             }
@@ -261,13 +261,13 @@ public class Spellbook {
         else {
             if (!data.contains("coefficients.entities." + attribute.getKey())) {
                 if (getInstance().DEBUG) {
-                    MessageUtil.log("Coefficients for " + attribute.getKey() + " not found. Using default values.");
+                    Spellbook.log("Coefficients for " + attribute.getKey() + " not found. Using default values.");
                 }
                 return caster.getAttribute(attribute).getValue() * multiplier;
             }
         }
         if (getInstance().DEBUG) {
-            //MessageUtil.log("Scaled value for " + attribute.getKey() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + attribute.getKey(), 1.0));
+            //Spellbook.log("Scaled value for " + attribute.getKey() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + attribute.getKey(), 1.0));
         }
         return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + attribute.getKey(), 1.0)) * multiplier;
     }
@@ -276,7 +276,7 @@ public class Spellbook {
         if (pvp) {
             if (!data.contains("coefficients.players." + id + "." + attribute.getKey())) {
                 if (getInstance().DEBUG) {
-                    MessageUtil.log("Coefficients for " + id + " for " + attribute.getKey() + " not found. Using default values.");
+                    Spellbook.log("Coefficients for " + id + " for " + attribute.getKey() + " not found. Using default values.");
                 }
                 return getScaledValue(data, caster, true, attribute, 1.0);
             }
@@ -284,13 +284,13 @@ public class Spellbook {
         else {
             if (!data.contains("coefficients.entities." + id + "." + attribute.getKey())) {
                 if (getInstance().DEBUG) {
-                    MessageUtil.log("Coefficients for " + id + " for " + attribute.getKey() + " not found. Using default values.");
+                    Spellbook.log("Coefficients for " + id + " for " + attribute.getKey() + " not found. Using default values.");
                 }
                 return getScaledValue(data, caster, false, attribute, 1.0);
             }
         }
         if (getInstance().DEBUG) {
-            //MessageUtil.log("Scaled value for " + attribute.translationKey() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + id + "." + attribute.getKey(), 1.0));
+            //Spellbook.log("Scaled value for " + attribute.translationKey() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + id + "." + attribute.getKey(), 1.0));
         }
         return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + id + "." + attribute.getKey(), 1.0));
     }
@@ -313,7 +313,7 @@ public class Spellbook {
             }
         }
         if (getInstance().DEBUG) {
-            //MessageUtil.log("Entity: " + entity.getName() + " | Initial damage: " + damage + " | Variance: " + variance + " | Crit: " + canCrit + " | Final damage: " + damage);
+            //Spellbook.log("Entity: " + entity.getName() + " | Initial damage: " + damage + " | Variance: " + variance + " | Crit: " + canCrit + " | Final damage: " + damage);
         }
         return damage;
     }
@@ -356,6 +356,10 @@ public class Spellbook {
 
     public static EffectData getEffectData(String id) {
         return getInstance().getAPI().getLibrary().getEffectByID(id);
+    }
+    
+    public static void log(String message) {
+        getInstance().getImplementer().getLogger().info("[Spellbook] " + message);
     }
 }
 

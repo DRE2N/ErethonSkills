@@ -1,10 +1,10 @@
 package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.AoEBaseSpell;
 import de.erethon.spellbook.utils.AssassinUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -45,7 +45,7 @@ public class TrapFire extends AssassinBaseTrap {
             /*if (!Spellbook.canAttack(caster, entity)) {
                 continue;
             }*/
-            MessageUtil.log("TrapFire: " + entity.getName() + " is burning");
+            Spellbook.log("TrapFire: " + entity.getName() + " is burning");
             entity.addEffect(caster, effectData, effectDuration * 20, (int) Math.round(effectStacks * damageMultiplier)); // TODO: Nothing happening here?
             triggerTraits(2);
         }

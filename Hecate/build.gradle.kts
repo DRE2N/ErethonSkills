@@ -1,4 +1,5 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 repositories {
     mavenLocal()
@@ -18,7 +19,7 @@ plugins {
     id("io.papermc.paperweight.userdev")
     id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
     id("io.github.goooler.shadow") version "8.1.5"
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.1"
+    id("de.eldoria.plugin-yml.paper") version "0.7.1"
 }
 
 configurations.all {
@@ -69,7 +70,7 @@ tasks {
     shadowJar {
         dependencies {
             include(project(":SpellbookSpells"))
-            include(dependency("com.elmakers.mine.bukkit:EffectLib:10.3"))
+            include(dependency("com.elmakers.mine.bukkit:EffectLib:10.10"))
         }
         // Comment relocations out for hotswapping
         relocate("com.elmakers.mine.bukkit", "de.erethon.hecate.effectlib")
@@ -82,20 +83,12 @@ tasks {
         }
         dependsOn(shadowJar)
     }
-    bukkit {
-        load = BukkitPluginDescription.PluginLoadOrder.STARTUP
-        main = "de.erethon.hecate.Hecate"
-        apiVersion = "1.21"
-        authors = listOf("Malfrador", "Fyreum")
-        commands {
-            register("hecate") {
-                description = "Main command for Hecate"
-                aliases = listOf("h", "hc")
-                permission = "hecate.cmd"
-                usage = "/hecate help"
-            }
-        }
-    }
+}
+
+paper {
+    main = "de.erethon.hecate.Hecate"
+    apiVersion = "1.21"
+    authors = listOf("Malfrador", "Fyreum")
 }
 
 tasks.register<Copy>("deployToSharedServer") {

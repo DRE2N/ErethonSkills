@@ -10,6 +10,7 @@ import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.commands.HecateCommandCache;
+import de.erethon.hecate.items.HEquipmentManager;
 import de.erethon.hecate.listeners.EntityListener;
 import de.erethon.hecate.listeners.EquipmentListener;
 import de.erethon.hecate.listeners.PlayerCastListener;
@@ -51,6 +52,7 @@ public final class Hecate extends EPlugin {
     private Spellbook spellbook;
     private HecateCommandCache commands;
     private DatabaseManager databaseManager;
+    private HEquipmentManager equipmentManager;
     private EntityStatusDisplayManager statusDisplayManager;
     private final Set<Traitline> traitlines = new HashSet<>();
     private final Set<HClass> hClasses = new HashSet<>();
@@ -85,10 +87,11 @@ public final class Hecate extends EPlugin {
             databaseManager = new DatabaseManager(connection);
         }
         catch (Exception e) {
-            MessageUtil.log("Failed to connect to database. Hecate will not work.");
+            Hecate.log("Failed to connect to database. Hecate will not work.");
             e.printStackTrace();
             return;
         }
+        File equipmentFile = new File(getDataFolder(), "equipment.yml");
         initFolders();
         instantiate();
         registerCommands();
@@ -101,6 +104,7 @@ public final class Hecate extends EPlugin {
             loadClasses();
             registerTranslations();
             translator.addSource(reg);
+            equipmentManager = new HEquipmentManager(equipmentFile);
             createPlaceholderDefinitions(Bukkit.getWorlds().get(0));
             ready = true;
         }, 30);
@@ -111,7 +115,7 @@ public final class Hecate extends EPlugin {
             if (data.contains("name")) {
                 ConfigurationSection nameSection = data.getConfigurationSection("name");
                 if (nameSection == null) {
-                    MessageUtil.log("Spell " + data.getId() + " has no name.");
+                    Hecate.log("Spell " + data.getId() + " has no name.");
                     continue;
                 }
                 for (String key : nameSection.getKeys(false)) {
@@ -128,7 +132,7 @@ public final class Hecate extends EPlugin {
             if (data.contains("description")) {
                 ConfigurationSection descriptionSection = data.getConfigurationSection("description");
                 if (descriptionSection == null) {
-                    MessageUtil.log("Spell " + data.getId() + " has no description.");
+                    Hecate.log("Spell " + data.getId() + " has no description.");
                     continue;
                 }
                 int maxLineCount = 0;  // We need to know this for lore rendering
@@ -154,7 +158,7 @@ public final class Hecate extends EPlugin {
             if (data.contains("name")) {
                 ConfigurationSection nameSection = data.getConfigurationSection("name");
                 if (nameSection == null) {
-                    MessageUtil.log("Trait " + data.getId() + " has no name.");
+                    Hecate.log("Trait " + data.getId() + " has no name.");
                     continue;
                 }
                 for (String key : nameSection.getKeys(false)) {
@@ -171,7 +175,7 @@ public final class Hecate extends EPlugin {
             if (data.contains("description")) {
                 ConfigurationSection descriptionSection = data.getConfigurationSection("description");
                 if (descriptionSection == null) {
-                    MessageUtil.log("Trait " + data.getId() + " has no description.");
+                    Hecate.log("Trait " + data.getId() + " has no description.");
                     continue;
                 }
                 int maxLineCount = 0;
@@ -197,7 +201,7 @@ public final class Hecate extends EPlugin {
     }
 
     private void createPlaceholderDefinitions(World world ) {
-        MessageUtil.log("Creating placeholder definitions...");
+        Hecate.log("Creating placeholder definitions...");
         Pig pig = world.spawn(world.getSpawnLocation(), Pig.class);
         pig.setPersistent(false);
         pig.setInvisible(true);
@@ -220,13 +224,13 @@ public final class Hecate extends EPlugin {
                 try {
                     data.save(data.getFile());
                 } catch (IOException e) {
-                    MessageUtil.log("Failed to save spell data for " + data.getId() + " after creating placeholder definitions.");
+                    Hecate.log("Failed to save spell data for " + data.getId() + " after creating placeholder definitions.");
                     throw new RuntimeException(e);
                 }
             }
         }
         pig.remove();
-        MessageUtil.log("Done. Created placeholder definitions for " + spellbook.getAPI().getLibrary().getLoaded().size() + " spells.");
+        Hecate.log("Done. Created placeholder definitions for " + spellbook.getAPI().getLibrary().getLoaded().size() + " spells.");
     }
 
     @Override
@@ -246,7 +250,7 @@ public final class Hecate extends EPlugin {
                 }
             }
         }
-        MessageUtil.log("Loaded " + hClasses.size() + " classes.");
+        Hecate.log("Loaded " + hClasses.size() + " classes.");
     }
 
     private void loadTraitlines() {
@@ -259,7 +263,7 @@ public final class Hecate extends EPlugin {
                 }
             }
         }
-        MessageUtil.log("Loaded " + traitlines.size() + " traitlines.");
+        Hecate.log("Loaded " + traitlines.size() + " traitlines.");
     }
 
     public void initFolders() {
@@ -301,6 +305,10 @@ public final class Hecate extends EPlugin {
         return databaseManager;
     }
 
+    public HEquipmentManager getEquipmentManager() {
+        return equipmentManager;
+    }
+
     public CharacterLobby getLobbyInUse() {
         return new CharacterLobby("default");
     }
@@ -325,13 +333,15 @@ public final class Hecate extends EPlugin {
         return statusDisplayManager;
     }
 
+
+
     public Traitline getTraitline(String id) {
         for (Traitline traitline : traitlines) {
             if (traitline.getId().equalsIgnoreCase(id)) {
                 return traitline;
             }
         }
-        MessageUtil.log("Traitline " + id + " not found.");
+        Hecate.log("Traitline " + id + " not found.");
         return null;
     }
 
@@ -345,6 +355,10 @@ public final class Hecate extends EPlugin {
             return hClasses.stream().findFirst().orElse(null);
         }
         return null;
+    }
+
+    public static void log(String message) {
+        Hecate.getInstance().getLogger().info(message);
     }
 
 }

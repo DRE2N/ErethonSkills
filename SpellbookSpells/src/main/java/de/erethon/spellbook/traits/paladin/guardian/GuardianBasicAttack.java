@@ -7,6 +7,8 @@ import org.bukkit.entity.LivingEntity;
 
 public class GuardianBasicAttack extends SpellTrait {
 
+    // The Guardian's basic attack generates devotion points on hit and heals the caster when enough devotion is accumulated.
+
     private final int devotionPerAttack = data.getInt("devotionPerAttack", 5);
     private final int devotionPerHeal = data.getInt("devotionPerHeal", 15);
 

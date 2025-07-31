@@ -8,6 +8,8 @@ import org.bukkit.entity.LivingEntity;
 
 public class HierophantBasicAttack extends SpellTrait {
 
+    // The Hierophant's basic attack generates wrath on damage taken and dealt, and increases magic damage based on the wrath accumulated.
+
     private final double wrathPerDamageTaken = data.getDouble("wrathPerDamageTaken", 0.2);
     private final double wrathPerDamageDealt = data.getDouble("wrathPerDamageDealt", 0.1);
     private final double magicDamageBonusPerWrath = data.getDouble("magicDamageBonusPerWrath", 1);

@@ -78,7 +78,7 @@ public class HClass extends YamlConfiguration {
 
     public Traitline getStarterTraitline() {
         if (defaultTraitline == null) {
-            MessageUtil.log("Class " + getId() + " has no default traitline configured");
+            Hecate.log("Class " + getId() + " has no default traitline configured");
             return null;
         }
         return defaultTraitline;
@@ -119,7 +119,7 @@ public class HClass extends YamlConfiguration {
         }
         ConfigurationSection spellLevelSection = getConfigurationSection("spellLevels");
         if (spellLevelSection == null) {
-            MessageUtil.log("Class " + getId()+ " has no spell levels configured!");
+            Hecate.log("Class " + getId()+ " has no spell levels configured!");
         } else {
             for (String key : spellLevelSection.getKeys(false)) {
                 ConfigurationSection levelEntry = spellLevelSection.getConfigurationSection(key);
@@ -129,7 +129,7 @@ public class HClass extends YamlConfiguration {
                     for (String spellId : levelEntry.getStringList("spells")) {
                         SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
                         if (spellData == null) {
-                            MessageUtil.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getId());
+                            Hecate.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getId());
                             continue;
                         }
                         spells.add(spellData);
@@ -141,14 +141,14 @@ public class HClass extends YamlConfiguration {
         for (String id : getStringList("traitlines")) {
             Traitline traitline = Hecate.getInstance().getTraitline(id);
             if (traitline == null) {
-                MessageUtil.log("Unknown traitline '" + id + "' found under 'traitlines' in class file " + getName());
+                Hecate.log("Unknown traitline '" + id + "' found under 'traitlines' in class file " + getName());
                 continue;
             }
             traitlines.add(traitline);
         }
         ConfigurationSection attributesSection = getConfigurationSection("attributeLevels");
         if (attributesSection == null) {
-            MessageUtil.log("Class " + getId() + " has no attributes configured!");
+            Hecate.log("Class " + getId() + " has no attributes configured!");
         } else {
             for (String key : attributesSection.getKeys(false)) {
                 ConfigurationSection levelEntry = attributesSection.getConfigurationSection(key);
@@ -159,9 +159,9 @@ public class HClass extends YamlConfiguration {
                         try {
                             Attribute attribute = Attribute.valueOf(attributeName.toUpperCase());
                             attributes.put(attribute, levelEntry.getDouble(attributeName));
-                            MessageUtil.log("Set " + attribute.name() + " to " + levelEntry.getDouble(attributeName));
+                            Hecate.log("Set " + attribute.name() + " to " + levelEntry.getDouble(attributeName));
                         } catch (IllegalArgumentException e) {
-                            MessageUtil.log("Unknown attribute '" + attributeName + "' found under 'attributes' in class file " + getId());
+                            Hecate.log("Unknown attribute '" + attributeName + "' found under 'attributes' in class file " + getId());
                         }
                     }
                     baseAttributesPerLevel.put(level, attributes);
@@ -170,7 +170,7 @@ public class HClass extends YamlConfiguration {
         }
         ConfigurationSection levelSection = getConfigurationSection("xpLevels");
         if (levelSection == null) {
-            MessageUtil.log("Class " + getId() + " has no levels configured!");
+            Hecate.log("Class " + getId() + " has no levels configured!");
         } else {
             for (String key : levelSection.getKeys(false)) {
                 ConfigurationSection levelEntry = levelSection.getConfigurationSection(key);
