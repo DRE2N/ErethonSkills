@@ -29,7 +29,7 @@ configurations.all {
 }
 
 group = "de.erethon"
-version = "1.1-SNAPSHOT"
+version = "1.2-SNAPSHOT"
 description = "Spell plugin for Erethon"
 
 java {
@@ -105,10 +105,14 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             groupId = "de.erethon.hecate"
+            version = "${project.version}"
             artifactId = "Hecate"
-            version = "1.0-SNAPSHOT"
-            artifactId = "Hecate"
-            from(components["java"])
+            artifact(tasks.shadowJar) {
+                classifier = ""
+            }
+            pom {
+                packaging = "jar"
+            }
         }
     }
 }

@@ -69,6 +69,18 @@ public class TeamManager {
         entity.getPersistentDataContainer().remove(teamKey);
     }
 
+    public SpellbookTeam getTeam(LivingEntity entity) {
+        return teams.get(entity.getUniqueId());
+    }
+
+    public void setTeam(LivingEntity entity, SpellbookTeam team) {
+        if (team == null) {
+            removeEntityFromTeam(entity);
+            return;
+        }
+        addEntityToTeam(entity, team);
+    }
+
     public boolean isInSameTeam(LivingEntity entity1, LivingEntity entity2) {
         return teams.get(entity1.getUniqueId()) == teams.get(entity2.getUniqueId());
     }

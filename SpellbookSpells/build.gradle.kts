@@ -6,8 +6,6 @@ plugins {
 
 group = "de.erethon"
 
-version = "1.0-SNAPSHOT"
-
 repositories {
     mavenLocal()
     mavenCentral()
