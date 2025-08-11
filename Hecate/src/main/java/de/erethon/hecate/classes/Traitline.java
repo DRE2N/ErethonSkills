@@ -42,6 +42,7 @@ public class Traitline extends YamlConfiguration {
     private final Set<TraitData> innateTraits = new HashSet<>();
     private TextColor energyColor = TextColor.fromHexString("#0xFF00");
     private @Nullable String energySymbol = "\u26A1"; // Symbol for energy in the UI
+    private Set<String> weaponTags = new HashSet<>();
 
     public Traitline(File file) throws IOException, InvalidConfigurationException {
         load(file);
@@ -91,6 +92,10 @@ public class Traitline extends YamlConfiguration {
         return energySymbol;
     }
 
+    public Set<String> getWeaponTags() {
+        return weaponTags;
+    }
+
     public void onSwitchTo(HCharacter character) {
         for (TraitData trait : innateTraits) {
             character.getPlayer().addTrait(trait);
@@ -114,6 +119,9 @@ public class Traitline extends YamlConfiguration {
         initialLevelRequirement = getInt("initialLevelRequirement", 0);
         energyColor = TextColor.fromCSSHexString(getString("energyColor", "#0xFF00"));
         energySymbol = getString("energySymbol", "\u26A1");
+        if (contains("weaponTags")) {
+            weaponTags = new HashSet<>(getStringList("weaponTags"));
+        }
         for (String id : getStringList("spells")) {
             SpellData spell = spellbookAPI.getLibrary().getSpellByID(id);
             if (spell == null) {

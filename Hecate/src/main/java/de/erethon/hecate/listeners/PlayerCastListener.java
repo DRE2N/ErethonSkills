@@ -1,25 +1,20 @@
 package de.erethon.hecate.listeners;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.SpecialActionKey;
-import de.erethon.hecate.charselection.CharacterSelection;
 import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.data.HCharacter;
-import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.DamageColor;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
-import de.erethon.hecate.util.ResourcepackHandler;
+import de.erethon.hephaestus.items.HItemStack;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.beastmaster.pet.RangerPet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -31,7 +26,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -45,6 +39,7 @@ import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -80,14 +75,26 @@ public class PlayerCastListener implements Listener {
 
     @EventHandler
     public void onModeSwitch(PlayerSwapHandItemsEvent event) {
+        // The OffHandItem is the item that WOULD BE in the offhand if the event is not cancelled. Thanks Spigot for great method naming!
         HCharacter hCharacter = plugin.getDatabaseManager().getCurrentCharacter(event.getPlayer());
         if (hCharacter == null) {
             return;
         }
-        // The OffHandItem is the item that WOULD BE in the offhand if the event is not cancelled. Thanks Spigot for great method naming!
-        if (event.getOffHandItem().getType() == Material.STICK) {
+        // Admin mode, with any stick
+        if (event.getOffHandItem().getType() == Material.STICK && event.getPlayer().hasPermission("hecate.castmode.adminbypass")) {
             hCharacter.switchCastMode(CombatModeReason.HOTKEY, !hCharacter.isInCastMode()); // The ! is important here lol
             event.setCancelled(true);
+            return;
+        }
+        // Normal players have to use tags
+        HItemStack offHandItem = HItemStack.getFromStack(event.getOffHandItem());
+        if (offHandItem == null || offHandItem.getItem() == null) {
+            return;
+        }
+        if (!Collections.disjoint(offHandItem.getItem().getTags(), hCharacter.getTraitline().getWeaponTags())) {
+            hCharacter.switchCastMode(CombatModeReason.HOTKEY, !hCharacter.isInCastMode());
+            event.setCancelled(true);
+            return;
         }
     }
 
