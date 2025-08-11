@@ -83,7 +83,7 @@ public final class Hecate extends EPlugin {
             BedrockDBConnection connection = new BedrockDBConnection(config.getString("dbUrl"),
                     config.getString("dbUser"),
                     config.getString("dbPassword"),
-                    "de.erethon.bedrock.postgresql.ds.PGSimpleDataSource");
+                    "org.postgresql.ds.PGSimpleDataSource");
             databaseManager = new DatabaseManager(connection);
         }
         catch (Exception e) {

@@ -1,8 +1,8 @@
 package de.erethon.hecate.data.dao;
 
-import de.erethon.bedrock.jdbi.v3.sqlobject.customizer.Bind;
-import de.erethon.bedrock.jdbi.v3.sqlobject.statement.SqlQuery;
-import de.erethon.bedrock.jdbi.v3.sqlobject.statement.SqlUpdate;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
+import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 
 import java.sql.Timestamp;
 import java.util.Optional;
@@ -25,7 +25,7 @@ public interface PlayerDao {
                      @Bind("lastCharacter") UUID lastCharacter); // Can be null
 
     @SqlUpdate("INSERT INTO Players (player_id, last_online) VALUES (:playerId, NOW()) " +
-            "ON CONFLICT (player_id) DO UPDATE SET last_online = EXCLUDED.last_online")
+               "ON CONFLICT (player_id) DO UPDATE SET last_online = EXCLUDED.last_online")
     int updateLastOnline(@Bind("playerId") UUID playerId);
 
     @SqlUpdate("UPDATE Players SET last_character = :lastCharacter WHERE player_id = :playerId")
