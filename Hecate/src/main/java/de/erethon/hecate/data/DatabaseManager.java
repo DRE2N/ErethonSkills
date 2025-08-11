@@ -573,6 +573,9 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     public long getLastSeen(UUID playerId) {
         HPlayer hPlayer = getHPlayer(playerId);
         if (hPlayer != null) {
+            if (hPlayer.getLastSeen() == null) {
+                return 0;
+            }
             return hPlayer.getLastSeen().getTime();
         }
         return 0;
