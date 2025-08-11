@@ -98,7 +98,6 @@ public class KineticLauncher extends AssassinBaseSpell {
         lineEffect.setLocation(caster.getLocation().add(0, -0.5, 0));
         lineEffect.setTarget(launcherTrait.getTargetLocation());
         lineEffect.particle = Particle.DUST;
-        lineEffect.particleSize = 0.3f;
         lineEffect.color = Color.TEAL;
         lineEffect.duration = 20;
         lineEffect.start();
