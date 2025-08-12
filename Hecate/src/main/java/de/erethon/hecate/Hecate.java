@@ -1,6 +1,5 @@
 package de.erethon.hecate;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.compatibility.Internals;
 import de.erethon.bedrock.database.BedrockDBConnection;
 import de.erethon.bedrock.plugin.EPlugin;
@@ -17,7 +16,7 @@ import de.erethon.hecate.listeners.PlayerCastListener;
 import de.erethon.hecate.progression.LevelMessages;
 import de.erethon.hecate.progression.LevelUtil;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
-import de.erethon.hecate.util.SpellbookTranslator;
+import de.erethon.spellbook.utils.SpellbookTranslator;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
@@ -62,7 +61,7 @@ public final class Hecate extends EPlugin {
 
     public boolean ready = false;
     private final GlobalTranslator translator = GlobalTranslator.translator();
-    private final SpellbookTranslator reg = new SpellbookTranslator();
+    private  SpellbookTranslator reg;
 
     public Hecate() {
         settings = EPluginSettings.builder()
@@ -81,6 +80,7 @@ public final class Hecate extends EPlugin {
 
     public void loadCore() {
         spellbook = new Spellbook(this);
+        reg = spellbook.getTranslator();
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(Bukkit.getWorldContainer(), "environment.yml"));
         try {
             BedrockDBConnection connection = new BedrockDBConnection(config.getString("dbUrl"),

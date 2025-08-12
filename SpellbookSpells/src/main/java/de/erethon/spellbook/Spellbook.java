@@ -8,6 +8,8 @@ import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.teams.TeamManager;
 import de.erethon.spellbook.utils.PetLookup;
+import de.erethon.spellbook.utils.SpellbookCommonMessages;
+import de.erethon.spellbook.utils.SpellbookTranslator;
 import de.slikey.effectlib.EffectManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -29,6 +31,7 @@ import java.util.Set;
 public class Spellbook {
 
     private static Spellbook instance;
+    private final SpellbookTranslator reg = new SpellbookTranslator();
     private final SpellbookAPI api;
     private final Plugin implementer;
     private final EffectManager effectManager;
@@ -56,6 +59,7 @@ public class Spellbook {
 
     public Spellbook(Plugin implementer) {
         instance = this;
+        new SpellbookCommonMessages();
         this.implementer = implementer;
         this.api = Bukkit.getServer().getSpellbookAPI();
         effectManager = new EffectManager(implementer);
@@ -360,6 +364,10 @@ public class Spellbook {
     
     public static void log(String message) {
         getInstance().getImplementer().getLogger().info("[Spellbook] " + message);
+    }
+
+    public SpellbookTranslator getTranslator() {
+        return reg;
     }
 }
 

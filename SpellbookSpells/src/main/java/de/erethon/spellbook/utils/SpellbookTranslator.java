@@ -1,4 +1,4 @@
-package de.erethon.hecate.util;
+package de.erethon.spellbook.utils;
 
 import de.erethon.bedrock.chat.MiniMessageTranslator;
 import net.kyori.adventure.key.Key;

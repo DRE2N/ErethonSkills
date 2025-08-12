@@ -3,6 +3,7 @@ package de.erethon.spellbook.spells;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import de.slikey.effectlib.effect.LineEffect;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -24,7 +25,7 @@ public class GrapplingHook extends SpellbookSpell {
     protected boolean onPrecast() {
         targetBlock = caster.getTargetBlockExact(data.getInt("range", 64));
         if (targetBlock == null) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein Ziel gefunden!");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         if (targetBlock.getType() != Material.RED_CONCRETE) {

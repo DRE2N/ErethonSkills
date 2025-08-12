@@ -4,6 +4,7 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.SpellbookBaseSpell;
+import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import de.erethon.spellbook.utils.Targeted;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Entity;
@@ -39,7 +40,7 @@ public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
             return true;
         }
         if (!canCast) {
-            caster.sendParsedActionBar("<color:#ff0000>Nicht genug Energie!");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
         }
         return canCast;
     }
@@ -59,19 +60,19 @@ public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
     protected boolean lookForTarget(boolean friendly, int range) {
         Entity target = caster.getTargetEntity(range, true);
         if (target == null) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         if (!(target instanceof LivingEntity)) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         if (friendly && Spellbook.canAttack(caster, (LivingEntity) target)) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NOT_FRIENDLY);
             return false;
         }
         if (!caster.hasLineOfSight(target)) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         this.target = (LivingEntity) target;

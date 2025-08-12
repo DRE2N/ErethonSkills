@@ -2,6 +2,7 @@ package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import de.slikey.effectlib.effect.LineEffect;
 import org.bukkit.Color;
 import org.bukkit.Particle;
@@ -31,7 +32,7 @@ public class VineStep extends RangerBaseSpell {
         }
         targetBlock = caster.getTargetBlockExact(data.getInt("range", 64));
         if (targetBlock == null) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein Ziel gefunden!");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         int heightDiff = targetBlock.getY() - caster.getLocation().getBlockY();

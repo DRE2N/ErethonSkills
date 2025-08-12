@@ -13,12 +13,16 @@ import de.erethon.spellbook.api.TraitData;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MainHand;
 
 import java.util.Set;
 
@@ -71,6 +75,52 @@ public class EquipmentListener implements Listener {
                 player.sendRichMessage("<red>You cannot equip this item!");
                 event.setCancelled(true);
             }
+        }
+    }
+
+    // Right-clicking an armor item
+    @EventHandler
+    private void onInteract(PlayerInteractEvent event) {
+        if (!event.hasItem()) {
+            return;
+        }
+        if (!event.getAction().isRightClick()) {
+            return;
+        }
+        if (event.getHand() != EquipmentSlot.HAND) {
+            return;
+        }
+        HItemStack stack = Hephaestus.getStack(event.getItem());
+        if (stack == null) {
+            return; // Not an hitem
+        }
+        Player player = event.getPlayer();
+        HPlayer hPlayer = plugin.getDatabaseManager().getHPlayer(player);
+        HCharacter hCharacter = hPlayer.getSelectedCharacter();
+        if (hCharacter == null) {
+            return;
+        }
+        HClass hClass = hCharacter.getHClass();
+        if (hClass == null) {
+            return;
+        }
+        HItem item = stack.getItem();
+        Set<String> itemTags = item.getTags();
+        Set<String> classTags = hClass.getArmorTags();
+        if (itemTags == null || classTags == null || itemTags.isEmpty() || classTags.isEmpty()) {
+            return;
+        }
+        boolean hasTag = false;
+        for (String tag : itemTags) {
+            if (classTags.contains(tag)) {
+                hasTag = true;
+                break;
+            }
+        }
+        if (!hasTag) {
+            player.sendRichMessage("<red>You cannot equip this item!");
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
         }
     }
 

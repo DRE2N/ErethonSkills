@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import de.erethon.spellbook.traits.assassin.sharpshooter.KineticLauncherTrait;
+import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import de.slikey.effectlib.effect.LineEffect;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -55,11 +56,11 @@ public class KineticLauncher extends AssassinBaseSpell {
     public boolean onCast() {
         Block targetBlock = caster.getTargetBlockExact(range);
         if (targetBlock == null) {
-            caster.sendParsedActionBar("<red>No valid target block in range.");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET_BLOCK);
             return false;
         }
         if (!targetBlock.getType().isSolid()) {
-            caster.sendParsedActionBar("<red>Cannot anchor to non-solid blocks.");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET_BLOCK);
             return false;
         }
         launcherTrait.setTargetLocation(targetBlock.getLocation());

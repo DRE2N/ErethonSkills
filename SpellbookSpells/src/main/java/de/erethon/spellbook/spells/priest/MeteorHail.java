@@ -1,6 +1,7 @@
 package de.erethon.spellbook.spells.priest;
 
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Fireball;
@@ -26,7 +27,7 @@ public class MeteorHail extends PriestBaseSpell {
     protected boolean onPrecast() {
         targetBlock = caster.getTargetBlockExact(64);
         if (targetBlock == null) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein Ziel gefunden!");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         return super.onPrecast();

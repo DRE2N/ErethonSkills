@@ -2,6 +2,7 @@ package de.erethon.spellbook.spells.ranger;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -31,7 +32,7 @@ public class SpiritGrove extends RangerBaseSpell {
     protected boolean onPrecast() {
         Block targetBlock = caster.getTargetBlockExact(data.getInt("range", 32));
         if (targetBlock == null || targetBlock.getType().isAir()) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein Ziel gefunden!");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         return super.onPrecast();

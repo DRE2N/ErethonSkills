@@ -5,6 +5,7 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -34,17 +35,7 @@ public class Mangle extends AssassinBaseSpell {
     protected boolean onPrecast() {
         lookForTarget(range);
         if (target == null) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein Ziel gefunden!");
-            return false;
-        }
-        int bleedingOnTarget = 0;
-        for (SpellEffect effect : target.getEffects()) {
-            if (effect.data == bleedingEffectData) {
-                bleedingOnTarget += effect.getStacks();
-            }
-        }
-        if (bleedingOnTarget < bleedStacksRequired) {
-            caster.sendParsedActionBar("<color:#ff0000>Das Ziel blutet nicht genug!");
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         return super.onPrecast();
@@ -60,6 +51,7 @@ public class Mangle extends AssassinBaseSpell {
                 bleedingEffect = effect;
             }
         }
+        // Bleeding
         if (bleedingOnTarget >= bleedStacksRequired && bleedingEffect != null) {
             int stacks = bleedingOnTarget - bleedStacksRequired;
             if (stacks <= 0) {
@@ -71,7 +63,11 @@ public class Mangle extends AssassinBaseSpell {
             target.addEffect(caster, weaknessEffectData, (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, weaknessMinDuration, weaknessMaxDuration, "weaknessDuration"), 1);
             target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL), caster);
             caster.getWorld().playSound(target, Sound.BLOCK_BAMBOO_BREAK, 1.0f, 1.2f);
-            caster.getWorld().spawnParticle(Particle.ITEM_SLIME, target.getLocation(), 3, 0.5, 0.5, 0.5);
+            caster.getWorld().spawnParticle(Particle.ITEM_SLIME, target.getLocation(), 3, 0.5, 0.5, 0.5, 0);
+        } else { // Not enough bleeding, only do physical damage
+            target.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL), caster);
+            caster.getWorld().playSound(target, Sound.BLOCK_BAMBOO_BREAK, 1.0f, 0.5f);
+            caster.getWorld().spawnParticle(Particle.ITEM_SLIME, target.getLocation(), 1, 0.5, 0.5, 0.5, 0);
         }
         return super.onCast();
     }
