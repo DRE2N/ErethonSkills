@@ -8,6 +8,7 @@ import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.events.CombatModeReason;
+import de.erethon.hecate.progression.LevelUtil;
 import de.erethon.spellbook.api.SpellData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -40,6 +41,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class HCharacter {
 
@@ -438,7 +440,14 @@ public class HCharacter {
     public CharacterCastingManager getCastingManager() { return castingManager; }
     public UUID getCharacterID() { return characterID; }
     public HPlayer getHPlayer() { return hPlayer; }
-    public int getLevel() { return level; }
+
+    public int getLevel() {
+        try {
+            return LevelUtil.getCharacterLevel(this).get();
+        } catch (InterruptedException | ExecutionException e) {
+            return 0; // Handle potential errors gracefully
+        }
+    }
     public String getClassId() { return classId; }
     public HClass getHClass() { return hClass; }
     public void setHClass(HClass hClass) { this.hClass = hClass; }

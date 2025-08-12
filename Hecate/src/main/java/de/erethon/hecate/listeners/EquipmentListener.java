@@ -71,7 +71,7 @@ public class EquipmentListener implements Listener {
                     break;
                 }
             }
-            if (!hasTag) {
+            if (!hasTag && canEquipLevel(player, stack, hCharacter)) {
                 player.sendRichMessage("<red>You cannot equip this item!");
                 event.setCancelled(true);
             }
@@ -117,7 +117,7 @@ public class EquipmentListener implements Listener {
                 break;
             }
         }
-        if (!hasTag) {
+        if (!hasTag && canEquipLevel(player, stack, hCharacter)) {
             player.sendRichMessage("<red>You cannot equip this item!");
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
@@ -183,6 +183,16 @@ public class EquipmentListener implements Listener {
             }
             player.addTrait(effect);
         }
+    }
+
+    private boolean canEquipLevel(Player player, HItemStack item, HCharacter character) {
+        int characterLevel = character.getLevel();
+        int itemLevel = item.getItemLevel();
+        if (itemLevel > characterLevel) {
+            player.sendRichMessage("<red>You need to be level <gold>" + itemLevel + "</gold> to equip this item!");
+            return false;
+        }
+        return true;
     }
 
 }
