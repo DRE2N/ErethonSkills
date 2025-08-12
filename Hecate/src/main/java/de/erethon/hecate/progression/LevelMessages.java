@@ -1,13 +1,14 @@
 package de.erethon.hecate.progression;
 
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.util.SpellbookTranslator;
+import de.erethon.spellbook.utils.SpellbookTranslator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -131,6 +132,13 @@ public class LevelMessages extends YamlConfiguration {
                 });
                 firework.setVelocity(new Vector(0, 0.5, 0));
                 firework.detonate();
+                // Heal the player if they are low and set food level on level up, as a little bonus
+                double healthPercent = player.getHealth() / player.getMaxHealth();
+                if (healthPercent <= 0.5) {
+                    player.setHealth(player.getMaxHealth() * 0.5);
+                }
+                player.setFoodLevel(20);
+                player.setSaturation(20);
             }
         };
         runnable.runTask(Hecate.getInstance());
