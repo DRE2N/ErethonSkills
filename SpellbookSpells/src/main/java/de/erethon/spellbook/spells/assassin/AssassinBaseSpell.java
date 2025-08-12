@@ -40,7 +40,7 @@ public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
             return true;
         }
         if (!canCast) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_ENERGY);
         }
         return canCast;
     }
