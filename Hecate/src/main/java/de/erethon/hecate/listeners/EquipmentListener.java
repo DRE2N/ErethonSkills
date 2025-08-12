@@ -30,20 +30,25 @@ public class EquipmentListener implements Listener {
 
     private Hecate plugin = Hecate.getInstance();
 
-    // TODO: Handle hotbar right-clicking (or just disable it)
     @EventHandler
     private void onEquip(InventoryClickEvent event) {
-        if (event.getSlotType() != InventoryType.SlotType.ARMOR) {
-            return;
-        }
         Player player = (Player) event.getWhoClicked();
-        HPlayer hPlayer = plugin.getDatabaseManager().getHPlayer(player);
-        HCharacter hCharacter = hPlayer.getSelectedCharacter();
+        HCharacter hCharacter = getCharacterFromPlayer(player);
         if (hCharacter == null) {
             return;
         }
         HClass hClass = hCharacter.getHClass();
         if (hClass == null) {
+            return;
+        }
+        if (event.getSlotType() != InventoryType.SlotType.ARMOR) {
+            if (event.getClick() == ClickType.SHIFT_LEFT || event.getClick() == ClickType.SHIFT_RIGHT) {
+                if (!canUse(event.getCurrentItem(), player, hCharacter) || !canEquipLevel(player, event.getCurrentItem(), hCharacter)) {
+                    player.sendRichMessage("<red>You cannot equip this item!");
+                    event.setCancelled(true);
+                }
+                return;
+            }
             return;
         }
         if (event.getClick() != ClickType.LEFT) {
@@ -53,25 +58,7 @@ public class EquipmentListener implements Listener {
         }
         // Setting an item in the armor slot
         if (event.getCursor().getType() != Material.AIR && (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)) {
-            HItemStack stack = Hephaestus.getStack(event.getCurrentItem());
-            if (stack == null) {
-                return;
-            }
-            HItem item = stack.getItem();
-            Set<String> itemTags = item.getTags();
-            Set<String> classTags = hClass.getArmorTags();
-            if (itemTags == null || classTags == null) {
-                return;
-            }
-            // The item needs to have at least one tag that the class has
-            boolean hasTag = false;
-            for (String tag : itemTags) {
-                if (classTags.contains(tag)) {
-                    hasTag = true;
-                    break;
-                }
-            }
-            if (!hasTag && canEquipLevel(player, stack, hCharacter)) {
+            if (!canUse(event.getCurrentItem(), player, hCharacter) || !canEquipLevel(player, event.getCurrentItem(), hCharacter)) {
                 player.sendRichMessage("<red>You cannot equip this item!");
                 event.setCancelled(true);
             }
@@ -90,13 +77,8 @@ public class EquipmentListener implements Listener {
         if (event.getHand() != EquipmentSlot.HAND) {
             return;
         }
-        HItemStack stack = Hephaestus.getStack(event.getItem());
-        if (stack == null) {
-            return; // Not an hitem
-        }
         Player player = event.getPlayer();
-        HPlayer hPlayer = plugin.getDatabaseManager().getHPlayer(player);
-        HCharacter hCharacter = hPlayer.getSelectedCharacter();
+        HCharacter hCharacter = getCharacterFromPlayer(player);
         if (hCharacter == null) {
             return;
         }
@@ -104,20 +86,7 @@ public class EquipmentListener implements Listener {
         if (hClass == null) {
             return;
         }
-        HItem item = stack.getItem();
-        Set<String> itemTags = item.getTags();
-        Set<String> classTags = hClass.getArmorTags();
-        if (itemTags == null || classTags == null || itemTags.isEmpty() || classTags.isEmpty()) {
-            return;
-        }
-        boolean hasTag = false;
-        for (String tag : itemTags) {
-            if (classTags.contains(tag)) {
-                hasTag = true;
-                break;
-            }
-        }
-        if (!hasTag && canEquipLevel(player, stack, hCharacter)) {
+        if (!canUse(event.getItem(), player, hCharacter) || !canEquipLevel(player, event.getItem(), hCharacter)) {
             player.sendRichMessage("<red>You cannot equip this item!");
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
@@ -134,8 +103,7 @@ public class EquipmentListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        HPlayer hPlayer = plugin.getDatabaseManager().getHPlayer(player);
-        HCharacter hCharacter = hPlayer.getSelectedCharacter();
+        HCharacter hCharacter = getCharacterFromPlayer(player);
         if (hCharacter == null) {
             return;
         }
@@ -185,14 +153,41 @@ public class EquipmentListener implements Listener {
         }
     }
 
-    private boolean canEquipLevel(Player player, HItemStack item, HCharacter character) {
+    private boolean canEquipLevel(Player player, ItemStack item, HCharacter character) {
         int characterLevel = character.getLevel();
-        int itemLevel = item.getItemLevel();
-        if (itemLevel > characterLevel) {
-            player.sendRichMessage("<red>You need to be level <gold>" + itemLevel + "</gold> to equip this item!");
+        HItemStack stack = Hephaestus.getStack(item);
+        if (stack == null) {
+            return true; // Not a hitem, so we don't care
+        }
+        int itemLevel = stack.getItemLevel();
+        if (itemLevel >= characterLevel) {
+            player.sendRichMessage("<red>You need to be character level <gold>" + itemLevel + "</gold> to equip this item!");
             return false;
         }
         return true;
+    }
+
+    private boolean canUse(ItemStack stack, Player player, HCharacter hCharacter) {
+        HItemStack hItemStack = Hephaestus.getStack(stack);
+        if (hItemStack == null) {
+            return true; // Not a hitem, so we don't care
+        }
+        HItem item = hItemStack.getItem();
+        Set<String> itemTags = item.getTags();
+        Set<String> classTags = hCharacter.getHClass().getArmorTags();
+        boolean canUse = itemTags == null || classTags == null || itemTags.isEmpty() || classTags.isEmpty();
+        for (String tag : itemTags) {
+            if (classTags.contains(tag)) {
+                canUse = true;
+                break;
+            }
+        }
+        return canEquipLevel(player, stack, hCharacter) && canUse;
+    }
+
+    private HCharacter getCharacterFromPlayer(Player player) {
+        HPlayer hPlayer = plugin.getDatabaseManager().getHPlayer(player);
+        return hPlayer.getSelectedCharacter();
     }
 
 }
