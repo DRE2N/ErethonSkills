@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":SpellbookSpells"))
     compileOnly("de.erethon.aether:Aether:1.0.0-SNAPSHOT") // For correct nametags
     compileOnly("de.erethon.hephaestus:Hephaestus:1.0.3-SNAPSHOT")
+    compileOnly("de.erethon.tyche:Tyche:1.0-SNAPSHOT")
 }
 
 
@@ -89,6 +90,13 @@ paper {
     main = "de.erethon.hecate.Hecate"
     apiVersion = "1.21"
     authors = listOf("Malfrador", "Fyreum")
+    hasOpenClassloader = true
+    serverDependencies {
+        register("Tyche") {
+            required = false
+            joinClasspath = true
+        }
+    }
 }
 
 tasks.register<Copy>("deployToSharedServer") {

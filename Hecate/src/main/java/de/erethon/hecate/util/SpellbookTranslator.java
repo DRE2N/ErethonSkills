@@ -1,12 +1,8 @@
 package de.erethon.hecate.util;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.chat.MiniMessageTranslator;
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.util.TriState;
-import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

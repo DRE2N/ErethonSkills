@@ -14,6 +14,8 @@ import de.erethon.hecate.items.HEquipmentManager;
 import de.erethon.hecate.listeners.EntityListener;
 import de.erethon.hecate.listeners.EquipmentListener;
 import de.erethon.hecate.listeners.PlayerCastListener;
+import de.erethon.hecate.progression.LevelMessages;
+import de.erethon.hecate.progression.LevelUtil;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.hecate.util.SpellbookTranslator;
 import de.erethon.spellbook.Spellbook;
@@ -27,6 +29,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Pig;
@@ -107,6 +110,19 @@ public final class Hecate extends EPlugin {
             equipmentManager = new HEquipmentManager(equipmentFile);
             createPlaceholderDefinitions(Bukkit.getWorlds().get(0));
             ready = true;
+            if (Bukkit.getPluginManager().isPluginEnabled("Tyche")) {
+                LevelUtil.createCurrencies();
+                File levelMessagesFile = new File(getDataFolder(), "levelMessages.yml");
+                if (!levelMessagesFile.exists()) {
+                    return;
+                }
+                try {
+                    new LevelMessages().load(levelMessagesFile);
+                } catch (IOException | InvalidConfigurationException e) {
+                    Hecate.log("Failed to load level messages from " + levelMessagesFile.getName() + ". Please check the file for errors.");
+                    e.printStackTrace();
+                }
+            }
         }, 30);
     }
 
@@ -333,7 +349,9 @@ public final class Hecate extends EPlugin {
         return statusDisplayManager;
     }
 
-
+    public SpellbookTranslator getTranslator() {
+        return reg;
+    }
 
     public Traitline getTraitline(String id) {
         for (Traitline traitline : traitlines) {

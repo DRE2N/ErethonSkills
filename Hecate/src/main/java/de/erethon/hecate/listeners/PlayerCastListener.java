@@ -1,5 +1,6 @@
 package de.erethon.hecate.listeners;
 
+import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.hecate.data.DatabaseManager;
@@ -17,6 +18,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
@@ -24,6 +26,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -31,6 +34,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLevelChangeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -229,6 +233,17 @@ public class PlayerCastListener implements Listener {
         Hecate.log("Disconnected " + event.getPlayer().getName() + " (" + event.getPlayer().getUniqueId() + ")");
     }
 
+    @EventHandler
+    private void onXpReceive(PlayerPickupExperienceEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    private void onXpDrop(EntitySpawnEvent event) {
+        if (event.getEntity() instanceof ExperienceOrb orb) {
+            event.setCancelled(true);
+        }
+    }
 
     private void castRightclickAction(Player player) {
         HCharacter hCharacter = cache.getCurrentCharacter(player);

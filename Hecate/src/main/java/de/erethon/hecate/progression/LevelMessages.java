@@ -1,0 +1,138 @@
+package de.erethon.hecate.progression;
+
+import de.erethon.hecate.Hecate;
+import de.erethon.hecate.util.SpellbookTranslator;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Firework;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+public class LevelMessages extends YamlConfiguration {
+
+    private final SpellbookTranslator translator = Hecate.getInstance().getTranslator();
+    private final static MiniMessage mm = MiniMessage.miniMessage();
+
+    private static final Map<Integer, String> characterLevelMessages = new HashMap<>();
+    private static final Map<Integer, String> allianceLevelMessages = new HashMap<>();
+    private static final Map<Integer, String> explorationLevelMessages = new HashMap<>();
+
+    @Override
+    public void load(@NotNull File file) throws FileNotFoundException, IOException, InvalidConfigurationException {
+        super.load(file);
+        if (contains("characterLevelMessages")) {
+            for (String outerKey : getConfigurationSection("characterLevelMessages").getKeys(false)) {
+                int level = Integer.parseInt(outerKey);
+                ConfigurationSection messageSection = getConfigurationSection("characterLevelMessages." + outerKey);
+                if (messageSection == null) {
+                    continue;
+                }
+                for (String key : messageSection.getKeys(false)) {
+                    if (key.equals("de")) {
+                        translator.registerTranslation("characterlvl." + level, messageSection.getString(key), Locale.GERMANY);
+                    } else {
+                        translator.registerTranslation("characterlvl." + level, messageSection.getString(key), Locale.US);
+                    }
+                }
+                characterLevelMessages.put(level, "characterlvl." + level);
+            }
+            Hecate.log("Loaded " + characterLevelMessages.size() + " character level messages");
+        }
+        if (contains("allianceLevelMessages")) {
+            for (String outerKey : getConfigurationSection("allianceLevelMessages").getKeys(false)) {
+                int level = Integer.parseInt(outerKey);
+                ConfigurationSection messageSection = getConfigurationSection("allianceLevelMessages." + outerKey);
+                if (messageSection == null) {
+                    continue;
+                }
+                for (String key : messageSection.getKeys(false)) {
+                    if (key.equals("de")) {
+                        translator.registerTranslation("alliancelvl." + level, messageSection.getString(key), Locale.GERMANY);
+                    } else {
+                        translator.registerTranslation("alliancelvl." + level, messageSection.getString(key), Locale.US);
+                    }
+                }
+                allianceLevelMessages.put(level, "alliancelvl." + level);
+            }
+            Hecate.log("Loaded " + allianceLevelMessages.size() + " alliance level messages");
+        }
+        if (contains("explorationLevelMessages")) {
+            for (String outerKey : getConfigurationSection("explorationLevelMessages").getKeys(false)) {
+                int level = Integer.parseInt(outerKey);
+                ConfigurationSection messageSection = getConfigurationSection("explorationLevelMessages." + outerKey);
+                if (messageSection == null) {
+                    continue;
+                }
+                for (String key : messageSection.getKeys(false)) {
+                    if (key.equals("de")) {
+                        translator.registerTranslation("explorationlvl." + level, messageSection.getString(key), Locale.GERMANY);
+                    } else {
+                        translator.registerTranslation("explorationlvl." + level, messageSection.getString(key), Locale.US);
+                    }
+                }
+                explorationLevelMessages.put(level, "explorationlvl." + level);
+            }
+            Hecate.log("Loaded " + explorationLevelMessages.size() + " character level messages");
+        }
+    }
+
+    public static void displayLevelMessage(Player player, int level, long currentXp, long nextLevelXp, String type) {
+        String messageKey;
+        switch (type.toLowerCase(Locale.ROOT)) {
+            case "character":
+                messageKey = characterLevelMessages.get(level);
+                break;
+            case "alliance":
+                messageKey = allianceLevelMessages.get(level);
+                break;
+            case "exploration":
+                messageKey = explorationLevelMessages.get(level);
+                break;
+            default:
+                return;
+        }
+        if (messageKey == null) {
+            messageKey = "hecate.missing.levelmsg";
+        }
+        Component message = Component.empty();
+        Component levelMessage = Component.translatable(messageKey);
+        Component header = mm.deserialize("<gold><st>          </st> <yellow>Level Up! <gold><st>          <reset>");
+        Component newLevelAndXp = mm.deserialize("<yellow>Level <gold>" + level + "<dark_gray> | <gold>" + currentXp + "<dark_gray>/<gold>" + nextLevelXp + "<gray> XP");
+        message = message.append(header).append(Component.newline()).append(newLevelAndXp).append(Component.newline()).append(Component.newline()).append(levelMessage);
+        player.sendMessage(message);
+        // Main thread
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.RECORDS, 1.0f, 1.0f);
+                Firework firework = player.getWorld().spawn(player.getLocation().add(0,7,0), Firework.class, fw -> {
+                    fw.setTicksToDetonate(20);
+                    FireworkMeta meta = fw.getFireworkMeta();
+                    meta.addEffect(FireworkEffect.builder().flicker(false).withColor(Color.ORANGE).build());
+                    fw.setFireworkMeta(meta);
+                    fw.setSilent(true);
+                });
+                firework.setVelocity(new Vector(0, 0.5, 0));
+                firework.detonate();
+            }
+        };
+        runnable.runTask(Hecate.getInstance());
+    }
+}
