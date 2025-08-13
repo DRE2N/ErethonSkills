@@ -103,6 +103,14 @@ public class Traitline extends YamlConfiguration {
         return weaponTags;
     }
 
+    public Set<String> getArmorTags() {
+        return armorTags;
+    }
+
+    public Set<String> getAccessoryTags() {
+        return accessoryTags;
+    }
+
     public Map<Integer, LevelInfo> getLevelInfo() {
         return levelInfo;
     }

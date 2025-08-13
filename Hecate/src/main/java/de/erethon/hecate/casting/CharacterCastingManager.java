@@ -331,6 +331,7 @@ public class CharacterCastingManager {
         return (int) ((currentTime - timestamp) / 1000);
     }
 
+    @SuppressWarnings("removal")
     private void setAttributesForLevel(int characterLevel) {
         HCharacter hCharacter = character;
         Traitline traitline = hCharacter.getTraitline();

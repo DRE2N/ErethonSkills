@@ -174,7 +174,7 @@ public class EquipmentListener implements Listener {
         }
         HItem item = hItemStack.getItem();
         Set<String> itemTags = item.getTags();
-        Set<String> classTags = hCharacter.getHClass().getArmorTags();
+        Set<String> classTags = hCharacter.getTraitline().getArmorTags();
         boolean canUse = itemTags == null || classTags == null || itemTags.isEmpty() || classTags.isEmpty();
         for (String tag : itemTags) {
             if (classTags.contains(tag)) {
