@@ -435,6 +435,13 @@ public class HCharacter {
         }
     }
 
+    public void setScaledPvP(boolean scaledPvP) {
+        if (castingManager != null) {
+            castingManager.setScaledPvPMode(scaledPvP);
+            Hecate.log("Scaled PvP mode set to " + scaledPvP + " for character " + characterID);
+        }
+    }
+
 
     public boolean isInCastMode() { return isInCastMode; }
     public CharacterCastingManager getCastingManager() { return castingManager; }

@@ -49,6 +49,8 @@ public class CharacterCastingManager {
     private boolean isInCastMode = false;
     private ItemStack castingItem;
     private int previousSlot;
+    private boolean scaledPvPMode = false;
+    private static final int LEVEL_FOR_SCALED_PVP = 18;
 
     private BukkitRunnable updateTask;
     private final Set<TraitData> combatOnlyTraits = new HashSet<>();
@@ -99,7 +101,11 @@ public class CharacterCastingManager {
             }
         };
         updateTask.runTaskTimer(plugin, 0, 20);
-        setAttributesForLevel();
+        int level = character.getLevel();
+        if (scaledPvPMode) {
+            level = LEVEL_FOR_SCALED_PVP;
+        }
+        setAttributesForLevel(level);
         for (TraitData trait : combatOnlyTraits) {
             player.addTrait(trait);
         }
@@ -325,14 +331,13 @@ public class CharacterCastingManager {
         return (int) ((currentTime - timestamp) / 1000);
     }
 
-    private void setAttributesForLevel() {
+    private void setAttributesForLevel(int characterLevel) {
         HCharacter hCharacter = character;
         Traitline traitline = hCharacter.getTraitline();
         if (traitline == null) {
             return;
         }
 
-        int characterLevel = hCharacter.getLevel();
         Map<Integer, LevelInfo> levelInfoMap = traitline.getLevelInfo();
 
         if (levelInfoMap == null || levelInfoMap.isEmpty()) {
@@ -367,6 +372,15 @@ public class CharacterCastingManager {
                 Hecate.log("Set base value for " + attribute.name() + " to " +
                           finalBaseValue + " (default: " + defaultBase + " + bonus: " + totalBonus + ")");
             }
+        }
+    }
+
+    public void setScaledPvPMode(boolean scaledPvPMode) {
+        this.scaledPvPMode = scaledPvPMode;
+        if (isInCastMode) {
+            int level = scaledPvPMode ? LEVEL_FOR_SCALED_PVP : character.getLevel();
+            setAttributesForLevel(level);
+            updateUI();
         }
     }
 
