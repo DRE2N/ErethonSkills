@@ -102,7 +102,7 @@ public class CharacterCastingManager {
         };
         updateTask.runTaskTimer(plugin, 0, 20);
         int level = character.getLevel();
-        if (scaledPvPMode) {
+        if (scaledPvPMode && level < LEVEL_FOR_SCALED_PVP) {
             level = LEVEL_FOR_SCALED_PVP;
         }
         setAttributesForLevel(level);
@@ -177,11 +177,11 @@ public class CharacterCastingManager {
         // Always update HUD
         int energy = player.getEnergy();
         int maxEnergy = player.getMaxEnergy();
-        double health = player.getHealth();
-        double maxHealth = player.getMaxHealth();
+        int health = (int) player.getHealth();
+        int maxHealth = (int) player.getMaxHealth();
 
         Component healthIcon = Component.text("\u2665", NamedTextColor.RED);
-        Component healthNumbers = Component.text(String.format("%.1f", health) + "/" + String.format("%.1f", maxHealth), NamedTextColor.RED);
+        Component healthNumbers = Component.text(health + "/" + maxHealth, NamedTextColor.RED);
         Component healthText = healthIcon.append(Component.space()).append(healthNumbers);
 
         Traitline traitline = character.getTraitline();
@@ -195,10 +195,19 @@ public class CharacterCastingManager {
         StringBuilder negativeEffectsBuilder = new StringBuilder();
 
         for (SpellEffect effect : player.getEffects()) {
+            int secondsLeft = effect.getTicksLeft() / 20;
             if (effect.data.isPositive()) {
-                positiveEffectsBuilder.append("+").append(effect.data.getIcon()).append(" ");
+                positiveEffectsBuilder.append("+").append(effect.data.getIcon());
+                if (effect.getTicksLeft() < Integer.MAX_VALUE) {
+                    positiveEffectsBuilder.append(secondsLeft);
+                }
+                positiveEffectsBuilder.append(" ");
             } else {
-                negativeEffectsBuilder.append("-").append(effect.data.getIcon()).append(" ");
+                negativeEffectsBuilder.append("-").append(effect.data.getIcon());
+                if (effect.getTicksLeft() < Integer.MAX_VALUE) {
+                    negativeEffectsBuilder.append(secondsLeft);
+                }
+                negativeEffectsBuilder.append(" ");
             }
         }
         Component positiveEffectsComponent = Component.text(positiveEffectsBuilder.toString().trim(), NamedTextColor.GREEN);
@@ -332,7 +341,7 @@ public class CharacterCastingManager {
     }
 
     @SuppressWarnings("removal")
-    private void setAttributesForLevel(int characterLevel) {
+    public void setAttributesForLevel(int characterLevel) {
         HCharacter hCharacter = character;
         Traitline traitline = hCharacter.getTraitline();
         if (traitline == null) {
@@ -374,12 +383,18 @@ public class CharacterCastingManager {
                           finalBaseValue + " (default: " + defaultBase + " + bonus: " + totalBonus + ")");
             }
         }
+        player.setHealth(player.getMaxHealth());
+        player.setHealthScaled(true);
+        player.setHealthScale(20.0);
     }
 
     public void setScaledPvPMode(boolean scaledPvPMode) {
         this.scaledPvPMode = scaledPvPMode;
         if (isInCastMode) {
-            int level = scaledPvPMode ? LEVEL_FOR_SCALED_PVP : character.getLevel();
+            int level = character.getLevel();
+            if (scaledPvPMode && level < LEVEL_FOR_SCALED_PVP) {
+                level = LEVEL_FOR_SCALED_PVP;
+            }
             setAttributesForLevel(level);
             updateUI();
         }

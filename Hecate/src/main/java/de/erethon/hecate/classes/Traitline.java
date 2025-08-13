@@ -36,8 +36,6 @@ public class Traitline extends YamlConfiguration {
     private String id;
     private Component displayName;
     private final List<Component> description = new ArrayList<>();
-    private int inactiveModelData = 0;
-    private int activeModelData = 0;
     private int initialLevelRequirement = 0;
     private final HashMap<Integer, List<TraitLineEntry>> traitMap = new HashMap<>();
     private final Set<SpellData> spells = new HashSet<>();
@@ -115,18 +113,6 @@ public class Traitline extends YamlConfiguration {
         return levelInfo;
     }
 
-    public void onSwitchTo(HCharacter character) {
-        for (TraitData trait : innateTraits) {
-            character.getPlayer().addTrait(trait);
-        }
-    }
-
-    public void onSwitchFrom(HCharacter character) {
-        for (TraitData trait : innateTraits) {
-            character.getPlayer().removeTrait(trait);
-        }
-    }
-
     @SuppressWarnings("removal")
     @Override
     public void load(File file) throws IOException, InvalidConfigurationException {
@@ -135,8 +121,6 @@ public class Traitline extends YamlConfiguration {
         id = file.getName().replace(".yml", "");
         displayName = mm.deserialize(getString("displayName", "<red>ERROR"));
         description.add(mm.deserialize(getString("description", "")));
-        inactiveModelData = getInt("inactiveModelData", 0);
-        activeModelData = getInt("activeModelData", 0);
         initialLevelRequirement = getInt("initialLevelRequirement", 0);
         energyColor = TextColor.fromCSSHexString(getString("energyColor", "#0xFF00"));
         energySymbol = getString("energySymbol", "\u26A1");
@@ -220,7 +204,7 @@ public class Traitline extends YamlConfiguration {
         if (contains("characterLevels")) {
             for (String outerKey : getConfigurationSection("characterLevels").getKeys(false)) {
                 int level = Integer.parseInt(outerKey);
-                ConfigurationSection levelSection = getConfigurationSection("characterLevels" + outerKey);
+                ConfigurationSection levelSection = getConfigurationSection("characterLevels." + outerKey);
                 if (levelSection == null) {
                     continue;
                 }
@@ -254,6 +238,6 @@ public class Traitline extends YamlConfiguration {
             }
             Hecate.log("Loaded " + levelInfo.size() + " character levels for " + id);
         }
-        Hecate.log("Loaded traitline " + id + " from " + file.getName() + " with " + traitMap.size() + " levels and " + traitMap.values().stream().mapToInt(List::size).sum() + " traits.");
+        Hecate.log("Loaded traitline " + id + " from " + file.getName() + " with " + levelInfo.size() + " levels and " + traitMap.values().stream().mapToInt(List::size).sum() + " traits.");
     }
 }

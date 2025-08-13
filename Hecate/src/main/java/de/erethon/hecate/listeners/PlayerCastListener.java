@@ -223,6 +223,8 @@ public class PlayerCastListener implements Listener {
         Player player = event.getPlayer();
         player.setInvisible(false);
         player.setWalkSpeed(0.2f);
+        player.setHealthScaled(true);
+        player.setHealthScale(20.0);
     }
 
     @EventHandler

@@ -125,6 +125,9 @@ public class LevelMessages extends YamlConfiguration {
                 }
                 player.setFoodLevel(20);
                 player.setSaturation(20);
+                if (character != null && type.equalsIgnoreCase("character")) {
+                    character.getCastingManager().setAttributesForLevel(level); // Ensure we update the attributes for the new level
+                }
             }
         };
         runnable.runTask(Hecate.getInstance());

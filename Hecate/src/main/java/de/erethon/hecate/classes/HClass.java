@@ -22,8 +22,6 @@ public class HClass extends YamlConfiguration {
     private TextColor color;
     private String description;
 
-    // Equipment
-
     public HClass(File file) {
         try {
             load(file);
