@@ -8,6 +8,7 @@ import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.events.CombatModeEnterEvent;
 import de.erethon.hecate.events.CombatModeLeaveEvent;
 import de.erethon.hecate.events.CombatModeReason;
+import de.erethon.hecate.progression.LevelInfo;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -22,7 +23,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
+import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -96,7 +99,7 @@ public class CharacterCastingManager {
             }
         };
         updateTask.runTaskTimer(plugin, 0, 20);
-        setClassAttributes(character.getHClass());
+        setAttributesForLevel();
         for (TraitData trait : combatOnlyTraits) {
             player.addTrait(trait);
         }
@@ -311,7 +314,7 @@ public class CharacterCastingManager {
         if (remainingSeconds <= 0) {
             return 0;
         }
-        return remainingSeconds * 20; // Convert remaining seconds to ticks
+        return remainingSeconds * 20;
     }
 
     private int getCooldownFromTimeStamp(long timestamp) {
@@ -322,24 +325,49 @@ public class CharacterCastingManager {
         return (int) ((currentTime - timestamp) / 1000);
     }
 
-    private void setClassAttributes(HClass hClass) {
-        if (hClass == null) {
+    private void setAttributesForLevel() {
+        HCharacter hCharacter = character;
+        Traitline traitline = hCharacter.getTraitline();
+        if (traitline == null) {
             return;
         }
-        int level = character.getLevel();
-        if (hClass.getAttributesPerLevel(level) == null || hClass.getAttributesPerLevel(level).isEmpty()) { // We don't need to increase attributes every level
+
+        int characterLevel = hCharacter.getLevel();
+        Map<Integer, LevelInfo> levelInfoMap = traitline.getLevelInfo();
+
+        if (levelInfoMap == null || levelInfoMap.isEmpty()) {
             return;
         }
-        for (Map.Entry<Attribute, Double> entry : hClass.getAttributesPerLevel(level).entrySet()) {
-            Hecate.log("Setting " + entry.getKey().getKey() + " to " + entry.getValue() + " for " + player.getName());
-            if (player.getAttribute(entry.getKey()) == null) {
-                Hecate.log("Attribute " + entry.getKey().getKey() + " not found on Player class. Check Papyrus.");
-                continue;
+
+        // Calculate cumulative attribute bonuses up to the character's level
+        Map<Attribute, Double> cumulativeAttributes = new HashMap<>();
+
+        for (int level = 1; level <= characterLevel; level++) {
+            LevelInfo levelInfo = levelInfoMap.get(level);
+            if (levelInfo != null && levelInfo.getBaseAttributeBonus() != null) {
+                for (Map.Entry<Attribute, Double> entry : levelInfo.getBaseAttributeBonus().entrySet()) {
+                    Attribute attribute = entry.getKey();
+                    Double bonus = entry.getValue();
+                    cumulativeAttributes.merge(attribute, bonus, Double::sum);
+                }
             }
-            player.getAttribute(entry.getKey()).setBaseValue(entry.getValue());
         }
-        player.setHealthScaled(true);
-        player.getCurrentInput();
+
+        Attributable defaultAttributeInstance = player.getType().getDefaultAttributes();
+        for (Map.Entry<Attribute, Double> entry : cumulativeAttributes.entrySet()) {
+            Attribute attribute = entry.getKey();
+            Double totalBonus = entry.getValue();
+
+            if (player.getAttribute(attribute) != null && totalBonus > 0 && defaultAttributeInstance.getAttribute(attribute) != null) {
+                double defaultBase = defaultAttributeInstance.getAttribute(attribute).getBaseValue();
+
+                double finalBaseValue = defaultBase + totalBonus;
+                player.getAttribute(attribute).setBaseValue(finalBaseValue);
+
+                Hecate.log("Set base value for " + attribute.name() + " to " +
+                          finalBaseValue + " (default: " + defaultBase + " + bonus: " + totalBonus + ")");
+            }
+        }
     }
 
 

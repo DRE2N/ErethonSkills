@@ -1,6 +1,7 @@
 package de.erethon.hecate.progression;
 
 import de.erethon.hecate.Hecate;
+import de.erethon.hecate.data.HCharacter;
 import de.erethon.spellbook.utils.SpellbookTranslator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -31,31 +32,12 @@ public class LevelMessages extends YamlConfiguration {
     private final SpellbookTranslator translator = Hecate.getInstance().getTranslator();
     private final static MiniMessage mm = MiniMessage.miniMessage();
 
-    private static final Map<Integer, String> characterLevelMessages = new HashMap<>();
     private static final Map<Integer, String> allianceLevelMessages = new HashMap<>();
     private static final Map<Integer, String> explorationLevelMessages = new HashMap<>();
 
     @Override
     public void load(@NotNull File file) throws FileNotFoundException, IOException, InvalidConfigurationException {
         super.load(file);
-        if (contains("characterLevelMessages")) {
-            for (String outerKey : getConfigurationSection("characterLevelMessages").getKeys(false)) {
-                int level = Integer.parseInt(outerKey);
-                ConfigurationSection messageSection = getConfigurationSection("characterLevelMessages." + outerKey);
-                if (messageSection == null) {
-                    continue;
-                }
-                for (String key : messageSection.getKeys(false)) {
-                    if (key.equals("de")) {
-                        translator.registerTranslation("characterlvl." + level, messageSection.getString(key), Locale.GERMANY);
-                    } else {
-                        translator.registerTranslation("characterlvl." + level, messageSection.getString(key), Locale.US);
-                    }
-                }
-                characterLevelMessages.put(level, "characterlvl." + level);
-            }
-            Hecate.log("Loaded " + characterLevelMessages.size() + " character level messages");
-        }
         if (contains("allianceLevelMessages")) {
             for (String outerKey : getConfigurationSection("allianceLevelMessages").getKeys(false)) {
                 int level = Integer.parseInt(outerKey);
@@ -96,9 +78,13 @@ public class LevelMessages extends YamlConfiguration {
 
     public static void displayLevelMessage(Player player, int level, long currentXp, long nextLevelXp, String type) {
         String messageKey;
+        HCharacter character = Hecate.getInstance().getDatabaseManager().getCurrentCharacter(player);
         switch (type.toLowerCase(Locale.ROOT)) {
             case "character":
-                messageKey = characterLevelMessages.get(level);
+                if (character == null) {
+                    return; // No character selected
+                }
+                messageKey = character.getTraitline().getLevelInfo().get(level).messageTranslationKey();
                 break;
             case "alliance":
                 messageKey = allianceLevelMessages.get(level);
