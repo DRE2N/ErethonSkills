@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class LevelUtil {
@@ -30,92 +31,133 @@ public class LevelUtil {
     public final static double WORLD_SEEKER_BASE_XP = 1500.0;
     public final static double WORLD_SEEKER_GROWTH_FACTOR = 1.05;
     public final static long MAX_WORLD_SEEKER_XP = calculateMaxXp(20, WORLD_SEEKER_BASE_XP, WORLD_SEEKER_GROWTH_FACTOR);
+    public final static long JOB_BASE_XP = 1000L;
+    public final static double JOB_GROWTH_FACTOR = 1.1;
+    public final static long MAX_JOB_XP = calculateMaxXp(20, JOB_BASE_XP, JOB_GROWTH_FACTOR);
+
+    private static CompletableFuture<Integer> fetchLevel(UUID ownerId, OwnerType ownerType, String currency, double base, double growth) {
+        return economyService.getBalance(ownerId, ownerType, currency)
+                .thenApply(totalXp -> getLevelFromXp(totalXp, base, growth));
+    }
 
     public static CompletableFuture<Integer> getCharacterLevel(HCharacter character) {
-        CompletableFuture<Long> xpFuture = economyService.getBalance(character.getCharacterID(), OwnerType.CHARACTER, "xp_character");
-        return xpFuture.thenApply(totalXp -> getLevelFromXp(totalXp, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR));
+        return fetchLevel(character.getCharacterID(), OwnerType.CHARACTER, "xp_character", CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR);
     }
 
     public static CompletableFuture<Integer> getAllianceLevel(HPlayer player) {
-        CompletableFuture<Long> xpFuture = economyService.getBalance(player.getPlayerId(), OwnerType.PLAYER, "xp_alliance");
-        return xpFuture.thenApply(totalXp -> getLevelFromXp(totalXp, ALLIANCE_BASE_XP, ALLIANCE_GROWTH_FACTOR));
+        return fetchLevel(player.getPlayerId(), OwnerType.PLAYER, "xp_alliance", ALLIANCE_BASE_XP, ALLIANCE_GROWTH_FACTOR);
     }
 
     public static CompletableFuture<Integer> getWorldSeekerLevel(HPlayer player) {
-        CompletableFuture<Long> xpFuture = economyService.getBalance(player.getPlayerId(), OwnerType.PLAYER, "xp_exploration");
-        return xpFuture.thenApply(totalXp -> getLevelFromXp(totalXp, WORLD_SEEKER_BASE_XP, WORLD_SEEKER_GROWTH_FACTOR));
+        return fetchLevel(player.getPlayerId(), OwnerType.PLAYER, "xp_exploration", WORLD_SEEKER_BASE_XP, WORLD_SEEKER_GROWTH_FACTOR);
+    }
+
+    public static CompletableFuture<Integer> getJobLevel(HCharacter character) {
+        return fetchLevel(character.getCharacterID(), OwnerType.CHARACTER, "xp_job", JOB_BASE_XP, JOB_GROWTH_FACTOR);
     }
 
     public static void giveCharacterXp(HCharacter character, long amount) {
-        if (amount <= 0) {
-            return;
-        }
-        CompletableFuture<Long> xpFuture = economyService.getBalance(character.getCharacterID(), OwnerType.CHARACTER, "xp_character");
-        xpFuture.thenAccept(currentXp -> {
-            long newXp = currentXp + amount;
-            long xpToGive = amount;
-            if (newXp > MAX_CHARACTER_XP) {
-                xpToGive = MAX_CHARACTER_XP - currentXp;
-                newXp = MAX_CHARACTER_XP;
-            }
-            int currentLevel = getLevelFromXp(currentXp, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR);
-            economyService.deposit(character.getCharacterID(), OwnerType.CHARACTER, "xp_character", xpToGive, "Hecate", null);
-            Hecate.log("Gave " + xpToGive + " XP to character " + character.getCharacterID() + ". New total: " + newXp);
-            int newLevel = getLevelFromXp(newXp, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR);
-            if (newLevel > currentLevel) {
-                Hecate.log("Character " + character.getCharacterID() + " leveled up from " + currentLevel + " to " + newLevel);
-                LevelMessages.displayLevelMessage(character.getPlayer(), newLevel, currentXp, currentXp + getXpForNextLevel(newLevel + 1, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR), "character");
-            }
-            displayLevel(character.getPlayer(), newLevel, getProgressForCurrentLevel(newLevel, newXp, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR), 20 * 5);
-        });
+        giveXp(
+                character.getCharacterID(),
+                OwnerType.CHARACTER,
+                "xp_character",
+                amount,
+                CHARACTER_BASE_XP,
+                CHARACTER_GROWTH_FACTOR,
+                MAX_CHARACTER_XP,
+                character.getPlayer(),
+                "XP",
+                "character",
+                "character",
+                () -> Hecate.log("Character " + character.getCharacterID() + " leveled up.")
+        );
     }
 
     public static void giveAllianceXp(HPlayer player, long amount) {
-        if (amount <= 0) {
-            return;
-        }
-        CompletableFuture<Long> xpFuture = economyService.getBalance(player.getPlayerId(), OwnerType.PLAYER, "xp_alliance");
-        xpFuture.thenAccept(currentXp -> {
-            long newXp = currentXp + amount;
-            long xpToGive = amount;
-            if (newXp > MAX_ALLIANCE_XP) {
-                xpToGive = MAX_ALLIANCE_XP - currentXp;
-                newXp = MAX_ALLIANCE_XP;
-            }
-            int currentLevel = getLevelFromXp(currentXp, ALLIANCE_BASE_XP, ALLIANCE_GROWTH_FACTOR);
-            economyService.deposit(player.getPlayerId(), OwnerType.PLAYER, "xp_alliance", xpToGive, "Hecate", null);
-            Hecate.log("Gave " + xpToGive + " Alliance XP to player " + player.getPlayerId() + ". New total: " + newXp);
-            int newLevel = getLevelFromXp(newXp, ALLIANCE_BASE_XP, ALLIANCE_GROWTH_FACTOR);
-            if (newLevel > currentLevel) {
-                Hecate.log("Player " + player.getPlayerId() + " leveled up in Alliance from " + currentLevel + " to " + newLevel);
-                LevelMessages.displayLevelMessage(player.getPlayer(), newLevel, currentXp, currentXp + getXpForNextLevel(newLevel + 1, ALLIANCE_BASE_XP, ALLIANCE_GROWTH_FACTOR), "alliance");
-            }
-            displayLevel(player.getPlayer(), newLevel, getProgressForCurrentLevel(newLevel, newXp, ALLIANCE_BASE_XP, ALLIANCE_GROWTH_FACTOR), 20 * 5);
-        });
+        giveXp(
+                player.getPlayerId(),
+                OwnerType.PLAYER,
+                "xp_alliance",
+                amount,
+                ALLIANCE_BASE_XP,
+                ALLIANCE_GROWTH_FACTOR,
+                MAX_ALLIANCE_XP,
+                player.getPlayer(),
+                "Alliance XP",
+                "player",
+                "alliance",
+                () -> Hecate.log("Player " + player.getPlayerId() + " leveled up in Alliance.")
+        );
     }
 
     public static void giveWorldSeekerXp(HPlayer player, long amount) {
-        if (amount <= 0) {
-            return;
-        }
-        CompletableFuture<Long> xpFuture = economyService.getBalance(player.getPlayerId(), OwnerType.PLAYER, "xp_exploration");
-        xpFuture.thenAccept(currentXp -> {
-            long newXp = currentXp + amount;
-            long xpToGive = amount;
-            if (newXp > MAX_WORLD_SEEKER_XP) {
-                xpToGive = MAX_WORLD_SEEKER_XP - currentXp;
-                newXp = MAX_WORLD_SEEKER_XP;
-            }
-            int currentLevel = getLevelFromXp(currentXp, WORLD_SEEKER_BASE_XP, WORLD_SEEKER_GROWTH_FACTOR);
-            economyService.deposit(player.getPlayerId(), OwnerType.PLAYER, "xp_exploration", xpToGive, "Hecate", null);
-            Hecate.log("Gave " + xpToGive + " World Seeker XP to player " + player.getPlayerId() + ". New total: " + newXp);
-            int newLevel = getLevelFromXp(newXp, WORLD_SEEKER_BASE_XP, WORLD_SEEKER_GROWTH_FACTOR);
-            if (newLevel > currentLevel) {
-                Hecate.log("Player " + player.getPlayerId() + " leveled up in World Seeker from " + currentLevel + " to " + newLevel);
-                LevelMessages.displayLevelMessage(player.getPlayer(), newLevel, currentXp, currentXp + getXpForNextLevel(newLevel + 1, WORLD_SEEKER_BASE_XP, WORLD_SEEKER_GROWTH_FACTOR), "exploration");
-            }
+        giveXp(
+                player.getPlayerId(),
+                OwnerType.PLAYER,
+                "xp_exploration",
+                amount,
+                WORLD_SEEKER_BASE_XP,
+                WORLD_SEEKER_GROWTH_FACTOR,
+                MAX_WORLD_SEEKER_XP,
+                player.getPlayer(),
+                "World Seeker XP",
+                "player",
+                "exploration",
+                () -> Hecate.log("Player " + player.getPlayerId() + " leveled up in World Seeker.")
+        );
+    }
 
-            displayLevel(player.getPlayer(), newLevel, getProgressForCurrentLevel(newLevel, newXp, WORLD_SEEKER_BASE_XP, WORLD_SEEKER_GROWTH_FACTOR), 20 * 5);
+    public static void giveJobXp(HCharacter character, long amount) {
+        giveXp(
+                character.getCharacterID(),
+                OwnerType.CHARACTER,
+                "xp_job",
+                amount,
+                JOB_BASE_XP,
+                JOB_GROWTH_FACTOR,
+                MAX_JOB_XP,
+                character.getPlayer(),
+                "Job XP",
+                "character",
+                "job",
+                () -> Hecate.log("Job " + character.getCharacterID() + " leveled up.")
+        );
+    }
+
+    private static void giveXp(
+            UUID ownerId,
+            OwnerType ownerType,
+            String currency,
+            long amount,
+            double baseXp,
+            double growthFactor,
+            long maxXp,
+            Player player,
+            String xpLabel,
+            String targetLabel,
+            String messageType,
+            Runnable levelUpLoggerSupplier
+    ) {
+        if (amount <= 0) return;
+        economyService.getBalance(ownerId, ownerType, currency).thenAccept(currentXp -> {
+            long spaceLeft = maxXp - currentXp;
+            if (spaceLeft <= 0) return;
+            long xpToGive = Math.min(amount, spaceLeft);
+            long newXp = currentXp + xpToGive;
+
+            int currentLevel = getLevelFromXp(currentXp, baseXp, growthFactor);
+            economyService.deposit(ownerId, ownerType, currency, xpToGive, "Hecate", null);
+            Hecate.log("Gave " + xpToGive + " " + xpLabel + " to " + targetLabel + " " + ownerId + ". New total: " + newXp);
+
+            int newLevel = getLevelFromXp(newXp, baseXp, growthFactor);
+            if (newLevel > currentLevel) {
+                levelUpLoggerSupplier.run();
+                LevelMessages.displayLevelMessage(player, newLevel, currentXp,
+                        currentXp + getXpForNextLevel(newLevel + 1, baseXp, growthFactor), messageType);
+            }
+            displayLevel(player, newLevel,
+                    getProgressForCurrentLevel(newLevel, newXp, baseXp, growthFactor),
+                    20 * 5);
         });
     }
 
@@ -199,11 +241,21 @@ public class LevelUtil {
                 false,
                 Scope.PLAYER
         );
+        Currency jobLevel = new Currency(
+                103,
+                "xp_job",
+                "Job XP",
+                "Job XP",
+                0L,
+                false,
+                Scope.CHARACTER
+        );
         try {
             // Only does something if the currency does not already exist, so we can safely call this multiple times
             economyService.defineCurrency(characterLevel);
             economyService.defineCurrency(allianceLevel);
             economyService.defineCurrency(worldSeekerLevel);
+            economyService.defineCurrency(jobLevel);
             Hecate.log("XP currencies created successfully.");
         } catch (Exception e) {
             Hecate.log("Failed to create currencies: " + e.getMessage());

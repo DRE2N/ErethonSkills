@@ -92,6 +92,12 @@ public class LevelMessages extends YamlConfiguration {
             case "exploration":
                 messageKey = explorationLevelMessages.get(level);
                 break;
+            case "job":
+                if (character == null) {
+                    return; // No character selected
+                }
+                messageKey = "Not.defined."; // Needs JXL stuff
+                break;
             default:
                 return;
         }
