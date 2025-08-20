@@ -12,10 +12,12 @@ import de.erethon.hephaestus.items.HItemStack;
 import de.erethon.spellbook.api.TraitData;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockDispenseArmorEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -150,6 +152,26 @@ public class EquipmentListener implements Listener {
                 continue;
             }
             player.addTrait(effect);
+        }
+    }
+
+    @EventHandler
+    private void onDispenseArmor(BlockDispenseArmorEvent event) {
+        HItemStack stack = Hephaestus.getStack(event.getItem());
+        if (stack == null || !(event.getTargetEntity() instanceof Player player)) {
+            return;
+        }
+        HCharacter hCharacter = getCharacterFromPlayer(player);
+        if (hCharacter == null) {
+            return;
+        }
+        HClass hClass = hCharacter.getHClass();
+        if (hClass == null) {
+            return;
+        }
+        if (!canUse(event.getItem(), player, hCharacter) || !canEquipLevel(player, event.getItem(), hCharacter)) {
+            player.sendRichMessage("<red>You cannot equip this item!");
+            event.setCancelled(true);
         }
     }
 
