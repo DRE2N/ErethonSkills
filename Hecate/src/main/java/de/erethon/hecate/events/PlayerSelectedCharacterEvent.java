@@ -16,8 +16,22 @@ public class PlayerSelectedCharacterEvent extends PlayerEvent {
     public PlayerSelectedCharacterEvent(HPlayer hPlayer, HCharacter character, boolean isNewCharacter) {
         super(hPlayer.getPlayer());
         this.player = hPlayer;
-        this.character = player.getSelectedCharacter();
+        this.character = character;
         this.isNewCharacter = isNewCharacter;
+    }
+
+    public HPlayer getHPlayer() {
+        return player;
+    }
+
+    public HCharacter getCharacter() {
+        return character;
+    }
+
+    // If this character was newly created by the player
+    // and not selected from existing characters
+    public boolean isNewCharacter() {
+        return isNewCharacter;
     }
 
     @Override
