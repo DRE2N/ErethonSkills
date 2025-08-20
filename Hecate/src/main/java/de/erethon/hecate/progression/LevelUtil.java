@@ -279,6 +279,19 @@ public class LevelUtil {
         }, duration);
     }
 
+    public static void displayCharLevel(Player player) {
+        HCharacter character = Hecate.getInstance().getDatabaseManager().getCurrentCharacter(player);
+        if (character == null) {
+            return;
+        }
+        CompletableFuture<Long> xpFuture = economyService.getBalance(character.getCharacterID(), OwnerType.CHARACTER, "xp_character");
+        xpFuture.thenAccept(totalXp -> {
+            int currentLevel = getLevelFromXp(totalXp, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR);
+            float currentProgress = getProgressForCurrentLevel(currentLevel, totalXp, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR);
+            sendFakeLevel(player, currentLevel, currentProgress);
+        });
+    }
+
     public static void sendFakeLevel(Player player, int level, float progress) {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         ServerPlayer serverPlayer = craftPlayer.getHandle();

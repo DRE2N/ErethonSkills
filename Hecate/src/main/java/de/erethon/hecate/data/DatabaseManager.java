@@ -7,6 +7,7 @@ import de.erethon.hecate.Hecate;
 import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.data.dao.PlayerDao;
 import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
+import de.erethon.hecate.progression.LevelUtil;
 import de.erethon.papyrus.events.PlayerDataRequestEvent;
 import de.erethon.papyrus.events.PlayerDataSaveEvent;
 import net.kyori.adventure.text.Component;
@@ -525,6 +526,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                                 player.removePotionEffect(PotionEffectType.BLINDNESS);
                                 Title title = Title.title(Component.empty(), Component.empty());
                                 player.showTitle(title);
+                                LevelUtil.displayCharLevel(finalHPlayer.getPlayer());
                             }
                         };
                         mainTask.runTaskLater(Hecate.getInstance(), 20);

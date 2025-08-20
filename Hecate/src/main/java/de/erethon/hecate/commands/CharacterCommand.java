@@ -10,6 +10,7 @@ import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
+import de.erethon.hecate.progression.LevelUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -106,6 +107,7 @@ public class CharacterCommand extends ECommand implements TabCompleter {
                                 player.removePotionEffect(PotionEffectType.BLINDNESS);
                                 Title title = Title.title(Component.empty(), Component.empty());
                                 player.showTitle(title);
+                                LevelUtil.displayCharLevel(player.getPlayer());
                             }
                         };
                         mainTask.runTaskLater(Hecate.getInstance(), 20);

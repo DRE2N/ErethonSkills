@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
+import de.erethon.hecate.progression.LevelUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;

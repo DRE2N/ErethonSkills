@@ -3,6 +3,7 @@ package de.erethon.hecate.data;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
+import de.erethon.hecate.progression.LevelUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
@@ -147,6 +148,7 @@ public class HPlayer {
                     Title endTitle = Title.title(Component.empty(), Component.empty());
                     player.showTitle(endTitle);
                     player.setGameMode(GameMode.SURVIVAL); // We currently do not save this data, so let's just set it to survival
+                    LevelUtil.displayCharLevel(player.getPlayer());
                 }
             };
             mainTask.runTaskLater(Hecate.getInstance(), 10);
