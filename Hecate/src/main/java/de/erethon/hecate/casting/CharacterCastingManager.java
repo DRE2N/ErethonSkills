@@ -15,6 +15,8 @@ import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -32,6 +34,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -284,10 +287,16 @@ public class CharacterCastingManager {
         // Populate the player's slots
         for (int i = 0; i < 8; i++) {
             if (i >= traitlineSpells.size()) {
-                break;
+                // If there are not enough spells, fill the rest with empty items.
+                player.getInventory().setItem(i, emptyStack());
+                slotSpells[i] = null;
+                cachedActiveSpells[i] = null;
+                continue;
             }
             SpellData spellData = traitlineSpells.get(i);
             if (spellData == null) {
+                // Add an empty, invisible item so pickups don't go into the hotbar.
+                player.getInventory().setItem(i, emptyStack());
                 continue;
             }
             ItemStack item = getItemStackFromSpellData(i, spellData);
@@ -296,6 +305,13 @@ public class CharacterCastingManager {
             slotSpells[i] = spellData;
             cachedActiveSpells[i] = spellData.getActiveSpell(player);
         }
+    }
+
+    private ItemStack emptyStack() {
+        ItemStack emptyItem = new ItemStack(CastingStatics.SLOT_DYES[0]);
+        emptyItem.setData(DataComponentTypes.ITEM_MODEL, Key.key("minecraft:air"));
+        emptyItem.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
+        return  emptyItem;
     }
 
     private ItemStack getItemStackFromSpellData(int slot, SpellData spellData) {

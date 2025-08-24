@@ -2,7 +2,6 @@ package de.erethon.hecate.listeners;
 
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
-import de.erethon.aether.events.CreatureLoadEvent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.ui.EntityStatusDisplay;
@@ -17,11 +16,7 @@ import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.teams.TeamManager;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,11 +24,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.io.File;
 
 public class EntityListener implements Listener {
 
@@ -65,11 +57,6 @@ public class EntityListener implements Listener {
         if (event.getEntity() instanceof LivingEntity living) {
             teamManager.loadEntity(living);
         }
-    }
-
-    @EventHandler
-    public void onCreatureLoad(CreatureLoadEvent event) {
-        displayManager.addStatusDisplay(event.getMob().getBukkitEntity(), new EntityStatusDisplay(event.getMob().getBukkitLivingEntity()));
     }
 
     // We need to clear things in case someone logs out or is despawned while having a buff active

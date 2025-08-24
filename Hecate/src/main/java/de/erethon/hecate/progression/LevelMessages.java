@@ -9,7 +9,6 @@ import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -77,14 +76,19 @@ public class LevelMessages extends YamlConfiguration {
     }
 
     public static void displayLevelMessage(Player player, int level, long currentXp, long nextLevelXp, String type) {
-        String messageKey;
+        String messageKey = null;
         HCharacter character = Hecate.getInstance().getDatabaseManager().getCurrentCharacter(player);
         switch (type.toLowerCase(Locale.ROOT)) {
             case "character":
                 if (character == null) {
-                    return; // No character selected
+                    return;
                 }
-                messageKey = character.getTraitline().getLevelInfo().get(level).messageTranslationKey();
+                var traitline = character.getTraitline();
+                LevelInfo info = null;
+                if (traitline != null && traitline.getLevelInfo() != null) {
+                    info = traitline.getLevelInfo().get(level);
+                }
+                messageKey = (info != null) ? info.messageTranslationKey() : null;
                 break;
             case "alliance":
                 messageKey = allianceLevelMessages.get(level);
@@ -94,7 +98,7 @@ public class LevelMessages extends YamlConfiguration {
                 break;
             case "job":
                 if (character == null) {
-                    return; // No character selected
+                    return;
                 }
                 messageKey = "Not.defined."; // Needs JXL stuff
                 break;
@@ -104,16 +108,22 @@ public class LevelMessages extends YamlConfiguration {
         if (messageKey == null) {
             messageKey = "hecate.missing.levelmsg";
         }
-        Component message = Component.empty();
-        Component levelMessage = Component.translatable(messageKey);
-        Component header = mm.deserialize("<gold><st>          </st> <yellow>Level Up! <gold><st>          <reset>");
-        Component newLevelAndXp = mm.deserialize("<yellow>Level <gold>" + level + "<dark_gray> | <gold>" + currentXp + "<dark_gray>/<gold>" + nextLevelXp + "<gray> XP");
-        message = message.append(header).append(Component.newline()).append(newLevelAndXp).append(Component.newline()).append(Component.newline()).append(levelMessage);
-        player.sendMessage(message);
-        // Main thread
-        BukkitRunnable runnable = new BukkitRunnable() {
+
+        final String resolvedMessageKey = messageKey;
+        final int newLevel = level;
+        final long curXp = currentXp;
+        final long nextXp = nextLevelXp;
+        final String resolvedType = type;
+        new BukkitRunnable() {
             @Override
             public void run() {
+                Component message = Component.empty();
+                Component levelMessage = Component.translatable(resolvedMessageKey);
+                Component header = mm.deserialize("<gold><st>          </st> <yellow>Level Up! <gold><st>          <reset>");
+                Component newLevelAndXp = mm.deserialize("<yellow>Level <gold>" + newLevel + "<dark_gray> | <gold>" + curXp + "<dark_gray>/<gold>" + nextXp + "<gray> XP");
+                message = message.append(header).append(Component.newline()).append(newLevelAndXp).append(Component.newline()).append(Component.newline()).append(levelMessage);
+                player.sendMessage(message);
+
                 player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, SoundCategory.RECORDS, 1.0f, 1.0f);
                 Firework firework = player.getWorld().spawn(player.getLocation().add(0,7,0), Firework.class, fw -> {
                     fw.setTicksToDetonate(20);
@@ -131,11 +141,11 @@ public class LevelMessages extends YamlConfiguration {
                 }
                 player.setFoodLevel(20);
                 player.setSaturation(20);
-                if (character != null && type.equalsIgnoreCase("character")) {
-                    character.getCastingManager().setAttributesForLevel(level); // Ensure we update the attributes for the new level
+                HCharacter character = Hecate.getInstance().getDatabaseManager().getCurrentCharacter(player);
+                if (character != null && resolvedType.equalsIgnoreCase("character")) {
+                    character.getCastingManager().setAttributesForLevel(newLevel); // Ensure we update the attributes for the new level
                 }
             }
-        };
-        runnable.runTask(Hecate.getInstance());
+        }.runTask(Hecate.getInstance());
     }
 }

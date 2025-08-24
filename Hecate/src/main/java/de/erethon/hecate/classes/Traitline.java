@@ -1,8 +1,6 @@
 package de.erethon.hecate.classes;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.hecate.progression.LevelInfo;
 import de.erethon.spellbook.api.SpellData;
@@ -12,7 +10,6 @@ import de.erethon.spellbook.utils.SpellbookTranslator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Color;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;

@@ -78,12 +78,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 "last_online TIMESTAMP," +
                 "last_character UUID)";
 
-        String createCompletedQuestsTable = "CREATE TABLE IF NOT EXISTS Completed_Quests (" +
-                "character_id UUID," +
-                "quest_id VARCHAR(255)," +
-                "completed_at TIMESTAMP," +
-                "PRIMARY KEY (character_id, quest_id))";
-
         String addForeignKeyToPlayers = "DO $$ BEGIN " +
                 "IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_last_character' AND conrelid = 'players'::regclass) THEN " +
                 "ALTER TABLE Players ADD CONSTRAINT fk_last_character FOREIGN KEY (last_character) REFERENCES Characters(character_id) ON DELETE SET NULL; " +
@@ -93,12 +87,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         String addForeignKeyToCharacters = "DO $$ BEGIN " +
                 "IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_player_id' AND conrelid = 'characters'::regclass) THEN " +
                 "ALTER TABLE Characters ADD CONSTRAINT fk_player_id FOREIGN KEY (player_id) REFERENCES Players(player_id) ON DELETE CASCADE; " +
-                "END IF; " +
-                "END $$;";
-
-        String addForeignKeyToCompletedQuests = "DO $$ BEGIN " +
-                "IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_character_id_quests' AND conrelid = 'completed_quests'::regclass) THEN " +
-                "ALTER TABLE Completed_Quests ADD CONSTRAINT fk_character_id_quests FOREIGN KEY (character_id) REFERENCES Characters(character_id) ON DELETE CASCADE; " +
                 "END IF; " +
                 "END $$;";
 
@@ -119,10 +107,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     handle.execute(createCharactersTable);
                     Hecate.log("Schema setup: Finished createCharactersTable.");
 
-                    Hecate.log("Schema setup: Executing createCompletedQuestsTable...");
-                    handle.execute(createCompletedQuestsTable);
-                    Hecate.log("Schema setup: Finished createCompletedQuestsTable.");
-
                     Hecate.log("Schema setup: Executing alter table statements...");
                     alterTableStatements.forEach(statement -> {
                         Hecate.log("Schema setup: Altering -> " + statement);
@@ -137,10 +121,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     Hecate.log("Schema setup: Executing addForeignKeyToPlayers...");
                     handle.execute(addForeignKeyToPlayers);
                     Hecate.log("Schema setup: Finished addForeignKeyToPlayers.");
-
-                    Hecate.log("Schema setup: Executing addForeignKeyToCompletedQuests...");
-                    handle.execute(addForeignKeyToCompletedQuests);
-                    Hecate.log("Schema setup: Finished addForeignKeyToCompletedQuests.");
 
                     Hecate.log("Schema setup: All statements executed successfully.");
                 } catch (Exception e) {

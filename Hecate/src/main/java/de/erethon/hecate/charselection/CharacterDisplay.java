@@ -1,16 +1,10 @@
 package de.erethon.hecate.charselection;
 
 import com.destroystokyo.paper.event.player.PlayerUseUnknownEntityEvent;
-import de.erethon.aether.Aether;
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.data.HCharacter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.ItemStackWithSlot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.ValueInput;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
