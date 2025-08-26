@@ -41,7 +41,6 @@ val papyrusVersion = "1.21.7-R0.1-SNAPSHOT"
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
     implementation(project(":SpellbookSpells"))
-    compileOnly("de.erethon.hephaestus:Hephaestus:1.0.3-SNAPSHOT")
     compileOnly("de.erethon.tyche:Tyche:1.0-SNAPSHOT")
 }
 

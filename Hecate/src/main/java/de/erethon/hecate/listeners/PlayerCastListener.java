@@ -8,7 +8,6 @@ import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.ui.DamageColor;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
-import de.erethon.hephaestus.items.HItemStack;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.beastmaster.pet.RangerPet;
@@ -78,32 +77,6 @@ public class PlayerCastListener implements Listener {
     public PlayerCastListener() {
         remover.runTaskTimer(plugin, 0, 20);
     }
-
-    @EventHandler
-    public void onModeSwitch(PlayerSwapHandItemsEvent event) {
-        // The OffHandItem is the item that WOULD BE in the offhand if the event is not cancelled. Thanks Spigot for great method naming!
-        HCharacter hCharacter = plugin.getDatabaseManager().getCurrentCharacter(event.getPlayer());
-        if (hCharacter == null) {
-            return;
-        }
-        // Admin mode, with any stick
-        if (event.getOffHandItem().getType() == Material.STICK && event.getPlayer().hasPermission("hecate.castmode.adminbypass")) {
-            hCharacter.switchCastMode(CombatModeReason.HOTKEY, !hCharacter.isInCastMode()); // The ! is important here lol
-            event.setCancelled(true);
-            return;
-        }
-        // Normal players have to use tags
-        HItemStack offHandItem = HItemStack.getFromStack(event.getOffHandItem());
-        if (offHandItem == null || offHandItem.getItem() == null) {
-            return;
-        }
-        if (!Collections.disjoint(offHandItem.getItem().getTags(), hCharacter.getTraitline().getWeaponTags())) {
-            hCharacter.switchCastMode(CombatModeReason.HOTKEY, !hCharacter.isInCastMode());
-            event.setCancelled(true);
-            return;
-        }
-    }
-
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {

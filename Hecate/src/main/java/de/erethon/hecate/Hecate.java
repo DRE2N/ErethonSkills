@@ -9,9 +9,7 @@ import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.commands.HecateCommandCache;
-import de.erethon.hecate.items.HEquipmentManager;
 import de.erethon.hecate.listeners.EntityListener;
-import de.erethon.hecate.listeners.EquipmentListener;
 import de.erethon.hecate.listeners.PlayerCastListener;
 import de.erethon.hecate.progression.LevelMessages;
 import de.erethon.hecate.progression.LevelUtil;
@@ -54,7 +52,6 @@ public final class Hecate extends EPlugin {
     private Spellbook spellbook;
     private HecateCommandCache commands;
     private DatabaseManager databaseManager;
-    private HEquipmentManager equipmentManager;
     private EntityStatusDisplayManager statusDisplayManager;
     private final Set<Traitline> traitlines = new HashSet<>();
     private final Set<HClass> hClasses = new HashSet<>();
@@ -94,20 +91,17 @@ public final class Hecate extends EPlugin {
             e.printStackTrace();
             return;
         }
-        File equipmentFile = new File(getDataFolder(), "equipment.yml");
         initFolders();
         instantiate();
         registerCommands();
         getServer().getPluginManager().registerEvents(new PlayerCastListener(), this);
         getServer().getPluginManager().registerEvents(new EntityListener(), this);
-        getServer().getPluginManager().registerEvents(new EquipmentListener(), this);
         Bukkit.getScheduler().runTaskLater(this, () -> { // Workaround for Spellbook not loading spells on load
             Bukkit.getServer().getSpellbookAPI().getLibrary().reload();
             loadTraitlines();
             loadClasses();
             registerTranslations();
             translator.addSource(reg);
-            equipmentManager = new HEquipmentManager(equipmentFile);
             createPlaceholderDefinitions(Bukkit.getWorlds().get(0));
             ready = true;
             if (Bukkit.getPluginManager().isPluginEnabled("Tyche")) {
@@ -319,10 +313,6 @@ public final class Hecate extends EPlugin {
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
-    }
-
-    public HEquipmentManager getEquipmentManager() {
-        return equipmentManager;
     }
 
     public CharacterLobby getLobbyInUse() {
