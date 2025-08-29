@@ -92,4 +92,7 @@ public interface CharacterDao {
     @SqlQuery("SELECT locked_by FROM Characters WHERE character_id = :characterId")
     Optional<String> getLockOwner(@Bind("characterId") UUID characterId);
 
+    @SqlUpdate("DELETE FROM Characters WHERE character_id = :characterId")
+    int deleteCharacter(@Bind("characterId") UUID characterId);
+
 }
