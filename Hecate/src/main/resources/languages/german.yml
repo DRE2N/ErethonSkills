@@ -1,0 +1,160 @@
+locale: de_DE
+
+# Deutsche Übersetzungen für Hecate
+# Verwende <arg:0>, <arg:1>, etc. für Argumente
+# MiniMessage Formatierung wird unterstützt
+
+# Allgemeine Nachrichten
+general:
+  loading: "<yellow>Lade..."
+  error: "<red>Ein Fehler ist aufgetreten: <arg:0>"
+  success: "<green>Erfolgreich!"
+  cancelled: "<gray>Vorgang abgebrochen."
+  permission_denied: "<red>Du hast keine Berechtigung dafür."
+  player_not_found: "<red>Spieler nicht gefunden."
+  invalid_usage: "<red>Ungültige Verwendung. Verwende: <arg:0>"
+
+# Charakterauswahl
+character:
+  selection:
+    title: "<gold><b>        Deine Charaktere</b>"
+    no_characters: "<yellow>Du hast noch keine Charaktere!"
+    no_characters_help: "<gray>Verwende <green>/char selection</green> um deinen ersten Charakter zu erstellen."
+    create_hint: "<gray>Verwende <green>/char selection</green> um einen neuen Charakter mit der visuellen Auswahl zu erstellen."
+    create_better_experience: "<gray>Dies bietet eine bessere Erfahrung als die Kommandozeilen-Erstellung."
+    already_selected: "<yellow>Dieser Charakter ist bereits ausgewählt."
+    current_indicator: " <green>(Aktuell)"
+    switching: "<yellow>Wechsle Charakter..."
+    switched: "<green>Gewechselt zu deinem <arg:0> (Level <arg:1>)"
+    creating_new: "<gold><b>◆ Neuer Charakter erstellt! ◆</b>"
+    choose_class: "<yellow>Wähle nun deine Startklasse..."
+    initializing: "Initialisiere neuen Charakter..."
+    combat_mode_error: "<red>Du kannst keinen Charakter auswählen während du im Kampfmodus bist."
+    slot_locked: "<gold>Dieser Charakterslot ist momentan gesperrt!"
+    slot_locked_help: "<gray><italic>Du kannst weitere Slots durch Gameplay freischalten oder"
+    slot_locked_store: "<gray><italic>durch Kauf bei <gold>store.erethon.net"
+    slot_empty: "<yellow>Dieser Charakterslot ist leer."
+    slot_empty_confirm: "<gray>Klicke erneut um einen neuen Charakter zu erstellen."
+    max_characters: "<red>Du hast die maximale Anzahl an Charakteren erreicht (<arg:0>)!"
+    max_characters_help: "<gray>Du kannst weitere Slots durch Gameplay oder bei <gold>store.erethon.net freischalten"
+
+  deletion:
+    warning_title: "<red>⚠ CHARAKTER LÖSCHUNG WARNUNG ⚠"
+    warning_about_to_delete: "<yellow>Du bist dabei deinen <arg:0> (Level <arg:1>) zu löschen"
+    warning_irreversible: "<red><b>DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN!</b>"
+    warning_confirm: "<gray>Ducken + Rechtsklick erneut innerhalb von 10 Sekunden zur Bestätigung."
+    warning_cancel: "<gray>Klicke etwas anderes zum Abbrechen."
+    title_delete: "⚠ CHARAKTER LÖSCHEN ⚠"
+    title_confirm: "Ducken + Rechtsklick erneut zur Bestätigung"
+    cancelled: "<gray>Charakterlöschung abgebrochen."
+    success: "<green>Charakter erfolgreich gelöscht!"
+    success_detail: "<gray>Dein <arg:0> (Level <arg:1>) wurde dauerhaft entfernt."
+    title_deleted: "Charakter gelöscht"
+    title_removed: "<arg:0> wurde entfernt"
+
+  info:
+    title: "<gold><b>        Charakter Info</b>"
+    class: "<yellow>Klasse: <arg:0>"
+    level: "<yellow>Level: <white><arg:0>"
+    traitline: "<yellow>Eigenschaftslinie: <aqua><arg:0>"
+    created: "<yellow>Erstellt: <gray><arg:0>"
+    skills: "<yellow>Fähigkeiten: <gray><arg:0> freigeschaltet"
+
+  controls:
+    left_click_select: "Linksklick: Auswählen"
+    sneak_right_click_delete: "Ducken + Rechtsklick: Löschen"
+
+# Klassenwahl
+class:
+  selection:
+    title: "<gold><b>        ⚔ KLASSENWAHL ⚔</b>"
+    choose_starting: "<yellow>Wähle deine Startklasse:"
+    left_click_info: "<gray>• <green>Linksklick</green> um mehr über eine Klasse zu erfahren"
+    right_click_select: "<gray>• <green>Rechtsklick</green> um eine Klasse zu wählen"
+    not_enough_pedestals: "<red>Warnung: Nicht genug Sockel für alle Klassen!"
+    click_learn_more: "Klicken um mehr zu erfahren"
+    right_click_to_select: "<green>Rechtsklick um diese Klasse zu wählen!"
+    not_found: "<red>Klasse nicht gefunden."
+
+  selected:
+    title: "Klasse gewählt!"
+    success_title: "<green><b>✓ Charakter erfolgreich erstellt!</b>"
+    class_label: "<yellow>Klasse: <arg:0>"
+    traitline_label: "<yellow>Start-Eigenschaftslinie: <aqua><arg:0>"
+    welcome: "<green><i>Willkommen bei Erethon! Dein Abenteuer beginnt jetzt...</i>"
+
+  already_has_class: "<red>Du hast bereits eine Klasse. Das sollte nicht möglich sein."
+
+# Befehle
+commands:
+  character:
+    help: "Charakterverwaltung - /char [list|select|create|info]"
+    list_title: "<gold><b>        Deine Charaktere</b>"
+    usage_select: "<red>Verwendung: /char select <Charakternummer>"
+    usage_select_help: "<gray>Verwende /char list um deine Charaktere zu sehen"
+    invalid_number: "<red>Ungültige Charakternummer. Verwende /char list um verfügbare Charaktere zu sehen."
+    number_out_of_range: "<red>Charakternummer außerhalb des Bereichs. Du hast <arg:0> Charaktere."
+    no_character_selected: "<red>Kein Charakter aktuell ausgewählt. Verwende zuerst /char select <nummer>."
+    unknown_subcommand: "<red>Unbekannter Unterbefehl. Verwende: /char [list|select|create|info|selection]"
+    unknown_subcommand_help: "<gray>Für Hilfe: /char list"
+    opening_selection: "<green>Öffne Charakterauswahl..."
+    no_lobby_configured: "<red>Keine Charakterlobby konfiguriert!"
+
+  admin:
+    help_title: "<gold><b>        Hecate Admin Befehle</b>"
+    help_charsel: "<yellow>Charakterauswahl:"
+    help_charsel_open: "<gray>• <green>/ha charsel open</green> - Charakterauswahl öffnen"
+    help_charsel_test: "<gray>• <green>/ha classtest</green> - Klassenwahl testen"
+    help_lobby: "<yellow>Lobby Verwaltung:"
+    help_lobby_create: "<gray>• <green>/ha lobby create <id></green> - Neue Lobby erstellen"
+    help_lobby_addped: "<gray>• <green>/ha lobby addped</green> - Sockel an deiner Position hinzufügen"
+    help_lobby_removeped: "<gray>• <green>/ha lobby removeped</green> - Nächsten Sockel entfernen"
+    help_lobby_info: "<gray>• <green>/ha lobby info</green> - Lobby Informationen anzeigen"
+    help_system: "<yellow>System:"
+    help_reload: "<gray>• <green>/ha reload</green> - Plugin Konfiguration neu laden"
+
+    charsel_opened: "<green>Charakterauswahl geöffnet."
+    charsel_usage: "<red>Verwendung: /ha charsel <open>"
+    charsel_unknown: "<red>Unbekannter charsel Befehl. Verwende: open"
+
+    lobby_created: "<green>Charakterlobby '<yellow><arg:0></yellow>' an deiner Position erstellt!"
+    lobby_created_help: "<gray>Füge nun Sockel mit <green>/ha lobby addped</green> hinzu"
+    lobby_usage: "<red>Verwendung: /ha lobby <create|addped|removeped|info>"
+    lobby_no_exists: "<red>Keine Lobby existiert! Erstelle zuerst eine mit /ha lobby create"
+    lobby_no_exists_remove: "<red>Keine Lobby existiert!"
+    lobby_pedestal_added: "<green>Sockel an deiner Position hinzugefügt!"
+    lobby_pedestal_count: "<gray>Sockel insgesamt: <arg:0>"
+    lobby_pedestal_removed: "<green>Nächsten Sockel entfernt!"
+    lobby_pedestal_not_found: "<yellow>Kein Sockel innerhalb von 1 Block von deiner Position gefunden."
+    lobby_not_configured: "<red>Keine Lobby ist konfiguriert."
+    lobby_info_title: "<gold><b>        Lobby Informationen</b>"
+    lobby_info_origin: "<yellow>Ursprung: <gray><arg:0>"
+    lobby_info_pedestals: "<yellow>Sockel: <gray><arg:0>"
+    lobby_unknown_command: "<red>Unbekannter Lobby Befehl. Verwende: create, addped, removeped, info"
+
+    classtest_opened: "<green>Klassenwahl Test geöffnet!"
+
+    reloading: "<yellow>Lade Hecate Konfiguration neu..."
+    reloaded: "<green>Konfiguration erfolgreich neu geladen!"
+
+    unknown_command: "<red>Unbekannter Befehl. Verwende <yellow>/ha help</yellow> für verfügbare Befehle."
+
+# Daten und Fehler
+data:
+  not_loaded: "<red>Spielerdaten nicht geladen. Bitte versuche es erneut."
+  player_not_found: "<red>Spieler nicht gefunden."
+  error_loading: "<red>Fehler beim Laden der Daten: <arg:0>"
+  error_saving: "<red>Fehler beim Speichern der Daten: <arg:0>"
+
+# Kampf und Zaubern
+combat:
+  entered_cast_mode: "Zaubermodus betreten"
+  left_cast_mode: "Zaubermodus verlassen"
+  no_commands_in_selection: "<red>Du kannst keine Befehle während der Charakterauswahl verwenden."
+
+# Verschiedenes
+misc:
+  no_class: "Keine Klasse"
+  classless: "Klassenlos"
+  none: "Keine"
+  empty: "leer"

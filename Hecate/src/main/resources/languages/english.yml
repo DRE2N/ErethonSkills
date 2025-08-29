@@ -1,0 +1,160 @@
+locale: en_US
+
+# English translations for Hecate
+# Use <arg:0>, <arg:1>, etc. for arguments
+# MiniMessage formatting is supported
+
+# General messages
+general:
+  loading: "<yellow>Loading..."
+  error: "<red>An error occurred: <arg:0>"
+  success: "<green>Success!"
+  cancelled: "<gray>Operation cancelled."
+  permission_denied: "<red>You don't have permission to do that."
+  player_not_found: "<red>Player not found."
+  invalid_usage: "<red>Invalid usage. Use: <arg:0>"
+
+# Character selection
+character:
+  selection:
+    title: "<gold><b>        Your Characters</b>"
+    no_characters: "<yellow>You don't have any characters yet!"
+    no_characters_help: "<gray>Use <green>/char selection</green> to create your first character."
+    create_hint: "<gray>Use <green>/char selection</green> to create a new character with the visual selection interface."
+    create_better_experience: "<gray>This provides a better experience than the command-line creation."
+    already_selected: "<yellow>That character is already selected."
+    current_indicator: " <green>(Current)"
+    switching: "<yellow>Switching character..."
+    switched: "<green>Switched to your <arg:0> (Level <arg:1>)"
+    creating_new: "<gold><b>◆ New Character Created! ◆</b>"
+    choose_class: "<yellow>Now select your starting class..."
+    initializing: "Initializing new character..."
+    combat_mode_error: "<red>You can't select a character while in combat mode."
+    slot_locked: "<gold>This character slot is currently locked!"
+    slot_locked_help: "<gray><italic>You can unlock more slots through gameplay or"
+    slot_locked_store: "<gray><italic>by purchasing them at <gold>store.erethon.net"
+    slot_empty: "<yellow>This character slot is empty."
+    slot_empty_confirm: "<gray>Click again to create a new character."
+    max_characters: "<red>You have reached the maximum number of characters (<arg:0>)!"
+    max_characters_help: "<gray>You can unlock more slots through gameplay or at <gold>store.erethon.net"
+
+  deletion:
+    warning_title: "<red>⚠ CHARACTER DELETION WARNING ⚠"
+    warning_about_to_delete: "<yellow>You are about to delete your <arg:0> (Level <arg:1>)"
+    warning_irreversible: "<red><b>THIS ACTION CANNOT BE UNDONE!</b>"
+    warning_confirm: "<gray>Sneak + Right-click again within 10 seconds to confirm deletion."
+    warning_cancel: "<gray>Click anything else to cancel."
+    title_delete: "⚠ DELETE CHARACTER ⚠"
+    title_confirm: "Sneak + Right-click again to confirm"
+    cancelled: "<gray>Character deletion cancelled."
+    success: "<green>Character deleted successfully!"
+    success_detail: "<gray>Your <arg:0> (Level <arg:1>) has been permanently removed."
+    title_deleted: "Character Deleted"
+    title_removed: "<arg:0> has been removed"
+
+  info:
+    title: "<gold><b>        Character Info</b>"
+    class: "<yellow>Class: <arg:0>"
+    level: "<yellow>Level: <white><arg:0>"
+    traitline: "<yellow>Traitline: <aqua><arg:0>"
+    created: "<yellow>Created: <gray><arg:0>"
+    skills: "<yellow>Skills: <gray><arg:0> unlocked"
+
+  controls:
+    left_click_select: "Left-click: Select"
+    sneak_right_click_delete: "Sneak + Right-click: Delete"
+
+# Class selection
+class:
+  selection:
+    title: "<gold><b>        ⚔ CLASS SELECTION ⚔</b>"
+    choose_starting: "<yellow>Choose your starting class:"
+    left_click_info: "<gray>• <green>Left-click</green> to learn about a class"
+    right_click_select: "<gray>• <green>Right-click</green> to select a class"
+    not_enough_pedestals: "<red>Warning: Not enough pedestals for all classes!"
+    click_learn_more: "Click to learn more"
+    right_click_to_select: "<green>Right-click to select this class!"
+    not_found: "<red>Class not found."
+
+  selected:
+    title: "Class Selected!"
+    success_title: "<green><b>✓ Character Created Successfully!</b>"
+    class_label: "<yellow>Class: <arg:0>"
+    traitline_label: "<yellow>Starting Traitline: <aqua><arg:0>"
+    welcome: "<green><i>Welcome to Erethon! Your adventure begins now...</i>"
+
+  already_has_class: "<red>You already have a class. This shouldn't be possible."
+
+# Commands
+commands:
+  character:
+    help: "Character management - /char [list|select|create|info]"
+    list_title: "<gold><b>        Your Characters</b>"
+    usage_select: "<red>Usage: /char select <character number>"
+    usage_select_help: "<gray>Use /char list to see your characters"
+    invalid_number: "<red>Invalid character number. Use /char list to see available characters."
+    number_out_of_range: "<red>Character number out of range. You have <arg:0> characters."
+    no_character_selected: "<red>No character currently selected. Use /char select <number> first."
+    unknown_subcommand: "<red>Unknown subcommand. Use: /char [list|select|create|info|selection]"
+    unknown_subcommand_help: "<gray>For help: /char list"
+    opening_selection: "<green>Opening character selection..."
+    no_lobby_configured: "<red>No character lobby is configured!"
+
+  admin:
+    help_title: "<gold><b>        Hecate Admin Commands</b>"
+    help_charsel: "<yellow>Character Selection:"
+    help_charsel_open: "<gray>• <green>/ha charsel open</green> - Open character selection"
+    help_charsel_test: "<gray>• <green>/ha classtest</green> - Test class selection screen"
+    help_lobby: "<yellow>Lobby Management:"
+    help_lobby_create: "<gray>• <green>/ha lobby create <id></green> - Create new lobby"
+    help_lobby_addped: "<gray>• <green>/ha lobby addped</green> - Add pedestal at your location"
+    help_lobby_removeped: "<gray>• <green>/ha lobby removeped</green> - Remove nearest pedestal"
+    help_lobby_info: "<gray>• <green>/ha lobby info</green> - Show lobby information"
+    help_system: "<yellow>System:"
+    help_reload: "<gray>• <green>/ha reload</green> - Reload plugin configuration"
+
+    charsel_opened: "<green>Character selection opened."
+    charsel_usage: "<red>Usage: /ha charsel <open>"
+    charsel_unknown: "<red>Unknown charsel command. Use: open"
+
+    lobby_created: "<green>Character lobby '<yellow><arg:0></yellow>' created at your location!"
+    lobby_created_help: "<gray>Now add pedestals with <green>/ha lobby addped</green>"
+    lobby_usage: "<red>Usage: /ha lobby <create|addped|removeped|info>"
+    lobby_no_exists: "<red>No lobby exists! Create one first with /ha lobby create"
+    lobby_no_exists_remove: "<red>No lobby exists!"
+    lobby_pedestal_added: "<green>Pedestal added at your location!"
+    lobby_pedestal_count: "<gray>Total pedestals: <arg:0>"
+    lobby_pedestal_removed: "<green>Removed nearest pedestal!"
+    lobby_pedestal_not_found: "<yellow>No pedestal found within 1 block of your location."
+    lobby_not_configured: "<red>No lobby is configured."
+    lobby_info_title: "<gold><b>        Lobby Information</b>"
+    lobby_info_origin: "<yellow>Origin: <gray><arg:0>"
+    lobby_info_pedestals: "<yellow>Pedestals: <gray><arg:0>"
+    lobby_unknown_command: "<red>Unknown lobby command. Use: create, addped, removeped, info"
+
+    classtest_opened: "<green>Class selection test opened!"
+
+    reloading: "<yellow>Reloading Hecate configuration..."
+    reloaded: "<green>Configuration reloaded successfully!"
+
+    unknown_command: "<red>Unknown command. Use <yellow>/ha help</yellow> for available commands."
+
+# Data and errors
+data:
+  not_loaded: "<red>Player data not loaded. Please try again."
+  player_not_found: "<red>Player not found."
+  error_loading: "<red>Error loading data: <arg:0>"
+  error_saving: "<red>Error saving data: <arg:0>"
+
+# Combat and casting
+combat:
+  entered_cast_mode: "Entered cast mode"
+  left_cast_mode: "Left cast mode"
+  no_commands_in_selection: "<red>You can't use commands while in character selection."
+
+# Miscellaneous
+misc:
+  no_class: "No Class"
+  classless: "Classless"
+  none: "None"
+  empty: "empty"

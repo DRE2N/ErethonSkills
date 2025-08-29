@@ -13,6 +13,7 @@ import de.erethon.hecate.listeners.EntityListener;
 import de.erethon.hecate.listeners.PlayerCastListener;
 import de.erethon.hecate.progression.LevelMessages;
 import de.erethon.hecate.progression.LevelUtil;
+import de.erethon.hecate.translations.TranslationManager;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.spellbook.utils.SpellbookTranslator;
 import de.erethon.spellbook.Spellbook;
@@ -53,12 +54,13 @@ public final class Hecate extends EPlugin {
     private HecateCommandCache commands;
     private DatabaseManager databaseManager;
     private EntityStatusDisplayManager statusDisplayManager;
+    private TranslationManager translationManager;
     private final Set<Traitline> traitlines = new HashSet<>();
     private final Set<HClass> hClasses = new HashSet<>();
 
     public boolean ready = false;
     private final GlobalTranslator translator = GlobalTranslator.translator();
-    private  SpellbookTranslator reg;
+    private SpellbookTranslator reg;
 
     public Hecate() {
         settings = EPluginSettings.builder()
@@ -78,6 +80,10 @@ public final class Hecate extends EPlugin {
     public void loadCore() {
         spellbook = new Spellbook(this);
         reg = spellbook.getTranslator();
+
+        // Initialize translation manager early
+        translationManager = new TranslationManager(this);
+
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(Bukkit.getWorldContainer(), "environment.yml"));
         try {
             BedrockDBConnection connection = new BedrockDBConnection(config.getString("dbUrl"),
@@ -341,6 +347,10 @@ public final class Hecate extends EPlugin {
 
     public SpellbookTranslator getTranslator() {
         return reg;
+    }
+
+    public TranslationManager getTranslationManager() {
+        return translationManager;
     }
 
     public Traitline getTraitline(String id) {
