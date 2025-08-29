@@ -1,12 +1,20 @@
 package de.erethon.hecate.charselection;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Location;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -21,16 +29,16 @@ public class ClassSelection extends BaseSelection {
         HPlayer hPlayer = plugin.getDatabaseManager().getHPlayer(player);
         this.lobby = lobby;
         if (hPlayer == null) {
-            MessageUtil.sendMessage(player, "<red>Player not found.");
+            player.sendMessage(Component.translatable("hecate.data.player_not_found"));
             return;
         }
         character = hPlayer.getSelectedCharacter();
         if (character == null) {
-            MessageUtil.sendMessage(player, "<red>No character selected. Cannot display class selection.");
+            player.sendMessage(Component.translatable("hecate.commands.character.no_character_selected"));
             return;
         }
         if (character.getHClass() != null) {
-            MessageUtil.sendMessage(player, "<red>You already have a class. This shouldn't be possible.");
+            player.sendMessage(Component.translatable("hecate.class.already_has_class"));
             return;
         }
         setup();
@@ -38,51 +46,124 @@ public class ClassSelection extends BaseSelection {
 
     @Override
     protected void setup() {
+        // Clear any existing displays from character selection
+        for (TextDisplay display : emptySlotDisplays) {
+            display.remove();
+        }
+        emptySlotDisplays.clear();
+
+        // Show welcome message
+        player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+        player.sendMessage(Component.translatable("hecate.class.selection.title"));
+        player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+        player.sendMessage(Component.translatable("hecate.class.selection.choose_starting"));
+        player.sendMessage(Component.translatable("hecate.class.selection.left_click_info"));
+        player.sendMessage(Component.translatable("hecate.class.selection.right_click_select"));
+
         for (HClass hClass : plugin.getHClasses()) {
             ClassDisplay display = new ClassDisplay(this, hClass);
             displayed.add(display);
         }
         List<Location> locations = lobby.getPedestalLocations();
-        for (int i = 0; i < displayed.size(); i++) {
-            if (i >= locations.size()) {
-                break;
-            }
-            displayed.get(i).display(player, locations.get(i));
+        if (locations.size() < displayed.size()) {
+            player.sendMessage(Component.translatable("hecate.class.selection.not_enough_pedestals"));
         }
-        MessageUtil.sendMessage(player, "<green>Right click a class to select it. Left click to learn more about a class.");
+
+        for (int i = 0; i < Math.min(displayed.size(), locations.size()); i++) {
+            displayed.get(i).display(player, locations.get(i));
+            spawnClassInfoDisplay(((ClassDisplay) displayed.get(i)).getHClass(), locations.get(i));
+        }
     }
 
     @Override
     public void onRightClick(BaseDisplay display) {
+        if (playerIsDone) return;
+
         if (!(display instanceof ClassDisplay classDisplay)) {
             return;
         }
         if (classDisplay.getHClass() == null) {
-            MessageUtil.sendMessage(player, "<red>Class not found.");
+            player.sendMessage(Component.translatable("hecate.class.not_found"));
             return;
         }
-        HClass cl = classDisplay.getHClass();
-        character.setHClass(cl);
-        character.setTraitline(cl.getStarterTraitline());
-        player.teleportAsync(new Location(player.getWorld(), 0, 100, 0)); // TODO: Temp
-        character.getHPlayer().getSelectedCharacter().saveCharacterPlayerData(false); // Do a save, just in case
-        MessageUtil.sendMessage(player, "<green><i>Character created! Welcome to Erethon!");
 
+        HClass selectedClass = classDisplay.getHClass();
+        character.setHClass(selectedClass);
+        character.setTraitline(selectedClass.getStarterTraitline());
+
+        // Visual feedback
+        player.showTitle(Title.title(
+            Component.translatable("hecate.class.selected.title"),
+            Component.text(selectedClass.getDisplayName(), selectedClass.getColor())
+        ));
+
+        player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+        player.sendMessage(Component.translatable("hecate.class.selected.success_title"));
+        player.sendMessage(Component.translatable("hecate.class.selected.class_label",
+            Component.text(selectedClass.getDisplayName(), selectedClass.getColor())));
+        player.sendMessage(Component.translatable("hecate.class.selected.traitline_label",
+            Component.text(selectedClass.getStarterTraitline().getName())));
+        player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+        player.sendMessage(Component.translatable("hecate.class.selected.welcome"));
+
+        // Clean up displays - both character displays and text displays
+        for (BaseDisplay baseDisplay : displayed) {
+            baseDisplay.remove(player);
+        }
+        for (TextDisplay textDisplay : emptySlotDisplays) {
+            textDisplay.remove();
+        }
+        emptySlotDisplays.clear();
+
+        playerIsDone = true;
+        done();
+
+        // Teleport and save
+        player.teleportAsync(new Location(player.getWorld(), 0, 100, 0)); // TODO: Replace with proper spawn location
+        character.getHPlayer().getSelectedCharacter().saveCharacterPlayerData(false);
     }
 
     @Override
     public void onLeftClick(BaseDisplay display) {
+        if (playerIsDone) return;
+
         if (!(display instanceof ClassDisplay classDisplay)) {
             return;
         }
         if (classDisplay.getHClass() == null) {
-            MessageUtil.sendMessage(player, "<red>Class not found.");
+            player.sendMessage(Component.translatable("hecate.class.not_found"));
             return;
         }
+
         HClass cl = classDisplay.getHClass();
-        MessageUtil.sendMessage(player, "<green>Class: " + cl.getName());
-        MessageUtil.sendMessage(player, "<green>Description: " + cl.getDescription());
-        MessageUtil.sendMessage(player, "<green>Starting Traitline: " + cl.getStarterTraitline().getName());
+        player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+        player.sendMessage(Component.text(cl.getDisplayName(), cl.getColor(), TextDecoration.BOLD));
+        player.sendMessage(Component.text(cl.getDescription(), NamedTextColor.GRAY));
+        player.sendMessage(Component.translatable("hecate.class.selected.traitline_label",
+            Component.text(cl.getStarterTraitline().getName())));
+        player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+        player.sendMessage(Component.translatable("hecate.class.selection.right_click_to_select"));
+    }
+
+    private void spawnClassInfoDisplay(HClass hClass, Location location) {
+        Location locCopy = location.clone();
+        locCopy.setYaw(0);
+        locCopy.setPitch(0);
+        locCopy.setY(locCopy.getY() + 2.5);
+        TextDisplay display = locCopy.getWorld().spawn(locCopy, TextDisplay.class, textDisplay -> {
+            textDisplay.setVisibleByDefault(false);
+            Component text = Component.text(hClass.getDisplayName(), hClass.getColor(), TextDecoration.BOLD);
+            text = text.append(Component.newline());
+            text = text.append(Component.translatable("hecate.class.selection.click_learn_more"));
+            textDisplay.text(text);
+            textDisplay.setBillboard(Display.Billboard.VERTICAL);
+            textDisplay.setDefaultBackground(false);
+            textDisplay.setBackgroundColor(org.bukkit.Color.fromARGB(0, 0, 0, 0));
+            Transformation transformation = new Transformation(new Vector3f(0f), new AxisAngle4f(), new Vector3f(0.7f), new AxisAngle4f());
+            textDisplay.setTransformation(transformation);
+        });
+        player.showEntity(plugin, display);
+        emptySlotDisplays.add(display);
     }
 
 }

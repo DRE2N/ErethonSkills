@@ -100,9 +100,11 @@ public class HPlayer {
                                     .thenRun(() -> {
                                         Hecate.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                                         setLastCharacter(selectedCharacter.getCharacterID());
+                                        clearBlindnessAndTitle();
                                     })
                                     .exceptionally(ex -> {
                                         ex.printStackTrace();
+                                        clearBlindnessAndTitle();
                                         return null;
                                     });
                         } else {
@@ -111,9 +113,11 @@ public class HPlayer {
                                     .thenRun(() -> {
                                         Hecate.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                                         setLastCharacter(selectedCharacter.getCharacterID());
+                                        clearBlindnessAndTitle();
                                     })
                                     .exceptionally(ex -> {
                                         ex.printStackTrace();
+                                        clearBlindnessAndTitle();
                                         return null;
                                     });
                         }
@@ -126,9 +130,11 @@ public class HPlayer {
                                 }
                                 Hecate.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                                 setLastCharacter(selectedCharacter.getCharacterID());
+                                clearBlindnessAndTitle();
                             })
                             .exceptionally(ex -> {
                                 ex.printStackTrace();
+                                clearBlindnessAndTitle();
                                 return null;
                             });
                     }
@@ -136,6 +142,7 @@ public class HPlayer {
             catch (Exception e) {
                 Hecate.log("Failed to switch to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                 e.printStackTrace();
+                clearBlindnessAndTitle();
             }
         } finally {
             lock.unlock();
@@ -152,6 +159,18 @@ public class HPlayer {
                 }
             };
             mainTask.runTaskLater(Hecate.getInstance(), 10);
+        }
+    }
+
+    private void clearBlindnessAndTitle() {
+        if (player != null && player.isOnline()) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    Title clearTitle = Title.title(Component.empty(), Component.empty());
+                    player.showTitle(clearTitle);
+                }
+            }.runTask(Hecate.getInstance());
         }
     }
 

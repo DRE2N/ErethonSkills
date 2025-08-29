@@ -3,8 +3,8 @@ package de.erethon.hecate.charselection;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
+import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
-import de.erethon.hecate.progression.LevelUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -18,8 +18,6 @@ import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
@@ -40,13 +38,15 @@ public class CharacterSelection extends BaseSelection {
     private final Interaction[] interactions = new Interaction[9];
     private boolean confirmed = false;
     private boolean playerIsDone = false;
+    private UUID characterToDelete = null; // Track which character is pending deletion
+    private long deleteRequestTime = 0; // Track when delete was requested
 
     public CharacterSelection(Player player, CharacterLobby lobby) {
         super(player);
         this.lobby = lobby;
         this.hPlayer = plugin.getDatabaseManager().getHPlayer(player);
         if (hPlayer.getSelectedCharacter() != null && hPlayer.getSelectedCharacter().isInCastMode()) {
-            MessageUtil.sendMessage(player, "<red>You can't select a character while in combat mode.");
+            player.sendMessage(Component.translatable("hecate.character.selection.combat_mode_error"));
             return;
         }
         List<HCharacter> characters = hPlayer.getCharacters();
@@ -100,8 +100,20 @@ public class CharacterSelection extends BaseSelection {
         }
         player.setInvisible(false);
         if (newCharacter) {
-            player.showTitle(Title.title(Component.empty(), Component.text("New character created!", NamedTextColor.GREEN)));
-            ClassSelection classSelection = new ClassSelection(player, lobby);
+            player.showTitle(Title.title(
+                Component.translatable("hecate.character.selection.creating_new", NamedTextColor.GOLD, TextDecoration.BOLD),
+                Component.translatable("hecate.character.selection.choose_class")
+            ));
+            player.sendMessage(Component.translatable("hecate.character.selection.creating_new"));
+            player.sendMessage(Component.translatable("hecate.character.selection.choose_class"));
+
+            // Delay class selection to allow for proper cleanup
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    ClassSelection classSelection = new ClassSelection(player, lobby);
+                }
+            }.runTaskLater(plugin, 5L);
         }
         done();
     }
@@ -114,7 +126,6 @@ public class CharacterSelection extends BaseSelection {
             return;
         }
         leaveCharacterSelection(false);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 9999, 1, true, false, false));
         HCharacter character = characterDisplay.getCharacter();
         plugin.getDatabaseManager().getHPlayer(player).setSelectedCharacter(character, true);
         playerIsDone = true;
@@ -125,7 +136,261 @@ public class CharacterSelection extends BaseSelection {
     }
 
     public void onRightClick(BaseDisplay display) {
+        // Regular right-click - could be used for character info or other features
+    }
 
+    public void onSneakRightClick(BaseDisplay display) {
+        if (playerIsDone) {
+            return;
+        }
+        if (!(display instanceof CharacterDisplay characterDisplay)) {
+            return;
+        }
+
+        HCharacter character = characterDisplay.getCharacter();
+        UUID characterId = character.getCharacterID();
+        long currentTime = System.currentTimeMillis();
+
+        // Check if this is a confirmation for the same character within 10 seconds
+        if (characterToDelete != null && characterToDelete.equals(characterId) &&
+            (currentTime - deleteRequestTime) < 10000) {
+
+            // Proceed with deletion
+            performCharacterDeletion(character, characterDisplay);
+
+        } else {
+            // First click - request confirmation
+            characterToDelete = characterId;
+            deleteRequestTime = currentTime;
+
+            String className = character.getHClass() != null ? character.getHClass().getDisplayName() :
+                Component.translatable("hecate.misc.classless").toString();
+
+            player.sendMessage(Component.translatable("hecate.character.deletion.warning_title"));
+            player.sendMessage(Component.translatable("hecate.character.deletion.warning_about_to_delete",
+                Component.text(className, character.getHClass() != null ? character.getHClass().getColor() : NamedTextColor.GRAY),
+                Component.text(character.getLevel())));
+            player.sendMessage(Component.translatable("hecate.character.deletion.warning_irreversible"));
+            player.sendMessage(Component.translatable("hecate.character.deletion.warning_confirm"));
+            player.sendMessage(Component.translatable("hecate.character.deletion.warning_cancel"));
+
+            player.showTitle(Title.title(
+                Component.translatable("hecate.character.deletion.title_delete"),
+                Component.translatable("hecate.character.deletion.title_confirm")
+            ));
+        }
+    }
+
+    private void performCharacterDeletion(HCharacter character, CharacterDisplay characterDisplay) {
+        String className = character.getHClass() != null ? character.getHClass().getDisplayName() : "Classless";
+
+        // Find the index of the character being deleted
+        int deletedIndex = -1;
+        for (int i = 0; i < displayed.size(); i++) {
+            if (displayed.get(i) instanceof CharacterDisplay cd &&
+                cd.getCharacter().getCharacterID().equals(character.getCharacterID())) {
+                deletedIndex = i;
+                break;
+            }
+        }
+
+        // Remove from display and player's character list
+        displayed.remove(characterDisplay);
+        characterDisplay.remove(player);
+        hPlayer.getCharacters().remove(character);
+
+        // If this was the selected character, clear it
+        if (hPlayer.getSelectedCharacter() != null &&
+            hPlayer.getSelectedCharacter().getCharacterID().equals(character.getCharacterID())) {
+            hPlayer.setSelectedCharacter(null, true);
+        }
+
+        // Delete from database
+        plugin.getDatabaseManager().executeAsync(handle -> {
+            handle.attach(CharacterDao.class).deleteCharacter(character.getCharacterID());
+        }).thenRun(() -> {
+            player.sendMessage(Component.translatable("hecate.character.deletion.success"));
+            player.sendMessage(Component.translatable("hecate.character.deletion.success_detail",
+                Component.text(className), Component.text(character.getLevel())));
+        }).exceptionally(ex -> {
+            player.sendMessage(Component.translatable("hecate.data.error_saving", Component.text(ex.getMessage())));
+            ex.printStackTrace();
+            return null;
+        });
+
+        // Clear deletion tracking
+        characterToDelete = null;
+        deleteRequestTime = 0;
+
+        // Visual feedback
+        player.showTitle(Title.title(
+            Component.translatable("hecate.character.deletion.title_deleted"),
+            Component.translatable("hecate.character.deletion.title_removed", Component.text(className))
+        ));
+
+        // Completely rebuild the display layout to shift characters left
+        rebuildDisplayLayout();
+    }
+
+    private void rebuildDisplayLayout() {
+        // Clear all existing displays and interactions
+        for (TextDisplay display : emptySlotDisplays) {
+            display.remove();
+        }
+        emptySlotDisplays.clear();
+
+        // Clear all interactions except those for existing characters
+        for (int i = 0; i < interactions.length; i++) {
+            if (interactions[i] != null && i >= displayed.size()) {
+                interactions[i].remove();
+                interactions[i] = null;
+            }
+        }
+
+        // Remove all existing character displays to reposition them
+        for (BaseDisplay characterDisplay : displayed) {
+            characterDisplay.remove(player);
+        }
+
+        // Rebuild the entire layout from scratch
+        List<Location> locations = lobby.getPedestalLocations();
+        for (int i = 0; i < locations.size(); i++) {
+            if (i >= hPlayer.getMaximumCharacters()) {
+                // Locked slot
+                spawnLockedSlotDisplay(locations.get(i));
+                if (interactions[i] == null) {
+                    interactions[i] = spawnInteractionEntity(locations.get(i));
+                }
+            } else if (i < displayed.size()) {
+                // Character slot - redisplay the character at the new position
+                if (displayed.get(i) instanceof CharacterDisplay characterDisplay) {
+                    characterDisplay.display(player, locations.get(i));
+                    spawnCharacterInfoDisplay(characterDisplay.getCharacter(), locations.get(i));
+                }
+            } else {
+                // Empty slot
+                spawnEmptySlotDisplay(locations.get(i));
+                if (interactions[i] == null) {
+                    interactions[i] = spawnInteractionEntity(locations.get(i));
+                }
+            }
+        }
+    }
+
+    private void spawnCharacterInfoDisplay(HCharacter character, Location location) {
+        Location locCopy = location.clone();
+        locCopy.setYaw(0);
+        locCopy.setPitch(0);
+        locCopy.setY(locCopy.getY() + 2);
+        TextDisplay display = locCopy.getWorld().spawn(locCopy, TextDisplay.class, textDisplay -> {
+            textDisplay.setVisibleByDefault(false);
+
+            String className = character.getHClass() != null ? character.getHClass().getDisplayName() :
+                Component.translatable("hecate.misc.no_class").toString();
+            Component text = Component.text(className, NamedTextColor.GOLD, TextDecoration.BOLD);
+            text = text.append(Component.newline());
+            text = text.append(Component.translatable("hecate.character.info.level", Component.text(character.getLevel())));
+            text = text.append(Component.newline());
+            text = text.append(Component.newline());
+            text = text.append(Component.translatable("hecate.character.controls.left_click_select"));
+            text = text.append(Component.newline());
+            text = text.append(Component.translatable("hecate.character.controls.sneak_right_click_delete"));
+
+            String createdAt = character.getCreatedAt().toString().substring(0, 10); // Just the date
+            text = text.append(Component.newline());
+            text = text.append(Component.translatable("hecate.character.info.created", Component.text(createdAt)));
+
+            if (player.hasPermission("hecate.admin")) { // Allow admins to see the character ID
+                text = text.append(Component.newline());
+                text = text.append(Component.text("ID: " + character.getCharacterID().toString().substring(0, 8) + "...", NamedTextColor.DARK_GRAY));
+            }
+
+            textDisplay.text(text);
+            textDisplay.setBillboard(Display.Billboard.VERTICAL);
+            textDisplay.setDefaultBackground(false);
+            textDisplay.setBackgroundColor(org.bukkit.Color.fromARGB(0, 0, 0, 0));
+            Transformation transformation = new Transformation(new Vector3f(0f), new AxisAngle4f(), new Vector3f(0.5f), new AxisAngle4f());
+            textDisplay.setTransformation(transformation);
+        });
+        player.showEntity(plugin, display);
+        emptySlotDisplays.add(display);
+    }
+
+    private void spawnLockedSlotDisplay(Location location) {
+        Location locCopy = location.clone();
+        locCopy.setYaw(0);
+        locCopy.setPitch(0);
+        locCopy.setY(locCopy.getY() + 1.5);
+
+        TextDisplay display = locCopy.getWorld().spawn(locCopy, TextDisplay.class, textDisplay -> {
+            textDisplay.setVisibleByDefault(false);
+
+            Component text = Component.text("🔒", NamedTextColor.RED)
+                .decoration(TextDecoration.BOLD, true)
+                .append(Component.newline())
+                .append(Component.translatable("hecate.character.slot.locked", NamedTextColor.GRAY));
+
+            textDisplay.text(text);
+            textDisplay.setBillboard(Display.Billboard.VERTICAL);
+            textDisplay.setDefaultBackground(false);
+            textDisplay.setBackgroundColor(org.bukkit.Color.fromARGB(0, 0, 0, 0));
+
+            Transformation transformation = new Transformation(
+                new Vector3f(0f),
+                new AxisAngle4f(),
+                new Vector3f(2.0f),
+                new AxisAngle4f()
+            );
+            textDisplay.setTransformation(transformation);
+        });
+
+        player.showEntity(plugin, display);
+        emptySlotDisplays.add(display);
+    }
+
+    private void spawnEmptySlotDisplay(Location location) {
+        Location locCopy = location.clone();
+        locCopy.setYaw(0);
+        locCopy.setPitch(0);
+        locCopy.setY(locCopy.getY() + 1.5);
+
+        TextDisplay display = locCopy.getWorld().spawn(locCopy, TextDisplay.class, textDisplay -> {
+            textDisplay.setVisibleByDefault(false);
+
+            Component text = Component.text("✚", NamedTextColor.GREEN)
+                .decoration(TextDecoration.BOLD, true)
+                .append(Component.newline())
+                .append(Component.translatable("hecate.character.slot.empty", NamedTextColor.GRAY))
+                .append(Component.newline())
+                .append(Component.translatable("hecate.character.slot.click_to_create", NamedTextColor.YELLOW));
+
+            textDisplay.text(text);
+            textDisplay.setBillboard(Display.Billboard.VERTICAL);
+            textDisplay.setDefaultBackground(false);
+            textDisplay.setBackgroundColor(org.bukkit.Color.fromARGB(0, 0, 0, 0));
+
+            Transformation transformation = new Transformation(
+                new Vector3f(0f),
+                new AxisAngle4f(),
+                new Vector3f(2.0f),
+                new AxisAngle4f()
+            );
+            textDisplay.setTransformation(transformation);
+        });
+
+        player.showEntity(plugin, display);
+        emptySlotDisplays.add(display);
+    }
+
+    private Interaction spawnInteractionEntity(Location location) {
+        Location locCopy = location.clone();
+        locCopy.setY(locCopy.getY() + 0.5);
+
+        return locCopy.getWorld().spawn(locCopy, Interaction.class, interaction -> {
+            interaction.setInteractionWidth(2.0f);
+            interaction.setInteractionHeight(3.0f);
+            interaction.setResponsive(true);
+        });
     }
 
     @EventHandler
@@ -136,6 +401,20 @@ public class CharacterSelection extends BaseSelection {
         if (event.getPlayer() != player) {
             return;
         }
+
+        // Only handle main hand interactions to prevent double triggers
+        if (event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) {
+            return;
+        }
+
+        // Reset deletion confirmation if player interacts with something else
+        if (characterToDelete != null) {
+            characterToDelete = null;
+            deleteRequestTime = 0;
+            player.sendMessage(Component.translatable("hecate.character.deletion.cancelled"));
+            player.showTitle(Title.title(Component.empty(), Component.empty()));
+        }
+
         if (event.getRightClicked() instanceof Interaction interaction) {
             for (int i = 0; i < interactions.length; i++) {
                 if (interactions[i] == interaction) {
@@ -143,24 +422,24 @@ public class CharacterSelection extends BaseSelection {
                         return; // the interaction is in the wrong place somehow
                     }
                     if (i >= hPlayer.getMaximumCharacters()) {
-                        MessageUtil.sendMessage(player, "<gold>This character slot is currently locked!");
-                        MessageUtil.sendMessage(player, "<gray><italic>You can unlock more slots through gameplay or");
-                        MessageUtil.sendMessage(player, "<gray><italic>by purchasing them at <gold>store.erethon.net");
+                        player.sendMessage(Component.translatable("hecate.character.selection.slot_locked"));
+                        player.sendMessage(Component.translatable("hecate.character.selection.slot_locked_help"));
+                        player.sendMessage(Component.translatable("hecate.character.selection.slot_locked_store"));
                         return; // the slot is locked
                     }
                     if (i >= displayed.size()) {
                         if (!confirmed) {
-                            MessageUtil.sendMessage(player, "<red>This character slot is empty.");
-                            MessageUtil.sendMessage(player, "<gray>Click again to create a new character.");
+                            player.sendMessage(Component.translatable("hecate.character.selection.slot_empty"));
+                            player.sendMessage(Component.translatable("hecate.character.selection.slot_empty_confirm"));
                             confirmed = true;
                             return; // the slot is empty
                         }
-                        HCharacter newCharacter = new HCharacter(UUID.randomUUID(), hPlayer, 1, "default", new Timestamp(System.currentTimeMillis()), new ArrayList<>());
+                        HCharacter newCharacter = new HCharacter(UUID.randomUUID(), hPlayer, 1, null, new Timestamp(System.currentTimeMillis()), new ArrayList<>());
                         hPlayer.getCharacters().add(newCharacter);
                         playerIsDone = true;
                         newCharacter.saveToDatabase().thenAccept(v -> {
                             hPlayer.setSelectedCharacter(newCharacter, true);
-                            player.showTitle(Title.title(Component.empty(), Component.text("Initializing new character...", NamedTextColor.GREEN)));
+                            player.showTitle(Title.title(Component.empty(), Component.translatable("hecate.character.selection.initializing")));
                             BukkitRunnable runLater = new BukkitRunnable() {
                                 @Override
                                 public void run() {
@@ -175,79 +454,5 @@ public class CharacterSelection extends BaseSelection {
                 }
             }
         }
-    }
-
-    private Interaction spawnInteractionEntity(Location location) {
-        Interaction interaction = location.getWorld().spawn(location, Interaction.class, interactionEntity -> {
-            interactionEntity.setInteractionHeight(1);
-            interactionEntity.setInteractionWidth(1);
-        });
-        player.showEntity(plugin, interaction);
-        return interaction;
-    }
-
-    private void spawnEmptySlotDisplay(Location location) {
-        Location locCopy = location.clone();
-        locCopy.setYaw(0);
-        locCopy.setPitch(0);
-        TextDisplay display = locCopy.getWorld().spawn(locCopy, TextDisplay.class, textDisplay -> {
-            textDisplay.setVisibleByDefault(false);
-            Component text = Component.text("+", NamedTextColor.GREEN).decorate(TextDecoration.BOLD);
-            textDisplay.text(text);
-            textDisplay.setBillboard(Display.Billboard.VERTICAL);
-            textDisplay.setDefaultBackground(false);
-            textDisplay.setBackgroundColor(org.bukkit.Color.fromARGB(0, 0, 0, 0));
-            Transformation transformation = new Transformation(new Vector3f(0f), new AxisAngle4f(), new Vector3f(5f), new AxisAngle4f());
-            textDisplay.setTransformation(transformation);
-        });
-        player.showEntity(plugin, display);
-        emptySlotDisplays.add(display);
-    }
-
-    private void spawnLockedSlotDisplay(Location location) {
-        Location locCopy = location.clone();
-        locCopy.setYaw(0);
-        locCopy.setPitch(0);
-        TextDisplay display = locCopy.getWorld().spawn(locCopy, TextDisplay.class, textDisplay -> {
-            textDisplay.setVisibleByDefault(false);
-            Component text = Component.text("\uD83D\uDD12", NamedTextColor.GOLD);
-            textDisplay.text(text);
-            textDisplay.setBillboard(Display.Billboard.VERTICAL);
-            textDisplay.setDefaultBackground(false);
-            textDisplay.setBackgroundColor(org.bukkit.Color.fromARGB(0, 0, 0, 0));
-            Transformation transformation = new Transformation(new Vector3f(0f), new AxisAngle4f(), new Vector3f(5f), new AxisAngle4f());
-            textDisplay.setTransformation(transformation);
-        });
-        player.showEntity(plugin, display);
-        emptySlotDisplays.add(display);
-    }
-
-    private void spawnCharacterInfoDisplay(HCharacter character, Location location) {
-        Location locCopy = location.clone();
-        locCopy.setYaw(0);
-        locCopy.setPitch(0);
-        locCopy.setY(locCopy.getY() + 2);
-        TextDisplay display = locCopy.getWorld().spawn(locCopy, TextDisplay.class, textDisplay -> {
-            textDisplay.setVisibleByDefault(false);
-            Component text = Component.text(character.getClassId(), NamedTextColor.GOLD);
-            text = text.append(Component.newline());
-            text = text.append(Component.text("Level: " + character.getLevel(), NamedTextColor.GRAY));
-            text = text.append(Component.newline());
-            String createdAt = character.getCreatedAt().toString();
-            text = text.append(Component.newline());
-            text = text.append(Component.text("created at: " + createdAt, NamedTextColor.DARK_GRAY));
-            if (player.hasPermission("hecate.admin")) { // Allow admins to see the character ID
-                text = text.append(Component.newline());
-                text = text.append(Component.text("ID: " + character.getCharacterID(), NamedTextColor.DARK_GRAY));
-            }
-            textDisplay.text(text);
-            textDisplay.setBillboard(Display.Billboard.VERTICAL);
-            textDisplay.setDefaultBackground(false);
-            textDisplay.setBackgroundColor(org.bukkit.Color.fromARGB(0, 0, 0, 0));
-            Transformation transformation = new Transformation(new Vector3f(0f), new AxisAngle4f(), new Vector3f(0.5f), new AxisAngle4f());
-            textDisplay.setTransformation(transformation);
-        });
-        player.showEntity(plugin, display);
-        emptySlotDisplays.add(display);
     }
 }

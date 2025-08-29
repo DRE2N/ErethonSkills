@@ -120,11 +120,11 @@ public class TraitMenu implements Listener/*, InventoryHolder*/ {
         TraitLineEntry entry = traitline.getTraitLineEntries(level).get(index);
         ItemStack item = new ItemStack(ICON_MATERIAL);
         ItemMeta meta = item.getItemMeta();
-        Component name = Component.translatable("spellbook.trait.name." + entry.data().getId());
+        Component name = Component.translatable("hecate.spellbook.trait.name." + entry.data().getId());
         meta.displayName(Component.text().append(name).color(player.gethClass().getColor()).decoration(TextDecoration.BOLD, true).build());
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < entry.data().getDescriptionLineCount(); i++) {
-            lore.add(Component.translatable("spellbook.trait.description." + entry.data().getId() + "." + i, ""));
+            lore.add(Component.translatable("hecate.spellbook.trait.description." + entry.data().getId() + "." + i, ""));
         }
         meta.lore(lore);
         if (active) {

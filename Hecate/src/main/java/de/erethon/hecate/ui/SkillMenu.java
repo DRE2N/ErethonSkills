@@ -148,11 +148,11 @@ public class SkillMenu implements Listener {
     private ItemStack itemFromSpellData(SpellData data) {
         ItemStack itemStack = new ItemStack(Material.BOOK);
         ItemMeta meta = itemStack.getItemMeta();
-        Component name = Component.translatable("spellbook.spell.name." + data.getId());
+        Component name = Component.translatable("hecate.spellbook.spell.name." + data.getId());
         meta.displayName(Component.text().append(name).color(player.gethClass().getColor()).decoration(TextDecoration.BOLD, true).build());
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < data.getDescriptionLineCount(); i++) {
-            lore.add(Component.translatable("spellbook.spell.description." + data.getId() + "." + i, ""));
+            lore.add(Component.translatable("hecate.spellbook.spell.description." + data.getId() + "." + i, ""));
         }
         meta.lore(lore);
         meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, data.getId());

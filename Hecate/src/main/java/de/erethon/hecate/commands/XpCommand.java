@@ -100,6 +100,9 @@ public class XpCommand extends ECommand {
         if (type.equals("all") || type.equals("worldseeker")) {
             showWorldSeekerXp(sender, hPlayer);
         }
+        if (type.equals("all") || type.equals("job")) {
+            showJobXp(sender, hPlayer);
+        }
     }
 
     private void handleGive(String[] args, CommandSender sender) {
@@ -152,6 +155,15 @@ public class XpCommand extends ECommand {
             case "worldseeker":
                 LevelUtil.giveWorldSeekerXp(hPlayer, amount);
                 MessageUtil.sendMessage(sender, "<green>Gave " + amount + " world seeker XP to " + target.getName());
+                break;
+            case "job":
+                HCharacter jobChar = hPlayer.getSelectedCharacter();
+                if (jobChar == null) {
+                    MessageUtil.sendMessage(sender, "<red>" + target.getName() + " has no active character.");
+                    return;
+                }
+                LevelUtil.giveJobXp(jobChar, amount);
+                MessageUtil.sendMessage(sender, "<green>Gave " + amount + " job XP to " + target.getName());
                 break;
             default:
                 MessageUtil.sendMessage(sender, "<red>Invalid type. Use: character, alliance, worldseeker");
@@ -209,6 +221,14 @@ public class XpCommand extends ECommand {
             case "worldseeker":
                 setXpBalance(hPlayer.getPlayerId(), OwnerType.PLAYER, "xp_exploration", amount);
                 MessageUtil.sendMessage(sender, "<green>Set world seeker XP for " + target.getName() + " to " + amount);
+                break;
+            case "job":
+                HCharacter jobChar = hPlayer.getSelectedCharacter();
+                if (jobChar == null) {
+                    MessageUtil.sendMessage(sender, "<red>" + target.getName() + " has no active character.");
+                    return;
+                }
+                setXpBalance(jobChar.getCharacterID(), OwnerType.CHARACTER, "xp_job", amount);
                 break;
             default:
                 MessageUtil.sendMessage(sender, "<red>Invalid type. Use: character, alliance, worldseeker");
@@ -298,6 +318,33 @@ public class XpCommand extends ECommand {
                 MessageUtil.sendMessage(sender, "<green>World Seeker XP: <white>" + xp + " <gray>(Level " + level + ")");
             } catch (Exception e) {
                 MessageUtil.sendMessage(sender, "<red>Error retrieving world seeker XP data.");
+            }
+        });
+    }
+
+    private void showJobXp(CommandSender sender, HPlayer hPlayer) {
+        TychePlugin tychePlugin = (TychePlugin) Bukkit.getPluginManager().getPlugin("Tyche");
+        if (tychePlugin == null) {
+            MessageUtil.sendMessage(sender, "<red>Tyche plugin not found. XP commands require Tyche to be installed.");
+            return;
+        }
+        EconomyService economyService = tychePlugin.getEco();
+        HCharacter character = hPlayer.getSelectedCharacter();
+        if (character == null) {
+            MessageUtil.sendMessage(sender, "<yellow>No active character.");
+            return;
+        }
+
+        CompletableFuture<Long> xpFuture = economyService.getBalance(character.getCharacterID(), OwnerType.CHARACTER, "xp_job");
+        CompletableFuture<Integer> levelFuture = LevelUtil.getJobLevel(character);
+
+        CompletableFuture.allOf(xpFuture, levelFuture).thenRun(() -> {
+            try {
+                long xp = xpFuture.get();
+                int level = levelFuture.get();
+                MessageUtil.sendMessage(sender, "<light_purple>Job XP: <white>" + xp + " <gray>(Level " + level + ")");
+            } catch (Exception e) {
+                MessageUtil.sendMessage(sender, "<red>Error retrieving job XP data.");
             }
         });
     }

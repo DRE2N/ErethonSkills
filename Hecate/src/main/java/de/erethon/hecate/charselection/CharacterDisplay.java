@@ -27,14 +27,21 @@ public class CharacterDisplay extends BaseDisplay implements Listener {
     @EventHandler
     private void onUnknownEntityInteract(PlayerUseUnknownEntityEvent event) {
         if (event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) {
+            return; // Only handle main hand interactions
+        }
+        if (event.getEntityId() != entityId) {
             return;
         }
-        if (!event.isAttack()) {
-            selection.onRightClick(this);
-            return;
-        }
-        if (event.getEntityId() == entityId) {
+
+        if (event.isAttack()) {
             selection.onLeftClick(this);
+        } else {
+            // Check if player is sneaking for deletion
+            if (event.getPlayer().isSneaking() && selection instanceof CharacterSelection characterSelection) {
+                characterSelection.onSneakRightClick(this);
+            } else {
+                selection.onRightClick(this);
+            }
         }
     }
 

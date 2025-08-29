@@ -1,8 +1,6 @@
 package de.erethon.hecate.casting;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
-import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.events.CombatModeEnterEvent;
@@ -22,23 +20,18 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -316,11 +309,11 @@ public class CharacterCastingManager {
 
     private ItemStack getItemStackFromSpellData(int slot, SpellData spellData) {
         ItemStack item = new ItemStack(CastingStatics.SLOT_DYES[slot]);
-        item.setData(DataComponentTypes.CUSTOM_NAME, Component.translatable("spellbook.spell.name." + spellData.getId()));
+        item.setData(DataComponentTypes.CUSTOM_NAME, Component.translatable("hecate.spellbook.spell.name." + spellData.getId()));
         List<Component> placeholders = spellData.getActiveSpell(player).getPlaceholders(player);
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < spellData.getDescriptionLineCount(); i++) {
-            lore.add(Component.translatable("spellbook.spell.description." + spellData.getId() + "." + i, placeholders));
+            lore.add(Component.translatable("hecate.spellbook.spell.description." + spellData.getId() + "." + i, placeholders));
         }
         item.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
         return item;
@@ -332,7 +325,7 @@ public class CharacterCastingManager {
         }
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < spell.getData().getDescriptionLineCount(); i++) {
-            lore.add(Component.translatable("spellbook.spell.description." + spell.getId() + "." + i, spell.getPlaceholders(player)));
+            lore.add(Component.translatable("hecate.spellbook.spell.description." + spell.getId() + "." + i, spell.getPlaceholders(player)));
         }
         stack.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
     }

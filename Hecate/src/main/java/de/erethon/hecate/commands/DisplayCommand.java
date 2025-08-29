@@ -51,10 +51,10 @@ public class DisplayCommand extends ECommand {
         }
         Player player = (Player) commandSender;
         SpellbookSpell spell = data.getActiveSpell(player);
-        player.sendMessage(Component.translatable("spellbook.spell.name." + data.getId(), data.getName()));
+        player.sendMessage(Component.translatable("hecate.spellbook.spell.name." + data.getId(), data.getName()));
         spell.getPlaceholders(player);
         for (int i = 0; i < data.getDescriptionLineCount(); i++) {
-            player.sendMessage(Component.translatable("spellbook.spell.description." + data.getId() + "." + i, spell.getPlaceholders(player)));
+            player.sendMessage(Component.translatable("hecate.spellbook.spell.description." + data.getId() + "." + i, spell.getPlaceholders(player)));
         }
     }
 

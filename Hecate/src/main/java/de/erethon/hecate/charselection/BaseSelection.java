@@ -1,8 +1,8 @@
 package de.erethon.hecate.charselection;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.data.DatabaseManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
@@ -52,7 +52,7 @@ public abstract class BaseSelection implements Listener {
         String message = event.getMessage();
         if (message.startsWith("/")) {
             event.setCancelled(true);
-            MessageUtil.sendMessage(player, "<red>You can't use commands while in character selection.");
+            player.sendMessage(Component.translatable("hecate.combat.no_commands_in_selection"));
         }
     }
 

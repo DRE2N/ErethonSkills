@@ -1,7 +1,6 @@
 package de.erethon.hecate.charselection;
 
 import com.destroystokyo.paper.event.player.PlayerUseUnknownEntityEvent;
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.HClass;
 import net.minecraft.world.item.ItemStack;
@@ -18,7 +17,6 @@ public class ClassDisplay extends BaseDisplay implements Listener {
         super(selection);
         this.hClass = hClass;
         loadInventory();
-        MessageUtil.broadcastMessage("Initializing class display");
         Bukkit.getPluginManager().registerEvents(this, Hecate.getInstance());
     }
 
@@ -28,16 +26,17 @@ public class ClassDisplay extends BaseDisplay implements Listener {
 
     @EventHandler
     private void onUnknownEntityInteract(PlayerUseUnknownEntityEvent event) {
-        MessageUtil.broadcastMessage("Interacted");
         if (event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) {
             return;
         }
-        if (!event.isAttack()) {
-            selection.onRightClick(this);
+        if (event.getEntityId() != entityId) {
             return;
         }
-        if (event.getEntityId() == entityId) {
+
+        if (event.isAttack()) {
             selection.onLeftClick(this);
+        } else {
+            selection.onRightClick(this);
         }
     }
 
