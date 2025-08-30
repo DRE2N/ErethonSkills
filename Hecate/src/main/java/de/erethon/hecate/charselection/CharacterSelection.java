@@ -163,12 +163,13 @@ public class CharacterSelection extends BaseSelection {
             characterToDelete = characterId;
             deleteRequestTime = currentTime;
 
-            String className = character.getHClass() != null ? character.getHClass().getDisplayName() :
-                Component.translatable("hecate.misc.classless").toString();
+            Component className = character.getHClass() != null ?
+                    character.getHClass().getDisplayName() :
+                Component.translatable("hecate.misc.no_class", NamedTextColor.GRAY);
 
             player.sendMessage(Component.translatable("hecate.character.deletion.warning_title"));
             player.sendMessage(Component.translatable("hecate.character.deletion.warning_about_to_delete",
-                Component.text(className, character.getHClass() != null ? character.getHClass().getColor() : NamedTextColor.GRAY),
+                className,
                 Component.text(character.getLevel())));
             player.sendMessage(Component.translatable("hecate.character.deletion.warning_irreversible"));
             player.sendMessage(Component.translatable("hecate.character.deletion.warning_confirm"));
@@ -182,7 +183,7 @@ public class CharacterSelection extends BaseSelection {
     }
 
     private void performCharacterDeletion(HCharacter character, CharacterDisplay characterDisplay) {
-        String className = character.getHClass() != null ? character.getHClass().getDisplayName() : "Classless";
+        Component className = character.getHClass().getDisplayName();
 
         // Find the index of the character being deleted
         int deletedIndex = -1;
@@ -211,7 +212,7 @@ public class CharacterSelection extends BaseSelection {
         }).thenRun(() -> {
             player.sendMessage(Component.translatable("hecate.character.deletion.success"));
             player.sendMessage(Component.translatable("hecate.character.deletion.success_detail",
-                Component.text(className), Component.text(character.getLevel())));
+                className, Component.text(character.getLevel())));
         }).exceptionally(ex -> {
             player.sendMessage(Component.translatable("hecate.data.error_saving", Component.text(ex.getMessage())));
             ex.printStackTrace();
@@ -225,7 +226,7 @@ public class CharacterSelection extends BaseSelection {
         // Visual feedback
         player.showTitle(Title.title(
             Component.translatable("hecate.character.deletion.title_deleted"),
-            Component.translatable("hecate.character.deletion.title_removed", Component.text(className))
+            Component.translatable("hecate.character.deletion.title_removed", className)
         ));
 
         // Completely rebuild the display layout to shift characters left
@@ -285,9 +286,9 @@ public class CharacterSelection extends BaseSelection {
         TextDisplay display = locCopy.getWorld().spawn(locCopy, TextDisplay.class, textDisplay -> {
             textDisplay.setVisibleByDefault(false);
 
-            String className = character.getHClass() != null ? character.getHClass().getDisplayName() :
-                Component.translatable("hecate.misc.no_class").toString();
-            Component text = Component.text(className, NamedTextColor.GOLD, TextDecoration.BOLD);
+            Component text = character.getHClass() != null ?
+                character.getHClass().getDisplayName() :
+                Component.translatable("hecate.misc.no_class", NamedTextColor.GRAY);
             text = text.append(Component.newline());
             text = text.append(Component.translatable("hecate.character.info.level", Component.text(character.getLevel())));
             text = text.append(Component.newline());

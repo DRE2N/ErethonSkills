@@ -94,15 +94,14 @@ public class ClassSelection extends BaseSelection {
         // Visual feedback
         player.showTitle(Title.title(
             Component.translatable("hecate.class.selected.title"),
-            Component.text(selectedClass.getDisplayName(), selectedClass.getColor())
+                selectedClass.getDisplayName()
         ));
 
         player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
         player.sendMessage(Component.translatable("hecate.class.selected.success_title"));
         player.sendMessage(Component.translatable("hecate.class.selected.class_label",
-            Component.text(selectedClass.getDisplayName(), selectedClass.getColor())));
-        player.sendMessage(Component.translatable("hecate.class.selected.traitline_label",
-            Component.text(selectedClass.getStarterTraitline().getName())));
+                selectedClass.getDisplayName()));
+        player.sendMessage(Component.translatable("hecate.class.selected.traitline_label", selectedClass.getDisplayName()));
         player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
         player.sendMessage(Component.translatable("hecate.class.selected.welcome"));
 
@@ -137,8 +136,8 @@ public class ClassSelection extends BaseSelection {
 
         HClass cl = classDisplay.getHClass();
         player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
-        player.sendMessage(Component.text(cl.getDisplayName(), cl.getColor(), TextDecoration.BOLD));
-        player.sendMessage(Component.text(cl.getDescription(), NamedTextColor.GRAY));
+        player.sendMessage(cl.getDisplayName());
+        player.sendMessage(cl.getDescription());
         player.sendMessage(Component.translatable("hecate.class.selected.traitline_label",
             Component.text(cl.getStarterTraitline().getName())));
         player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
@@ -152,7 +151,7 @@ public class ClassSelection extends BaseSelection {
         locCopy.setY(locCopy.getY() + 2.5);
         TextDisplay display = locCopy.getWorld().spawn(locCopy, TextDisplay.class, textDisplay -> {
             textDisplay.setVisibleByDefault(false);
-            Component text = Component.text(hClass.getDisplayName(), hClass.getColor(), TextDecoration.BOLD);
+            Component text = hClass.getDisplayName();
             text = text.append(Component.newline());
             text = text.append(Component.translatable("hecate.class.selection.click_learn_more"));
             textDisplay.text(text);

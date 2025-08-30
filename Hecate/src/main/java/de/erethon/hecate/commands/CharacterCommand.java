@@ -83,10 +83,10 @@ public class CharacterCommand extends ECommand implements TabCompleter {
                                    hPlayer.getSelectedCharacter().getCharacterID().equals(character.getCharacterID());
 
                 String prefix = isSelected ? "★ " : (i + 1) + ". ";
-                String className = character.getHClass() != null ? character.getHClass().getDisplayName() : "No Class";
+                Component className = character.getHClass() != null ? character.getHClass().getDisplayName() : Component.text("Classless", NamedTextColor.GRAY);
 
                 Component message = Component.text(prefix, isSelected ? NamedTextColor.GREEN : NamedTextColor.GRAY)
-                    .append(Component.text(className, character.getHClass() != null ? character.getHClass().getColor() : NamedTextColor.GRAY))
+                    .append(className)
                     .append(Component.text(" - Level " + character.getLevel(), NamedTextColor.GRAY));
 
                 if (isSelected) {
@@ -142,9 +142,11 @@ public class CharacterCommand extends ECommand implements TabCompleter {
         // Switch character
         hPlayer.setSelectedCharacter(targetCharacter, false);
 
-        String className = targetCharacter.getHClass() != null ? targetCharacter.getHClass().getDisplayName() : "Classless";
+        Component className = targetCharacter.getHClass() != null
+            ? targetCharacter.getHClass().getDisplayName()
+            : Component.text("No Class", NamedTextColor.GRAY);
         player.sendMessage(Component.translatable("hecate.character.selection.switched",
-            Component.text(className), Component.text(targetCharacter.getLevel())));
+            className, Component.text(targetCharacter.getLevel())));
     }
 
     private void handleCharacterCreate(Player player, HPlayer hPlayer, String[] args) {
@@ -189,14 +191,15 @@ public class CharacterCommand extends ECommand implements TabCompleter {
         }
 
         // Display character info
-        String className = character.getHClass() != null ? character.getHClass().getDisplayName() : "No Class";
+        Component className = character.getHClass() != null
+            ? character.getHClass().getDisplayName()
+            : Component.text("No Class", NamedTextColor.GRAY);
         String traitlineName = character.getTraitline() != null ? character.getTraitline().getName() : "None";
 
         player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
         player.sendMessage(Component.translatable("hecate.character.info.title"));
         player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
-        player.sendMessage(Component.translatable("hecate.character.info.class",
-            Component.text(className, character.getHClass() != null ? character.getHClass().getColor() : NamedTextColor.GRAY)));
+        player.sendMessage(Component.translatable("hecate.character.info.class", className));
         player.sendMessage(Component.translatable("hecate.character.info.level", Component.text(character.getLevel())));
         player.sendMessage(Component.translatable("hecate.character.info.traitline", Component.text(traitlineName)));
         player.sendMessage(Component.translatable("hecate.character.info.created",

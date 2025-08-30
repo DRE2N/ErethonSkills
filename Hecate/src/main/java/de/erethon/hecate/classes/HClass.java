@@ -1,7 +1,10 @@
 package de.erethon.hecate.classes;
 
 import de.erethon.hecate.Hecate;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -14,13 +17,14 @@ import java.util.List;
 public class HClass extends YamlConfiguration {
 
     private final List<Traitline> traitlines = new ArrayList<>();
+    MiniMessage mm = MiniMessage.miniMessage();
 
     private Traitline defaultTraitline = null;
 
     private String id;
-    private String displayName;
+    private Component displayName;
+    private Component description;
     private TextColor color;
-    private String description;
 
     public HClass(File file) {
         try {
@@ -46,11 +50,11 @@ public class HClass extends YamlConfiguration {
         return id;
     }
 
-    public String getDisplayName() {
+    public Component getDisplayName() {
         return displayName;
     }
 
-    public String getDescription() {
+    public Component getDescription() {
         return description;
     }
 
@@ -63,8 +67,8 @@ public class HClass extends YamlConfiguration {
     public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
         super.load(file);
         id = file.getName().replace(".yml", "");
-        displayName = getString("displayName", id);
-        description = getString("description", "");
+        displayName = Component.translatable("hecate.class." + id + ".name");
+        description = Component.translatable("hecate.class." + id + ".description");
         defaultTraitline = Hecate.getInstance().getTraitline(getString("defaultTraitline"));
         color = TextColor.fromHexString(getString("color", "#ffffff"));
         for (String id : getStringList("traitlines")) {
