@@ -108,6 +108,16 @@ tasks.register<Copy>("deployToSharedServer") {
 }
 
 publishing {
+    repositories {
+        maven {
+            name = "erethon"
+            url = uri("https://repo.erethon.de/snapshots")
+            credentials(PasswordCredentials::class)
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+    }
     publications {
         create<MavenPublication>("maven") {
             groupId = "de.erethon.hecate"
