@@ -1,7 +1,9 @@
 package de.erethon.spellbook.spells;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.aoe.AoE;
+import de.erethon.spellbook.aoe.AoEParameters;
+import de.erethon.spellbook.aoe.AoEShape;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -9,14 +11,12 @@ import de.erethon.spellbook.utils.Targeted;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.minimessage.tag.Tag;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.bukkit.Location;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,5 +168,58 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
 
     public List<String> getPlaceholderNames() {
         return placeholderNames;
+    }
+
+    /**
+     * Creates an AoE with the specified parameters
+     * @param center The center location of the AoE
+     * @param shape The shape of the AoE
+     * @param parameters The parameters defining the AoE's dimensions
+     * @param rotation Optional rotation vector for oriented shapes
+     * @param duration Duration in ticks (-1 for permanent)
+     * @return The created AoE
+     */
+    protected AoE createAoE(Location center, AoEShape shape, AoEParameters parameters, Vector rotation, long duration) {
+        return new AoE(this, caster, center, shape, parameters, rotation, duration);
+    }
+
+    /**
+     * Creates a circular AoE
+     * @param center The center location
+     * @param radius The radius of the circle
+     * @param height The height of the AoE
+     * @param duration Duration in ticks (-1 for permanent)
+     * @return The created AoE
+     */
+    protected AoE createCircularAoE(Location center, double radius, double height, long duration) {
+        return createAoE(center, AoEShape.CIRCLE, AoEParameters.circle(radius, height), null, duration);
+    }
+
+    /**
+     * Creates a rectangular AoE
+     * @param center The center location
+     * @param width The width of the rectangle
+     * @param length The length of the rectangle
+     * @param height The height of the AoE
+     * @param rotation Optional rotation vector
+     * @param duration Duration in ticks (-1 for permanent)
+     * @return The created AoE
+     */
+    protected AoE createRectangularAoE(Location center, double width, double length, double height, Vector rotation, long duration) {
+        return createAoE(center, AoEShape.RECTANGLE, AoEParameters.rectangle(width, length, height), rotation, duration);
+    }
+
+    /**
+     * Creates a cone AoE
+     * @param center The center location
+     * @param radius The radius of the cone
+     * @param angle The angle of the cone in degrees
+     * @param height The height of the AoE
+     * @param direction The direction the cone faces
+     * @param duration Duration in ticks (-1 for permanent)
+     * @return The created AoE
+     */
+    protected AoE createConeAoE(Location center, double radius, double angle, double height, Vector direction, long duration) {
+        return createAoE(center, AoEShape.CONE, AoEParameters.cone(radius, angle, height), direction, duration);
     }
 }

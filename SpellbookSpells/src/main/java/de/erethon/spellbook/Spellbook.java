@@ -36,6 +36,7 @@ public class Spellbook {
     private final Plugin implementer;
     private final EffectManager effectManager;
     private final TeamManager teamManager;
+    private final AoEManager aoeManager;
 
     private final PetLookup petLookup;
 
@@ -65,6 +66,7 @@ public class Spellbook {
         effectManager = new EffectManager(implementer);
         teamManager = new TeamManager();
         petLookup = new PetLookup();
+        aoeManager = new AoEManager();
         ccEffects.add(api.getLibrary().getEffectByID("Stun"));
         ccEffects.add(api.getLibrary().getEffectByID("Fear"));
         ccEffects.add(api.getLibrary().getEffectByID("Slow"));
@@ -84,6 +86,10 @@ public class Spellbook {
 
     public EffectManager getEffectManager() {
         return effectManager;
+    }
+
+    public AoEManager getAoEManager() {
+        return aoeManager;
     }
 
     public TeamManager getTeamManager() {

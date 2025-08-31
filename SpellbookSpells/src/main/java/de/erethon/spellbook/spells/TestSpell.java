@@ -1,18 +1,15 @@
 package de.erethon.spellbook.spells;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.aoe.AoE;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.fx.Animation;
-import de.erethon.spellbook.fx.cues.CircleBlockDisplayCue;
-import de.erethon.spellbook.fx.cues.SweepingBlockDisplayCue;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Listener;
 
 
-public class TestSpell extends SpellbookSpell implements Listener {
+public class TestSpell extends SpellbookBaseSpell implements Listener {
 
     public TestSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -22,23 +19,45 @@ public class TestSpell extends SpellbookSpell implements Listener {
     }
 
     @Override
-    protected boolean onPrecast() {
+    public boolean onCast() {
+        AoE circularAoE = createCircularAoE(caster.getLocation(), 7, 3, 200);
+
+        AoE rectangularAoE = createRectangularAoE(caster.getLocation(), 5, 10, 3, caster.getLocation().getDirection(), 200);
+
+        AoE coneAoE = createConeAoE(caster.getLocation(), 10, 90, 3, caster.getLocation().getDirection(), 200)
+                .onEnter((aoe, entity) -> {
+                    entity.setFireTicks(100);
+                })
+                .onLeave((aoe, entity) -> {
+                    entity.sendMessage("You left the fire zone!");
+                })
+                .onTick(aoe -> {
+                });
+                coneAoE.addDisplay(coneAoE.createDisplay()
+                        .blockDisplay(Material.FIRE)
+                        .scale(2.0f)
+                        .translate(0, 1, 0)
+                        .build())
+                .addDisplay(coneAoE.createDisplay()
+                        .textDisplay("<red>Danger Zone!")
+                        .scale(1.5f)
+                        .translate(0, 3, 0)
+                        .build())
+                .addBlocksOnTopGroundLevel(Material.FIRE)
+                .sendBlockChanges();
+
         return true;
     }
 
+
+
     @Override
-    protected boolean onCast() {
-        Animation animation = new Animation().addCue(0, new CircleBlockDisplayCue(Material.STONE, 5, 60, 5, 1.0f));
-        animation.play(caster);
-        return true;
+    public LivingEntity getTarget() {
+        return null;
     }
 
     @Override
-    protected void onAfterCast() {
-        caster.setCooldown(data);
-    }
+    public void setTarget(LivingEntity target) {
 
-    @Override
-    protected void onTick() {
     }
 }
