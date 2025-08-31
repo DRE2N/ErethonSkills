@@ -102,9 +102,15 @@ public class BloodCraze extends AssassinBaseSpell {
     @Override
     protected void onTickFinish() {
         super.onTickFinish();
-        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedBoost);
 
         playBloodCrazeEnd();
+    }
+
+    @Override
+    protected void cleanup() {
+        super.cleanup();
+        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedBoost);
+        caster.getTags().remove("assassin.blood_craze");
     }
 
     private void playBloodCrazeEnd() {
