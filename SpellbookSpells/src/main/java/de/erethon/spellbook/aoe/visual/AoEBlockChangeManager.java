@@ -67,6 +67,37 @@ public class AoEBlockChangeManager {
     }
 
     /**
+     * Adds block changes on top of solid blocks with random material selection
+     */
+    public void addBlockChangesOnTop(Collection<Player> players, Collection<Location> locations, Material... materials) {
+        addBlockChangesOnTop(players, locations, 1, materials);
+    }
+
+    /**
+     * Adds block changes on top of solid blocks with random material selection and configurable layer thickness
+     */
+    public void addBlockChangesOnTop(Collection<Player> players, Collection<Location> locations, int layerThickness, Material... materials) {
+        if (materials.length == 0) return;
+
+        Random random = new Random();
+        for (Location loc : locations) {
+            Block block = loc.getBlock();
+            if (block.isSolid()) {
+                for (int layer = 1; layer <= layerThickness; layer++) {
+                    Location topLocation = loc.clone().add(0, layer, 0);
+                    Block topBlock = topLocation.getBlock();
+                    if (topBlock.getType() == Material.AIR) {
+                        Material selectedMaterial = materials[random.nextInt(materials.length)];
+                        addBlockChange(players, topLocation, selectedMaterial);
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Adds block changes on top of solid blocks at ground level only (ignores AoE height)
      */
     public void addBlockChangesOnTopGroundLevel(Collection<Player> players, Collection<Location> centerLocations, Material material, int radius) {
@@ -100,6 +131,19 @@ public class AoEBlockChangeManager {
     public void replaceBlocks(Collection<Player> players, Collection<Location> locations, Material material) {
         for (Location loc : locations) {
             addBlockChange(players, loc, material);
+        }
+    }
+
+    /**
+     * Replaces blocks at given locations with random material selection
+     */
+    public void replaceBlocks(Collection<Player> players, Collection<Location> locations, Material... materials) {
+        if (materials.length == 0) return;
+
+        Random random = new Random();
+        for (Location loc : locations) {
+            Material selectedMaterial = materials[random.nextInt(materials.length)];
+            addBlockChange(players, loc, selectedMaterial);
         }
     }
 

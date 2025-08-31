@@ -11,6 +11,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.Location;
 
 public class HolySmite extends InquisitorBaseSpell {
 
@@ -38,31 +39,73 @@ public class HolySmite extends InquisitorBaseSpell {
 
     @Override
     public boolean onCast() {
-        LineEffect lineEffect = new LineEffect(effectManager);
-        lineEffect.particle = Particle.WHITE_ASH;
-        lineEffect.particleCount = 32;
-        lineEffect.setEntity(caster);
-        lineEffect.setTargetEntity(target);
-        lineEffect.duration = 30;
-        lineEffect.isZigZag = true;
-        lineEffect.start();
-        caster.getWorld().playSound(target, Sound.BLOCK_BELL_RESONATE, 1, 0.5f);
+        int judgementStacks = getJudgementStacksOnTarget(target);
+
+        Location strikeLocation = target.getLocation().add(0, 15, 0);
+        for (int i = 0; i < 15; i++) {
+            Location particleLoc = strikeLocation.clone().subtract(0, i, 0);
+            caster.getWorld().spawnParticle(Particle.WHITE_ASH, particleLoc, 2, 0.1, 0.1, 0.1);
+            caster.getWorld().spawnParticle(Particle.ENCHANTED_HIT, particleLoc, 1, 0.05, 0.05, 0.05);
+        }
+
+        createCircularAoE(target.getLocation(), 3, 1, 100)
+                .onEnter((aoe, entity) -> {
+                    if (entity == target) {
+                        entity.getWorld().spawnParticle(Particle.EXPLOSION, entity.getLocation(), 2, 0.5, 0.5, 0.5);
+                        entity.getWorld().spawnParticle(Particle.FLASH, entity.getLocation(), 5, 0.3, 0.3, 0.3);
+                    } else if (Spellbook.canAttack(caster, entity)) {
+                        double consecrationDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADVANTAGE_MAGICAL) * 0.4;
+                        entity.damage(consecrationDamage, caster);
+                        entity.getWorld().spawnParticle(Particle.WHITE_ASH, entity.getLocation(), 5, 0.3, 0.3, 0.3);
+                        entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.5f, 1.5f);
+                    }
+                })
+                .onTick(aoe -> {
+                    for (LivingEntity entity : aoe.getEntitiesInside()) {
+                        if (entity == caster) {
+                            if (entity.getTicksLived() % 10 == 0) {
+                                entity.getWorld().spawnParticle(Particle.ENCHANTED_HIT, entity.getLocation(), 2, 0.3, 0.3, 0.3);
+                            }
+                        } else if (Spellbook.canAttack(caster, entity)) {
+                            if (entity.getTicksLived() % 60 == 0) { // Every 3 seconds
+                                entity.addEffect(caster, Spellbook.getEffectData("Weakness"), 60, 1);
+                                entity.getWorld().spawnParticle(Particle.WHITE_ASH, entity.getLocation(), 3, 0.2, 0.2, 0.2);
+                            }
+                        }
+                    }
+                });
+
+        caster.getWorld().playSound(target.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.8f, 1.5f);
+        caster.getWorld().playSound(target.getLocation(), Sound.BLOCK_BELL_RESONATE, 1.0f, 0.5f);
+
         double physicalDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
         double magicalDamage = 0;
-        int judgementStacks = getJudgementStacksOnTarget(target);
-        for (int i = 0; i <= judgementStacks; i++) {
+
+        for (int i = 0; i < judgementStacks; i++) {
             magicalDamage += bonusDamagePerStack;
+            target.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, target.getLocation().add(0, 1, 0), 3, 0.3, 0.3, 0.3);
             removeJudgement(target);
         }
+
         target.damage(physicalDamage, caster, PDamageType.PHYSICAL);
         target.damage(magicalDamage, caster, PDamageType.MAGIC);
+
+        target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 1, 0), 10, 0.5, 0.5, 0.5);
+        target.getWorld().spawnParticle(Particle.ENCHANTED_HIT, target.getLocation(), 8, 0.3, 0.3, 0.3);
+
         triggerTraits(1);
+
         if (judgementStacks > 0) {
             int furyDuration = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, furyDurationMin, furyDurationMax, "furyDuration") * 20;
             caster.addEffect(caster, fury, furyDuration, judgementStacks * furyStacksPerStack);
-            target.getWorld().playSound(target, Sound.BLOCK_CONDUIT_ACTIVATE, 1, 0.5f);
+
+            caster.getWorld().spawnParticle(Particle.FLAME, caster.getLocation().add(0, 1, 0), judgementStacks * 2, 0.5, 0.5, 0.5);
+            caster.getWorld().spawnParticle(Particle.ENCHANTED_HIT, caster.getLocation(), judgementStacks, 0.3, 0.3, 0.3);
+            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_CONDUIT_ACTIVATE, 1.0f, 0.5f);
+
             triggerTraits(2);
         }
+
         return super.onCast();
     }
 

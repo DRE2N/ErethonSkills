@@ -19,6 +19,9 @@ public class InquisitorBasicAttack extends SpellTrait {
 
     public InquisitorBasicAttack(TraitData data, LivingEntity caster) {
         super(data, caster);
+        if (judgementData == null) {
+            throw new IllegalArgumentException("Judgement effect not found. Make sure it is defined in the Spellbook configs.");
+        }
     }
 
     @Override
@@ -37,6 +40,7 @@ public class InquisitorBasicAttack extends SpellTrait {
         if (target == null) return 0;
         SpellEffect judgementEffect = null;
         for (SpellEffect effect : target.getEffects()) {
+            if (data == null) continue;
             if (effect.data == judgementData) {
                 judgementEffect = effect;
                 break;

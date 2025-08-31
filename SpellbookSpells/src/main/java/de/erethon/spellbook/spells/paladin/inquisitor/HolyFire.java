@@ -1,21 +1,16 @@
 package de.erethon.spellbook.spells.paladin.inquisitor;
 
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.CircleEffect;
-import de.slikey.effectlib.effect.ParticleEffect;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class HolyFire extends InquisitorBaseSpell {
@@ -40,6 +35,42 @@ public class HolyFire extends InquisitorBaseSpell {
 
     @Override
     public boolean onCast() {
+        createCircularAoE(caster.getLocation(), rangeMax, 2, keepAliveTicks)
+                .onEnter((aoe, entity) -> {
+                    if (Spellbook.canAttack(caster, entity)) {
+                        double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADVANTAGE_MAGICAL);
+                        entity.damage(damage, caster);
+                        entity.addEffect(caster, Spellbook.getEffectData("Weakness"), 60, 1);
+                        entity.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, entity.getLocation(), 5, 0.3, 0.3, 0.3);
+                        entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_HURT, 0.8f, 1.2f);
+                    } else if (entity != caster) {
+                        entity.heal(3.0);
+                        entity.addEffect(caster, Spellbook.getEffectData("Regeneration"), 100, 1);
+                        entity.getWorld().spawnParticle(Particle.HEART, entity.getLocation().add(0, 2, 0), 2, 0.3, 0.3, 0.3);
+                    }
+                })
+                .onTick(aoe -> {
+                    range = (float) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, rangeMin, rangeMax, "range");
+
+                    for (LivingEntity entity : aoe.getEntitiesInside()) {
+                        if (Spellbook.canAttack(caster, entity)) {
+                            entity.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, entity.getLocation(), 1, 0.2, 0.2, 0.2);
+                            if (entity.getTicksLived() % 40 == 0) {
+                                double tickDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADVANTAGE_MAGICAL) * 0.2;
+                                entity.damage(tickDamage, caster);
+                                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 0.3f, 1.5f);
+                            }
+                        } else if (entity != caster) {
+                            entity.getWorld().spawnParticle(Particle.ENCHANTED_HIT, entity.getLocation(), 1, 0.2, 0.2, 0.2);
+                            // Continuous healing every 2 seconds
+                            if (entity.getTicksLived() % 40 == 0) {
+                                entity.heal(1.5);
+                                entity.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, entity.getLocation(), 2, 0.2, 0.2, 0.2);
+                            }
+                        }
+                    }
+                });
+
         circleEffect = new CircleEffect(Spellbook.getInstance().getEffectManager());
         circleEffect.particle = Particle.SOUL_FIRE_FLAME;
         circleEffect.duration = keepAliveTicks * 50;
@@ -51,24 +82,19 @@ public class HolyFire extends InquisitorBaseSpell {
         circleEffect.enableRotation = false;
         circleEffect.setLocation(caster.getLocation().clone().add(0, 1, 0));
         circleEffect.start();
+
+        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_BLAZE_AMBIENT, 1.0f, 0.8f);
         return super.onCast();
     }
 
     @Override
     protected void onTick() {
-        Set<LivingEntity> entities = new HashSet<>();
-        range = (float) Spellbook.getRangedValue(data, caster,Attribute.ADVANTAGE_MAGICAL, rangeMin, rangeMax, "range");
-        caster.getNearbyEntities(range, 2, range).forEach(e -> {
-            if (e instanceof LivingEntity living && Spellbook.canAttack(caster, living)) {
-                living.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, living, false, Attribute.ADVANTAGE_MAGICAL));
-                entities.add(living);
-            }
-        });
-        triggerTraits(entities);
         Location loc = caster.getLocation().clone();
         loc.setPitch(0);
         loc.add(0, 1, 0);
         circleEffect.setLocation(loc);
+
+        super.onTick();
     }
 
     @Override
@@ -86,41 +112,59 @@ public class HolyFire extends InquisitorBaseSpell {
         loc.add(0, 1, 0);
         explode.setLocation(loc);
         explode.start();
+
         Set<LivingEntity> enemies = new HashSet<>();
         Set<LivingEntity> friends = new HashSet<>();
-        loc.getWorld().playSound(Sound.sound(org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, Sound.Source.RECORD, 1, 1), loc.getX(), loc.getY(), loc.getZ());
-        BukkitRunnable explodeTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                explode.radius += 0.1f;
-                if (explode.isDone()) {
-                    loc.getNearbyLivingEntities(explode.radius).forEach(e -> {
-                        if (!Spellbook.canAttack(caster, e)) {
-                            e.setHealth(Math.max(e.getMaxHealth(), (e.getHealth() + healAmount + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER))));
-                            friends.add(e);
-                        } else {
-                            enemies.add(e);
+
+        loc.getWorld().playSound(loc, Sound.BLOCK_BEACON_ACTIVATE, 1.5f, 1.0f);
+        loc.getWorld().spawnParticle(Particle.EXPLOSION, loc, 5, 2.0, 1.0, 2.0);
+
+        // Create final explosion effect that deals massive damage/healing
+        createCircularAoE(loc, explode.radius, 2, 80)
+                .onEnter((aoe, entity) -> {
+                    if (!Spellbook.canAttack(caster, entity) && entity != caster) {
+                        friends.add(entity);
+                        entity.getWorld().spawnParticle(Particle.HEART, entity.getLocation().add(0, 2, 0), 5, 0.5, 0.5, 0.5);
+                    } else if (entity != caster) {
+                        enemies.add(entity);
+                        double finalDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, true, Attribute.ADVANTAGE_MAGICAL);
+                        entity.damage(finalDamage, caster);
+                        entity.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, entity.getLocation(), 8, 0.5, 0.5, 0.5);
+                    }
+                })
+                .onTick(aoe -> {
+                    // Create lingering consecrated/desecrated ground
+                    for (LivingEntity entity : aoe.getEntitiesInside()) {
+                        if (Spellbook.canAttack(caster, entity)) {
+                            if (entity.getTicksLived() % 20 == 0) { // Every second
+                                entity.addEffect(caster, Spellbook.getEffectData("Burning"), 40, 1);
+                                entity.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, entity.getLocation(), 2, 0.2, 0.2, 0.2);
+                            }
+                        } else if (entity != caster) {
+                            if (entity.getTicksLived() % 20 == 0) { // Every second
+                                entity.addEffect(caster, Spellbook.getEffectData("Regeneration"), 40, 1);
+                                entity.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, entity.getLocation(), 2, 0.2, 0.2, 0.2);
+                            }
                         }
-                    });
-                    cancel();
-                }
-            }
-        };
+                    }
+                });
+
         triggerTraits(enemies, 1);
-        explodeTask.runTaskTimer(Spellbook.getInstance().getImplementer(), 0, 1);
-        if (explode.isDone()) {
-            int totalJudgementStacks = 0;
-            for (LivingEntity living : enemies) {
-                int judgementStacks = getJudgementStacksOnTarget(living);
-                totalJudgementStacks += judgementStacks;
-                for (int i = 0; i <= judgementStacks; i++) {
-                    removeJudgement(living);
-                }
+
+        int totalJudgementStacks = 0;
+        for (LivingEntity living : enemies) {
+            int judgementStacks = getJudgementStacksOnTarget(living);
+            totalJudgementStacks += judgementStacks;
+            for (int i = 0; i <= judgementStacks; i++) {
+                removeJudgement(living);
             }
-            int bonusHeal = (int) (bonusHealPerJudgementStack * totalJudgementStacks);
-            for (LivingEntity living : friends) {
-                living.setHealth(living.getHealth() + bonusHeal);
-            }
+        }
+
+        double bonusHeal = bonusHealPerJudgementStack * totalJudgementStacks;
+        for (LivingEntity living : friends) {
+            living.heal(healAmount + bonusHeal + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER));
+            living.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, living.getLocation(), 8, 0.5, 0.5, 0.5);
+            living.getWorld().playSound(living.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 0.8f, 1.2f);
         }
     }
 

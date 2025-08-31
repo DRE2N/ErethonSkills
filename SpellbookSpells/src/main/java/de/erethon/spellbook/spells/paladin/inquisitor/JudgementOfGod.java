@@ -26,7 +26,7 @@ import java.util.Set;
 public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
 
     // AoE damage spell that deals massive damage to all enemies in a radius around the caster.
-    // Can only be used if the target has maximum judgement stacks.
+    // Scales damage based on total judgement stacks on all enemies in the area - the more judged enemies, the more powerful.
     // If an enemy dies, it will deal additional damage to all enemies in a smaller radius around the corpse and apply weakness.
     // The initial damage is distributed among all enemies in the radius.
 
@@ -59,11 +59,19 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
         if (target == null) {
             return false;
         }
-        int stacks = getJudgementStacksOnTarget(target);
-        if (stacks < 7) {
-            caster.sendParsedActionBar("<red>Not enough judgement!");
+
+        int totalJudgementInArea = 0;
+        for (LivingEntity entity : target.getLocation().getNearbyLivingEntities(range)) {
+            if (Spellbook.canAttack(caster, entity)) {
+                totalJudgementInArea += getJudgementStacksOnTarget(entity);
+            }
+        }
+
+        if (totalJudgementInArea < 3) {
+            caster.sendParsedActionBar("<red>Not enough judgement in the area! Need at least 3 total stacks.");
             return false;
         }
+
         return true;
     }
 

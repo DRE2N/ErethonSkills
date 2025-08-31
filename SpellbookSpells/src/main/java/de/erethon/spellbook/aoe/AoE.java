@@ -14,13 +14,11 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Collection;
 
 /**
  * Represents an active AoE in the world
@@ -139,6 +137,16 @@ public class AoE {
     }
 
     /**
+     * Adds block changes with random material selection (ground level only)
+     */
+    public AoE addBlockChange(Material... materials) {
+        Set<Player> nearbyPlayers = getNearbyPlayers();
+        Set<Location> groundBlocks = getGroundBlocksInAoE();
+        blockChangeManager.replaceBlocks(nearbyPlayers, groundBlocks, materials);
+        return this;
+    }
+
+    /**
      * Adds block changes that will affect the entire AoE volume (3D)
      */
     public AoE addBlockChangeVolume(Material material) {
@@ -178,19 +186,46 @@ public class AoE {
     }
 
     /**
-     * Adds blocks on top of solid blocks at ground level only (single layer)
+     * Adds block changes that will be sent to nearby players (ground level only) with random material selection
      */
-    public AoE addBlocksOnTopGroundLevel(Material material) {
-        return addBlocksOnTopGroundLevel(material, 1);
+    public AoE addBlocksOnTopGroundLevel(Material... materials) {
+        return addBlocksOnTopGroundLevel(1, materials);
     }
 
     /**
-     * Adds blocks on top of solid blocks at ground level with configurable layer thickness
+     * Adds block changes that will be sent to nearby players (ground level only) with random material selection and configurable layer thickness
      */
-    public AoE addBlocksOnTopGroundLevel(Material material, int layerThickness) {
+    public AoE addBlocksOnTopGroundLevel(int layerThickness, Material... materials) {
         Set<Player> nearbyPlayers = getNearbyPlayers();
-        Set<Location> groundBlocks = getGroundBlocksInAoE(); // Use the proper AoE shape
-        blockChangeManager.addBlockChangesOnTop(nearbyPlayers, groundBlocks, material, layerThickness);
+        Set<Location> groundBlocks = getGroundBlocksInAoE();
+        blockChangeManager.addBlockChangesOnTop(nearbyPlayers, groundBlocks, layerThickness, materials);
+        return this;
+    }
+
+    /**
+     * Adds block changes with random material selection that will affect the entire AoE volume (3D)
+     */
+    public AoE addBlockChangeVolume(Material... materials) {
+        Set<Player> nearbyPlayers = getNearbyPlayers();
+        Set<Location> areaBlocks = getBlocksInAoE();
+        blockChangeManager.replaceBlocks(nearbyPlayers, areaBlocks, materials);
+        return this;
+    }
+
+    /**
+     * Adds blocks on top of solid blocks in the AoE with random material selection
+     */
+    public AoE addBlocksOnTop(Material... materials) {
+        return addBlocksOnTop(1, materials);
+    }
+
+    /**
+     * Adds blocks on top of solid blocks in the AoE with random material selection and configurable layer thickness
+     */
+    public AoE addBlocksOnTop(int layerThickness, Material... materials) {
+        Set<Player> nearbyPlayers = getNearbyPlayers();
+        Set<Location> areaBlocks = getBlocksInAoE();
+        blockChangeManager.addBlockChangesOnTop(nearbyPlayers, areaBlocks, layerThickness, materials);
         return this;
     }
 

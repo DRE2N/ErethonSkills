@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -17,6 +18,7 @@ public class WrathfulBurst extends PaladinBaseSpell {
 
     // The Hierophant unleashes a burst of energy, damaging all enemies in the area.
     // If the Hierophant has more than 50% wrath, the burst deals additional damage and applies a burning effect.
+    // Creates expanding rings of fire and light that spread outward from the caster.
 
     private final double radius = data.getDouble("radius", 5.0);
     private final int minWrathForBurst = data.getInt("minWrathForBurst", 50);
@@ -36,30 +38,36 @@ public class WrathfulBurst extends PaladinBaseSpell {
     @Override
     public boolean onCast() {
         World world = caster.getWorld();
-        if (caster.getEnergy() > minWrathForBurst) {
-            for (LivingEntity livingEntity : caster.getLocation().getNearbyLivingEntities(radius)) {
-                if (livingEntity != null && Spellbook.canAttack(caster, livingEntity) && livingEntity != caster) {
-                    double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
-                    livingEntity.damage(damage, caster, PDamageType.PHYSICAL);
-                    world.spawnParticle(Particle.FLAME, livingEntity.getLocation(), 5, 0.5, 0.5, 0.5);
-                    world.playSound(livingEntity.getLocation(), org.bukkit.Sound.ENTITY_BLAZE_SHOOT, 1, 0.2f);
-                }
-            }
+        boolean hasHighWrath = caster.getEnergy() > minWrathForBurst;
+
+        createCircularAoE(caster.getLocation(), radius, 2, 20)
+                .onEnter((aoe, entity) -> {
+                    if (Spellbook.canAttack(caster, entity)) {
+                        double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, true, Attribute.ADVANTAGE_MAGICAL);
+                        if (hasHighWrath) {
+                            damage *= burstDamageMultiplier;
+                            int burningDuration = (int) Spellbook.getRangedValue(data, caster, entity, Attribute.ADVANTAGE_MAGICAL, burningMinDuration, burningMaxDuration, "burningDuration");
+                            entity.addEffect(entity, Spellbook.getEffectData("Burning"), burningDuration, 1);
+                            entity.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, entity.getLocation(), 8, 0.5, 0.5, 0.5);
+                        }
+                        entity.damage(damage, caster, PDamageType.MAGIC);
+                        entity.getWorld().spawnParticle(Particle.FLAME, entity.getLocation(), hasHighWrath ? 8 : 5, 0.5, 0.5, 0.5);
+                        entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, hasHighWrath ? 2.0f : 1.2f);
+                    }
+                })
+                .addBlocksOnTopGroundLevel(hasHighWrath ?
+                    new Material[]{Material.FIRE, Material.SOUL_FIRE, Material.MAGMA_BLOCK} :
+                    new Material[]{Material.FIRE})
+                .sendBlockChanges();
+
+        world.spawnParticle(Particle.EXPLOSION, caster.getLocation().add(0, 1, 0), hasHighWrath ? 3 : 1, 1.0, 0.5, 1.0);
+        world.playSound(caster.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1.5f, hasHighWrath ? 0.8f : 1.2f);
+
+        if (hasHighWrath) {
             caster.setEnergy(0);
             world.playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 0.8f, 0.8f);
-            return true;
-        } else {
-            for (LivingEntity livingEntity : caster.getLocation().getNearbyLivingEntities(radius)) {
-                if (livingEntity != null && Spellbook.canAttack(caster, livingEntity) && livingEntity != caster) {
-                    double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL) * burstDamageMultiplier;
-                    livingEntity.damage(damage, caster, PDamageType.PHYSICAL);
-                    livingEntity.addEffect(livingEntity, Spellbook.getEffectData("Burning"), (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, burningMinDuration, burningMaxDuration, "burningDuration"), 1);
-                    world.spawnParticle(Particle.FLAME, livingEntity.getLocation(), 8, 0.5, 0.5, 0.5);
-                    world.spawnParticle(Particle.SOUL_FIRE_FLAME, livingEntity.getLocation(), 8, 0.5, 0.5, 0.5);
-                    world.playSound(livingEntity.getLocation(), org.bukkit.Sound.ENTITY_BLAZE_SHOOT, 1, 2);
-                }
-            }
         }
+
         return super.onCast();
     }
 
