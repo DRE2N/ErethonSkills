@@ -5,21 +5,22 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
+import de.erethon.spellbook.aoe.AoE;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import de.erethon.spellbook.traits.assassin.shadow.ShadowEchoReturnTrait;
 import io.papermc.paper.entity.TeleportFlag;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class ShadowEcho extends AssassinBaseSpell {
-
-    // Marks a location. The Shadow can return to the marked location by casting the spell again. Upon return, gain Resistance.
-    // If a marked target was damaged during the duration of the spell, gain energy.
 
     private final int energyRestoreOnMarkedDamage = data.getInt("energyRestoreOnMarkedDamage", 25);
     private final int resistanceMinDuration = data.getInt("resistanceMinDuration", 6) * 20;
@@ -28,7 +29,8 @@ public class ShadowEcho extends AssassinBaseSpell {
     private ShadowEchoReturnTrait echo = null;
     private final TraitData echoTraitData = Bukkit.getServer().getSpellbookAPI().getLibrary().getTraitByID("ShadowEchoReturnTrait");
     private final EffectData resistanceData = Spellbook.getEffectData("Resistance");
-    private int visualTicks = 20;
+    private int visualTicks = 10;
+    private AoE shadowPortal = null;
 
     public ShadowEcho(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -39,14 +41,29 @@ public class ShadowEcho extends AssassinBaseSpell {
     protected boolean onPrecast() {
         getOrAddEchoTrait();
         if (echo.isWaitingForReturn()) {
-            caster.teleport(echo.getReturnLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+            Location returnLoc = echo.getReturnLocation();
+
+            caster.getWorld().spawnParticle(Particle.PORTAL, caster.getLocation().add(0, 1, 0), 30, 1, 1, 1, 1);
+            caster.getWorld().spawnParticle(Particle.PORTAL, returnLoc.add(0, 1, 0), 30, 1, 1, 1, 1);
+            caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation().add(0, 1, 0), 20, 0.8, 0.8, 0.8, 0.1, new Particle.DustOptions(Color.BLACK, 1.5f));
+
+            caster.getWorld().playSound(caster.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 0.8f);
+            caster.getWorld().playSound(returnLoc, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.2f);
+
+            caster.teleport(returnLoc, PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
             caster.addEffect(caster, resistanceData, (int) Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, resistanceMinDuration, resistanceMaxDuration,"resistanceDuration"), 1);
+
             if (echo.hasDamagedMarkedTarget()) {
                 caster.setEnergy(caster.getEnergy() + energyRestoreOnMarkedDamage);
+                caster.getWorld().spawnParticle(Particle.ENCHANT, caster.getLocation().add(0, 1, 0), 15, 0.5, 0.5, 0.5, 1);
             }
-            caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, Sound.Source.RECORD, 0.8f, 1));
-            currentTicks = keepAliveTicks;
-            onTickFinish();
+
+            if (shadowPortal != null) {
+                shadowPortal.revertBlockChanges();
+                shadowPortal = null;
+            }
+
+            caster.removeTrait(echoTraitData);
             return false;
         }
         return super.onPrecast();
@@ -54,8 +71,19 @@ public class ShadowEcho extends AssassinBaseSpell {
 
     @Override
     public boolean onCast() {
-        echo.setReturnLocation(caster.getLocation());
-        caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, Sound.Source.RECORD, 0.8f, 0.5f));
+        Location markLoc = caster.getLocation().clone();
+        echo.setReturnLocation(markLoc);
+
+        caster.getWorld().playSound(markLoc, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 0.8f, 0.5f);
+        caster.getWorld().playSound(markLoc, org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, 0.6f, 1.8f);
+
+        caster.getWorld().spawnParticle(Particle.PORTAL, markLoc.add(0, 1, 0), 20, 0.8, 0.5, 0.8, 0.5);
+        caster.getWorld().spawnParticle(Particle.DUST, markLoc.add(0, 0.5, 0), 15, 1, 0.2, 1, 0.1, new Particle.DustOptions(Color.PURPLE, 1.2f));
+
+        shadowPortal = createCircularAoE(markLoc, 2.0, 0.5, keepAliveTicks)
+            .addBlockChange(Material.BLACK_CONCRETE)
+            .sendBlockChanges();
+
         return super.onCast();
     }
 
@@ -63,8 +91,11 @@ public class ShadowEcho extends AssassinBaseSpell {
     protected void onTick() {
         visualTicks--;
         if (visualTicks <= 0) {
-            visualTicks = 20;
-            caster.getWorld().spawnParticle(Particle.ASH, echo.getReturnLocation(), 5, 1, 1, 1);
+            visualTicks = 10;
+            Location portalLoc = echo.getReturnLocation();
+            portalLoc.getWorld().spawnParticle(Particle.PORTAL, portalLoc.clone().add(0, 1, 0), 8, 0.8, 0.3, 0.8, 0.2);
+            portalLoc.getWorld().spawnParticle(Particle.DUST, portalLoc.clone().add(0, 0.5, 0), 3, 0.5, 0.1, 0.5, 0, new Particle.DustOptions(Color.PURPLE, 0.8f));
+            portalLoc.getWorld().spawnParticle(Particle.WHITE_ASH, portalLoc.clone().add(0, 2, 0), 2, 1, 0.5, 1, 0.01);
         }
         super.onTick();
     }
@@ -73,7 +104,13 @@ public class ShadowEcho extends AssassinBaseSpell {
     protected void onTickFinish() {
         super.onTickFinish();
         caster.removeTrait(echoTraitData);
-        caster.playSound(Sound.sound(org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, Sound.Source.RECORD, 0.7f, 0));
+        if (shadowPortal != null) {
+            shadowPortal.revertBlockChanges();
+        }
+
+        Location portalLoc = echo.getReturnLocation();
+        portalLoc.getWorld().spawnParticle(Particle.SMOKE, portalLoc.clone().add(0, 1, 0), 15, 1, 0.5, 1, 0.1);
+        portalLoc.getWorld().playSound(portalLoc, org.bukkit.Sound.BLOCK_FIRE_EXTINGUISH, 0.8f, 1.5f);
     }
 
     private void getOrAddEchoTrait() {
@@ -83,7 +120,7 @@ public class ShadowEcho extends AssassinBaseSpell {
                 return;
             }
         }
-        if (echo == null) {;
+        if (echo == null) {
             caster.addTrait(echoTraitData);
             for (SpellTrait trait : caster.getActiveTraits()) {
                 if (trait instanceof ShadowEchoReturnTrait echoTrait) {
