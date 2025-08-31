@@ -71,13 +71,7 @@ public class BladeDash extends AssassinBaseSpell {
         Location endLocation = startLocation.clone().add(dashVector);
 
         playDashWindup(startLocation, direction);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                executeDash(startLocation, endLocation, dashVector, direction);
-            }
-        }.runTaskLater(Spellbook.getInstance().getImplementer(), 5L);
+        executeDash(startLocation, endLocation, dashVector, direction);
 
         return true;
     }

@@ -41,11 +41,20 @@ public class BloodCraze extends AssassinBaseSpell {
     }
 
     @Override
+    protected boolean onPrecast() {
+        if (caster.getTags().contains("assassin.blood_craze")) {
+            return false;
+        }
+        return super.onPrecast();
+    }
+
+    @Override
     public boolean onCast() {
         caster.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(speedBoost);
 
         playBloodCrazeActivation();
         createBloodAura();
+        caster.getTags().add("assassin.blood_craze");
 
         return super.onCast();
     }
