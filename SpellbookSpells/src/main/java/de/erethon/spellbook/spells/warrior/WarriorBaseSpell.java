@@ -26,12 +26,14 @@ public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
 
     @Override
     protected boolean onPrecast() {
-        return hasEnergy(caster, data);
+        return hasEnergy(caster, data) || caster.getTags().contains("warrior.unflinching_stance");
     }
 
     @Override
     public boolean onCast() {
-        caster.setEnergy(caster.getEnergy() - rageCost);
+        if (!caster.getTags().contains("warrior.unflinching_stance")) {
+            caster.setEnergy(caster.getEnergy() - rageCost);
+        }
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         return super.onCast();
     }
