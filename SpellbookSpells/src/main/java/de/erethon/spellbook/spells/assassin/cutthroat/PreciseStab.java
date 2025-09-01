@@ -128,7 +128,6 @@ public class PreciseStab extends AssassinBaseSpell {
         createConeAoE(waveOrigin, furyWaveRange, furyWaveAngle, 2.5, direction, 60)
                 .onEnter((aoe, entity) -> {
                     if (!entity.equals(caster) && !entity.equals(target) && Spellbook.canAttack(caster, entity)) {
-                        // Deal damage instead of applying intimidation
                         entity.damage(Spellbook.getVariedAttributeBasedDamage(data, caster, entity, true, Attribute.ADVANTAGE_PHYSICAL), caster, PDamageType.PHYSICAL);
                         entity.getWorld().playSound(entity.getLocation(), Sound.BLOCK_SOUL_SAND_STEP, 0.5f, 0.8f);
                     }

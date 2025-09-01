@@ -85,20 +85,20 @@ public class WhirlingBlades extends AssassinBaseSpell {
         List<Entity> nearbyEntities = caster.getNearbyEntities(radius, radius, radius);
 
         for (Entity entity : nearbyEntities) {
-            if (entity instanceof LivingEntity target && !entity.equals(caster) && Spellbook.canAttack(caster, target)) {
-                double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
-                boolean isBleeding = target.hasEffect(bleedEffectIdentifier);
+            if (entity instanceof LivingEntity t && !entity.equals(caster) && Spellbook.canAttack(caster, t)) {
+                double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, t, true, Attribute.ADVANTAGE_PHYSICAL);
+                boolean isBleeding = t.hasEffect(bleedEffectIdentifier);
 
                 if (isBleeding) {
                     damage *= bonusDamageMultiplier;
-                    spreadBleedingEffect(target, bleedingDuration);
-                    playBleedingSpreadEffect(target.getLocation());
+                    spreadBleedingEffect(t, bleedingDuration);
+                    playBleedingSpreadEffect(t.getLocation());
                 }
 
-                target.damage(damage, caster);
-                affectedTargets.add(target);
+                t.damage(damage, caster);
+                affectedTargets.add(t);
 
-                playSlashEffect(target.getLocation(), isBleeding);
+                playSlashEffect(t.getLocation(), isBleeding);
             }
         }
 

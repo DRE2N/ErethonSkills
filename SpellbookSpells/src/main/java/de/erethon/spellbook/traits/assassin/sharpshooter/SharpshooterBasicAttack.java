@@ -44,6 +44,10 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
     private final double movementSpeedMultiplier = data.getDouble("movementSpeedMultiplier", 0.8);
     private final int focusPerSecond = data.getInt("focusPerSecond", 1);
     private final int focusPerHeadshot = data.getInt("focusPerHeadshot", 25);
+    private final double huntersFocusChargeBonus = data.getDouble("huntersFocusChargeBonus", 0.5);
+    private final String huntersFocusTag = "hunters_focus_active";
+    private final double ultChargedShotDamageBonus = data.getDouble("ultChargedShotDamageBonus", 0.2);
+    private final double meleeRange = data.getDouble("meleeRange", 3.0);
 
     private final AttributeModifier movementSpeedModifier = new AttributeModifier(NamespacedKey.fromString("spellbook:sharpshooter_basic_attack"), -movementSpeedMultiplier, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
 
@@ -66,6 +70,19 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         if (event.getClickedBlock() != null || caster.getTargetEntity((int) caster.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).getValue()) != null) {
             return;
         }
+
+        LivingEntity nearbyEnemy = null;
+        for (LivingEntity entity : caster.getLocation().getNearbyLivingEntities(meleeRange)) {
+            if (entity != caster && Spellbook.canAttack(caster, entity)) {
+                nearbyEnemy = entity;
+                break;
+            }
+        }
+
+        if (nearbyEnemy != null) {
+            return;
+        }
+
         if (currentChargeTicks == -1) {
             currentChargeTicks = 0;
             caster.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1f, 1.3f);
@@ -95,7 +112,12 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         }
         // Shooting mechanic
         if (currentChargeTicks >= 0) {
-            currentChargeTicks++;
+            int chargeIncrement = 1;
+            if (caster.getTags().contains(huntersFocusTag)) {
+                chargeIncrement += (int) (huntersFocusChargeBonus);
+            }
+            currentChargeTicks += chargeIncrement;
+
             if (currentChargeTicks >= attackMaxChargeTicks) {
                 releaseShot();
                 return;
@@ -107,7 +129,7 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
             lineEffect.setTarget(caster.getLocation().add(direction.toLocation(caster.getWorld())));
             lineEffect.duration = 50;
             lineEffect.particle = Particle.DUST;
-            lineEffect.color = Color.BLACK;
+            lineEffect.color = caster.getScoreboardTags().contains(huntersFocusTag) ? Color.ORANGE : Color.BLACK;
             lineEffect.particleData = 0;
             lineEffect.particles = 16;
             lineEffect.start();
@@ -143,6 +165,9 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
             caster.addEnergy(focusPerHeadshot);
         } else {
             caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1f, 1.2f);
+        }
+        if (caster.getTags().contains("singular_weakness")) {
+            damage *= (1 + ultChargedShotDamageBonus);
         }
         target.damage(damage, caster, PDamageType.MAGIC);
         currentChargeTicks = -1;

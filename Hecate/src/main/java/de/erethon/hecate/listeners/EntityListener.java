@@ -27,6 +27,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class EntityListener implements Listener {
 
     private final EntityStatusDisplayManager displayManager = Hecate.getInstance().getStatusDisplayManager();
@@ -64,7 +67,6 @@ public class EntityListener implements Listener {
     public void onEntityRemove(EntityRemoveFromWorldEvent event) {
         if (event.getEntity() instanceof LivingEntity living) {
             living.getEffects().forEach(SpellEffect::onRemove);
-            living.getActiveTraits().stream().map(SpellTrait::getData).forEach(living::removeTrait);
             if (displayManager.hasStatusDisplay(living)) {
                 displayManager.removeStatusDisplay(living);
             }
@@ -86,9 +88,8 @@ public class EntityListener implements Listener {
     @EventHandler
     public void onLogout(PlayerQuitEvent event) {
         event.getPlayer().getEffects().forEach(SpellEffect::onRemove);
-        for (SpellTrait trait : event.getPlayer().getActiveTraits()) {
-            event.getPlayer().removeTrait(trait.getData());
-        }
+        Set<SpellTrait> toRemove = new HashSet<>(event.getPlayer().getActiveTraits());
+        toRemove.stream().map(SpellTrait::getData).forEach(event.getPlayer()::removeTrait);
     }
 
     @EventHandler

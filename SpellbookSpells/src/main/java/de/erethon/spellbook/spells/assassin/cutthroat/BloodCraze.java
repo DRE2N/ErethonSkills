@@ -17,7 +17,6 @@ import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class BloodCraze extends AssassinBaseSpell {
 
@@ -86,8 +85,8 @@ public class BloodCraze extends AssassinBaseSpell {
                 .onTick(aoe -> {
                     if (currentTicks % 20 == 0) {
                         Location auraCenter = caster.getLocation().add(0, 0.5, 0);
-                        caster.getWorld().spawnParticle(Particle.DUST, auraCenter, 8, bloodAuraRadius * 0.7, 0.2, bloodAuraRadius * 0.7, 0,
-                            new Particle.DustOptions(org.bukkit.Color.RED, 1.2f));
+                        caster.getWorld().spawnParticle(Particle.DUST, auraCenter, 2, bloodAuraRadius * 0.7, 0.2, bloodAuraRadius * 0.7, 0,
+                            new Particle.DustOptions(org.bukkit.Color.RED, 0.5f));
                     }
                 });
 
@@ -130,8 +129,8 @@ public class BloodCraze extends AssassinBaseSpell {
             visualTicks = 20;
             Location casterLoc = caster.getLocation().add(0, 1, 0);
             caster.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, casterLoc, 3, 0.5, 0.5, 0.5);
-            caster.getWorld().spawnParticle(Particle.DUST, casterLoc, 5, 0.3, 0.3, 0.3, 0,
-                new Particle.DustOptions(org.bukkit.Color.MAROON, 1.0f));
+            caster.getWorld().spawnParticle(Particle.DUST, casterLoc, 3, 0.3, 0.3, 0.3, 0,
+                new Particle.DustOptions(org.bukkit.Color.MAROON, 0.3f));
         }
 
         if (auraUpdateTicks <= 0) {
@@ -147,8 +146,8 @@ public class BloodCraze extends AssassinBaseSpell {
             bloodPulse.setLocation(caster.getLocation().add(0, 0.1, 0));
             bloodPulse.radius = (float) bloodAuraRadius;
             bloodPulse.particle = Particle.DUST;
-            bloodPulse.particles = 20;
-            bloodPulse.duration = 8;
+            bloodPulse.particles = 16;
+            bloodPulse.duration = 50;
             bloodPulse.start();
         }
     }
@@ -173,14 +172,14 @@ public class BloodCraze extends AssassinBaseSpell {
 
     private void playHealingEffect() {
         Location casterLoc = caster.getLocation().add(0, 1, 0);
-        caster.getWorld().spawnParticle(Particle.HEART, casterLoc, 3, 0.3, 0.3, 0.3, 0.1);
-        caster.getWorld().spawnParticle(Particle.DUST, casterLoc, 8, 0.4, 0.4, 0.4, 0,
-            new Particle.DustOptions(org.bukkit.Color.RED, 1.5f));
+        caster.getWorld().spawnParticle(Particle.HEART, casterLoc, 3, 0.3, 0.3, 0.3, 0);
+        caster.getWorld().spawnParticle(Particle.DUST, casterLoc, 4, 0.4, 0.4, 0.4, 0,
+            new Particle.DustOptions(org.bukkit.Color.RED, 1.0f));
     }
 
     private void playCleavingEffect(LivingEntity entity) {
         Location entityLoc = entity.getLocation().add(0, 1, 0);
-        entity.getWorld().spawnParticle(Particle.CRIT, entityLoc, 5, 0.3, 0.3, 0.3, 0.1);
+        entity.getWorld().spawnParticle(Particle.CRIT, entityLoc, 5, 0.3, 0.3, 0.3, 0);
         entity.getWorld().spawnParticle(Particle.DUST, entityLoc, 3, 0.2, 0.2, 0.2, 0,
             new Particle.DustOptions(org.bukkit.Color.MAROON, 1.0f));
         entity.getWorld().playSound(entityLoc, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.4f, 1.3f);
