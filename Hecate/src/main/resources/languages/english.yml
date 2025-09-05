@@ -63,6 +63,10 @@ character:
   controls:
     left_click_select: "Left-click: Select"
     sneak_right_click_delete: "Sneak + Right-click: Delete"
+  slot:
+    locked: "<red>Locked"
+    empty: "<gray>Empty Slot"
+    click_to_create: "<green>Create New Character"
 
 # Class selection
 class:

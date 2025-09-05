@@ -1,6 +1,7 @@
 package de.erethon.hecate.charselection;
 
 import de.erethon.bedrock.chat.MessageUtil;
+import de.erethon.hecate.Hecate;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.data.dao.CharacterDao;
@@ -35,11 +36,13 @@ public class CharacterSelection extends BaseSelection {
     private final HPlayer hPlayer;
     private final CharacterLobby lobby;
     private final Set<TextDisplay> emptySlotDisplays = new HashSet<>();
+    private final Set<TextDisplay> characterInfoDisplays = new HashSet<>(); // Separate collection for character info displays
     private final Interaction[] interactions = new Interaction[9];
     private boolean confirmed = false;
     private boolean playerIsDone = false;
     private UUID characterToDelete = null; // Track which character is pending deletion
     private long deleteRequestTime = 0; // Track when delete was requested
+    private long lastSneakRightClickTime = 0; // Debounce mechanism to prevent double events
 
     public CharacterSelection(Player player, CharacterLobby lobby) {
         super(player);
@@ -54,18 +57,21 @@ public class CharacterSelection extends BaseSelection {
             CharacterDisplay display = new CharacterDisplay(character, this);
             displayed.add(display);
         }
+        
+        // Only call setup once, either immediately or after saving
         if (hPlayer.getSelectedCharacter() == null) {
             setup();
-            return;
+        } else {
+            hPlayer.getSelectedCharacter().saveToDatabase().thenAccept(v -> {
+                setup();
+            });
         }
-        hPlayer.getSelectedCharacter().saveToDatabase().thenAccept(v -> { // make sure the current character is saved first
-            setup();
-            hPlayer.setSelectedCharacter(null, false);
-        });
-
     }
 
     protected void setup() {
+        // Clean up any existing entities before creating new ones
+        cleanupExistingEntities();
+
         player.teleportAsync(lobby.getOrigin()).thenAccept(a -> {
             List<Location> locations = lobby.getPedestalLocations();
             for (int i = 0; i < locations.size(); i++) {
@@ -87,12 +93,34 @@ public class CharacterSelection extends BaseSelection {
         });
     }
 
+    private void cleanupExistingEntities() {
+        for (TextDisplay display : emptySlotDisplays) {
+            display.remove();
+        }
+        emptySlotDisplays.clear();
+
+        for (TextDisplay display : characterInfoDisplays) {
+            display.remove();
+        }
+        characterInfoDisplays.clear();
+
+        for (int i = 0; i < interactions.length; i++) {
+            if (interactions[i] != null) {
+                interactions[i].remove();
+                interactions[i] = null;
+            }
+        }
+    }
+
     private void leaveCharacterSelection(boolean newCharacter) {
         for (BaseDisplay characterDisplay : displayed) {
             characterDisplay.remove(player);
         }
         for (TextDisplay emptySlotDisplay : emptySlotDisplays) {
             emptySlotDisplay.remove();
+        }
+        for (TextDisplay characterInfoDisplay : characterInfoDisplays) {
+            characterInfoDisplay.remove();
         }
         for (Interaction interaction : interactions) {
             if (interaction == null) continue;
@@ -151,11 +179,14 @@ public class CharacterSelection extends BaseSelection {
         UUID characterId = character.getCharacterID();
         long currentTime = System.currentTimeMillis();
 
-        // Check if this is a confirmation for the same character within 10 seconds
+
+        if (currentTime - lastSneakRightClickTime < 100) {
+            return; // Fires double sometimes, just ignore
+        }
+        lastSneakRightClickTime = currentTime;
+
         if (characterToDelete != null && characterToDelete.equals(characterId) &&
             (currentTime - deleteRequestTime) < 10000) {
-
-            // Proceed with deletion
             performCharacterDeletion(character, characterDisplay);
 
         } else {
@@ -183,30 +214,18 @@ public class CharacterSelection extends BaseSelection {
     }
 
     private void performCharacterDeletion(HCharacter character, CharacterDisplay characterDisplay) {
-        Component className = character.getHClass().getDisplayName();
-
-        // Find the index of the character being deleted
-        int deletedIndex = -1;
-        for (int i = 0; i < displayed.size(); i++) {
-            if (displayed.get(i) instanceof CharacterDisplay cd &&
-                cd.getCharacter().getCharacterID().equals(character.getCharacterID())) {
-                deletedIndex = i;
-                break;
-            }
-        }
-
-        // Remove from display and player's character list
+        Component className = character.getHClass() != null ?
+                character.getHClass().getDisplayName() :
+                Component.translatable("hecate.misc.no_class", NamedTextColor.GRAY);
         displayed.remove(characterDisplay);
         characterDisplay.remove(player);
         hPlayer.getCharacters().remove(character);
 
-        // If this was the selected character, clear it
         if (hPlayer.getSelectedCharacter() != null &&
             hPlayer.getSelectedCharacter().getCharacterID().equals(character.getCharacterID())) {
             hPlayer.setSelectedCharacter(null, true);
         }
 
-        // Delete from database
         plugin.getDatabaseManager().executeAsync(handle -> {
             handle.attach(CharacterDao.class).deleteCharacter(character.getCharacterID());
         }).thenRun(() -> {
@@ -219,7 +238,6 @@ public class CharacterSelection extends BaseSelection {
             return null;
         });
 
-        // Clear deletion tracking
         characterToDelete = null;
         deleteRequestTime = 0;
 
@@ -239,6 +257,11 @@ public class CharacterSelection extends BaseSelection {
             display.remove();
         }
         emptySlotDisplays.clear();
+
+        for (TextDisplay display : characterInfoDisplays) {
+            display.remove();
+        }
+        characterInfoDisplays.clear();
 
         // Clear all interactions except those for existing characters
         for (int i = 0; i < interactions.length; i++) {
@@ -312,9 +335,10 @@ public class CharacterSelection extends BaseSelection {
             textDisplay.setBackgroundColor(org.bukkit.Color.fromARGB(0, 0, 0, 0));
             Transformation transformation = new Transformation(new Vector3f(0f), new AxisAngle4f(), new Vector3f(0.5f), new AxisAngle4f());
             textDisplay.setTransformation(transformation);
+            textDisplay.setPersistent(false);
         });
         player.showEntity(plugin, display);
-        emptySlotDisplays.add(display);
+        characterInfoDisplays.add(display);
     }
 
     private void spawnLockedSlotDisplay(Location location) {
@@ -339,10 +363,11 @@ public class CharacterSelection extends BaseSelection {
             Transformation transformation = new Transformation(
                 new Vector3f(0f),
                 new AxisAngle4f(),
-                new Vector3f(2.0f),
+                new Vector3f(1.0f),
                 new AxisAngle4f()
             );
             textDisplay.setTransformation(transformation);
+            textDisplay.setPersistent(false);
         });
 
         player.showEntity(plugin, display);
@@ -361,10 +386,7 @@ public class CharacterSelection extends BaseSelection {
             Component text = Component.text("✚", NamedTextColor.GREEN)
                 .decoration(TextDecoration.BOLD, true)
                 .append(Component.newline())
-                .append(Component.translatable("hecate.character.slot.empty", NamedTextColor.GRAY))
-                .append(Component.newline())
-                .append(Component.translatable("hecate.character.slot.click_to_create", NamedTextColor.YELLOW));
-
+                .append(Component.translatable("hecate.character.slot.empty", NamedTextColor.GRAY));
             textDisplay.text(text);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
             textDisplay.setDefaultBackground(false);
@@ -373,10 +395,11 @@ public class CharacterSelection extends BaseSelection {
             Transformation transformation = new Transformation(
                 new Vector3f(0f),
                 new AxisAngle4f(),
-                new Vector3f(2.0f),
+                new Vector3f(1.0f),
                 new AxisAngle4f()
             );
             textDisplay.setTransformation(transformation);
+            textDisplay.setPersistent(false);
         });
 
         player.showEntity(plugin, display);
@@ -387,11 +410,15 @@ public class CharacterSelection extends BaseSelection {
         Location locCopy = location.clone();
         locCopy.setY(locCopy.getY() + 0.5);
 
-        return locCopy.getWorld().spawn(locCopy, Interaction.class, interaction -> {
-            interaction.setInteractionWidth(2.0f);
-            interaction.setInteractionHeight(3.0f);
-            interaction.setResponsive(true);
+        Interaction interaction = locCopy.getWorld().spawn(locCopy, Interaction.class, entity -> {
+            entity.setInteractionWidth(2.0f);
+            entity.setInteractionHeight(3.0f);
+            entity.setResponsive(true);
+            entity.setVisibleByDefault(false);
+            entity.setPersistent(false);
         });
+        player.showEntity(plugin, interaction);
+        return interaction;
     }
 
     @EventHandler
@@ -408,8 +435,7 @@ public class CharacterSelection extends BaseSelection {
             return;
         }
 
-        // Reset deletion confirmation if player interacts with something else
-        if (characterToDelete != null) {
+        if (characterToDelete != null && event.getRightClicked() instanceof Interaction) {
             characterToDelete = null;
             deleteRequestTime = 0;
             player.sendMessage(Component.translatable("hecate.character.deletion.cancelled"));
@@ -417,9 +443,11 @@ public class CharacterSelection extends BaseSelection {
         }
 
         if (event.getRightClicked() instanceof Interaction interaction) {
+            event.setCancelled(true); // Cancel the event to prevent other handlers
             for (int i = 0; i < interactions.length; i++) {
                 if (interactions[i] == interaction) {
                     if (i < displayed.size()) {
+                        Hecate.log("CharacterSelection: Slot " + i + " has a character, ignoring interaction");
                         return; // the interaction is in the wrong place somehow
                     }
                     if (i >= hPlayer.getMaximumCharacters()) {
@@ -428,32 +456,33 @@ public class CharacterSelection extends BaseSelection {
                         player.sendMessage(Component.translatable("hecate.character.selection.slot_locked_store"));
                         return; // the slot is locked
                     }
-                    if (i >= displayed.size()) {
-                        if (!confirmed) {
-                            player.sendMessage(Component.translatable("hecate.character.selection.slot_empty"));
-                            player.sendMessage(Component.translatable("hecate.character.selection.slot_empty_confirm"));
-                            confirmed = true;
-                            return; // the slot is empty
-                        }
-                        HCharacter newCharacter = new HCharacter(UUID.randomUUID(), hPlayer, 1, null, new Timestamp(System.currentTimeMillis()), new ArrayList<>());
-                        hPlayer.getCharacters().add(newCharacter);
-                        playerIsDone = true;
-                        newCharacter.saveToDatabase().thenAccept(v -> {
-                            hPlayer.setSelectedCharacter(newCharacter, true);
-                            player.showTitle(Title.title(Component.empty(), Component.translatable("hecate.character.selection.initializing")));
-                            BukkitRunnable runLater = new BukkitRunnable() {
-                                @Override
-                                public void run() {
-                                    leaveCharacterSelection(true);
-                                    PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(hPlayer, newCharacter, true);
-                                    Bukkit.getPluginManager().callEvent(event);
-                                }
-                            };
-                            runLater.runTaskLater(plugin, 20);
-                        });
+                    // This slot is available for character creation
+                    if (!confirmed) {
+                        player.sendMessage(Component.translatable("hecate.character.selection.slot_empty"));
+                        player.sendMessage(Component.translatable("hecate.character.selection.slot_empty_confirm"));
+                        confirmed = true;
+                        return; // the slot is empty
                     }
+                    HCharacter newCharacter = new HCharacter(UUID.randomUUID(), hPlayer, 1, null, new Timestamp(System.currentTimeMillis()), new ArrayList<>());
+                    hPlayer.getCharacters().add(newCharacter);
+                    playerIsDone = true;
+                    newCharacter.saveToDatabase().thenAccept(v -> {
+                        hPlayer.setSelectedCharacter(newCharacter, true);
+                        player.showTitle(Title.title(Component.empty(), Component.translatable("hecate.character.selection.initializing")));
+                        BukkitRunnable runLater = new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                leaveCharacterSelection(true);
+                                PlayerSelectedCharacterEvent event = new PlayerSelectedCharacterEvent(hPlayer, newCharacter, true);
+                                Bukkit.getPluginManager().callEvent(event);
+                            }
+                        };
+                        runLater.runTaskLater(plugin, 20);
+                    });
+                    return;
                 }
             }
+            Hecate.log("CharacterSelection: Interaction entity not found in interactions array");
         }
     }
 }
