@@ -107,7 +107,6 @@ public class EntityListener implements Listener {
         if (!displayManager.hasStatusDisplay(entity)) {
             displayManager.addStatusDisplay(entity, new EntityStatusDisplay(entity));
         }
-        MessageUtil.broadcastMessage("Removing effect " + event.getEffect().data + " from " + entity.getName());
         displayManager.getStatusDisplay(entity).updateStatusDisplay();
     }
 

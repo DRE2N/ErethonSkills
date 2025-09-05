@@ -142,7 +142,7 @@ public final class Hecate extends EPlugin {
                     } else {
                         locale = Locale.US;
                     }
-                    reg.registerTranslation("spellbook.spell.name." + data.getId(), value, locale);
+                    reg.registerTranslation("hecate.spellbook.spell.name." + data.getId(), value, locale);
                 }
             }
             if (data.contains("description")) {
@@ -162,7 +162,7 @@ public final class Hecate extends EPlugin {
                     }
                     int i = 0;
                     for (String line : value) {
-                        reg.registerTranslation("spellbook.spell.description." + data.getId() + "." + i, line, locale);
+                        reg.registerTranslation("hecate.spellbook.spell.description." + data.getId() + "." + i, line, locale);
                         i++;
                     }
                     maxLineCount = Math.max(maxLineCount, i);
@@ -185,7 +185,7 @@ public final class Hecate extends EPlugin {
                     } else {
                         locale = Locale.US;
                     }
-                    reg.registerTranslation("spellbook.trait.name." + data.getId(), value, locale);
+                    reg.registerTranslation("hecate.spellbook.trait.name." + data.getId(), value, locale);
                 }
             }
             if (data.contains("description")) {
@@ -205,7 +205,7 @@ public final class Hecate extends EPlugin {
                     }
                     int i = 0;
                     for (String line : value) {
-                        reg.registerTranslation("spellbook.trait.description." + data.getId() + "." + i, line, locale);
+                        reg.registerTranslation("hecate.spellbook.trait.description." + data.getId() + "." + i, line, locale);
                         i++;
                     }
                     maxLineCount = Math.max(maxLineCount, i);

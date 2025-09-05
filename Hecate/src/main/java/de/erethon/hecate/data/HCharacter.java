@@ -1,5 +1,7 @@
 package de.erethon.hecate.data;
 
+import ca.spottedleaf.dataconverter.minecraft.MCDataConverter;
+import ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry;
 import com.mojang.logging.LogUtils;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
@@ -10,10 +12,12 @@ import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.progression.LevelUtil;
 import de.erethon.spellbook.api.SpellData;
+import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ProblemReporter;
@@ -278,10 +282,14 @@ public class HCharacter {
         try {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(blob);
             CompoundTag tag = NbtIo.readCompressed(inputStream, NbtAccounter.create(20 * 1024 * 1024));
+            int dataVersion = NbtUtils.getDataVersion(tag, -1);
+            tag = MCDataConverter.convertTag(MCTypeRegistry.PLAYER, tag, dataVersion, SharedConstants.getCurrentVersion().dataVersion().version());
+
             this.playerData = tag;
             inputStream.close();
 
             // Apply data on the main thread
+            CompoundTag finalTag = tag;
             new BukkitRunnable() {
                 @Override
                 public void run() {
@@ -289,28 +297,27 @@ public class HCharacter {
                         ServerPlayer serverPlayer = craftPlayer.getHandle();
                         Level serverLevel = serverPlayer.level();
 
-                        // Todo: Readd Leafs DataFixer here
-                        boolean wasInCastMode = tag.contains("HecateHotbar");
+                        boolean wasInCastMode = finalTag.contains("HecateHotbar");
 
                         // If they were in cast mode, DO NOT load Pos/Motion/Rotation from the saved tag.
                         // Use the player's CURRENT position to prevent teleport exploits/issues.
                         if (wasInCastMode) {
-                            tag.remove("Pos");
-                            tag.remove("Motion");
-                            tag.remove("Rotation");
-                            tag.remove("FallDistance"); // Don't restore old fall distance
+                            finalTag.remove("Pos");
+                            finalTag.remove("Motion");
+                            finalTag.remove("Rotation");
+                            finalTag.remove("FallDistance"); // Don't restore old fall distance
                             Hecate.log("Player " + characterID + " was in cast mode, not restoring position/rotation.");
                         }
                         // Remove UUID to prevent issues
-                        tag.remove("UUID");
+                        finalTag.remove("UUID");
                         try (ProblemReporter.ScopedCollector scopedCollector = new ProblemReporter.ScopedCollector(serverPlayer.problemPath(), LogUtils.getLogger())) {
-                            ValueInput tagInput = TagValueInput.create(scopedCollector, serverPlayer.registryAccess(), tag);
+                            ValueInput tagInput = TagValueInput.create(scopedCollector, serverPlayer.registryAccess(), finalTag);
                             serverPlayer.load(tagInput);
                         }
 
                         if (wasInCastMode) {
                             Hecate.log("Player " + characterID + " was in cast mode, restoring hotbar...");
-                            ListTag loadedHotbarTag = tag.getList("HecateHotbar").get();
+                            ListTag loadedHotbarTag = finalTag.getList("HecateHotbar").get();
                             for (int i = 0; i < Math.min(9, loadedHotbarTag.size()); i++) {
                                 String encodedItem = loadedHotbarTag.getString(i).get();
                                 if (encodedItem.equals("empty")) {
@@ -337,7 +344,7 @@ public class HCharacter {
                                     }
                                 }
                             }
-                            tag.remove("HecateHotbar");
+                            finalTag.remove("HecateHotbar");
                             Hecate.log("Hotbar restoration attempt finished for " + characterID + ".");
                         }
 

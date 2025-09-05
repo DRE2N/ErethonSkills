@@ -47,7 +47,7 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
     private final double huntersFocusChargeBonus = data.getDouble("huntersFocusChargeBonus", 0.5);
     private final String huntersFocusTag = "hunters_focus_active";
     private final double ultChargedShotDamageBonus = data.getDouble("ultChargedShotDamageBonus", 0.2);
-    private final double meleeRange = data.getDouble("meleeRange", 3.0);
+    private final double meleeRangeBonus = data.getDouble("meleeRangeBonus", 3.0);
 
     private final AttributeModifier movementSpeedModifier = new AttributeModifier(NamespacedKey.fromString("spellbook:sharpshooter_basic_attack"), -movementSpeedMultiplier, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
 
@@ -72,6 +72,7 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         }
 
         LivingEntity nearbyEnemy = null;
+        double meleeRange = caster.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).getValue() + meleeRangeBonus;
         for (LivingEntity entity : caster.getLocation().getNearbyLivingEntities(meleeRange)) {
             if (entity != caster && Spellbook.canAttack(caster, entity)) {
                 nearbyEnemy = entity;
