@@ -78,7 +78,7 @@ public class PlayerCastListener implements Listener {
         remover.runTaskTimer(plugin, 0, 20);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player player && event.getEntity() instanceof LivingEntity entity) {
             addDisplayDamage(player, entity, event.getDamage(), event.getDamageType());

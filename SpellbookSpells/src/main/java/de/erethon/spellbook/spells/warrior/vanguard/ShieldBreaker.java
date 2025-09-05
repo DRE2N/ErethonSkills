@@ -5,6 +5,7 @@ import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.warrior.WarriorBaseSpell;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -78,7 +79,7 @@ public class ShieldBreaker extends WarriorBaseSpell {
         } else {
             target.addEffect(caster, slowEffectData, slowDuration, slowStacks);
 
-            target.getWorld().spawnParticle(Particle.BLOCK_CRUMBLE, target.getLocation().add(0, 0.5, 0), 12, 0.3, 0.3, 0.3, 0.1);
+            target.getWorld().spawnParticle(Particle.BLOCK_CRUMBLE, target.getLocation().add(0, 0.5, 0), 12, 0.3, 0.3, 0.3, 0.1, Material.DIRT.createBlockData());
             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 0.8f, 0.8f);
         }
     }

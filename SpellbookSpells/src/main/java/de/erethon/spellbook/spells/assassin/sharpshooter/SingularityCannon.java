@@ -132,9 +132,9 @@ public class SingularityCannon extends AssassinBaseSpell {
         caster.getWorld().playSound(startLoc, Sound.ENTITY_WITHER_SPAWN, SoundCategory.PLAYERS, 1.5f, 2.0f);
         caster.getWorld().playSound(startLoc, Sound.ENTITY_ENDER_DRAGON_SHOOT, SoundCategory.PLAYERS, 2.0f, 0.5f);
 
-        startLoc.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, startLoc, 1, 0, 0, 0, 0);
-        startLoc.getWorld().spawnParticle(Particle.FLASH, startLoc, 3, 0.5, 0.5, 0.5, 0);
-        startLoc.getWorld().spawnParticle(Particle.END_ROD, startLoc, 50, 2, 2, 2, 0.5);
+        startLoc.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, startLoc, 1, 0, 0, 0, 0, null, true);
+        startLoc.getWorld().spawnParticle(Particle.FLASH, startLoc, 3, 0.5, 0.5, 0.5, 0, null, true);
+        startLoc.getWorld().spawnParticle(Particle.END_ROD, startLoc, 50, 2, 2, 2, 0.5, null, true);
 
         Location endLoc = startLoc.clone().add(targetDirection.clone().multiply(beamRange));
         createMassiveBeamEffect(startLoc, endLoc);
@@ -183,6 +183,7 @@ public class SingularityCannon extends AssassinBaseSpell {
             mainBeam.color = Color.WHITE;
             mainBeam.particles = 100;
             mainBeam.duration = 40;
+            mainBeam.particleForceShow = true;
             mainBeam.start();
 
             LineEffect energyBeam = new LineEffect(effectManager);
@@ -191,6 +192,7 @@ public class SingularityCannon extends AssassinBaseSpell {
             energyBeam.particle = Particle.END_ROD;
             energyBeam.particles = 80;
             energyBeam.duration = 30;
+            energyBeam.particleForceShow = true;
             energyBeam.start();
         }
     }
@@ -219,25 +221,25 @@ public class SingularityCannon extends AssassinBaseSpell {
         Location targetLoc = target.getLocation().add(0, 1, 0);
 
         if (isPrimary) {
-            targetLoc.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, targetLoc, 1, 0, 0, 0, 0);
-            targetLoc.getWorld().spawnParticle(Particle.FLASH, targetLoc, 3, 0.5, 0.5, 0.5, 0);
+            targetLoc.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, targetLoc, 1, 0, 0, 0, 0,null, true);
+            targetLoc.getWorld().spawnParticle(Particle.FLASH, targetLoc, 3, 0.5, 0.5, 0.5, 0, null, true);
             targetLoc.getWorld().playSound(targetLoc, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 2.0f, 0.8f);
         } else {
-            targetLoc.getWorld().spawnParticle(Particle.EXPLOSION, targetLoc, 2, 0.3, 0.3, 0.3, 0);
+            targetLoc.getWorld().spawnParticle(Particle.EXPLOSION, targetLoc, 2, 0.3, 0.3, 0.3, 0,null, true);
             targetLoc.getWorld().playSound(targetLoc, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 1.2f, 1.2f);
         }
 
         targetLoc.getWorld().spawnParticle(Particle.DUST, targetLoc, 20, 0.5, 0.5, 0.5, 0,
-            new Particle.DustOptions(Color.RED, 2.0f));
-        targetLoc.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, targetLoc, 15, 0.8, 0.8, 0.8, 0.3);
+            new Particle.DustOptions(Color.RED, 2.0f), true);
+        targetLoc.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, targetLoc, 15, 0.8, 0.8, 0.8, 0.3,null, true);
 
         targetLoc.getWorld().spawnParticle(Particle.DUST, targetLoc, 10, 0.3, 0.3, 0.3, 0,
-            new Particle.DustOptions(Color.PURPLE, 1.5f));
+            new Particle.DustOptions(Color.PURPLE, 1.5f), true);
     }
 
     private void createKillVFX(Location killLoc) {
-        killLoc.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, killLoc, 30, 1, 1, 1, 0.5);
-        killLoc.getWorld().spawnParticle(Particle.FLASH, killLoc, 5, 1, 1, 1, 0);
+        killLoc.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, killLoc, 30, 1, 1, 1, 0.5,null, true);
+        killLoc.getWorld().spawnParticle(Particle.FLASH, killLoc, 5, 1, 1, 1, 0,null, true);
         killLoc.getWorld().playSound(killLoc, Sound.ITEM_TOTEM_USE, SoundCategory.PLAYERS, 1.0f, 1.8f);
     }
 
@@ -257,10 +259,10 @@ public class SingularityCannon extends AssassinBaseSpell {
                 for (int i = 0; i < 10; i++) {
                     Location trailLoc = start.clone().add(direction.clone().multiply(i * step));
                     trailLoc.getWorld().spawnParticle(Particle.DUST, trailLoc, 3, 0.3, 0.3, 0.3, 0,
-                        new Particle.DustOptions(Color.WHITE, 1.8f));
+                        new Particle.DustOptions(Color.WHITE, 1.8f), true);
 
                     if (ticks < 5) {
-                        trailLoc.getWorld().spawnParticle(Particle.END_ROD, trailLoc, 1, 0.1, 0.1, 0.1, 0.05);
+                        trailLoc.getWorld().spawnParticle(Particle.END_ROD, trailLoc, 1, 0.1, 0.1, 0.1, 0.05,null, true);
                     }
                 }
 
