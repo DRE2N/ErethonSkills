@@ -1,5 +1,8 @@
 package de.erethon.hecate.casting;
 
+import de.erethon.aergia.ui.UIComponent;
+import de.erethon.aergia.ui.UIUpdater;
+import de.erethon.aergia.ui.event.UICreateEvent;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.data.HCharacter;
@@ -14,11 +17,16 @@ import de.erethon.spellbook.api.TraitData;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import io.papermc.paper.datacomponent.item.TooltipDisplay;
+import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -26,6 +34,7 @@ import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.map.MinecraftFont;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -37,7 +46,7 @@ import java.util.Map;
 import java.util.Set;
 
 // This class manages the casting mode of a character. It exists per character and is responsible for setting up the player's UI, updating it, and handling the player's attributes.
-public class CharacterCastingManager {
+public class CharacterCastingManager implements Listener {
 
     private final Hecate plugin = Hecate.getInstance();
     private final HCharacter character;
@@ -53,12 +62,14 @@ public class CharacterCastingManager {
     private final SpellData[] slotSpells = new SpellData[8];
     private final SpellbookSpell[] cachedActiveSpells = new SpellbookSpell[8];
     private final HashMap<Attribute, Double> cachedAttributes = new HashMap<>();
+    private BossBar bossBar;
 
     private final NamespacedKey castingMarker = new NamespacedKey(plugin, "casting_marker");
 
     public CharacterCastingManager(HCharacter character) {
         this.character = character;
         this.player = character.getHPlayer().getPlayer();
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     public void switchCastMode(CombatModeReason reason, boolean newMode, ItemStack castingItem) {
@@ -121,6 +132,12 @@ public class CharacterCastingManager {
             player.removeTrait(trait);
         }
         player.getInventory().setHeldItemSlot(previousSlot);
+
+        // Hide bossbar when exiting casting mode
+        if (bossBar != null) {
+            player.hideBossBar(bossBar);
+            bossBar = null;
+        }
     }
 
     private void updateUI() {
@@ -170,6 +187,7 @@ public class CharacterCastingManager {
                 }
             }
         }
+
         // Always update HUD
         int energy = player.getEnergy();
         int maxEnergy = player.getMaxEnergy();
@@ -183,68 +201,66 @@ public class CharacterCastingManager {
         Traitline traitline = character.getTraitline();
         TextColor energyColor = traitline.getEnergyColor();
         String energyIconUnicode = traitline.getEnergySymbol();
+        if (energyIconUnicode == null || energyIconUnicode.isBlank()) {
+            energyIconUnicode = "\u26A1"; // Default to lightning bolt
+        }
         Component energyIcon = Component.text(energyIconUnicode, energyColor);
         Component energyNumbers = Component.text(energy + "/" + maxEnergy, energyColor);
         Component energyText = energyIcon.append(Component.space()).append(energyNumbers);
 
-        StringBuilder positiveEffectsBuilder = new StringBuilder();
-        StringBuilder negativeEffectsBuilder = new StringBuilder();
+        Component positiveEffects = Component.empty();
+        Component negativeEffects = Component.empty();
 
         for (SpellEffect effect : player.getEffects()) {
-            int secondsLeft = effect.getTicksLeft() / 20;
+            Component effectDisplay = formatEffectDisplay(effect);
+
             if (effect.data.isPositive()) {
-                positiveEffectsBuilder.append("+").append(effect.data.getIcon());
-                if (effect.getTicksLeft() < Integer.MAX_VALUE) {
-                    positiveEffectsBuilder.append(secondsLeft);
+                if (positiveEffects.equals(Component.empty())) {
+                    positiveEffects = effectDisplay;
+                } else {
+                    positiveEffects = positiveEffects.append(Component.space()).append(effectDisplay);
                 }
-                positiveEffectsBuilder.append(" ");
             } else {
-                negativeEffectsBuilder.append("-").append(effect.data.getIcon());
-                if (effect.getTicksLeft() < Integer.MAX_VALUE) {
-                    negativeEffectsBuilder.append(secondsLeft);
+                if (negativeEffects.equals(Component.empty())) {
+                    negativeEffects = effectDisplay;
+                } else {
+                    negativeEffects = negativeEffects.append(Component.space()).append(effectDisplay);
                 }
-                negativeEffectsBuilder.append(" ");
             }
         }
-        Component positiveEffectsComponent = Component.text(positiveEffectsBuilder.toString().trim(), NamedTextColor.GREEN);
-        Component negativeEffectsComponent = Component.text(negativeEffectsBuilder.toString().trim(), NamedTextColor.RED);
 
-        // Separators
-        Component centerSpacer = Component.text(" | ", NamedTextColor.DARK_GRAY);
         Component betweenSpacer = Component.text("     ");
-
-        // --- Calculate Content Widths on Each Side of the Separator ---
-
-        // Left side content: Health + BetweenSpacer + Positive Effects
-        PlainTextComponentSerializer pt = PlainTextComponentSerializer.plainText();
-        int healthWidth = pt.serialize(healthText).length();
-        int posEffectsWidth = pt.serialize(positiveEffectsComponent).length();
-        int betweenSpacerWidth = pt.serialize(betweenSpacer).length();
-
-        int leftContentWidth = healthWidth + betweenSpacerWidth + posEffectsWidth;
-
-        // Right side content: Negative Effects + BetweenSpacer + Energy
-        int negEffectsWidth = pt.serialize(negativeEffectsComponent).length();
-        int energyWidth = pt.serialize(energyText).length();
-
-        int rightContentWidth = negEffectsWidth + betweenSpacerWidth + energyWidth;
-        int requiredSideWidth = Math.max(leftContentWidth, rightContentWidth);
-        int leftPaddingSpaces = Math.max(0, requiredSideWidth - leftContentWidth);
-        int rightPaddingSpaces = Math.max(0, requiredSideWidth - rightContentWidth);
-
-        Component leftPadding = Component.text(" ".repeat(leftPaddingSpaces));
-        Component rightPadding = Component.text(" ".repeat(rightPaddingSpaces));
-
-        Component actionbar = leftPadding
-                .append(healthText)
+        Component actionbar = healthText
                 .append(betweenSpacer)
-                .append(positiveEffectsComponent)
-                .append(centerSpacer) // The anchor point that should appear in the screen center
-                .append(negativeEffectsComponent)
-                .append(betweenSpacer)
-                .append(energyText)
-                .append(rightPadding);
+                .append(energyText);
+
         player.sendActionBar(actionbar);
+    }
+
+    private Component formatEffectDisplay(SpellEffect effect) {
+        Component display = Component.empty();
+        Component icon = MiniMessage.miniMessage().deserialize(effect.data.getIcon());
+
+        int stacks = effect.getStacks();
+        if (stacks > 1) {
+            display = display.append(icon).append(Component.text("x" + stacks, NamedTextColor.YELLOW));
+        } else {
+            display = display.append(icon);
+        }
+
+        int duration = effect.getTicksLeft() / 20;
+        String durationText;
+        if (duration > 0) {
+            durationText = duration + "s";
+            while (durationText.length() < 3) {
+                durationText = " " + durationText;
+            }
+        } else {
+            durationText = " ∞ ";
+        }
+
+        display = display.append(Component.space()).append(Component.text(durationText, NamedTextColor.GRAY));
+        return display;
     }
 
     private void updateSkillUI() {
@@ -301,7 +317,7 @@ public class CharacterCastingManager {
     }
 
     private ItemStack emptyStack() {
-        ItemStack emptyItem = new ItemStack(CastingStatics.SLOT_DYES[0]);
+        ItemStack emptyItem = new ItemStack(CastingStatics.SLOT_DYES[8]);
         emptyItem.setData(DataComponentTypes.ITEM_MODEL, Key.key("minecraft:air"));
         emptyItem.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
         return  emptyItem;
@@ -392,7 +408,6 @@ public class CharacterCastingManager {
                           finalBaseValue + " (default: " + defaultBase + " + bonus: " + totalBonus + ")");
             }
         }
-        player.setHealth(player.getMaxHealth());
         player.setHealthScaled(true);
         player.setHealthScale(20.0);
     }
@@ -408,6 +423,68 @@ public class CharacterCastingManager {
             updateUI();
         }
     }
+
+    private int getSafeTextWidth(String text) {
+        if (text == null || text.isEmpty()) {
+            return 0;
+        }
+
+        try {
+            if (MinecraftFont.Font.isValid(text)) {
+                return MinecraftFont.Font.getWidth(text);
+            }
+        } catch (Exception e) {
+        }
+
+        int totalWidth = 0;
+        for (char c : text.toCharArray()) {
+            try {
+                String charStr = String.valueOf(c);
+                if (MinecraftFont.Font.isValid(charStr)) {
+                    totalWidth += MinecraftFont.Font.getWidth(charStr);
+                } else {
+                    if (c == ' ') {
+                        totalWidth += 4;
+                    } else if (Character.isLetterOrDigit(c)) {
+                        totalWidth += 6;
+                    } else {
+                        totalWidth += 5;
+                    }
+                }
+            } catch (Exception e) {
+                if (c == ' ') {
+                    totalWidth += 4;
+                } else {
+                    totalWidth += 6;
+                }
+            }
+        }
+        return totalWidth;
+    }
+
+    @EventHandler
+    public void onUICreate(UICreateEvent event) {
+        applyToUIUpdater(event.getUIUpdater());
+    }
+
+    public void applyToUIUpdater(@NotNull UIUpdater uiUpdater) {
+        uiUpdater.getBossBar().getCenter().add(UIComponent.reactivatable(p -> {
+            if (!isInCastMode || p.getPlayer() != player) {
+                return Component.text("hey");
+            }
+            return Component.text("test"); // This no worky
+        }, 20, "hecate_spell_effects"));
+
+    }
+
+    private Component getSpellEffectsComponent() {
+        Component component = Component.empty();
+        for (SpellEffect effect : player.getEffects()) {
+            component = component.append(formatEffectDisplay(effect)).append(Component.text(" "));
+        }
+        return component;
+    }
+
 
 
 }

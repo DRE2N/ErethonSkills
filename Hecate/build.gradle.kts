@@ -42,6 +42,7 @@ dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
     implementation(project(":SpellbookSpells"))
     compileOnly("de.erethon.tyche:Tyche:1.0-SNAPSHOT")
+    compileOnly("de.erethon.aergia:Aergia:1.0.1")
 }
 
 
