@@ -3,6 +3,7 @@ package de.erethon.spellbook.spells.assassin.cutthroat;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.aoe.AoE;
+import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.CircleEffect;
@@ -11,11 +12,9 @@ import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 
 public class BloodCraze extends AssassinBaseSpell {
@@ -28,8 +27,10 @@ public class BloodCraze extends AssassinBaseSpell {
     private final double damageAsHealingMultiplierMin = data.getDouble("damageAsHealingMultiplierMin", 0.15);
     private final double damageAsHealingMultiplierMax = data.getDouble("damageAsHealingMultiplierMax", 0.25);
     private final double bloodAuraRadius = data.getDouble("bloodAuraRadius", 4.0);
+    private final double speedDurationMin = data.getDouble("speedDurationMin", 5.0) * 20;
+    private final double speedDurationMax = data.getDouble("speedDurationMax", 8.0) * 20;
 
-    private final AttributeModifier speedBoost = new AttributeModifier(new NamespacedKey("spellbook", "blood_craze"), 0.2, AttributeModifier.Operation.ADD_NUMBER);
+    private final EffectData speedBoostData = Spellbook.getEffectData("Speed");
 
     private int visualTicks = 20;
     private int auraUpdateTicks = 40;
@@ -49,8 +50,8 @@ public class BloodCraze extends AssassinBaseSpell {
 
     @Override
     public boolean onCast() {
-        caster.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(speedBoost);
-
+        int speedDuration = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, speedDurationMin, speedDurationMax, "speedDuration");
+        caster.addEffect(caster, speedBoostData, speedDuration, 1);
         playBloodCrazeActivation();
         createBloodAura();
         caster.getTags().add("assassin.blood_craze");
@@ -108,7 +109,6 @@ public class BloodCraze extends AssassinBaseSpell {
     @Override
     protected void cleanup() {
         super.cleanup();
-        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedBoost);
         caster.getTags().remove("assassin.blood_craze");
     }
 
@@ -189,5 +189,7 @@ public class BloodCraze extends AssassinBaseSpell {
     protected void addSpellPlaceholders() {
         spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, damageAsHealingMultiplierMin, damageAsHealingMultiplierMax, "healing"), VALUE_COLOR));
         placeholderNames.add("healing");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, speedDurationMin, speedDurationMax, "speedDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("speedDuration");
     }
 }

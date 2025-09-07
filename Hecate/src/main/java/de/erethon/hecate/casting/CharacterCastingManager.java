@@ -1,8 +1,9 @@
 package de.erethon.hecate.casting;
 
+import de.erethon.aergia.Aergia;
+import de.erethon.aergia.player.EPlayer;
 import de.erethon.aergia.ui.UIComponent;
 import de.erethon.aergia.ui.UIUpdater;
-import de.erethon.aergia.ui.event.UICreateEvent;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.data.HCharacter;
@@ -21,12 +22,12 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.ShadowColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.jetbrains.annotations.NotNull;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
@@ -63,6 +64,7 @@ public class CharacterCastingManager implements Listener {
     private final SpellbookSpell[] cachedActiveSpells = new SpellbookSpell[8];
     private final HashMap<Attribute, Double> cachedAttributes = new HashMap<>();
     private BossBar bossBar;
+    private UIUpdater uiUpdater;
 
     private final NamespacedKey castingMarker = new NamespacedKey(plugin, "casting_marker");
 
@@ -70,6 +72,7 @@ public class CharacterCastingManager implements Listener {
         this.character = character;
         this.player = character.getHPlayer().getPlayer();
         Bukkit.getPluginManager().registerEvents(this, plugin);
+        loadUIUpdater();
     }
 
     public void switchCastMode(CombatModeReason reason, boolean newMode, ItemStack castingItem) {
@@ -212,6 +215,10 @@ public class CharacterCastingManager implements Listener {
         Component negativeEffects = Component.empty();
 
         for (SpellEffect effect : player.getEffects()) {
+            if (effect.getTicksLeft() <= 20) {
+                continue;
+            }
+
             Component effectDisplay = formatEffectDisplay(effect);
 
             if (effect.data.isPositive()) {
@@ -228,18 +235,22 @@ public class CharacterCastingManager implements Listener {
                 }
             }
         }
+        updateBossbarUI(positiveEffects, negativeEffects);
 
         Component betweenSpacer = Component.text("     ");
         Component actionbar = healthText
                 .append(betweenSpacer)
                 .append(energyText);
-
+        actionbar = actionbar.shadowColor(ShadowColor.none());
         player.sendActionBar(actionbar);
     }
 
     private Component formatEffectDisplay(SpellEffect effect) {
         Component display = Component.empty();
         Component icon = MiniMessage.miniMessage().deserialize(effect.data.getIcon());
+
+        NamedTextColor effectColor = effect.data.isPositive() ? NamedTextColor.GREEN : NamedTextColor.RED;
+        icon = icon.color(effectColor);
 
         int stacks = effect.getStacks();
         if (stacks > 1) {
@@ -249,17 +260,17 @@ public class CharacterCastingManager implements Listener {
         }
 
         int duration = effect.getTicksLeft() / 20;
-        String durationText;
         if (duration > 0) {
-            durationText = duration + "s";
-            while (durationText.length() < 3) {
-                durationText = " " + durationText;
+            String durationText = duration + "s";
+            StringBuilder paddedDuration = new StringBuilder();
+            int padding = 3 - durationText.length();
+            for (int i = 0; i < padding; i++) {
+                paddedDuration.append(" ");
             }
-        } else {
-            durationText = " ∞ ";
-        }
+            paddedDuration.append(durationText);
 
-        display = display.append(Component.space()).append(Component.text(durationText, NamedTextColor.GRAY));
+            display = display.append(Component.space()).append(Component.text(paddedDuration.toString(), NamedTextColor.GRAY));
+        }
         return display;
     }
 
@@ -325,7 +336,9 @@ public class CharacterCastingManager implements Listener {
 
     private ItemStack getItemStackFromSpellData(int slot, SpellData spellData) {
         ItemStack item = new ItemStack(CastingStatics.SLOT_DYES[slot]);
-        item.setData(DataComponentTypes.CUSTOM_NAME, Component.translatable("hecate.spellbook.spell.name." + spellData.getId()));
+        Component name = Component.translatable("hecate.spellbook.spell.name." + spellData.getId());
+        name = name.decoration(TextDecoration.ITALIC, false);
+        item.setData(DataComponentTypes.CUSTOM_NAME, name);
         List<Component> placeholders = spellData.getActiveSpell(player).getPlaceholders(player);
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < spellData.getDescriptionLineCount(); i++) {
@@ -462,27 +475,124 @@ public class CharacterCastingManager implements Listener {
         return totalWidth;
     }
 
-    @EventHandler
-    public void onUICreate(UICreateEvent event) {
-        applyToUIUpdater(event.getUIUpdater());
-    }
-
-    public void applyToUIUpdater(@NotNull UIUpdater uiUpdater) {
+    public void loadUIUpdater() {
+        Aergia aergia = Aergia.inst();
+        EPlayer ePlayer = aergia.getEPlayerCache().getByPlayer(player);
+        if (ePlayer == null) {
+            Hecate.log("EPlayer is null when trying to apply UIUpdater.");
+            return;
+        }
+        uiUpdater = ePlayer.getUIUpdater();
         uiUpdater.getBossBar().getCenter().add(UIComponent.reactivatable(p -> {
             if (!isInCastMode || p.getPlayer() != player) {
-                return Component.text("hey");
+                return Component.empty();
             }
-            return Component.text("test"); // This no worky
+            return Component.empty(); // This no worky
         }, 20, "hecate_spell_effects"));
 
     }
 
-    private Component getSpellEffectsComponent() {
-        Component component = Component.empty();
-        for (SpellEffect effect : player.getEffects()) {
-            component = component.append(formatEffectDisplay(effect)).append(Component.text(" "));
+    private void updateBossbarUI(Component positive, Component negative) {
+        if (uiUpdater == null) {
+            Hecate.log("Somehow the UIUpdater is null when trying to update the bossbar. Trying to find it again...");
+            loadUIUpdater();
+            return;
         }
-        return component;
+        UIComponent component = uiUpdater.getBossBar().getCenter().getById("hecate_spell_effects");
+        if (component == null) {
+            return;
+        }
+        if (positive == Component.empty() && negative == Component.empty()) {
+            component.setComponent(UIComponent.permanent(Component.empty()));
+            return;
+        }
+        component.setComponent(UIComponent.temporary(getSpellEffectsComponent(positive, negative), 20));
+        component.resetDuration();
+    }
+
+    private Component getSpellEffectsComponent(Component positive, Component negative) {
+        final int MAX_LENGTH = 600;
+        Component spacer = Component.text(" | ", NamedTextColor.DARK_GRAY);
+        PlainTextComponentSerializer plainTextComponentSerializer = PlainTextComponentSerializer.plainText();
+
+        String positiveText = positive != null ? plainTextComponentSerializer.serialize(positive) : "";
+        String negativeText = negative != null ? plainTextComponentSerializer.serialize(negative) : "";
+
+        boolean hasPositive = positive != null && !positive.equals(Component.empty()) && !positiveText.isEmpty();
+        boolean hasNegative = negative != null && !negative.equals(Component.empty()) && !negativeText.isEmpty();
+
+        int positiveWidth = hasPositive ? getSafeTextWidth(positiveText) : 0;
+        int negativeWidth = hasNegative ? getSafeTextWidth(negativeText) : 0;
+        int spacerWidth = getSafeTextWidth(" | ");
+
+        int totalContentWidth = positiveWidth + negativeWidth + spacerWidth;
+
+        if (totalContentWidth > MAX_LENGTH - 100) {
+            int availableWidth = MAX_LENGTH - spacerWidth - 100;
+            int halfAvailable = availableWidth / 2;
+
+            if (hasPositive && positiveWidth > halfAvailable) {
+                positive = truncateComponent(positive, halfAvailable);
+                positiveText = plainTextComponentSerializer.serialize(positive);
+                positiveWidth = getSafeTextWidth(positiveText);
+            }
+
+            if (hasNegative && negativeWidth > halfAvailable) {
+                negative = truncateComponent(negative, halfAvailable);
+                negativeText = plainTextComponentSerializer.serialize(negative);
+                negativeWidth = getSafeTextWidth(negativeText);
+            }
+        }
+
+        Component result = Component.empty();
+
+        if (hasPositive) {
+            result = result.append(positive);
+        }
+
+        result = result.append(spacer);
+
+        if (hasNegative) {
+            result = result.append(negative);
+        }
+
+        if (hasPositive && !hasNegative) {
+            String counterSpaces = " ".repeat(Math.min(positiveWidth / 4, 50)); // Divide by ~4 since space width is ~4
+            result = result.append(Component.text(counterSpaces, NamedTextColor.DARK_GRAY));
+        } else if (!hasPositive && hasNegative) {
+            String counterSpaces = " ".repeat(Math.min(negativeWidth / 4, 50));
+            result = Component.text(counterSpaces, NamedTextColor.DARK_GRAY).append(spacer).append(negative);
+        }
+        result = result.shadowColor(ShadowColor.none());
+        return result;
+    }
+
+    private Component truncateComponent(Component component, int maxWidth) {
+        if (component == null) {
+            return Component.empty();
+        }
+
+        String text = component.toString();
+        if (getSafeTextWidth(text) <= maxWidth) {
+            return component;
+        }
+
+        // Simple truncation - could be improved to be smarter about effect boundaries
+        StringBuilder truncated = new StringBuilder();
+        int currentWidth = 0;
+
+        for (char c : text.toCharArray()) {
+            int charWidth = getSafeTextWidth(String.valueOf(c));
+            if (currentWidth + charWidth + getSafeTextWidth("...") > maxWidth) {
+                truncated.append("...");
+                break;
+            }
+            truncated.append(c);
+            currentWidth += charWidth;
+        }
+
+        // Try to preserve the original component's color if possible
+        return Component.text(truncated.toString(), NamedTextColor.WHITE);
     }
 
 

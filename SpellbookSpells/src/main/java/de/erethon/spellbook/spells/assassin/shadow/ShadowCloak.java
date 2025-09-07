@@ -33,10 +33,11 @@ public class ShadowCloak extends AssassinBaseSpell {
     private final int bonusDamage = data.getInt("bonusDamage", 100);
     private final int blindnessMinDuration = data.getInt("blindnessMinDuration", 10) * 20;
     private final int blindnessMaxDuration = data.getInt("blindnessMaxDuration", 20) * 20;
-    private final double speedBoostAmount = data.getDouble("speedBoost", 0.3);
+    private final double speedDurationMin = data.getDouble("speedDurationMin", 5) * 20;
+    private final double speedDurationMax = data.getDouble("speedDurationMax", 8) * 20;
 
-    private final AttributeModifier speedBoost = new AttributeModifier(new NamespacedKey("spellbook", "shadow_cloak"), speedBoostAmount, AttributeModifier.Operation.ADD_NUMBER);
     private final EffectData blindness = Spellbook.getEffectData("Blindness");
+    private final EffectData speedBoostData = Spellbook.getEffectData("Speed");
 
     private boolean alreadyAttacked = false;
     private AoE shadowAura = null;
@@ -57,7 +58,8 @@ public class ShadowCloak extends AssassinBaseSpell {
         caster.getWorld().spawnParticle(Particle.SMOKE, caster.getLocation().add(0, 1, 0), 15, 0.8, 0.8, 0.8, 0.1);
 
         caster.setInvisible(true);
-        caster.getAttribute(Attribute.MOVEMENT_SPEED).addModifier(speedBoost);
+        int speedDuration = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, speedDurationMin, speedDurationMax, "speedDuration");
+        caster.addEffect(caster, speedBoostData, speedDuration, 1);
 
         Set<EffectData> toRemove = caster.getEffects().stream()
             .filter(effect -> !effect.data.isPositive())
@@ -122,7 +124,6 @@ public class ShadowCloak extends AssassinBaseSpell {
     protected void cleanup() {
         super.cleanup();
         caster.setInvisible(false);
-        caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedBoost);
         caster.getTags().remove("shadow_cloak");
         if (shadowAura != null) {
             shadowAura.revertBlockChanges();
@@ -148,7 +149,9 @@ public class ShadowCloak extends AssassinBaseSpell {
 
     @Override
     protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, blindnessMinDuration, blindnessMaxDuration, "blindnessDuration:"), VALUE_COLOR));
-        placeholderNames.add("blindness");
+        spellAddedPlaceholders.add(Component.text((int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, blindnessMinDuration, blindnessMaxDuration, "blindnessDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("blindnessDuration");
+        spellAddedPlaceholders.add(Component.text((int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, speedDurationMin, speedDurationMax, "speedDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("speedDuration");
     }
 }
