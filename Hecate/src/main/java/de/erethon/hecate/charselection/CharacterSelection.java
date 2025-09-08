@@ -226,17 +226,23 @@ public class CharacterSelection extends BaseSelection {
             hPlayer.setSelectedCharacter(null, true);
         }
 
-        plugin.getDatabaseManager().executeAsync(handle -> {
-            handle.attach(CharacterDao.class).deleteCharacter(character.getCharacterID());
-        }).thenRun(() -> {
-            player.sendMessage(Component.translatable("hecate.character.deletion.success"));
-            player.sendMessage(Component.translatable("hecate.character.deletion.success_detail",
-                className, Component.text(character.getLevel())));
-        }).exceptionally(ex -> {
-            player.sendMessage(Component.translatable("hecate.data.error_saving", Component.text(ex.getMessage())));
-            ex.printStackTrace();
-            return null;
-        });
+        // Use soft deletion instead of hard deletion
+        plugin.getDatabaseManager().softDeleteCharacter(character.getCharacterID(), player.getName())
+                .thenAccept(success -> {
+                    if (success) {
+                        player.sendMessage(Component.translatable("hecate.character.deletion.success"));
+                        player.sendMessage(Component.translatable("hecate.character.deletion.success_detail",
+                                className, Component.text(character.getLevel())));
+                        player.sendMessage(Component.translatable("hecate.character.deletion.restore_info"));
+                    } else {
+                        player.sendMessage(Component.translatable("hecate.character.deletion.failed"));
+                    }
+                })
+                .exceptionally(ex -> {
+                    player.sendMessage(Component.translatable("hecate.data.error_saving", Component.text(ex.getMessage())));
+                    ex.printStackTrace();
+                    return null;
+                });
 
         characterToDelete = null;
         deleteRequestTime = 0;
@@ -466,7 +472,11 @@ public class CharacterSelection extends BaseSelection {
                     HCharacter newCharacter = new HCharacter(UUID.randomUUID(), hPlayer, 1, null, new Timestamp(System.currentTimeMillis()), new ArrayList<>());
                     hPlayer.getCharacters().add(newCharacter);
                     playerIsDone = true;
-                    newCharacter.saveToDatabase().thenAccept(v -> {
+
+                    // Save the player first to ensure it exists in the database, then save the character
+                    plugin.getDatabaseManager().savePlayerData(hPlayer).thenCompose(v -> {
+                        return newCharacter.saveToDatabase();
+                    }).thenAccept(v -> {
                         hPlayer.setSelectedCharacter(newCharacter, true);
                         player.showTitle(Title.title(Component.empty(), Component.translatable("hecate.character.selection.initializing")));
                         BukkitRunnable runLater = new BukkitRunnable() {
@@ -478,6 +488,11 @@ public class CharacterSelection extends BaseSelection {
                             }
                         };
                         runLater.runTaskLater(plugin, 20);
+                    }).exceptionally(ex -> {
+                        player.sendMessage(Component.translatable("hecate.data.error_saving", Component.text(ex.getMessage())));
+                        ex.printStackTrace();
+                        playerIsDone = false; // Allow the player to try again
+                        return null;
                     });
                     return;
                 }

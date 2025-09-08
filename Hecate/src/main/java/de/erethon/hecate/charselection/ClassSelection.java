@@ -116,9 +116,15 @@ public class ClassSelection extends BaseSelection {
         playerIsDone = true;
         done();
 
-        // Teleport and save
-        player.teleportAsync(new Location(player.getWorld(), 0, 100, 0)); // TODO: Replace with proper spawn location
-        character.getHPlayer().getSelectedCharacter().saveCharacterPlayerData(false);
+        // Save the character to database with the new class and traitline, then teleport
+        character.saveToDatabase().thenAccept(v -> {
+            player.teleportAsync(new Location(player.getWorld(), 0, 100, 0)); // TODO: Replace with proper spawn location
+            character.saveCharacterPlayerData(false);
+        }).exceptionally(ex -> {
+            player.sendMessage(Component.translatable("hecate.data.error_saving", Component.text(ex.getMessage())));
+            ex.printStackTrace();
+            return null;
+        });
     }
 
     @Override

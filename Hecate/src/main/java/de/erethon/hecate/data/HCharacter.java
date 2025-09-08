@@ -508,8 +508,16 @@ public class HCharacter {
     }
     public String getClassId() { return classId; }
     public HClass getHClass() { return hClass; }
-    public void setHClass(HClass hClass) { this.hClass = hClass; }
-    public Traitline getTraitline() { return traitline; }
+    public void setHClass(HClass hClass) {
+        this.hClass = hClass;
+        this.classId = hClass != null ? hClass.getId() : null;
+    }
+    public Traitline getTraitline() {
+        if (traitline == null && hClass != null) {
+            traitline = hClass.getStarterTraitline();
+        }
+        return traitline;
+    }
 
     public void setTraitline(Traitline traitline) {
         getPlayer().getActiveTraits().clear();

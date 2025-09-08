@@ -92,7 +92,9 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
         List<String> alterTableStatements = Arrays.asList(
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS traitline VARCHAR(255)",
-                "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS selected_traits INTEGER[]"
+                "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS selected_traits INTEGER[]",
+                "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP",
+                "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS deleted_by VARCHAR(255)"
         );
 
         return CompletableFuture.runAsync(() -> { // Use our own future here as the normal one is not ready yet
@@ -344,12 +346,33 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         UUID lastCharId = hPlayer.getLastCharacter();
         Timestamp now = Timestamp.from(Instant.now());
 
-        return executeAsync(handle -> playerDao.upsertPlayer(hPlayer.getPlayerId(), now, lastCharId))
-                .exceptionally(ex -> {
-                    Hecate.log("Error saving player data for " + hPlayer.getPlayerId() + ": " + ex.getMessage());
-                    ex.printStackTrace();
-                    return null;
-                }).thenApply(v -> null);
+        // Check if the last character actually exists in the database before trying to save the reference.
+        // We might have new players who do not have any characters yet, or the last character was deleted.
+        if (lastCharId != null) {
+            return queryAsync(handle -> characterDao.findCharacterById(lastCharId).isPresent())
+                    .thenCompose(characterExists -> {
+                        UUID validLastCharId = characterExists ? lastCharId : null;
+                        if (!characterExists && lastCharId != null) {
+                            Hecate.log("Character " + lastCharId + " does not exist in database, saving player " + hPlayer.getPlayerId() + " without last_character reference");
+                            // Clear the invalid reference from the HPlayer object too
+                            hPlayer.setLastCharacter(null);
+                        }
+                        return executeAsync(handle -> playerDao.upsertPlayer(hPlayer.getPlayerId(), now, validLastCharId));
+                    })
+                    .exceptionally(ex -> {
+                        Hecate.log("Error saving player data for " + hPlayer.getPlayerId() + ": " + ex.getMessage());
+                        ex.printStackTrace();
+                        return null;
+                    }).thenApply(v -> null);
+        } else {
+            // No last character reference, proceed normally
+            return executeAsync(handle -> playerDao.upsertPlayer(hPlayer.getPlayerId(), now, null))
+                    .exceptionally(ex -> {
+                        Hecate.log("Error saving player data for " + hPlayer.getPlayerId() + ": " + ex.getMessage());
+                        ex.printStackTrace();
+                        return null;
+                    }).thenApply(v -> null);
+        }
     }
 
 
@@ -416,6 +439,116 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 });
     }
 
+    // --- Character Deletion Methods ---
+
+    public CompletableFuture<Boolean> softDeleteCharacter(UUID characterId, String deletedBy) {
+        return queryAsync(handle -> characterDao.softDeleteCharacter(characterId, deletedBy))
+                .thenApply(rowsAffected -> {
+                    boolean success = rowsAffected > 0;
+                    if (success) {
+                        Hecate.log("Character " + characterId + " soft deleted by " + deletedBy);
+
+                        // If this character was someone's last selected character, clear it
+                        uuidToHPlayerMap.values().forEach(hPlayer -> {
+                            if (characterId.equals(hPlayer.getLastCharacter())) {
+                                hPlayer.setLastCharacter(null);
+                                savePlayerData(hPlayer);
+                                Hecate.log("Cleared last character reference for player " + hPlayer.getPlayerId());
+                            }
+
+                            // If this character is currently selected, deselect it
+                            if (hPlayer.getSelectedCharacter() != null &&
+                                characterId.equals(hPlayer.getSelectedCharacter().getCharacterID())) {
+                                hPlayer.setSelectedCharacter(null, false);
+                                Hecate.log("Deselected character " + characterId + " for player " + hPlayer.getPlayerId());
+                            }
+
+                            // Remove from character list
+                            hPlayer.getCharacters().removeIf(character ->
+                                characterId.equals(character.getCharacterID()));
+                        });
+                    } else {
+                        Hecate.log("Failed to soft delete character " + characterId + " (not found or already deleted)");
+                    }
+                    return success;
+                })
+                .exceptionally(ex -> {
+                    Hecate.log("Error soft deleting character " + characterId + ": " + ex.getMessage());
+                    ex.printStackTrace();
+                    return false;
+                });
+    }
+
+    public CompletableFuture<Boolean> restoreCharacter(UUID characterId) {
+        return queryAsync(handle -> characterDao.restoreCharacter(characterId))
+                .thenApply(rowsAffected -> {
+                    boolean success = rowsAffected > 0;
+                    if (success) {
+                        Hecate.log("Character " + characterId + " restored successfully");
+
+                        // Reload the character data and add it back to the player's character list
+                        getCharacterData(characterId).thenAccept(character -> {
+                            if (character != null) {
+                                HPlayer hPlayer = uuidToHPlayerMap.get(character.getHPlayer().getPlayerId());
+                                if (hPlayer != null) {
+                                    hPlayer.getCharacters().add(character);
+                                    Hecate.log("Added restored character " + characterId + " back to player " + hPlayer.getPlayerId());
+                                }
+                            }
+                        });
+                    } else {
+                        Hecate.log("Failed to restore character " + characterId + " (not found or not deleted)");
+                    }
+                    return success;
+                })
+                .exceptionally(ex -> {
+                    Hecate.log("Error restoring character " + characterId + ": " + ex.getMessage());
+                    ex.printStackTrace();
+                    return false;
+                });
+    }
+
+    // Admin methods for viewing deleted characters
+    public CompletableFuture<List<HCharacter>> getDeletedCharactersForPlayer(UUID playerId) {
+        HPlayer tempHPlayer = uuidToHPlayerMap.computeIfAbsent(playerId, HPlayer::new);
+        return queryAsync(handle ->
+                characterDao.findDeletedCharactersByPlayerId(playerId)
+                        .stream()
+                        .map(flatData -> {
+                            try {
+                                return mapFlatDataToHCharacter(flatData, tempHPlayer, handle);
+                            } catch (Exception e) {
+                                Hecate.log("Error mapping deleted character data for player " + playerId + ": " + e.getMessage());
+                                e.printStackTrace();
+                                return null;
+                            }
+                        })
+                        .filter(java.util.Objects::nonNull)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    public CompletableFuture<List<HCharacter>> getAllCharactersForPlayer(UUID playerId, boolean includeDeleted) {
+        HPlayer tempHPlayer = uuidToHPlayerMap.computeIfAbsent(playerId, HPlayer::new);
+        return queryAsync(handle -> {
+            List<CharacterDao.FlatData> flatDataList = includeDeleted
+                ? characterDao.findAllCharactersByPlayerId(playerId)
+                : characterDao.findCharactersByPlayerId(playerId);
+
+            return flatDataList.stream()
+                    .map(flatData -> {
+                        try {
+                            return mapFlatDataToHCharacter(flatData, tempHPlayer, handle);
+                        } catch (Exception e) {
+                            Hecate.log("Error mapping character data for player " + playerId + ": " + e.getMessage());
+                            e.printStackTrace();
+                            return null;
+                        }
+                    })
+                    .filter(java.util.Objects::nonNull)
+                    .collect(Collectors.toList());
+        });
+    }
     // --- Event Handlers ---
 
     @EventHandler
@@ -517,6 +650,53 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     }
                 }
             });
+        } else {
+            if (hPlayer.getCharacters().isEmpty()) {
+                Hecate.log("New player " + uuid + " has no characters. Starting character selection.");
+
+                BukkitRunnable startCharacterSelection = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (Hecate.getInstance().getLobbyInUse() == null) {
+                                player.sendMessage(Component.translatable("hecate.character.selection.no_lobby"));
+                                Hecate.log("Cannot start character selection for new player " + uuid + " - no lobby configured.");
+                                return;
+                            }
+
+                            player.sendMessage(Component.translatable("hecate.character.selection.welcome_new_player"));
+                            new de.erethon.hecate.charselection.CharacterSelection(player, Hecate.getInstance().getLobbyInUse());
+                        } catch (Exception e) {
+                            Hecate.log("Error starting character selection for new player " + uuid + ": " + e.getMessage());
+                            e.printStackTrace();
+                            player.sendMessage(Component.translatable("hecate.character.selection.error_starting"));
+                        }
+                    }
+                };
+                startCharacterSelection.runTaskLater(Hecate.getInstance(), 40L);
+            } else {
+                Hecate.log("Player " + uuid + " has characters but no last selected character. Starting character selection.");
+
+                BukkitRunnable startCharacterSelection = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (Hecate.getInstance().getLobbyInUse() == null) {
+                                player.sendMessage(Component.translatable("hecate.character.selection.no_lobby"));
+                                Hecate.log("Cannot start character selection for player " + uuid + " - no lobby configured.");
+                                return;
+                            }
+
+                            new de.erethon.hecate.charselection.CharacterSelection(player, Hecate.getInstance().getLobbyInUse());
+                        } catch (Exception e) {
+                            Hecate.log("Error starting character selection for player " + uuid + ": " + e.getMessage());
+                            e.printStackTrace();
+                            player.sendMessage(Component.translatable("hecate.character.selection.error_starting"));
+                        }
+                    }
+                };
+                startCharacterSelection.runTaskLater(Hecate.getInstance(), 40L);
+            }
         }
     }
 
@@ -583,3 +763,4 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         super.close();
     }
 }
+

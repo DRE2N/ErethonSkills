@@ -63,7 +63,6 @@ public class CharacterCastingManager implements Listener {
     private final SpellData[] slotSpells = new SpellData[8];
     private final SpellbookSpell[] cachedActiveSpells = new SpellbookSpell[8];
     private final HashMap<Attribute, Double> cachedAttributes = new HashMap<>();
-    private BossBar bossBar;
     private UIUpdater uiUpdater;
 
     private final NamespacedKey castingMarker = new NamespacedKey(plugin, "casting_marker");
@@ -135,12 +134,6 @@ public class CharacterCastingManager implements Listener {
             player.removeTrait(trait);
         }
         player.getInventory().setHeldItemSlot(previousSlot);
-
-        // Hide bossbar when exiting casting mode
-        if (bossBar != null) {
-            player.hideBossBar(bossBar);
-            bossBar = null;
-        }
     }
 
     private void updateUI() {
@@ -202,6 +195,10 @@ public class CharacterCastingManager implements Listener {
         Component healthText = healthIcon.append(Component.space()).append(healthNumbers);
 
         Traitline traitline = character.getTraitline();
+        if (traitline == null) {
+            player.sendParsedActionBar("<red>Internal error: No traitline found.");
+            return;
+        }
         TextColor energyColor = traitline.getEnergyColor();
         String energyIconUnicode = traitline.getEnergySymbol();
         if (energyIconUnicode == null || energyIconUnicode.isBlank()) {

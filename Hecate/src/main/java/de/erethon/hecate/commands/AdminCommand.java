@@ -43,6 +43,7 @@ public class AdminCommand extends ECommand implements TabCompleter {
             case "charsel", "characterselection" -> handleCharacterSelection(player, args);
             case "lobby" -> handleLobby(player, args);
             case "classtest" -> handleClassTest(player, args);
+            case "characters", "chars" -> handleCharacterManagement(player, args);
             case "reload" -> handleReload(player);
             case "help" -> showHelp(player);
             default -> {
@@ -52,9 +53,9 @@ public class AdminCommand extends ECommand implements TabCompleter {
     }
 
     private void showHelp(Player player) {
-        player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+        player.sendMessage(Component.text(">>>", NamedTextColor.GOLD));
         player.sendMessage(Component.translatable("hecate.commands.admin.help_title"));
-        player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+        player.sendMessage(Component.text(">>>", NamedTextColor.GOLD));
         player.sendMessage(Component.translatable("hecate.commands.admin.help_charsel"));
         player.sendMessage(Component.translatable("hecate.commands.admin.help_charsel_open"));
         player.sendMessage(Component.translatable("hecate.commands.admin.help_charsel_test"));
@@ -67,7 +68,7 @@ public class AdminCommand extends ECommand implements TabCompleter {
         player.sendMessage(Component.empty());
         player.sendMessage(Component.translatable("hecate.commands.admin.help_system"));
         player.sendMessage(Component.translatable("hecate.commands.admin.help_reload"));
-        player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+        player.sendMessage(Component.text(">>>", NamedTextColor.GOLD));
     }
 
     private void handleCharacterSelection(Player player, String[] args) {
@@ -170,8 +171,152 @@ public class AdminCommand extends ECommand implements TabCompleter {
 
     private void handleReload(Player player) {
         player.sendMessage(Component.translatable("hecate.commands.admin.reloading"));
-        // Add reload logic here when implemented
+        // TODO
         player.sendMessage(Component.translatable("hecate.commands.admin.reloaded"));
+    }
+
+    private void handleCharacterManagement(Player player, String[] args) {
+        if (args.length < 3) {
+            player.sendMessage(Component.translatable("hecate.commands.admin.characters_usage"));
+            return;
+        }
+
+        switch (args[2].toLowerCase()) {
+            case "deleted" -> {
+                if (args.length < 4) {
+                    player.sendMessage(Component.translatable("hecate.commands.admin.characters_deleted_usage"));
+                    return;
+                }
+
+                String targetPlayerName = args[3];
+                org.bukkit.OfflinePlayer targetPlayer = plugin.getServer().getOfflinePlayer(targetPlayerName);
+
+                if (!targetPlayer.hasPlayedBefore() && !targetPlayer.isOnline()) {
+                    player.sendMessage(Component.translatable("hecate.commands.admin.player_not_found", Component.text(targetPlayerName)));
+                    return;
+                }
+
+                plugin.getDatabaseManager().getDeletedCharactersForPlayer(targetPlayer.getUniqueId())
+                        .thenAccept(deletedCharacters -> {
+                            if (deletedCharacters.isEmpty()) {
+                                player.sendMessage(Component.translatable("hecate.commands.admin.no_deleted_characters", Component.text(targetPlayerName)));
+                                return;
+                            }
+
+                            player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+                            player.sendMessage(Component.translatable("hecate.commands.admin.deleted_characters_title", Component.text(targetPlayerName)));
+                            player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+
+                            for (de.erethon.hecate.data.HCharacter character : deletedCharacters) {
+                                Component className = character.getHClass() != null ?
+                                    character.getHClass().getDisplayName() :
+                                    Component.translatable("hecate.misc.no_class", NamedTextColor.GRAY);
+
+                                player.sendMessage(Component.text("• ", NamedTextColor.GRAY)
+                                    .append(Component.text("ID: ", NamedTextColor.DARK_GRAY))
+                                    .append(Component.text(character.getCharacterID().toString().substring(0, 8) + "...", NamedTextColor.YELLOW))
+                                    .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
+                                    .append(className)
+                                    .append(Component.text(" (Level " + character.getLevel() + ")", NamedTextColor.GRAY)));
+                            }
+
+                            player.sendMessage(Component.empty());
+                            player.sendMessage(Component.translatable("hecate.commands.admin.characters_restore_help"));
+                            player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+                        })
+                        .exceptionally(ex -> {
+                            player.sendMessage(Component.translatable("hecate.data.error_loading", Component.text(ex.getMessage())));
+                            ex.printStackTrace();
+                            return null;
+                        });
+            }
+            case "restore" -> {
+                if (args.length < 4) {
+                    player.sendMessage(Component.translatable("hecate.commands.admin.characters_restore_usage"));
+                    return;
+                }
+
+                String characterIdStr = args[3];
+                java.util.UUID characterId;
+
+                try {
+                    characterId = java.util.UUID.fromString(characterIdStr);
+                } catch (IllegalArgumentException e) {
+                    player.sendMessage(Component.translatable("hecate.commands.admin.invalid_character_id"));
+                    return;
+                }
+
+                plugin.getDatabaseManager().restoreCharacter(characterId)
+                        .thenAccept(success -> {
+                            if (success) {
+                                player.sendMessage(Component.translatable("hecate.commands.admin.character_restored",
+                                    Component.text(characterId.toString().substring(0, 8) + "...")));
+                            } else {
+                                player.sendMessage(Component.translatable("hecate.commands.admin.character_restore_failed",
+                                    Component.text(characterId.toString().substring(0, 8) + "...")));
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            player.sendMessage(Component.translatable("hecate.data.error_saving", Component.text(ex.getMessage())));
+                            ex.printStackTrace();
+                            return null;
+                        });
+            }
+            case "all" -> {
+                if (args.length < 4) {
+                    player.sendMessage(Component.translatable("hecate.commands.admin.characters_all_usage"));
+                    return;
+                }
+
+                String targetPlayerName = args[3];
+                org.bukkit.OfflinePlayer targetPlayer = plugin.getServer().getOfflinePlayer(targetPlayerName);
+
+                if (!targetPlayer.hasPlayedBefore() && !targetPlayer.isOnline()) {
+                    player.sendMessage(Component.translatable("hecate.commands.admin.player_not_found", Component.text(targetPlayerName)));
+                    return;
+                }
+
+                plugin.getDatabaseManager().getAllCharactersForPlayer(targetPlayer.getUniqueId(), true)
+                        .thenAccept(allCharacters -> {
+                            if (allCharacters.isEmpty()) {
+                                player.sendMessage(Component.translatable("hecate.commands.admin.no_characters", Component.text(targetPlayerName)));
+                                return;
+                            }
+
+                            player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+                            player.sendMessage(Component.translatable("hecate.commands.admin.all_characters_title", Component.text(targetPlayerName)));
+                            player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+
+                            for (de.erethon.hecate.data.HCharacter character : allCharacters) {
+                                Component className = character.getHClass() != null ?
+                                    character.getHClass().getDisplayName() :
+                                    Component.translatable("hecate.misc.no_class", NamedTextColor.GRAY);
+
+                                // Check if character is deleted by looking at the database fields
+                                boolean isDeleted = false; // We'll need to add this info to HCharacter or check differently
+
+                                Component statusIcon = isDeleted ?
+                                    Component.text("🗑️ ", NamedTextColor.RED) :
+                                    Component.text("✅ ", NamedTextColor.GREEN);
+
+                                player.sendMessage(statusIcon
+                                    .append(Component.text("ID: ", NamedTextColor.DARK_GRAY))
+                                    .append(Component.text(character.getCharacterID().toString().substring(0, 8) + "...", NamedTextColor.YELLOW))
+                                    .append(Component.text(" | ", NamedTextColor.DARK_GRAY))
+                                    .append(className)
+                                    .append(Component.text(" (Level " + character.getLevel() + ")", NamedTextColor.GRAY)));
+                            }
+
+                            player.sendMessage(Component.text("═══════════════════════════════════════", NamedTextColor.GOLD));
+                        })
+                        .exceptionally(ex -> {
+                            player.sendMessage(Component.translatable("hecate.data.error_loading", Component.text(ex.getMessage())));
+                            ex.printStackTrace();
+                            return null;
+                        });
+            }
+            default -> player.sendMessage(Component.translatable("hecate.commands.admin.characters_unknown_command"));
+        }
     }
 
     private String formatLocation(org.bukkit.Location loc) {
