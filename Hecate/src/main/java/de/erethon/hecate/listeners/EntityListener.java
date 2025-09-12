@@ -41,7 +41,7 @@ public class EntityListener implements Listener {
             if (!displayManager.hasStatusDisplay(event.getEntity())) {
                 displayManager.addStatusDisplay(living, new EntityStatusDisplay(living));
             }
-            displayManager.getStatusDisplay(living).updateHealthDisplay();
+            displayManager.getStatusDisplay(living).updateHealthDisplay(event.getDamage());
         }
     }
 

@@ -1,6 +1,5 @@
 package de.erethon.hecate.ui;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.spellbook.api.SpellEffect;
 import net.kyori.adventure.text.Component;
@@ -79,8 +78,8 @@ public class EntityStatusDisplay {
         entityNameTag.text(holder.teamDisplayName());
     }
 
-    public void updateHealthDisplay() {
-        healthDisplay.text(getHealth(holder.getHealth(), holder.getMaxHealth()));
+    public void updateHealthDisplay(double damage) {
+        healthDisplay.text(getHealth(Math.max(0, holder.getHealth() - damage), holder.getMaxHealth()));
     }
 
     public void updateStatusDisplay() {
