@@ -60,7 +60,15 @@ public class EntityListener implements Listener {
         if (event.getEntity() instanceof LivingEntity living) {
             teamManager.loadEntity(living);
         }
+        if (displayManager.hasStatusDisplay(event.getEntity())) {
+            return;
+        }
+        if (event.getEntity() instanceof LivingEntity living) {
+            displayManager.addStatusDisplay(living, new EntityStatusDisplay(living));
+            event.getEntity().setCustomNameVisible(true);
+        }
     }
+
 
     // We need to clear things in case someone logs out or is despawned while having a buff active
     @EventHandler

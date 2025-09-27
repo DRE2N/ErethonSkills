@@ -44,4 +44,9 @@ public class VanguardBasicAttack extends SpellTrait {
         }
         return super.onAttack(target, damage, type);
     }
+
+    @Override
+    protected void onAdd() {
+        caster.setMaxEnergy(100);
+    }
 }

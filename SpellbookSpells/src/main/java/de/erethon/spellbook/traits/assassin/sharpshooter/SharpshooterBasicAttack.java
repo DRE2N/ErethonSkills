@@ -87,6 +87,9 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         if (currentChargeTicks == -1) {
             currentChargeTicks = 0;
             caster.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1f, 1.3f);
+            if (caster.getAttribute(Attribute.MOVEMENT_SPEED).getModifier(movementSpeedModifier.getKey()) != null) {
+                caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(movementSpeedModifier);
+            }
             caster.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(movementSpeedModifier);
             oldFov = nmsPlayer.getAbilities().getWalkingSpeed();
             nmsPlayer.getAbilities().setWalkingSpeed(0.1f); // This is badly named and only affects the FOV, not the actual walking speed.
@@ -181,6 +184,7 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
         CraftPlayer craftPlayer = (CraftPlayer) caster;
         nmsPlayer = craftPlayer.getHandle();
+        craftPlayer.setMaxEnergy(100);
     }
 
     @Override
