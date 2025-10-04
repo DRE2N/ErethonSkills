@@ -56,7 +56,13 @@ public class CharacterCommand extends ECommand implements TabCompleter {
                     player.sendMessage(Component.translatable("hecate.commands.character.no_lobby_configured"));
                     return;
                 }
-                new CharacterSelection(player, Hecate.getInstance().getLobbyInUse());
+                try {
+                    new CharacterSelection(player, Hecate.getInstance().getLobbyInUse());
+                } catch (Exception e) {
+                    player.sendMessage(Component.translatable("hecate.commands.character.failed_to_open_selection"));
+                    e.printStackTrace();
+                    return;
+                }
                 player.sendMessage(Component.translatable("hecate.commands.character.opening_selection"));
             }
             default -> {

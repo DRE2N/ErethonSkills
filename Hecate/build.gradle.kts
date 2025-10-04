@@ -17,15 +17,15 @@ plugins {
     `java-library`
     `maven-publish`
     id("io.papermc.paperweight.userdev")
-    id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
+    id("xyz.jpenilla.run-paper") version "2.3.1"// Adds runServer and runMojangMappedServer tasks for testing
     id("io.github.goooler.shadow") version "8.1.5"
     id("de.eldoria.plugin-yml.paper") version "0.7.1"
 }
 
 configurations.all {
-    resolutionStrategy {
+    /*resolutionStrategy {
         resolutionStrategy.cacheChangingModulesFor(60, "seconds") // Force-redownload Papyrus
-    }
+    }*/
 }
 
 group = "de.erethon"
@@ -36,7 +36,7 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-val papyrusVersion = "1.21.8-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.9-R0.1-SNAPSHOT"
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
@@ -53,7 +53,7 @@ tasks {
             project.buildDir.mkdir()
         }
         val f = File(project.buildDir,  "server.jar");
-        //uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
         runDirectory.set(file("C:\\Dev\\Erethon"))
     }

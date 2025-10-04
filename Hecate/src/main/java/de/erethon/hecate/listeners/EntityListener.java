@@ -64,8 +64,23 @@ public class EntityListener implements Listener {
             return;
         }
         if (event.getEntity() instanceof LivingEntity living) {
-            displayManager.addStatusDisplay(living, new EntityStatusDisplay(living));
-            event.getEntity().setCustomNameVisible(true);
+            BukkitRunnable tickLater = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (displayManager.hasStatusDisplay(living)) {
+                        cancel();
+                        return;
+                    }
+                    if (living.isDead() || !living.isValid()) {
+                        cancel();
+                        return;
+                    }
+                    displayManager.addStatusDisplay(living, new EntityStatusDisplay(living));
+                    event.getEntity().setCustomNameVisible(true);
+                    cancel();
+                }
+            };
+            tickLater.runTaskLater(Hecate.getInstance(), 5);
         }
     }
 

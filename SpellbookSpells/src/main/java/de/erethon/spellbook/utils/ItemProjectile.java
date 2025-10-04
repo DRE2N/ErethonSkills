@@ -62,12 +62,6 @@ public class ItemProjectile extends Arrow {
     }
 
     @Override
-    public void lerpMotion(double x, double y, double z) {
-        super.lerpMotion(x, y, z);
-        updateArmorstand();
-    }
-
-    @Override
     public void move(MoverType movementType, Vec3 movement) {
         super.move(movementType, movement);
         updateArmorstand();

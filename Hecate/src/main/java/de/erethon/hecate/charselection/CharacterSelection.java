@@ -6,6 +6,7 @@ import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
+import io.papermc.paper.entity.TeleportFlag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -19,6 +20,7 @@ import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
@@ -62,9 +64,14 @@ public class CharacterSelection extends BaseSelection {
         if (hPlayer.getSelectedCharacter() == null) {
             setup();
         } else {
-            hPlayer.getSelectedCharacter().saveToDatabase().thenAccept(v -> {
-                setup();
-            });
+            hPlayer.getSelectedCharacter().saveToDatabase().thenAcceptAsync(v -> {
+                try {
+                    setup();
+                } catch (Exception e) {
+                    player.sendMessage(Component.translatable("hecate.data.error_saving", Component.text(e.getMessage())));
+                    e.printStackTrace();
+                }
+            }, Bukkit.getScheduler().getMainThreadExecutor(Hecate.getInstance()));
         }
     }
 
@@ -72,7 +79,12 @@ public class CharacterSelection extends BaseSelection {
         // Clean up any existing entities before creating new ones
         cleanupExistingEntities();
 
-        player.teleportAsync(lobby.getOrigin()).thenAccept(a -> {
+        boolean tp = player.teleport(lobby.getOrigin(), PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+        if (!tp) {
+            player.sendMessage("Character selection failed: could not teleport to lobby");
+            return;
+        }
+        try {
             List<Location> locations = lobby.getPedestalLocations();
             for (int i = 0; i < locations.size(); i++) {
                 if (i >= hPlayer.getMaximumCharacters()) {
@@ -90,7 +102,11 @@ public class CharacterSelection extends BaseSelection {
                     interactions[i] = interaction;
                 }
             }
-        });
+        } catch (Exception e) {
+            player.sendMessage(Component.text("Error: " + e.getMessage(), NamedTextColor.RED));
+            e.printStackTrace();
+        }
+
     }
 
     private void cleanupExistingEntities() {

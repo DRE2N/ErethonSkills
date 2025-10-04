@@ -42,6 +42,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static net.minecraft.server.MinecraftServer.getServer;
+
 public class HCharacter {
 
     private final Hecate plugin = Hecate.getInstance();
@@ -393,7 +395,7 @@ public class HCharacter {
                         }
 
                         serverPlayer.onUpdateAbilities();
-                        serverPlayer.getServer().getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket(serverPlayer.getId(), serverPlayer.getEntityData().getNonDefaultValues()));
+                        getServer().getPlayerList().broadcastAll(new net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket(serverPlayer.getId(), serverPlayer.getEntityData().getNonDefaultValues()));
                         serverPlayer.containerMenu.broadcastChanges();
                         serverPlayer.inventoryMenu.broadcastChanges();
 
@@ -403,7 +405,7 @@ public class HCharacter {
                             serverPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket(serverPlayer.getId(), mobEffect, false));
                         }
 
-                        serverPlayer.getServer().getPlayerList().sendAllPlayerInfo(serverPlayer);
+                        getServer().getPlayerList().sendAllPlayerInfo(serverPlayer);
 
                         serverPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundSetHealthPacket(serverPlayer.getHealth(), serverPlayer.getFoodData().getFoodLevel(), serverPlayer.getFoodData().getSaturationLevel()));
 

@@ -1,5 +1,7 @@
 package de.erethon.hecate.charselection;
 
+import com.destroystokyo.paper.profile.CraftPlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Pair;
@@ -13,7 +15,9 @@ import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 import org.bukkit.Bukkit;
@@ -24,6 +28,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class BaseDisplay {
@@ -56,36 +61,31 @@ public class BaseDisplay {
     }
 
     private void sendPlayerPackets(Player player, Location location) {
-        double x = location.getX();
-        double y = location.getY();
-        double z = location.getZ();
-        float yaw = location.getYaw();
-        float pitch = location.getPitch();
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-        net.minecraft.server.level.ServerPlayer serverPlayer = craftPlayer.getHandle();
-        ServerGamePacketListenerImpl connection = craftPlayer.getHandle().connection;
-        // Create a new GameProfile with the same properties as the player's profile, so the client can render the skin
-        GameProfile gameProfile = new GameProfile(uuid, "");
-        GameProfile playerProfile = serverPlayer.getGameProfile();
-        PropertyMap properties = playerProfile.getProperties();
-        gameProfile.getProperties().putAll(properties);
-        // Send info to the client to display the player
-        ClientboundPlayerInfoUpdatePacket infoUpdatePacket = new ClientboundPlayerInfoUpdatePacket(
-                EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, ClientboundPlayerInfoUpdatePacket.Action.INITIALIZE_CHAT, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY),
-                new ClientboundPlayerInfoUpdatePacket.Entry(uuid, gameProfile, false, -1, GameType.SURVIVAL, net.minecraft.network.chat.Component.empty(), true, 0, null));
+        try { // Futures swallow exceptions otherwise
+            double x = location.getX();
+            double y = location.getY();
+            double z = location.getZ();
+            float yaw = location.getYaw();
+            float pitch = location.getPitch();
+            CraftPlayer craftPlayer = (CraftPlayer) player;
+            net.minecraft.server.level.ServerPlayer serverPlayer = craftPlayer.getHandle();
+            ServerGamePacketListenerImpl connection = craftPlayer.getHandle().connection;
+            // Create a new GameProfile with the same properties as the player's profile, so the client can render the skin
+            Set<ProfileProperty> properties = player.getPlayerProfile().getProperties();
+            CraftPlayerProfile craftPlayerProfile = new CraftPlayerProfile(uuid, "CharSel");
+            craftPlayerProfile.getProperties().addAll(properties);
+            // Send info to the client to display the player
+            Mannequin mannequin = new Mannequin(EntityType.MANNEQUIN, serverPlayer.level());
+            mannequin.setProfile(craftPlayerProfile.buildResolvableProfile());
 
-        connection.send(infoUpdatePacket);
-        ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(entityId, uuid, x, y, z, pitch, yaw, EntityType.PLAYER, 0, Vec3.ZERO, yaw);
-        ClientboundSetEntityDataPacket entityDataPacket = new ClientboundSetEntityDataPacket(entityId, serverPlayer.getEntityData().packAll());
-        BukkitRunnable entityDataPacketSender = new BukkitRunnable() {
-            @Override
-            public void run() {
-                connection.send(addEntityPacket);
-                connection.send(entityDataPacket);
-                sendEntityEquipmentPacket(connection);
-            }
-        };
-        entityDataPacketSender.runTaskLater(plugin, 3);
+            ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(entityId, uuid, x, y, z, pitch, yaw, EntityType.MANNEQUIN, 0, Vec3.ZERO, yaw);
+            ClientboundSetEntityDataPacket entityDataPacket = new ClientboundSetEntityDataPacket(entityId, mannequin.getEntityData().packAll());
+            connection.send(addEntityPacket);
+            connection.send(entityDataPacket);
+            sendEntityEquipmentPacket(connection);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void sendEntityEquipmentPacket(ServerGamePacketListenerImpl connection) {

@@ -21,20 +21,17 @@ repositories {
 }
 
 configurations.all {
-    resolutionStrategy {
+    /*resolutionStrategy {
         resolutionStrategy.cacheChangingModulesFor(60, "seconds") // Force-redownload Papyrus
-    }
+    }*/
 }
 
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", "1.21.7-R0.1-SNAPSHOT") { isChanging = true }
+    paperweight.devBundle("de.erethon.papyrus", "1.21.9-R0.1-SNAPSHOT") { isChanging = true }
     implementation("com.elmakers.mine.bukkit:EffectLib:10.11-SNAPSHOT")
 }
 
 tasks {
-    assemble {
-        dependsOn(reobfJar)
-    }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
         options.release.set(21)

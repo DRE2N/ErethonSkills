@@ -276,13 +276,21 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     }
 
     public CompletableFuture<List<HCharacter>> loadCharactersForPlayer(UUID playerId) {
-        HPlayer tempHPlayer = uuidToHPlayerMap.computeIfAbsent(playerId, HPlayer::new);
+        HPlayer tempHPlayer = uuidToHPlayerMap.get(playerId);
+        if (tempHPlayer == null) {
+            tempHPlayer = new HPlayer(playerId);
+            HPlayer existing = uuidToHPlayerMap.putIfAbsent(playerId, tempHPlayer);
+            if (existing != null) {
+                tempHPlayer = existing;
+            }
+        }
+        HPlayer finalTempHPlayer = tempHPlayer;
         return queryAsync(handle ->
                 characterDao.findCharactersByPlayerId(playerId)
                         .stream()
                         .map(flatData -> {
                             try {
-                                return mapFlatDataToHCharacter(flatData, tempHPlayer, handle);
+                                return mapFlatDataToHCharacter(flatData, finalTempHPlayer, handle);
                             } catch (Exception e) {
                                 Hecate.log("Error mapping character data for player " + playerId + ": " + e.getMessage());
                                 e.printStackTrace();
@@ -423,7 +431,14 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                         return null;
                     }
                     CharacterDao.FlatData flatData = optionalFlatData.get();
-                    HPlayer hPlayer = uuidToHPlayerMap.computeIfAbsent(flatData.getPlayerId(), HPlayer::new);
+                    HPlayer hPlayer = uuidToHPlayerMap.get(flatData.getPlayerId());
+                    if (hPlayer == null) {
+                        hPlayer = new HPlayer(flatData.getPlayerId());
+                        HPlayer existing = uuidToHPlayerMap.putIfAbsent(flatData.getPlayerId(), hPlayer);
+                        if (existing != null) {
+                            hPlayer = existing;
+                        }
+                    }
                     try(Handle handle = jdbi.open()) { // Need a handle for array mapping
                         return mapFlatDataToHCharacter(flatData, hPlayer, handle);
                     } catch (Exception e) {
@@ -510,13 +525,21 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
     // Admin methods for viewing deleted characters
     public CompletableFuture<List<HCharacter>> getDeletedCharactersForPlayer(UUID playerId) {
-        HPlayer tempHPlayer = uuidToHPlayerMap.computeIfAbsent(playerId, HPlayer::new);
+        HPlayer tempHPlayer = uuidToHPlayerMap.get(playerId);
+        if (tempHPlayer == null) {
+            tempHPlayer = new HPlayer(playerId);
+            HPlayer existing = uuidToHPlayerMap.putIfAbsent(playerId, tempHPlayer);
+            if (existing != null) {
+                tempHPlayer = existing;
+            }
+        }
+        HPlayer finalTempHPlayer = tempHPlayer;
         return queryAsync(handle ->
                 characterDao.findDeletedCharactersByPlayerId(playerId)
                         .stream()
                         .map(flatData -> {
                             try {
-                                return mapFlatDataToHCharacter(flatData, tempHPlayer, handle);
+                                return mapFlatDataToHCharacter(flatData, finalTempHPlayer, handle);
                             } catch (Exception e) {
                                 Hecate.log("Error mapping deleted character data for player " + playerId + ": " + e.getMessage());
                                 e.printStackTrace();
@@ -529,7 +552,15 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     }
 
     public CompletableFuture<List<HCharacter>> getAllCharactersForPlayer(UUID playerId, boolean includeDeleted) {
-        HPlayer tempHPlayer = uuidToHPlayerMap.computeIfAbsent(playerId, HPlayer::new);
+        HPlayer tempHPlayer = uuidToHPlayerMap.get(playerId);
+        if (tempHPlayer == null) {
+            tempHPlayer = new HPlayer(playerId);
+            HPlayer existing = uuidToHPlayerMap.putIfAbsent(playerId, tempHPlayer);
+            if (existing != null) {
+                tempHPlayer = existing;
+            }
+        }
+        HPlayer finalTempHPlayer = tempHPlayer;
         return queryAsync(handle -> {
             List<CharacterDao.FlatData> flatDataList = includeDeleted
                 ? characterDao.findAllCharactersByPlayerId(playerId)
@@ -538,7 +569,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             return flatDataList.stream()
                     .map(flatData -> {
                         try {
-                            return mapFlatDataToHCharacter(flatData, tempHPlayer, handle);
+                            return mapFlatDataToHCharacter(flatData, finalTempHPlayer, handle);
                         } catch (Exception e) {
                             Hecate.log("Error mapping character data for player " + playerId + ": " + e.getMessage());
                             e.printStackTrace();
