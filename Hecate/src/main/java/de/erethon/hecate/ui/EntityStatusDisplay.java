@@ -1,9 +1,7 @@
 package de.erethon.hecate.ui;
 
 import de.erethon.hecate.Hecate;
-import de.erethon.spellbook.api.SpellEffect;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Display;
@@ -17,14 +15,16 @@ import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import java.util.List;
-
 public class EntityStatusDisplay {
 
-    LivingEntity holder;
-    TextDisplay entityNameTag;
-    TextDisplay healthDisplay;
-    TextDisplay statusDisplay;
+    private final EntityStatusDisplayManager manager = Hecate.getInstance().getStatusDisplayManager();
+
+    public LivingEntity holder;
+    public TextDisplay entityNameTag;
+    public TextDisplay healthDisplay;
+    public TextDisplay statusDisplay;
+
+    private boolean removed = false;
 
     public EntityStatusDisplay(LivingEntity holder) {
         this.holder = holder;
@@ -32,7 +32,7 @@ public class EntityStatusDisplay {
         locWithOutRotation.setPitch(0);
         locWithOutRotation.setYaw(0);
         holder.getWorld().spawn(locWithOutRotation, TextDisplay.class, textDisplay -> {
-            Transformation nameTagTransform = new Transformation(new Vector3f(0, (float) Math.max(0.8f, holder.getHeight() - 1.2f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.9f, 0.9f, 0.9f), new AxisAngle4f(0, 0, 0, 0));
+            Transformation nameTagTransform = new Transformation(new Vector3f(0, (float) Math.max(0.4f, holder.getHeight() - 1.6f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.9f, 0.9f, 0.9f), new AxisAngle4f(0, 0, 0, 0));
             textDisplay.setTransformation(nameTagTransform);
             textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
@@ -40,11 +40,15 @@ public class EntityStatusDisplay {
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
             textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 0);
             textDisplay.setPersistent(false);
+            textDisplay.setViewRange(0.1f);
+            textDisplay.setDisplayHeight(0.1f);
+            textDisplay.setDisplayWidth(0.1f);
+            textDisplay.setShadowed(false);
             holder.addPassenger(textDisplay);
             entityNameTag = textDisplay;
         });
         holder.getWorld().spawn(locWithOutRotation, TextDisplay.class, textDisplay -> {
-            Transformation healthDisplayTransformation = new Transformation(new Vector3f(0, (float) Math.max(0.3f, holder.getHeight() - 2f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.2f, 3f, 0.4f), new AxisAngle4f(0, 0, 0, 0));
+            Transformation healthDisplayTransformation = new Transformation(new Vector3f(0, (float) Math.max(0.0f, holder.getHeight() - 2f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.2f, 3f, 0.4f), new AxisAngle4f(0, 0, 0, 0));
             textDisplay.setTransformation(healthDisplayTransformation);
             textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
@@ -52,11 +56,15 @@ public class EntityStatusDisplay {
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
             textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 1);
             textDisplay.setPersistent(false);
+            textDisplay.setViewRange(0.1f);
+            textDisplay.setDisplayHeight(0.1f);
+            textDisplay.setDisplayWidth(0.1f);
+            textDisplay.setShadowed(false);
             holder.addPassenger(textDisplay);
             healthDisplay = textDisplay;
         });
         holder.getWorld().spawn(locWithOutRotation, TextDisplay.class, textDisplay -> {
-            Transformation statusDisplayTransform = new Transformation(new Vector3f(0, (float) Math.max(0.6f, holder.getHeight() - 1.4f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.4f, 0.4f, 0.4f), new AxisAngle4f(0, 0, 0, 0));
+            Transformation statusDisplayTransform = new Transformation(new Vector3f(0, (float) Math.max(0.2f, holder.getHeight() - 2f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.4f, 0.4f, 0.4f), new AxisAngle4f(0, 0, 0, 0));
             textDisplay.setTransformation(statusDisplayTransform);
             textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
@@ -64,6 +72,10 @@ public class EntityStatusDisplay {
             textDisplay.text(Component.empty());
             textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 1);
             textDisplay.setPersistent(false);
+            textDisplay.setViewRange(0.1f);
+            textDisplay.setDisplayHeight(0.1f);
+            textDisplay.setDisplayWidth(0.1f);
+            textDisplay.setShadowed(false);
             holder.addPassenger(textDisplay);
             statusDisplay = textDisplay;
         });
@@ -85,35 +97,15 @@ public class EntityStatusDisplay {
     public void updateStatusDisplay() {
         if (holder.getEffects().isEmpty()) {
             statusDisplay.text(Component.empty());
+            manager.unmarkForTicking(this);
             return;
         }
         if (holder.isChanneling()) {
             return;
         }
-        List<SpellEffect> positiveEffects = holder.getEffects().stream().filter(effect -> effect.data.isPositive()).toList();
-        List<SpellEffect> negativeEffects = holder.getEffects().stream().filter(effect -> !effect.data.isPositive()).toList();
-        StringBuilder positiveString = new StringBuilder();
-        StringBuilder negativeString = new StringBuilder();
-        for (SpellEffect effect : positiveEffects) {
-            positiveString.append(effect.data.getIcon()).append(" ");
-        }
-        for (SpellEffect effect : negativeEffects) {
-            negativeString.append(effect.data.getIcon()).append(" ");
-        }
-        Component positives = Component.text(positiveString.toString()).color(NamedTextColor.GREEN);
-        if (positiveEffects.isEmpty()) {
-            positives = Component.empty();
-        }
-        Component negatives = Component.text(negativeString.toString()).color(NamedTextColor.RED);
-        if (negativeEffects.isEmpty()) {
-            negatives = Component.empty();
-        }
-        Component spacer = Component.text(" | ").color(NamedTextColor.DARK_GRAY);
-        if (positiveEffects.isEmpty() && negativeEffects.isEmpty()) {
-            statusDisplay.text(Component.empty());
-            return;
-        }
-        statusDisplay.text(positives.append(spacer).append(negatives));
+        Component[] formatted = EffectDisplayFormatter.formatEffects(holder.getEffects());
+        statusDisplay.text(EffectDisplayFormatter.combineEffects(formatted[0], formatted[1]));
+        manager.markForTicking(this);
     }
 
     public void showText(Component component, int duration) {
@@ -124,6 +116,16 @@ public class EntityStatusDisplay {
                 updateStatusDisplay();
             }
         }.runTaskLater(Hecate.getInstance(), duration);
+    }
+
+    public void onTick() {
+        if (removed || holder.isDead() || !holder.isValid()) {
+            manager.unmarkForTicking(this);
+            manager.removeStatusDisplay(holder);
+            return;
+        }
+        healthDisplay.text(getHealth(Math.max(0, holder.getHealth()), holder.getMaxHealth()));
+        updateStatusDisplay();
     }
 
     public Component getHealth(double currentHealth, double maxHealth) {
@@ -143,5 +145,6 @@ public class EntityStatusDisplay {
         statusDisplay.remove();
         entityNameTag.remove();
         healthDisplay.remove();
+        removed = true;
     }
 }

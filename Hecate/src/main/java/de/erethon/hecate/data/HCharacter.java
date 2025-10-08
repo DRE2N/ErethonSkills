@@ -66,6 +66,7 @@ public class HCharacter {
     private CharacterCastingManager castingManager;
     private boolean isInCastMode = false;
     private final ItemStack[] hotbar = new ItemStack[9];
+    private ItemStack offhandItem;
 
     public HCharacter(UUID characterID, HPlayer hPlayer, int level, String classId, Timestamp createdAt, List<String> skills) {
         this.characterID = characterID;
@@ -231,7 +232,9 @@ public class HCharacter {
             tag.discard("UUID");
 
             String serializedHotbar = "";
+            String serializedOffhand = "";
             if (shouldSaveHotbarSeparately || castModeSwitch) {
+                // Serialize hotbar
                 for (int i = 0; i < 9; i++) {
                     ItemStack item = hotbar[i];
                     if (item == null || item.getType().isAir()) {
@@ -247,7 +250,20 @@ public class HCharacter {
                         }
                     }
                 }
+                // Serialize offhand item
+                if (offhandItem == null || offhandItem.getType().isAir()) {
+                    serializedOffhand = "empty";
+                } else {
+                    byte[] itemBytes = offhandItem.serializeAsBytes();
+                    if (itemBytes != null && itemBytes.length > 0) {
+                        serializedOffhand = Base64.getEncoder().encodeToString(itemBytes);
+                    } else {
+                        serializedOffhand = "empty";
+                        Hecate.log("Failed to serialize offhand item for character " + characterID);
+                    }
+                }
                 Hecate.log("Serialized hotbar separately for " + characterID + ": " + serializedHotbar.length() + " length.");
+                Hecate.log("Serialized offhand for " + characterID + ": " + serializedOffhand.length() + " length.");
                 shouldSaveHotbarSeparately = false;
             }
 
@@ -290,6 +306,10 @@ public class HCharacter {
                 if (!serializedHotbar.isEmpty()) {
                     builtTag.putString("HecateHotbar", serializedHotbar);
                 }
+                // Save the offhand item separately
+                if (!serializedOffhand.isEmpty()) {
+                    builtTag.putString("HecateOffhand", serializedOffhand);
+                }
 
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 NbtIo.writeCompressed(builtTag, outputStream);
@@ -298,6 +318,10 @@ public class HCharacter {
                 // Normal mode - save hotbar separately if needed
                 if (!serializedHotbar.isEmpty()) {
                     tag.putString("HecateHotbar", serializedHotbar);
+                }
+                // Save the offhand item separately if needed
+                if (!serializedOffhand.isEmpty()) {
+                    tag.putString("HecateOffhand", serializedOffhand);
                 }
 
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -352,7 +376,7 @@ public class HCharacter {
                         }
 
                         if (wasInCastMode) {
-                            Hecate.log("Player " + characterID + " was in cast mode, restoring hotbar...");
+                            Hecate.log("Player " + characterID + " was in cast mode, restoring hotbar and offhand...");
                             Optional<String> hotbarDataOpt = finalTag.getString("HecateHotbar");
                             if (hotbarDataOpt.isPresent() && !hotbarDataOpt.get().isEmpty()) {
                                 String hotbarData = hotbarDataOpt.get();
@@ -390,8 +414,38 @@ public class HCharacter {
                                     bukkitPlayer.getInventory().setItem(i, null);
                                 }
                             }
+
+                            // Restore offhand item
+                            Optional<String> offhandDataOpt = finalTag.getString("HecateOffhand");
+                            if (offhandDataOpt.isPresent() && !offhandDataOpt.get().isEmpty()) {
+                                String offhandData = offhandDataOpt.get();
+                                if (offhandData.equals("empty")) {
+                                    offhandItem = null;
+                                } else {
+                                    try {
+                                        byte[] bytes = Base64.getDecoder().decode(offhandData);
+                                        if (bytes.length > 0) {
+                                            offhandItem = ItemStack.deserializeBytes(bytes);
+                                            Hecate.log("Restored offhand item for " + characterID);
+                                        } else {
+                                            offhandItem = null;
+                                        }
+                                    } catch (IllegalArgumentException e) {
+                                        Hecate.log("Failed to decode Base64 offhand item for " + characterID + ": " + e.getMessage());
+                                        offhandItem = null;
+                                    } catch (Exception e) {
+                                        Hecate.log("Failed to deserialize offhand item for " + characterID + ": " + e.getMessage());
+                                        offhandItem = null;
+                                    }
+                                }
+                            } else {
+                                Hecate.log("No offhand data found for cast mode character " + characterID);
+                                offhandItem = null;
+                            }
+
                             finalTag.remove("HecateHotbar");
-                            Hecate.log("Hotbar restoration attempt finished for " + characterID + ".");
+                            finalTag.remove("HecateOffhand");
+                            Hecate.log("Hotbar and offhand restoration attempt finished for " + characterID + ".");
                         }
 
                         serverPlayer.onUpdateAbilities();
@@ -455,6 +509,7 @@ public class HCharacter {
                 hotbar[i] = player.getInventory().getItem(i);
             }
             ItemStack weapon = player.getInventory().getItemInMainHand();
+            offhandItem = player.getInventory().getItemInOffHand();
             shouldSaveHotbarSeparately = true;
 
             saveCharacterPlayerData(true)
@@ -482,6 +537,9 @@ public class HCharacter {
                 for (int i = 0; i < 9; i++) {
                     player.getInventory().setItem(i, hotbar[i]);
                 }
+                // Restore the offhand item
+                player.getInventory().setItemInOffHand(offhandItem);
+                offhandItem = null;
                 shouldSaveHotbarSeparately = false;
                 saveCharacterPlayerData(false);
             }

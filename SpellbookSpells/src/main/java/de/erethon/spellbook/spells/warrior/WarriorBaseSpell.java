@@ -15,7 +15,7 @@ import java.util.List;
 public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
 
     protected final int duration = data.getInt("duration", 0);
-    public int rageCost = data.getInt("rageCost", 0);
+    public int rageCost = data.getInt("energyCost", data.getInt("rageCost", 0));
 
     public LivingEntity target;
 

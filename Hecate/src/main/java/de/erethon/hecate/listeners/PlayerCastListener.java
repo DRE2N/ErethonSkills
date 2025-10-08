@@ -134,6 +134,7 @@ public class PlayerCastListener implements Listener {
         SpellData spell = hCharacter.getCastingManager().getSpellAtSlot(event.getNewSlot());
         if (spell != null && event.getPlayer().canCast(spell)) {
             spell.queue(event.getPlayer());
+            hCharacter.getCastingManager().updateCastingItemName(spell);
         }
     }
 

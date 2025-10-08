@@ -365,7 +365,11 @@ public class Spellbook {
     }
 
     public static EffectData getEffectData(String id) {
-        return getInstance().getAPI().getLibrary().getEffectByID(id);
+        EffectData data = getInstance().getAPI().getLibrary().getEffectByID(id);
+        if (data == null) {
+            log("EffectData with ID " + id + " not found!");
+        }
+        return data;
     }
     
     public static void log(String message) {

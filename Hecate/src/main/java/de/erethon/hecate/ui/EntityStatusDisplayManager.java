@@ -7,10 +7,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EntityStatusDisplayManager {
 
     private final HashMap<Entity, EntityStatusDisplay> displays = new HashMap<>();
+    private final Set<EntityStatusDisplay> tickingStatusDisplays = new HashSet<>();
     public static NamespacedKey ENTITY_STATUS_KEY = new NamespacedKey("spellbook", "status");
 
     public EntityStatusDisplayManager() {
@@ -21,6 +24,16 @@ public class EntityStatusDisplayManager {
             }
         };
         updateNames.runTaskTimer(Hecate.getInstance(), 0, 1200);
+        BukkitRunnable tickDisplays = new BukkitRunnable() {
+            @Override
+            public void run() {
+                Set<EntityStatusDisplay> copy = new HashSet<>(tickingStatusDisplays);
+                for (EntityStatusDisplay display : copy) {
+                    display.onTick();
+                }
+            }
+        };
+        tickDisplays.runTaskTimer(Hecate.getInstance(), 0, 20);
     }
 
     public boolean hasStatusDisplay(Entity entity) {
@@ -29,6 +42,14 @@ public class EntityStatusDisplayManager {
 
     public void addStatusDisplay(Entity entity, EntityStatusDisplay display) {
         displays.put(entity, display);
+    }
+
+    public void markForTicking(EntityStatusDisplay display) {
+        tickingStatusDisplays.add(display);
+    }
+
+    public void unmarkForTicking(EntityStatusDisplay display) {
+        tickingStatusDisplays.remove(display);
     }
 
     public void removeStatusDisplay(Entity entity) {

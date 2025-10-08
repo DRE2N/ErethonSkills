@@ -45,7 +45,6 @@ dependencies {
     compileOnly("de.erethon.aergia:Aergia:1.0.1")
 }
 
-
 tasks {
     paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
     runServer {
@@ -81,7 +80,6 @@ tasks {
                 "paperweight-mappings-namespace" to "mojang"
             )
         }
-        dependsOn(shadowJar)
     }
 }
 
@@ -103,7 +101,7 @@ tasks.register<Copy>("deployToSharedServer") {
     group = "Erethon"
     description = "Used for deploying the plugin to the shared server. runServer will do this automatically." +
             "This task is only for manual deployment when running runServer from another plugin."
-    dependsOn(":jar")
+    dependsOn(tasks.shadowJar)
     from(layout.buildDirectory.file("libs/Hecate-$version-all.jar"))
     into("C:\\Dev\\Erethon\\plugins")
 }

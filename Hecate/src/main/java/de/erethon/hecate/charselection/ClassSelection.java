@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
@@ -118,8 +119,10 @@ public class ClassSelection extends BaseSelection {
 
         // Save the character to database with the new class and traitline, then teleport
         character.saveToDatabase().thenAccept(v -> {
-            player.teleportAsync(new Location(player.getWorld(), 0, 100, 0)); // TODO: Replace with proper spawn location
-            character.saveCharacterPlayerData(false);
+            plugin.getServer().getScheduler().runTask(plugin, t -> {
+                        player.performCommand("warp tutorial");
+                        character.saveCharacterPlayerData(false);
+            });
         }).exceptionally(ex -> {
             player.sendMessage(Component.translatable("hecate.data.error_saving", Component.text(ex.getMessage())));
             ex.printStackTrace();

@@ -11,6 +11,7 @@ import de.erethon.hecate.events.CombatModeEnterEvent;
 import de.erethon.hecate.events.CombatModeLeaveEvent;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.progression.LevelInfo;
+import de.erethon.hecate.ui.EffectDisplayFormatter;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellbookSpell;
@@ -53,6 +54,7 @@ public class CharacterCastingManager implements Listener {
     private final Player player;
     private boolean isInCastMode = false;
     private ItemStack castingItem;
+    private ItemStack originalCastingItem; // Store the original weapon
     private int previousSlot;
     private boolean scaledPvPMode = false;
     private static final int LEVEL_FOR_SCALED_PVP = 18;
@@ -83,7 +85,9 @@ public class CharacterCastingManager implements Listener {
         }
         isInCastMode = newMode;
         if (isInCastMode) {
-            this.castingItem = castingItem;
+            // Store the original and create a copy for cast mode
+            this.originalCastingItem = castingItem;
+            this.castingItem = castingItem != null ? castingItem.clone() : null;
             startCastMode();
             CombatModeEnterEvent event = new CombatModeEnterEvent(player, character, reason);
             Bukkit.getPluginManager().callEvent(event);
@@ -91,6 +95,9 @@ public class CharacterCastingManager implements Listener {
             stopCastMode();
             CombatModeLeaveEvent event = new CombatModeLeaveEvent(player, character, reason);
             Bukkit.getPluginManager().callEvent(event);
+            // Clear references
+            this.castingItem = null;
+            this.originalCastingItem = null;
         }
     }
 
@@ -99,6 +106,21 @@ public class CharacterCastingManager implements Listener {
             return null;
         }
         return slotSpells[slot];
+    }
+
+    public void updateCastingItemName(SpellData data) {
+        TextColor energyColor = character.getTraitline().getEnergyColor();
+        Component name = Component.empty();
+        Component spellName = Component.translatable("hecate.spellbook.spell.name." + data.getId());
+        spellName = spellName.decoration(TextDecoration.ITALIC, false).color(energyColor);
+        Component energyCostText = Component.empty();
+        if (data.get("energyCost") != null) {
+            int energyCost = data.getInt("energyCost", 0);
+            energyCostText = Component.text("[", NamedTextColor.DARK_GRAY).append(Component.text("-" + energyCost, energyColor)).append(Component.text("]", NamedTextColor.DARK_GRAY));
+        }
+        name = name.append(spellName).append(Component.text(" ")).append(energyCostText);
+        castingItem.setData(DataComponentTypes.CUSTOM_NAME, name);
+        player.getInventory().setItem(8, castingItem);
     }
 
     private void startCastMode() {
@@ -207,31 +229,8 @@ public class CharacterCastingManager implements Listener {
         Component energyNumbers = Component.text(energy + "/" + maxEnergy, energyColor);
         Component energyText = energyIcon.append(Component.space()).append(energyNumbers);
 
-        Component positiveEffects = Component.empty();
-        Component negativeEffects = Component.empty();
-
-        for (SpellEffect effect : player.getEffects()) {
-            if (effect.getTicksLeft() <= 20) {
-                continue;
-            }
-
-            Component effectDisplay = formatEffectDisplay(effect);
-
-            if (effect.data.isPositive()) {
-                if (positiveEffects.equals(Component.empty())) {
-                    positiveEffects = effectDisplay;
-                } else {
-                    positiveEffects = positiveEffects.append(Component.space()).append(effectDisplay);
-                }
-            } else {
-                if (negativeEffects.equals(Component.empty())) {
-                    negativeEffects = effectDisplay;
-                } else {
-                    negativeEffects = negativeEffects.append(Component.space()).append(effectDisplay);
-                }
-            }
-        }
-        updateBossbarUI(positiveEffects, negativeEffects);
+        Component[] formatted = EffectDisplayFormatter.formatEffects(player.getEffects());
+        updateBossbarUI(formatted[0], formatted[1]);
 
         Component betweenSpacer = Component.text("     ");
         Component actionbar = healthText
@@ -239,35 +238,6 @@ public class CharacterCastingManager implements Listener {
                 .append(energyText);
         actionbar = actionbar.shadowColor(ShadowColor.none());
         player.sendActionBar(actionbar);
-    }
-
-    private Component formatEffectDisplay(SpellEffect effect) {
-        Component display = Component.empty();
-        Component icon = MiniMessage.miniMessage().deserialize(effect.data.getIcon());
-
-        NamedTextColor effectColor = effect.data.isPositive() ? NamedTextColor.GREEN : NamedTextColor.RED;
-        icon = icon.color(effectColor);
-
-        int stacks = effect.getStacks();
-        if (stacks > 1) {
-            display = display.append(icon).append(Component.text("x" + stacks, NamedTextColor.YELLOW));
-        } else {
-            display = display.append(icon);
-        }
-
-        int duration = effect.getTicksLeft() / 20;
-        if (duration > 0) {
-            String durationText = duration + "s";
-            StringBuilder paddedDuration = new StringBuilder();
-            int padding = 3 - durationText.length();
-            for (int i = 0; i < padding; i++) {
-                paddedDuration.append(" ");
-            }
-            paddedDuration.append(durationText);
-
-            display = display.append(Component.space()).append(Component.text(paddedDuration.toString(), NamedTextColor.GRAY));
-        }
-        return display;
     }
 
     private void updateSkillUI() {
@@ -295,6 +265,9 @@ public class CharacterCastingManager implements Listener {
         for (int i = 0; i < 9; i++) {
             player.getInventory().setItem(i, null);
         }
+        // Clear the offhand in cast mode
+        player.getInventory().setItemInOffHand(null);
+
         // Add the weapon to its place
         previousSlot = player.getInventory().getHeldItemSlot();
         player.getInventory().setHeldItemSlot(8);
@@ -333,7 +306,7 @@ public class CharacterCastingManager implements Listener {
     private ItemStack getItemStackFromSpellData(int slot, SpellData spellData) {
         ItemStack item = new ItemStack(CastingStatics.SLOT_DYES[slot]);
         Component name = Component.translatable("hecate.spellbook.spell.name." + spellData.getId());
-        name = name.decoration(TextDecoration.ITALIC, false);
+        name = name.decoration(TextDecoration.ITALIC, false).color(character.getTraitline().getEnergyColor());
         item.setData(DataComponentTypes.CUSTOM_NAME, name);
         List<Component> placeholders = spellData.getActiveSpell(player).getPlaceholders(player);
         List<Component> lore = new ArrayList<>();
