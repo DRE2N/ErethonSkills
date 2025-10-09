@@ -33,7 +33,7 @@ public class CutthroatBasicAttack extends SpellTrait {
     @Override
     protected void onAdd() {
         super.onAdd();
-        caster.setMaxEnergy(100);
+        //caster.setMaxEnergy(100);
     }
 
     @Override
@@ -49,6 +49,7 @@ public class CutthroatBasicAttack extends SpellTrait {
         currentAttacks++;
         if (currentAttacks >= attacksForBonus) {
             currentAttacks = 0;
+            if (target.isInvulnerable()) return super.onAttack(target, damage, type);
             caster.addEnergy(bonusEnergy);
             damage *= bonusDamageMultiplier;
             caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.6f, 2.0f);

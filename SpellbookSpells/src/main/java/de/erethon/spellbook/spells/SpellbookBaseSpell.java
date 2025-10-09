@@ -7,6 +7,7 @@ import de.erethon.spellbook.aoe.AoEShape;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
+import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import de.erethon.spellbook.utils.Targeted;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -16,6 +17,7 @@ import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -55,6 +57,10 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
 
     protected List<Component> spellAddedPlaceholders = new ArrayList<>();
     protected List<String> placeholderNames = new ArrayList<>();
+
+    public int range = data.getInt("range", 32);
+    public int targetRaytraceSize = data.getInt("targetRaySize", 1);
+    public LivingEntity target;
 
     public SpellbookBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -221,5 +227,53 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
      */
     protected AoE createConeAoE(Location center, double radius, double angle, double height, Vector direction, long duration) {
         return createAoE(center, AoEShape.CONE, AoEParameters.cone(radius, angle, height), direction, duration);
+    }
+
+    protected boolean lookForTarget() {
+        return lookForTarget(false, range);
+    }
+
+    protected boolean lookForTarget(int range) {
+        return lookForTarget(false, range);
+    }
+
+    protected boolean lookForTarget(boolean friendly) {
+        return lookForTarget(friendly, range);
+    }
+
+    protected boolean lookForTarget(boolean friendly, int range) {
+        RayTraceResult result = caster.getWorld().rayTraceEntities(
+            caster.getEyeLocation(),
+            caster.getEyeLocation().getDirection(),
+            range,
+            targetRaytraceSize,
+            entity -> {
+                if (!(entity instanceof LivingEntity)) {
+                    return false;
+                }
+                if (entity.equals(caster)) {
+                    return false;
+                }
+                LivingEntity living = (LivingEntity) entity;
+                // For friendly targeting, we want allies (cannot attack)
+                // For hostile targeting, we want enemies (can attack)
+                if (friendly) {
+                    return !Spellbook.canAttack(caster, living);
+                } else {
+                    return Spellbook.canAttack(caster, living);
+                }
+            }
+        );
+
+        if (result == null || result.getHitEntity() == null) {
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            return false;
+        }
+        if (!(result.getHitEntity() instanceof LivingEntity)) {
+            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            return false;
+        }
+        this.target = (LivingEntity) result.getHitEntity();
+        return true;
     }
 }

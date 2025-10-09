@@ -17,8 +17,6 @@ public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
     protected final int duration = data.getInt("duration", 0);
     public int rageCost = data.getInt("energyCost", data.getInt("rageCost", 0));
 
-    public LivingEntity target;
-
     public WarriorBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
@@ -50,11 +48,11 @@ public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
     }
 
     protected boolean lookForTarget() {
-        return lookForTarget(false, data.getInt("range", 32));
+        return super.lookForTarget(data.getInt("range", 32));
     }
 
     protected boolean lookForTarget(int range) {
-        return lookForTarget(false, range);
+        return super.lookForTarget(range);
     }
 
     protected boolean lookForTarget(boolean friendly) {

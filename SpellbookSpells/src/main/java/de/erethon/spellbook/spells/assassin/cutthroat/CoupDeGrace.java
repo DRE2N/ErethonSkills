@@ -16,7 +16,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -37,6 +36,7 @@ public class CoupDeGrace extends AssassinBaseSpell {
 
     private boolean hasJumped = false;
     private boolean hasExecuted = false;
+    private BukkitRunnable jumpTask = null;
 
     public CoupDeGrace(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -95,31 +95,50 @@ public class CoupDeGrace extends AssassinBaseSpell {
         double distance = toTarget.length();
         toTarget.normalize();
 
-        if (distance <= 2.0) {
+        // Scale velocity based on distance to support longer jumps
+        if (distance <= 3.0) {
             Vector leapVector = toTarget.multiply(0.8);
             leapVector.setY(0.3);
             caster.setVelocity(leapVector);
-        } else if (distance <= 4.0) {
-            Vector leapVector = toTarget.multiply(1.2);
-            leapVector.setY(0.4);
+        } else if (distance <= 8.0) {
+            Vector leapVector = toTarget.multiply(1.4);
+            leapVector.setY(0.5 + (distance * 0.05));
+            caster.setVelocity(leapVector);
+        } else if (distance <= 16.0) {
+            Vector leapVector = toTarget.multiply(1.8);
+            leapVector.setY(0.7 + (distance * 0.04));
             caster.setVelocity(leapVector);
         } else {
-            Vector leapVector = toTarget.multiply(Math.min(distance * 0.6, 1.8));
-            leapVector.setY(Math.max(0.5, distance * 0.08));
+            // For very long distances (up to 32 blocks)
+            Vector leapVector = toTarget.multiply(2.2);
+            leapVector.setY(0.9 + (distance * 0.03));
             caster.setVelocity(leapVector);
         }
 
         playEnhancedLeapEffects();
 
-        new BukkitRunnable() {
+        jumpTask = new BukkitRunnable() {
             int attempts = 0;
 
             @Override
             public void run() {
+                if (hasExecuted) {
+                    this.cancel();
+                    return;
+                }
+
                 attempts++;
+
+                if (target == null || target.isDead()) {
+                    this.cancel();
+                    currentTicks = keepAliveTicks;
+                    onTickFinish();
+                    return;
+                }
+
                 double currentDistance = target.getLocation().distance(caster.getLocation());
 
-                if (currentDistance <= 2.5 || attempts >= 30) {
+                if (currentDistance <= 2.5 || attempts >= 60) {
                     this.cancel();
                     if (!hasExecuted) {
                         executeAssassination();
@@ -130,7 +149,8 @@ public class CoupDeGrace extends AssassinBaseSpell {
                     caster.setVelocity(additionalBoost);
                 }
             }
-        }.runTaskTimer(Spellbook.getInstance().getImplementer(), 2L, 1L);
+        };
+        jumpTask.runTaskTimer(Spellbook.getInstance().getImplementer(), 2L, 1L);
     }
 
     private void playEnhancedLeapEffects() {
@@ -207,6 +227,10 @@ public class CoupDeGrace extends AssassinBaseSpell {
     private void executeAssassination() {
         hasExecuted = true;
 
+        if (jumpTask != null && !jumpTask.isCancelled()) {
+            jumpTask.cancel();
+        }
+
         double bonusFromBleeding = 0;
         double scaledBonus = Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, bonusPerBleedingMin, bonusPerBleedingMax, "bleedingBonus");
         int bleedingStacks = 0;
@@ -223,15 +247,16 @@ public class CoupDeGrace extends AssassinBaseSpell {
 
         playExecutionStrike(bleedingStacks);
 
-        target.damage(totalDamage, caster);
-
+        // Check execution threshold BEFORE dealing damage
         double healthPercent = target.getHealth() / target.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH).getValue();
+        boolean shouldExecute = healthPercent < executionThreshold;
 
-        if (healthPercent < executionThreshold) {
+        if (shouldExecute) {
             performExecution();
         } else {
+            target.damage(totalDamage, caster);
             performRegularHit();
-        }
+        };
 
         currentTicks = keepAliveTicks;
         onTickFinish();

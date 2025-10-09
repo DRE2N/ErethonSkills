@@ -67,6 +67,9 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         if (player != caster || !event.getAction().isLeftClick() || event.getHand() != EquipmentSlot.HAND) {
             return;
         }
+        if (!caster.getPersistentDataContainer().has(Spellbook.PERSISTENT_CASTING_KEY)) {
+            return;
+        }
         if (event.getClickedBlock() != null || caster.getTargetEntity((int) caster.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).getValue()) != null) {
             return;
         }
@@ -107,6 +110,9 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
 
     @Override
     protected void onTick() {
+        if (!caster.getPersistentDataContainer().has(Spellbook.PERSISTENT_CASTING_KEY)) {
+            return;
+        }
         // Focus regeneration
         if (focusTicks >= 20) {
             focusTicks = 0;
@@ -141,6 +147,9 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
     }
 
     private void releaseShot() {
+        if (!caster.getPersistentDataContainer().has(Spellbook.PERSISTENT_CASTING_KEY)) {
+            return;
+        }
         caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(movementSpeedModifier);
         nmsPlayer.getAbilities().setWalkingSpeed(oldFov);
         RayTraceResult ray = caster.getWorld().rayTrace(b ->
@@ -184,7 +193,7 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
         CraftPlayer craftPlayer = (CraftPlayer) caster;
         nmsPlayer = craftPlayer.getHandle();
-        craftPlayer.setMaxEnergy(100);
+        //craftPlayer.setMaxEnergy(100);
     }
 
     @Override

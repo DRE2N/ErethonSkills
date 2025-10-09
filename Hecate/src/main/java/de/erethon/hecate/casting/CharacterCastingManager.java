@@ -13,7 +13,6 @@ import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.progression.LevelInfo;
 import de.erethon.hecate.ui.EffectDisplayFormatter;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
 import io.papermc.paper.datacomponent.DataComponentTypes;
@@ -25,7 +24,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.ShadowColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
@@ -52,6 +50,7 @@ public class CharacterCastingManager implements Listener {
     private final Hecate plugin = Hecate.getInstance();
     private final HCharacter character;
     private final Player player;
+    private final NamespacedKey PERSISTENT_CASTING_KEY = new NamespacedKey("spellbook", "cast_mode");
     private boolean isInCastMode = false;
     private ItemStack castingItem;
     private ItemStack originalCastingItem; // Store the original weapon
@@ -147,6 +146,7 @@ public class CharacterCastingManager implements Listener {
         }
         populateSlots();
         updateSkillUI();
+        player.getPersistentDataContainer().set(PERSISTENT_CASTING_KEY, PersistentDataType.BOOLEAN, true);
     }
 
     private void stopCastMode() {
@@ -155,6 +155,7 @@ public class CharacterCastingManager implements Listener {
             player.removeTrait(trait);
         }
         player.getInventory().setHeldItemSlot(previousSlot);
+        player.getPersistentDataContainer().remove(PERSISTENT_CASTING_KEY);
     }
 
     private void updateUI() {

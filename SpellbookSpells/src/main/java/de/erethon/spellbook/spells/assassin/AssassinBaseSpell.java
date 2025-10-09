@@ -1,23 +1,16 @@
 package de.erethon.spellbook.spells.assassin;
 
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.SpellbookBaseSpell;
 import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import de.erethon.spellbook.utils.Targeted;
-import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-
-import java.util.List;
 
 public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
 
     public int duration = data.getInt("duration", 10);
     public int energyCost = data.getInt("energyCost", 0);
-    public int range = data.getInt("range", 32);
-    public LivingEntity target;
 
     public AssassinBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -43,40 +36,6 @@ public class AssassinBaseSpell extends SpellbookBaseSpell implements Targeted {
             caster.sendParsedActionBar(SpellbookCommonMessages.NO_ENERGY);
         }
         return canCast;
-    }
-
-    protected boolean lookForTarget() {
-        return lookForTarget(false, range);
-    }
-
-    protected boolean lookForTarget(int range) {
-        return lookForTarget(false, range);
-    }
-
-    protected boolean lookForTarget(boolean friendly) {
-        return lookForTarget(friendly, range);
-    }
-
-    protected boolean lookForTarget(boolean friendly, int range) {
-        Entity target = caster.getTargetEntity(range, true);
-        if (target == null) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
-            return false;
-        }
-        if (!(target instanceof LivingEntity)) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
-            return false;
-        }
-        if (friendly && Spellbook.canAttack(caster, (LivingEntity) target)) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NOT_FRIENDLY);
-            return false;
-        }
-        if (!caster.hasLineOfSight(target)) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
-            return false;
-        }
-        this.target = (LivingEntity) target;
-        return true;
     }
 
     @Override

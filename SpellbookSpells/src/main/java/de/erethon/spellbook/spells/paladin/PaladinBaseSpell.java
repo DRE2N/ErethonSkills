@@ -17,8 +17,6 @@ public class PaladinBaseSpell extends SpellbookBaseSpell {
     protected final int energyCost = data.getInt("energyCost", 0);
     protected final int cooldown = data.getInt("cooldown", 5) * 1000;
 
-    protected LivingEntity target;
-
     public PaladinBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
@@ -42,11 +40,11 @@ public class PaladinBaseSpell extends SpellbookBaseSpell {
     }
 
     protected boolean lookForTarget() {
-        return lookForTarget(false, 32);
+        return super.lookForTarget(32);
     }
 
     protected boolean lookForTarget(int range) {
-        return lookForTarget(false, range);
+        return super.lookForTarget(range);
     }
 
     protected boolean lookForTarget(boolean friendly) {

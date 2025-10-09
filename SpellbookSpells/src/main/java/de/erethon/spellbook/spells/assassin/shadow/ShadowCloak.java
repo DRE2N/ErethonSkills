@@ -18,6 +18,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,11 +31,12 @@ public class ShadowCloak extends AssassinBaseSpell {
     // If the target is marked, apply blindness.
     // Blindness scales with advantage_magical.
 
-    private final int bonusDamage = data.getInt("bonusDamage", 100);
-    private final int blindnessMinDuration = data.getInt("blindnessMinDuration", 10) * 20;
-    private final int blindnessMaxDuration = data.getInt("blindnessMaxDuration", 20) * 20;
+    private final int blindnessMinDuration = data.getInt("blindnessDurationMin", 10) * 20;
+    private final int blindnessMaxDuration = data.getInt("blindnessDurationMax", 20) * 20;
     private final double speedDurationMin = data.getDouble("speedDurationMin", 5) * 20;
     private final double speedDurationMax = data.getDouble("speedDurationMax", 8) * 20;
+    private final double bonusDamageMin = data.getDouble("bonusDamageMin", 20);
+    private final double bonusDamageMax = data.getDouble("bonusDamageMax", 150);
 
     private final EffectData blindness = Spellbook.getEffectData("Blindness");
     private final EffectData speedBoostData = Spellbook.getEffectData("Speed");
@@ -73,7 +75,15 @@ public class ShadowCloak extends AssassinBaseSpell {
             .followEntity(caster)
             .addBlockChange(Material.GRAY_CONCRETE_POWDER)
             .sendBlockChanges();
-
+        // Hide equipment from other players, otherwise we have floating weapons
+        for (Player player : caster.getTrackedBy()) {
+            player.sendEquipmentChange(caster, EquipmentSlot.HAND, null);
+            player.sendEquipmentChange(caster, EquipmentSlot.OFF_HAND, null);
+            player.sendEquipmentChange(caster, EquipmentSlot.HEAD, null);
+            player.sendEquipmentChange(caster, EquipmentSlot.CHEST, null);
+            player.sendEquipmentChange(caster, EquipmentSlot.LEGS, null);
+            player.sendEquipmentChange(caster, EquipmentSlot.FEET, null);
+        }
         return super.onCast();
     }
 
@@ -117,6 +127,7 @@ public class ShadowCloak extends AssassinBaseSpell {
             (int) Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, blindnessMinDuration, blindnessMaxDuration, "blindnessDuration"), 1);
 
         alreadyAttacked = true;
+        double bonusDamage = Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, bonusDamageMin, bonusDamageMax, "bonusDamage");
         return super.onAttack(target, damage + bonusDamage, type);
     }
 
@@ -128,6 +139,17 @@ public class ShadowCloak extends AssassinBaseSpell {
         if (shadowAura != null) {
             shadowAura.revertBlockChanges();
             shadowAura.end();
+        }
+        // Restore equipment visibility
+        for (Player player : caster.getTrackedBy()) {
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                if (caster.getEquipment() != null) {
+                    caster.getEquipment().getItem(slot);
+                    if (caster.getEquipment().getItem(slot).getType() != Material.AIR) {
+                        player.sendEquipmentChange(caster, slot, caster.getEquipment().getItem(slot));
+                    }
+                }
+            }
         }
     }
 
@@ -153,5 +175,7 @@ public class ShadowCloak extends AssassinBaseSpell {
         placeholderNames.add("blindnessDuration");
         spellAddedPlaceholders.add(Component.text((int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, speedDurationMin, speedDurationMax, "speedDuration") / 20, VALUE_COLOR));
         placeholderNames.add("speedDuration");
+        spellAddedPlaceholders.add(Component.text((int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, bonusDamageMin, bonusDamageMax, "bonusDamage"), ATTR_PHYSICAL_COLOR));
+        placeholderNames.add("bonusDamage");
     }
 }

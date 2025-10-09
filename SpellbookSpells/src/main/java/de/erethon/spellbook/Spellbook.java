@@ -16,6 +16,7 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.LivingEntity;
@@ -51,6 +52,8 @@ public class Spellbook {
     private final EffectData silence = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Silence");
 
     public static final HashMap<SpellData, Map<String, String>> PLACEHOLDER_CACHE = new HashMap<>();
+
+    public static final NamespacedKey PERSISTENT_CASTING_KEY = new NamespacedKey("spellbook", "cast_mode");
 
     /**
      * Damage is divided by this value, and the result is the maximum variance.
