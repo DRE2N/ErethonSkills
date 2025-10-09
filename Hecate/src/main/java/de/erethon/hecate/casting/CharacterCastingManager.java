@@ -361,6 +361,15 @@ public class CharacterCastingManager implements Listener {
             return;
         }
 
+        // First, reset all attributes to their default values to prevent stacking
+        Attributable defaultAttributeInstance = player.getType().getDefaultAttributes();
+        for (Attribute attribute : Registry.ATTRIBUTE) {
+            if (player.getAttribute(attribute) != null && defaultAttributeInstance.getAttribute(attribute) != null) {
+                double defaultBase = defaultAttributeInstance.getAttribute(attribute).getBaseValue();
+                player.getAttribute(attribute).setBaseValue(defaultBase);
+            }
+        }
+
         // Calculate cumulative attribute bonuses up to the character's level
         Map<Attribute, Double> cumulativeAttributes = new HashMap<>();
 
@@ -375,12 +384,12 @@ public class CharacterCastingManager implements Listener {
             }
         }
 
-        Attributable defaultAttributeInstance = player.getType().getDefaultAttributes();
+        // Apply the attribute bonuses from the current traitline
         for (Map.Entry<Attribute, Double> entry : cumulativeAttributes.entrySet()) {
             Attribute attribute = entry.getKey();
             Double totalBonus = entry.getValue();
 
-            if (player.getAttribute(attribute) != null && totalBonus > 0 && defaultAttributeInstance.getAttribute(attribute) != null) {
+            if (player.getAttribute(attribute) != null && defaultAttributeInstance.getAttribute(attribute) != null) {
                 double defaultBase = defaultAttributeInstance.getAttribute(attribute).getBaseValue();
 
                 double finalBaseValue = defaultBase + totalBonus;

@@ -32,7 +32,7 @@ public class EntityStatusDisplay {
         locWithOutRotation.setPitch(0);
         locWithOutRotation.setYaw(0);
         holder.getWorld().spawn(locWithOutRotation, TextDisplay.class, textDisplay -> {
-            Transformation nameTagTransform = new Transformation(new Vector3f(0, (float) Math.max(0.4f, holder.getHeight() - 1.6f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.9f, 0.9f, 0.9f), new AxisAngle4f(0, 0, 0, 0));
+            Transformation nameTagTransform = new Transformation(new Vector3f(0, (float) Math.max(0.4f, holder.getHeight() - 1.6f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.5f, 0.5f, 0.5f), new AxisAngle4f(0, 0, 0, 0));
             textDisplay.setTransformation(nameTagTransform);
             textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);

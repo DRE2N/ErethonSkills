@@ -28,7 +28,7 @@ public class InquisitorBasicAttack extends SpellTrait {
     public double onAttack(LivingEntity target, double damage, PDamageType type) {
         int judgementStacks = getJudgementStacksOnTarget(target);
         if (judgementStacks < maximumJudgementStacks) {
-            target.addEffect(caster, judgementData, Integer.MAX_VALUE, 1);
+            target.addEffect(caster, judgementData, 120, 1);
         }
         if (judgementStacks == maximumJudgementStacks) {
             target.getWorld().playSound(target, Sound.BLOCK_CONDUIT_ACTIVATE, 0.7f, 0.5f);

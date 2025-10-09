@@ -30,7 +30,7 @@ public class InquisitorBaseSpell extends PaladinBaseSpell {
 
     protected void addJudgement(LivingEntity target) {
         if (target == null) return;
-        target.addEffect(caster, judgementData, Integer.MAX_VALUE, 1);
+        target.addEffect(caster, judgementData, 120, 1);
     }
 
     protected void removeJudgement(LivingEntity target) {
