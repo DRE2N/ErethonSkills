@@ -25,6 +25,9 @@ import java.util.Set;
 
 public class WhirlingBlades extends AssassinBaseSpell {
 
+    // Spins around the caster, dealing damage to all nearby enemies.
+    // If an enemy is affected by bleeding, they take bonus damage and spread the effect to nearby enemies.
+
     private final double radius = data.getDouble("radius", 3);
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.5);
     private final double bleedingSpreadRadius = data.getDouble("bleedingSpreadRadius", 2);

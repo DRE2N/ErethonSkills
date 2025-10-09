@@ -190,6 +190,6 @@ public class SealOfDeath extends AssassinBaseSpell implements Listener {
     @Override
     protected void addSpellPlaceholders() {
         spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, blindnessDurationMin, blindnessDurationMax, "blindnessDuration"), VALUE_COLOR));
-        placeholderNames.add("blindness");
+        placeholderNames.add("blindnessDuration");
     }
 }

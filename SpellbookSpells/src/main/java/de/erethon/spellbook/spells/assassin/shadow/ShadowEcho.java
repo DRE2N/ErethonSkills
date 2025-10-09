@@ -133,7 +133,7 @@ public class ShadowEcho extends AssassinBaseSpell {
 
     @Override
     protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, resistanceMinDuration, resistanceMaxDuration,"resistance"), VALUE_COLOR));
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, resistanceMinDuration, resistanceMaxDuration,"resistanceDuration"), VALUE_COLOR));
         placeholderNames.add("resistanceDuration");
     }
 }

@@ -7,6 +7,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.aoe.AoE;
 import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,13 +18,19 @@ import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ShadowCloak extends AssassinBaseSpell {
+public class ShadowCloak extends AssassinBaseSpell implements Listener {
 
     // Cloaks the caster in shadows, making them invisible and increasing their movement speed.
     // Attacking will break the cloak and deal massive bonus damage.
@@ -37,6 +44,8 @@ public class ShadowCloak extends AssassinBaseSpell {
     private final double speedDurationMax = data.getDouble("speedDurationMax", 8) * 20;
     private final double bonusDamageMin = data.getDouble("bonusDamageMin", 20);
     private final double bonusDamageMax = data.getDouble("bonusDamageMax", 150);
+    private final double healthRegenMin = data.getDouble("healthRegenMin", 5);
+    private final double healthRegenMax = data.getDouble("healthRegenMax", 25);
 
     private final EffectData blindness = Spellbook.getEffectData("Blindness");
     private final EffectData speedBoostData = Spellbook.getEffectData("Speed");
@@ -84,12 +93,24 @@ public class ShadowCloak extends AssassinBaseSpell {
             player.sendEquipmentChange(caster, EquipmentSlot.LEGS, null);
             player.sendEquipmentChange(caster, EquipmentSlot.FEET, null);
         }
+        for (LivingEntity entity : caster.getLocation().getNearbyLivingEntities(16)) {
+            if (Spellbook.canAttack(caster, entity) && entity != caster && entity instanceof Mob mob) {
+                if (mob.getTarget() == caster) {
+                    mob.setTarget(null);
+                }
+            }
+        }
+        Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
         return super.onCast();
     }
 
     @Override
     protected void onTick() {
         visualTicks--;
+        if (caster.getTicksLived() % 20 == 0) {
+            double healthRegen = Spellbook.getRangedValue(data, caster, Attribute.STAT_HEALINGPOWER, healthRegenMin, healthRegenMax, "healthRegen");
+            caster.heal(healthRegen, EntityRegainHealthEvent.RegainReason.CUSTOM);
+        }
         if (visualTicks <= 0) {
             visualTicks = 8;
             caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation().add(0, 1, 0), 3, 0.5, 0.5, 0.5, 0, new Particle.DustOptions(Color.fromRGB(64, 64, 64), 0.8f));
@@ -153,6 +174,20 @@ public class ShadowCloak extends AssassinBaseSpell {
         }
     }
 
+    @EventHandler
+    private void onTarget(EntityTargetEvent event) {
+        if (event.getTarget() == null || event.getTarget() != caster) {
+            return;
+        }
+        if (!caster.getTags().contains("shadow_cloak")) {
+            return;
+        }
+        if (event.getReason() == EntityTargetEvent.TargetReason.TARGET_INVALID || event.getReason() == EntityTargetEvent.TargetReason.FORGOT_TARGET) {
+            return;
+        }
+        event.setCancelled(true);
+    }
+
     private void endCloak() {
         caster.getTags().remove("shadow_cloak");
 
@@ -177,5 +212,7 @@ public class ShadowCloak extends AssassinBaseSpell {
         placeholderNames.add("speedDuration");
         spellAddedPlaceholders.add(Component.text((int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, bonusDamageMin, bonusDamageMax, "bonusDamage"), ATTR_PHYSICAL_COLOR));
         placeholderNames.add("bonusDamage");
+        spellAddedPlaceholders.add(Component.text((int) Spellbook.getRangedValue(data, caster, Attribute.STAT_HEALINGPOWER, healthRegenMin, healthRegenMax, "healthRegen"), VALUE_COLOR));
+        placeholderNames.add("healthRegen");
     }
 }

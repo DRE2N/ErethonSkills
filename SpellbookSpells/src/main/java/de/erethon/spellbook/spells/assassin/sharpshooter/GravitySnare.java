@@ -131,4 +131,11 @@ public class GravitySnare extends AssassinBaseSpell {
                 }
             });
     }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, caster, Attribute.ADVANTAGE_MAGICAL, minSlowAmplifier, maxSlowAmplifier, "slowAmplifier"), VALUE_COLOR));
+        placeholderNames.add("slowAmplifier");
+
+    }
 }
