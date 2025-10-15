@@ -69,7 +69,7 @@ tasks {
     shadowJar {
         dependencies {
             include(project(":SpellbookSpells"))
-            include(dependency("com.elmakers.mine.bukkit:EffectLib:10.11-SNAPSHOT"))
+            include(dependency("com.elmakers.mine.bukkit:EffectLib:10.12-SNAPSHOT"))
         }
         // Comment relocations out for hotswapping
         relocate("com.elmakers.mine.bukkit", "de.erethon.hecate.effectlib")

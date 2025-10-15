@@ -28,7 +28,7 @@ configurations.all {
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", "1.21.9-R0.1-SNAPSHOT") { isChanging = true }
-    implementation("com.elmakers.mine.bukkit:EffectLib:10.11-SNAPSHOT")
+    implementation("com.elmakers.mine.bukkit:EffectLib:10.12-SNAPSHOT")
 }
 
 tasks {
