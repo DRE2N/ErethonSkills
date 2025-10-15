@@ -4,6 +4,7 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.database.BedrockDBConnection;
 import de.erethon.bedrock.database.EDatabaseManager;
 import de.erethon.hecate.Hecate;
+import de.erethon.hecate.data.dao.BankDao;
 import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.data.dao.PlayerDao;
 import de.erethon.hecate.events.PlayerSelectedCharacterEvent;
@@ -48,12 +49,14 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
     private final PlayerDao playerDao;
     private final CharacterDao characterDao;
+    private final BankDao bankDao;
 
     public DatabaseManager(BedrockDBConnection connection) {
         super(connection, new ThreadPoolExecutor(2, 4, 60L, java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<>()));
 
         this.playerDao = getDao(PlayerDao.class);
         this.characterDao = getDao(CharacterDao.class);
+        this.bankDao = getDao(BankDao.class);
 
         Bukkit.getPluginManager().registerEvents(this, Hecate.getInstance());
     }
@@ -78,6 +81,12 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 "last_online TIMESTAMP," +
                 "last_character UUID)";
 
+        String createBanksTable = "CREATE TABLE IF NOT EXISTS Banks (" +
+                "player_id UUID PRIMARY KEY," +
+                "bank_contents BYTEA," +
+                "unlocked_pages INT DEFAULT 1," +
+                "FOREIGN KEY (player_id) REFERENCES Players(player_id) ON DELETE CASCADE)";
+
         String addForeignKeyToPlayers = "DO $$ BEGIN " +
                 "IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_last_character' AND conrelid = 'players'::regclass) THEN " +
                 "ALTER TABLE Players ADD CONSTRAINT fk_last_character FOREIGN KEY (last_character) REFERENCES Characters(character_id) ON DELETE SET NULL; " +
@@ -94,7 +103,9 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS traitline VARCHAR(255)",
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS selected_traits INTEGER[]",
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP",
-                "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS deleted_by VARCHAR(255)"
+                "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS deleted_by VARCHAR(255)",
+                "ALTER TABLE Banks ADD COLUMN IF NOT EXISTS bank_contents BYTEA",
+                "ALTER TABLE Banks ADD COLUMN IF NOT EXISTS unlocked_pages INT DEFAULT 1"
         );
 
         return CompletableFuture.runAsync(() -> { // Use our own future here as the normal one is not ready yet
@@ -108,6 +119,10 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     Hecate.log("Schema setup: Executing createCharactersTable...");
                     handle.execute(createCharactersTable);
                     Hecate.log("Schema setup: Finished createCharactersTable.");
+
+                    Hecate.log("Schema setup: Executing createBanksTable...");
+                    handle.execute(createBanksTable);
+                    Hecate.log("Schema setup: Finished createBanksTable.");
 
                     Hecate.log("Schema setup: Executing alter table statements...");
                     alterTableStatements.forEach(statement -> {
@@ -349,6 +364,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
     public CompletableFuture<Void> savePlayerData(HPlayer hPlayer) {
         if (hPlayer == null) {
+            Hecate.log("Attempted to save null HPlayer");
             return CompletableFuture.completedFuture(null);
         }
         UUID lastCharId = hPlayer.getLastCharacter();
@@ -772,6 +788,39 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             return hPlayer.getLastSeen().getTime();
         }
         return 0;
+    }
+
+    // --- Bank Methods ---
+
+    public CompletableFuture<Bank> loadBankData(UUID playerId) {
+        HPlayer hPlayer = uuidToHPlayerMap.get(playerId);
+        if (hPlayer == null) {
+            hPlayer = new HPlayer(playerId);
+            HPlayer existing = uuidToHPlayerMap.putIfAbsent(playerId, hPlayer);
+            if (existing != null) {
+                hPlayer = existing;
+            }
+        }
+        HPlayer finalHPlayer = hPlayer;
+
+        return queryAsync(handle -> {
+            byte[] contents = bankDao.findBankContents(playerId).orElse(null);
+            int unlockedPages = bankDao.findUnlockedPages(playerId).orElse(Bank.DEFAULT_PAGES);
+            return new Bank(finalHPlayer, contents, unlockedPages);
+        }).exceptionally(ex -> {
+            Hecate.log("Error loading bank data for " + playerId + ": " + ex.getMessage());
+            ex.printStackTrace();
+            return new Bank(finalHPlayer, null, Bank.DEFAULT_PAGES);
+        });
+    }
+
+    public CompletableFuture<Boolean> saveBankData(UUID playerId, byte[] contents, int unlockedPages) {
+        return queryAsync(handle -> bankDao.upsertBank(playerId, contents, unlockedPages) > 0)
+                .exceptionally(ex -> {
+                    Hecate.log("Error saving bank data for " + playerId + ": " + ex.getMessage());
+                    ex.printStackTrace();
+                    return false;
+                });
     }
 
     // --- Shutdown handling ---
