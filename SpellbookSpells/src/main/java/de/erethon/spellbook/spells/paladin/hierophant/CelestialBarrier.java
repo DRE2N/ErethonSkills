@@ -2,6 +2,7 @@ package de.erethon.spellbook.spells.paladin.hierophant;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.aoe.AoE;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import de.slikey.effectlib.effect.CylinderEffect;
@@ -12,12 +13,16 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.util.Transformation;
+import org.joml.AxisAngle4f;
+import org.joml.Vector3f;
 
 public class CelestialBarrier extends HierophantBaseSpell implements Listener {
 
@@ -56,7 +61,7 @@ public class CelestialBarrier extends HierophantBaseSpell implements Listener {
     public boolean onCast() {
         boolean hasHighWrath = caster.getEnergy() > minWrathForReflect;
 
-        createCircularAoE(barrierLocation, radius, 3, keepAliveTicks)
+        AoE barrier = createCircularAoE(barrierLocation, radius, 3, keepAliveTicks)
                 .onEnter((aoe, entity) -> {
                     if (!Spellbook.canAttack(caster, entity)) {
                         entity.getWorld().spawnParticle(Particle.ENCHANTED_HIT, entity.getLocation(), 5, 0.3, 0.5, 0.3);
@@ -76,7 +81,7 @@ public class CelestialBarrier extends HierophantBaseSpell implements Listener {
                 });
 
         if (hasHighWrath) {
-            createCircularAoE(barrierLocation, radius + 2, 1, keepAliveTicks)
+            barrier = createCircularAoE(barrierLocation, radius + 2, 1, keepAliveTicks)
                     .onTick(aoe -> {
                         for (LivingEntity entity : aoe.getEntitiesInside()) {
                             if (!Spellbook.canAttack(caster, entity)) {
@@ -85,6 +90,12 @@ public class CelestialBarrier extends HierophantBaseSpell implements Listener {
                         }
                     });
         }
+        BlockDisplay blockDisplay = caster.getWorld().spawn(barrierLocation, BlockDisplay.class, bd -> {
+            bd.setBlock(Material.BEACON.createBlockData());
+            bd.setPersistent(false);
+            bd.setTransformation(new Transformation(new Vector3f(0, 0, 0), new AxisAngle4f(0, 1, 0, 0), new Vector3f(2, 2, 2), new AxisAngle4f(0, 0, 0, 0)));
+        });
+        barrier.addDisplay(blockDisplay);
 
         CylinderEffect cylinderEffect = new CylinderEffect(Spellbook.getInstance().getEffectManager());
         cylinderEffect.setLocation(barrierLocation);

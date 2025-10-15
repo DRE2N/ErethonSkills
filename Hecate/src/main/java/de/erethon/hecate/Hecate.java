@@ -213,7 +213,6 @@ public final class Hecate extends EPlugin {
                 data.setDescriptionLineCount(maxLineCount);
             }
         }
-        translator.addSource(reg);
     }
 
     private void createPlaceholderDefinitions(World world ) {

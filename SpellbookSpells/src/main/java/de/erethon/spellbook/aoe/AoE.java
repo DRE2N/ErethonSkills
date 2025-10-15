@@ -423,8 +423,10 @@ public class AoE {
                 blockChangeManager.updatePosition(oldCenter, center, newGroundBlocks, currentBlockMaterial);
             }
         }
-
-        displayManager.updateDisplayPositions(center);
+        // Update rate should match teleport duration set in AoEDisplayBuilder so it looks smooth
+        if (getCurrentTick() % 4 == 0) {
+            displayManager.updateDisplayPositions(center);
+        }
 
         if (tickCallback != null) {
             tickCallback.onAoETick(this);

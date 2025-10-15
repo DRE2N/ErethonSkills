@@ -67,6 +67,7 @@ public class HCharacter {
     private boolean isInCastMode = false;
     private final ItemStack[] hotbar = new ItemStack[9];
     private ItemStack offhandItem;
+    private ItemStack castingItem; // Store the original casting item for restoration
 
     public HCharacter(UUID characterID, HPlayer hPlayer, int level, String classId, Timestamp createdAt, List<String> skills) {
         this.characterID = characterID;
@@ -233,6 +234,7 @@ public class HCharacter {
 
             String serializedHotbar = "";
             String serializedOffhand = "";
+            String serializedCastingItem = "";
             if (shouldSaveHotbarSeparately || castModeSwitch) {
                 // Serialize hotbar
                 for (int i = 0; i < 9; i++) {
@@ -262,8 +264,21 @@ public class HCharacter {
                         Hecate.log("Failed to serialize offhand item for character " + characterID);
                     }
                 }
+                // Serialize casting item
+                if (castingItem != null && !castingItem.getType().isAir()) {
+                    byte[] itemBytes = castingItem.serializeAsBytes();
+                    if (itemBytes != null && itemBytes.length > 0) {
+                        serializedCastingItem = Base64.getEncoder().encodeToString(itemBytes);
+                    } else {
+                        serializedCastingItem = "empty";
+                        Hecate.log("Failed to serialize casting item for character " + characterID);
+                    }
+                } else {
+                    serializedCastingItem = "empty";
+                }
                 Hecate.log("Serialized hotbar separately for " + characterID + ": " + serializedHotbar.length() + " length.");
                 Hecate.log("Serialized offhand for " + characterID + ": " + serializedOffhand.length() + " length.");
+                Hecate.log("Serialized casting item for " + characterID + ": " + serializedCastingItem.length() + " length.");
                 shouldSaveHotbarSeparately = false;
             }
 
@@ -309,6 +324,10 @@ public class HCharacter {
                 // Save the offhand item separately
                 if (!serializedOffhand.isEmpty()) {
                     builtTag.putString("HecateOffhand", serializedOffhand);
+                }
+                // Save the casting item separately
+                if (!serializedCastingItem.isEmpty()) {
+                    builtTag.putString("HecateCastingItem", serializedCastingItem);
                 }
 
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -443,9 +462,38 @@ public class HCharacter {
                                 offhandItem = null;
                             }
 
+                            // Restore casting item
+                            Optional<String> castingItemDataOpt = finalTag.getString("HecateCastingItem");
+                            if (castingItemDataOpt.isPresent() && !castingItemDataOpt.get().isEmpty()) {
+                                String castingItemData = castingItemDataOpt.get();
+                                if (castingItemData.equals("empty")) {
+                                    castingItem = null;
+                                } else {
+                                    try {
+                                        byte[] bytes = Base64.getDecoder().decode(castingItemData);
+                                        if (bytes.length > 0) {
+                                            castingItem = ItemStack.deserializeBytes(bytes);
+                                            Hecate.log("Restored casting item for " + characterID);
+                                        } else {
+                                            castingItem = null;
+                                        }
+                                    } catch (IllegalArgumentException e) {
+                                        Hecate.log("Failed to decode Base64 casting item for " + characterID + ": " + e.getMessage());
+                                        castingItem = null;
+                                    } catch (Exception e) {
+                                        Hecate.log("Failed to deserialize casting item for " + characterID + ": " + e.getMessage());
+                                        castingItem = null;
+                                    }
+                                }
+                            } else {
+                                Hecate.log("No casting item data found for cast mode character " + characterID);
+                                castingItem = null;
+                            }
+
                             finalTag.remove("HecateHotbar");
                             finalTag.remove("HecateOffhand");
-                            Hecate.log("Hotbar and offhand restoration attempt finished for " + characterID + ".");
+                            finalTag.remove("HecateCastingItem");
+                            Hecate.log("Hotbar, offhand, and casting item restoration attempt finished for " + characterID + ".");
                         }
 
                         serverPlayer.onUpdateAbilities();
@@ -510,6 +558,7 @@ public class HCharacter {
             }
             ItemStack weapon = player.getInventory().getItemInMainHand();
             offhandItem = player.getInventory().getItemInOffHand();
+            castingItem = weapon != null ? weapon.clone() : null; // Store the casting item for restoration
             shouldSaveHotbarSeparately = true;
 
             saveCharacterPlayerData(true)
@@ -540,6 +589,7 @@ public class HCharacter {
                 // Restore the offhand item
                 player.getInventory().setItemInOffHand(offhandItem);
                 offhandItem = null;
+                castingItem = null; // Clear the casting item reference
                 shouldSaveHotbarSeparately = false;
                 saveCharacterPlayerData(false);
             }

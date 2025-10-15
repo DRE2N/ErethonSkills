@@ -21,6 +21,7 @@ public class BloodCraze extends CutthroatBaseSpell {
 
     // The Cutthroat enters a blood frenzy, increasing their movement speed and dealing cleaving damage to nearby enemies.
     // The Cutthroat heals for a portion of the damage dealt. The healing scales with resistance_magical.
+    // Aura: While Blood Craze is active, the Cutthroat emits a blood aura that damages nearby enemies every second.
 
     private final double cleavingRange = data.getDouble("cleavingRange", 3.0);
     private final double cleavingDamageMultiplier = data.getDouble("cleavingDamageMultiplier", 0.8);
@@ -37,7 +38,7 @@ public class BloodCraze extends CutthroatBaseSpell {
 
     public BloodCraze(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = duration * 20;
+        keepAliveTicks = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, speedDurationMin, speedDurationMax, "speedDuration");
     }
 
     @Override
@@ -88,13 +89,24 @@ public class BloodCraze extends CutthroatBaseSpell {
                         Location auraCenter = caster.getLocation().add(0, 0.5, 0);
                         caster.getWorld().spawnParticle(Particle.DUST, auraCenter, 2, bloodAuraRadius * 0.7, 0.2, bloodAuraRadius * 0.7, 0,
                             new Particle.DustOptions(org.bukkit.Color.RED, 0.5f));
+                        for (LivingEntity entity : aoe.getEntitiesInside()) {
+                            if (Spellbook.canAttack(caster, entity)) {
+                                double auraDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, true, Attribute.ADVANTAGE_PHYSICAL);
+                                entity.damage(auraDamage, caster, PDamageType.PHYSICAL);
+                                Location entityLoc = entity.getLocation().add(0, 1, 0);
+                                entity.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, entityLoc, 1, 0.3, 0.3, 0.3);
+                                entity.getWorld().spawnParticle(Particle.DUST, entityLoc, 1, 0.2, 0.2, 0.2, 0,
+                                        new Particle.DustOptions(org.bukkit.Color.MAROON, 1.0f));
+                                entity.getWorld().playSound(entityLoc, Sound.ENTITY_PLAYER_HURT, 0.4f, 1.3f);
+                            }
+                        }
                     }
                 });
-
+        float scale = (float) (bloodAuraRadius * 4);
         bloodAura.addDisplay(bloodAura.createDisplay()
                 .blockDisplay(Material.REDSTONE_WIRE)
-                .scale(0.8f)
-                .translate(0, 0.05f, 0)
+                .scale(scale, 0.1f, scale)
+                .translate(0, 0, 0)
                 .build())
                 .sendBlockChanges();
     }

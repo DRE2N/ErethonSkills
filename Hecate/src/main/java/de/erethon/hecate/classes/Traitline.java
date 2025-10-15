@@ -41,6 +41,7 @@ public class Traitline extends YamlConfiguration {
     private final Set<TraitData> innateTraits = new HashSet<>();
     private TextColor energyColor = TextColor.fromHexString("#0xFF00");
     private @Nullable String energySymbol = "\u26A1"; // Symbol for energy in the UI
+    private final List<Component> attackModifierDescription = new ArrayList<>();
     private final HashSet<String> armorTags = new HashSet<>();
     private final HashSet<String> accessoryTags = new HashSet<>();
     private final HashSet<String> weaponTags = new HashSet<>();
@@ -110,17 +111,98 @@ public class Traitline extends YamlConfiguration {
         return levelInfo;
     }
 
+    public List<Component> getAttackModifierDescription() {
+        return attackModifierDescription;
+    }
+
     @SuppressWarnings("removal")
     @Override
     public void load(File file) throws IOException, InvalidConfigurationException {
         super.load(file);
         final SpellbookTranslator translator = Hecate.getInstance().getTranslator();
         id = file.getName().replace(".yml", "");
-        displayName = mm.deserialize(getString("displayName", "<red>ERROR"));
-        description.add(mm.deserialize(getString("description", "")));
+
+        if (contains("displayName")) {
+            ConfigurationSection nameSection = getConfigurationSection("displayName");
+            if (nameSection != null) {
+                for (String key : nameSection.getKeys(false)) {
+                    String value = nameSection.getString(key, "<no translation>");
+                    Locale locale;
+                    if (key.contains("de")) {
+                        locale = Locale.GERMANY;
+                    } else {
+                        locale = Locale.US;
+                    }
+                    translator.registerTranslation("hecate.traitline." + id + ".name", value, locale);
+                }
+                displayName = Component.translatable("hecate.traitline." + id + ".name");
+            } else {
+                displayName = mm.deserialize(getString("displayName", "<red>ERROR"));
+            }
+        } else {
+            displayName = mm.deserialize("<red>ERROR");
+        }
+
+        description.clear();
+        if (contains("description")) {
+            ConfigurationSection descriptionSection = getConfigurationSection("description");
+            if (descriptionSection != null) {
+                int maxLineCount = 0;
+                for (String key : descriptionSection.getKeys(false)) {
+                    List<String> lines = descriptionSection.getStringList(key);
+                    Locale locale;
+                    if (key.contains("de")) {
+                        locale = Locale.GERMANY;
+                    } else {
+                        locale = Locale.US;
+                    }
+                    int i = 0;
+                    for (String line : lines) {
+                        translator.registerTranslation("hecate.traitline." + id + ".description." + i, line, locale);
+                        i++;
+                    }
+                    maxLineCount = Math.max(maxLineCount, i);
+                }
+                // Add translatable components for each line
+                for (int i = 0; i < maxLineCount; i++) {
+                    description.add(Component.translatable("hecate.traitline." + id + ".description." + i));
+                }
+            } else {
+                // Old format - fallback to direct string (for backwards compatibility)
+                description.add(mm.deserialize(getString("description", "")));
+            }
+        }
+
         initialLevelRequirement = getInt("initialLevelRequirement", 0);
         energyColor = TextColor.fromCSSHexString(getString("energyColor", "#0xFF00"));
         energySymbol = getString("energySymbol", "\u26A1");
+        if (contains("attackModifierDescription")) {
+            ConfigurationSection attackModifierSection = getConfigurationSection("attackModifierDescription");
+            if (attackModifierSection != null) {
+                int maxLineCount = 0;
+                for (String key : attackModifierSection.getKeys(false)) {
+                    List<String> lines = attackModifierSection.getStringList(key);
+                    Locale locale;
+                    if (key.contains("de")) {
+                        locale = Locale.GERMANY;
+                    } else {
+                        locale = Locale.US;
+                    }
+                    int i = 0;
+                    for (String line : lines) {
+                        String translationKey = "hecate.traitline." + id + ".attackmodifier." + i;
+                        translator.registerTranslation(translationKey, line, locale);
+                        i++;
+                    }
+                    maxLineCount = Math.max(maxLineCount, i);
+                }
+                // Add translatable components for each line
+                for (int i = 0; i < maxLineCount; i++) {
+                    Component comp = Component.translatable("hecate.traitline." + id + ".attackmodifier." + i);
+                    attackModifierDescription.add(comp);
+                }
+            }
+        }
         if (contains("weaponTags")) {
             weaponTags.addAll(getStringList("weaponTags"));
         }

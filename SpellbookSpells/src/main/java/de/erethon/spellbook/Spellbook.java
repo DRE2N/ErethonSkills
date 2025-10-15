@@ -342,6 +342,12 @@ public class Spellbook {
     }
 
     public static boolean canAttack(LivingEntity attacker, LivingEntity target) {
+        if (attacker == null || target == null) {
+            return false;
+        }
+        if (attacker == target) {
+            return false;
+        }
         if (getInstance().DEBUG) {
             return true;
         }

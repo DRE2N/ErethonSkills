@@ -24,6 +24,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.ShadowColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
@@ -66,6 +67,7 @@ public class CharacterCastingManager implements Listener {
     private UIUpdater uiUpdater;
 
     private final NamespacedKey castingMarker = new NamespacedKey(plugin, "casting_marker");
+    private long castingItemNameSetTick = -1;
 
     public CharacterCastingManager(HCharacter character) {
         this.character = character;
@@ -108,6 +110,11 @@ public class CharacterCastingManager implements Listener {
     }
 
     public void updateCastingItemName(SpellData data) {
+        if (data == null) {
+            castingItem.setData(DataComponentTypes.CUSTOM_NAME, Component.empty());
+            player.getInventory().setItem(8, castingItem);
+            return;
+        }
         TextColor energyColor = character.getTraitline().getEnergyColor();
         Component name = Component.empty();
         Component spellName = Component.translatable("hecate.spellbook.spell.name." + data.getId());
@@ -119,6 +126,32 @@ public class CharacterCastingManager implements Listener {
         }
         name = name.append(spellName).append(Component.text(" ")).append(energyCostText);
         castingItem.setData(DataComponentTypes.CUSTOM_NAME, name);
+
+        castingItemNameSetTick = player.getTicksLived();
+        player.getInventory().setItem(8, castingItem);
+    }
+
+    private void updateCastingItemLore(SpellData rightClickSpell) {
+        List<Component> lore = new ArrayList<>();
+
+        // Attack modifier description
+        lore.addAll(character.getTraitline().getAttackModifierDescription());
+        lore.add(Component.text(" "));
+
+        // RMB spell description
+        if (rightClickSpell != null) {
+            lore.add(Component.text("RMB", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+            SpellbookSpell activeSpell = rightClickSpell.getActiveSpell(player);
+            Component name = Component.translatable("hecate.spellbook.spell.name." + rightClickSpell.getId());
+            name = name.decoration(TextDecoration.ITALIC, false).color(character.getTraitline().getEnergyColor());
+            lore.add(name);
+            List<Component> placeholders = activeSpell.getPlaceholders(player);
+            for (int i = 0; i < rightClickSpell.getDescriptionLineCount(); i++) {
+                lore.add(Component.translatable("hecate.spellbook.spell.description." + rightClickSpell.getId() + "." + i, placeholders));
+            }
+        }
+
+        castingItem.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
         player.getInventory().setItem(8, castingItem);
     }
 
@@ -206,6 +239,32 @@ public class CharacterCastingManager implements Listener {
             }
         }
 
+        // Update cooldown for casting item (RIGHT_CLICK spell)
+        SpellData rightClickSpell = character.getTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK);
+        if (rightClickSpell != null && castingItem != null) {
+            ItemStack stack = player.getInventory().getItem(8);
+            if (stack == null) {
+                return; // Casting item is not in the inventory
+            }
+            int cooldown = rightClickSpell.getCooldown();
+            if (player.getUsedSpells().containsKey(rightClickSpell)) {
+                int current = getCooldownFromTimeStamp(player.getUsedSpells().get(rightClickSpell));
+                int remaining = cooldown - current;
+                stack.setAmount(Math.max(1, remaining));
+
+                if (!player.hasCooldown(stack.getType())) {
+                    player.setCooldown(stack, getRemainingCooldownTicks(current, cooldown));
+                }
+            } else {
+                if (stack.getAmount() != 1) {
+                    stack.setAmount(1);
+                }
+                if (player.hasCooldown(stack.getType())) {
+                    player.setCooldown(stack, 0);
+                }
+            }
+        }
+
         // Always update HUD
         int energy = player.getEnergy();
         int maxEnergy = player.getMaxEnergy();
@@ -259,6 +318,10 @@ public class CharacterCastingManager implements Listener {
             }
             updateLoreFromActiveSpell(stack, activeSpell);
         }
+        // Reset the the casting item name after 5 seconds
+        if (player.getTicksLived() + 100 > castingItemNameSetTick) {
+            updateCastingItemName(null);
+        }
     }
 
     private void populateSlots() {
@@ -273,6 +336,9 @@ public class CharacterCastingManager implements Listener {
         previousSlot = player.getInventory().getHeldItemSlot();
         player.getInventory().setHeldItemSlot(8);
         player.getInventory().setItem(8, castingItem);
+        if (character.getTraitline() != null && character.getTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
+            updateCastingItemLore(character.getTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK));
+        }
         List<SpellData> traitlineSpells = character.getTraitline().defaultSpellSlots;
         // Populate the player's slots
         for (int i = 0; i < 8; i++) {

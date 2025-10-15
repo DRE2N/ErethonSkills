@@ -7,18 +7,19 @@ import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Transformation;
-import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
 /**
  * Builder for creating Display entities with AoE visual effects
  */
-public class AoEDisplayBuilder {
-    private final Location location;
-
+public record AoEDisplayBuilder(Location location) {
     public AoEDisplayBuilder(Location location) {
         this.location = location.clone();
+        // Zero out pitch and yaw to ensure displays are always horizontally aligned
+        this.location.setPitch(0);
+        this.location.setYaw(0);
+        this.location.setY(Math.floor(location.getY()) + 0.01);
     }
 
     /**
@@ -83,8 +84,16 @@ public class AoEDisplayBuilder {
             BlockDisplay display = (BlockDisplay) location.getWorld().spawnEntity(location, EntityType.BLOCK_DISPLAY);
             display.setBlock(material.createBlockData());
 
-            Transformation transformation = new Transformation(translation, rotation, scale, new AxisAngle4f(0, 0, 1, 0));
+            Vector3f centeredTranslation = new Vector3f(
+                translation.x - (scale.x / 2f),
+                translation.y,
+                translation.z - (scale.z / 2f)
+            );
+
+            Transformation transformation = new Transformation(centeredTranslation, rotation, scale, new AxisAngle4f(0, 0, 1, 0));
             display.setTransformation(transformation);
+            display.setTeleportDuration(4); // Smooth teleport by default
+            display.setPersistent(false);
 
             if (glowColorOverride != -1) {
                 display.setGlowColorOverride(Color.fromRGB(glowColorOverride));
@@ -142,9 +151,16 @@ public class AoEDisplayBuilder {
             ItemDisplay display = (ItemDisplay) location.getWorld().spawnEntity(location, EntityType.ITEM_DISPLAY);
             display.setItemStack(item);
             display.setItemDisplayTransform(displayTransform);
+            Vector3f centeredTranslation = new Vector3f(
+                    translation.x - (scale.x / 2f),
+                    translation.y,
+                    translation.z - (scale.z / 2f)
+            );
 
-            Transformation transformation = new Transformation(translation, rotation, scale, new AxisAngle4f(0, 0, 1, 0));
+            Transformation transformation = new Transformation(centeredTranslation, rotation, scale, new AxisAngle4f(0, 0, 1, 0));
             display.setTransformation(transformation);
+            display.setTeleportDuration(4); // Smooth teleport by default
+            display.setPersistent(false);
 
             if (glowColorOverride != -1) {
                 display.setGlowColorOverride(Color.fromRGB(glowColorOverride));
@@ -223,9 +239,16 @@ public class AoEDisplayBuilder {
             display.setSeeThrough(seeThrough);
             display.setShadowed(shadowed);
             display.setBackgroundColor(Color.fromARGB(backgroundColor));
+            display.setPersistent(false);
+            Vector3f centeredTranslation = new Vector3f(
+                    translation.x - (scale.x / 2f),
+                    translation.y,
+                    translation.z - (scale.z / 2f)
+            );
 
-            Transformation transformation = new Transformation(translation, rotation, scale, new AxisAngle4f(0, 0, 1, 0));
+            Transformation transformation = new Transformation(centeredTranslation, rotation, scale, new AxisAngle4f(0, 0, 1, 0));
             display.setTransformation(transformation);
+            display.setTeleportDuration(4); // Smooth teleport by default
 
             if (glowColorOverride != -1) {
                 display.setGlowColorOverride(Color.fromRGB(glowColorOverride));

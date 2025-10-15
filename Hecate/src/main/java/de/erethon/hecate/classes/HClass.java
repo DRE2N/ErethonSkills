@@ -7,6 +7,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -66,9 +67,43 @@ public class HClass extends YamlConfiguration {
     @Override
     public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
         super.load(file);
+        final de.erethon.spellbook.utils.SpellbookTranslator translator = Hecate.getInstance().getTranslator();
         id = file.getName().replace(".yml", "");
+
+        if (contains("displayName")) {
+            ConfigurationSection nameSection = getConfigurationSection("displayName");
+            if (nameSection != null) {
+                for (String key : nameSection.getKeys(false)) {
+                    String value = nameSection.getString(key, "<no translation>");
+                    java.util.Locale locale;
+                    if (key.contains("de")) {
+                        locale = java.util.Locale.GERMANY;
+                    } else {
+                        locale = java.util.Locale.US;
+                    }
+                    translator.registerTranslation("hecate.class." + id + ".name", value, locale);
+                }
+            }
+        }
         displayName = Component.translatable("hecate.class." + id + ".name");
+
+        if (contains("description")) {
+            ConfigurationSection descriptionSection = getConfigurationSection("description");
+            if (descriptionSection != null) {
+                for (String key : descriptionSection.getKeys(false)) {
+                    String value = descriptionSection.getString(key, "<no translation>");
+                    java.util.Locale locale;
+                    if (key.contains("de")) {
+                        locale = java.util.Locale.GERMANY;
+                    } else {
+                        locale = java.util.Locale.US;
+                    }
+                    translator.registerTranslation("hecate.class." + id + ".description", value, locale);
+                }
+            }
+        }
         description = Component.translatable("hecate.class." + id + ".description");
+
         defaultTraitline = Hecate.getInstance().getTraitline(getString("defaultTraitline"));
         color = TextColor.fromHexString(getString("color", "#ffffff"));
         for (String id : getStringList("traitlines")) {

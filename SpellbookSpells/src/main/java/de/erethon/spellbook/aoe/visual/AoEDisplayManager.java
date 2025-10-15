@@ -40,9 +40,12 @@ public class AoEDisplayManager {
      */
     public void updateDisplayPositions(Location center) {
         for (Display display : displays) {
-            // Keep displays relative to center - can be customized per display type
             if (!display.isDead()) {
-                display.teleport(center);
+                Location displayLoc = center.clone();
+                displayLoc.setPitch(0);
+                displayLoc.setYaw(0);
+                displayLoc.setY(Math.floor(center.getY()) + 0.01);
+                display.teleport(displayLoc);
             }
         }
     }

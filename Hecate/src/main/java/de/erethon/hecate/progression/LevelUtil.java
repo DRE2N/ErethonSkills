@@ -305,7 +305,7 @@ public class LevelUtil {
 
     // Display the level for x seconds, and then revert to the character level, which is always displayed
     public static void displayLevel(Player player, int level, float progress, int duration) {
-        HCharacter character = Hecate.getInstance().getDatabaseManager().getCurrentCharacter(player);
+        HCharacter character = Hecate.getInstance().getDatabaseManager().getCurrentCharacter    (player);
         if (character == null) {
             return;
         }
