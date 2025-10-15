@@ -10,7 +10,7 @@ import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.commands.HecateCommandCache;
 import de.erethon.hecate.listeners.EntityListener;
-import de.erethon.hecate.listeners.PlayerCastListener;
+import de.erethon.hecate.listeners.HPlayerListener;
 import de.erethon.hecate.progression.LevelMessages;
 import de.erethon.hecate.progression.LevelUtil;
 import de.erethon.hecate.translations.TranslationManager;
@@ -100,7 +100,7 @@ public final class Hecate extends EPlugin {
         initFolders();
         instantiate();
         registerCommands();
-        getServer().getPluginManager().registerEvents(new PlayerCastListener(), this);
+        getServer().getPluginManager().registerEvents(new HPlayerListener(), this);
         getServer().getPluginManager().registerEvents(new EntityListener(), this);
         Bukkit.getScheduler().runTaskLater(this, () -> { // Workaround for Spellbook not loading spells on load
             Bukkit.getServer().getSpellbookAPI().getLibrary().reload();

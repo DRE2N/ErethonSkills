@@ -1,6 +1,7 @@
 package de.erethon.hecate.listeners;
 
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
+import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.SpecialActionKey;
@@ -8,6 +9,7 @@ import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.events.CombatModeReason;
+import de.erethon.hecate.progression.LevelUtil;
 import de.erethon.hecate.ui.BankInventory;
 import de.erethon.hecate.ui.DamageColor;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
@@ -30,7 +32,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -39,24 +40,20 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLevelChangeEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class PlayerCastListener implements Listener {
+public class HPlayerListener implements Listener {
 
     private final Hecate plugin = Hecate.getInstance();
     private ConcurrentHashMap<TextDisplay, Long> displays = new ConcurrentHashMap<>();
@@ -79,7 +76,7 @@ public class PlayerCastListener implements Listener {
         }
     };
 
-    public PlayerCastListener() {
+    public HPlayerListener() {
         remover.runTaskTimer(plugin, 0, 20);
     }
 
@@ -248,6 +245,11 @@ public class PlayerCastListener implements Listener {
         if (event.getEntity() instanceof ExperienceOrb orb) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    private void onRespawn(PlayerPostRespawnEvent event) {
+        LevelUtil.displayCharLevel(event.getPlayer());
     }
 
     private void castRightclickAction(Player player) {
