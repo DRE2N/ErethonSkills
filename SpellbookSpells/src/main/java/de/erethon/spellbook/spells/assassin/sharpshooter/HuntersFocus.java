@@ -16,7 +16,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class HuntersFocus extends AssassinBaseSpell {
+public class HuntersFocus extends SharpshooterBaseSpell {
 
     // Toggle ability. While active, you drain Focus per second. In return, your Charged Shot charges 50% faster,
     // and you gain "True Sight," allowing you to see invisible enemies within a 30-block radius.

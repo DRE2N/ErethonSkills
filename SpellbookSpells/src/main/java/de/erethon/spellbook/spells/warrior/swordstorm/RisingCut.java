@@ -20,7 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInputEvent;
 import org.bukkit.util.Vector;
 
-public class RisingCut extends WarriorBaseSpell implements Listener {
+public class RisingCut extends SwordstormBaseSpell implements Listener {
 
     // A swift upward slash that deals moderate damage. If Jump key is pressed immediately after connecting the hit,
     // the target is launched into the air, interrupting running spells, and the Swordstorm can attack again, dealing increased damage.

@@ -15,7 +15,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
-public class Harpoon extends WarriorBaseSpell implements Listener {
+public class Harpoon extends SwordstormBaseSpell implements Listener {
 
     // Launch a spectral trident forward. If it hits an enemy, it deals minor damage and pulls them a short distance towards you.
     // While holding moving backward during hit: The pull is stronger/faster.

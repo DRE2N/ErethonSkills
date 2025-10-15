@@ -19,7 +19,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class PreciseStab extends AssassinBaseSpell {
+public class PreciseStab extends CutthroatBaseSpell {
 
     // Perform a quick, piercing stab on the target. Deals moderate physical damage.
     // If the target has 3 or more Bleed stacks, this attack consumes the bleeding to grant you Fury.

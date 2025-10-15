@@ -17,7 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LightOfPurification extends PaladinBaseSpell {
+public class LightOfPurification extends GuardianBaseSpell {
 
     // The Guardian channels a circle of light, removing negative effects from allies and applying a resistance effect.
     // The Guardian gains devotion for each effect removed.

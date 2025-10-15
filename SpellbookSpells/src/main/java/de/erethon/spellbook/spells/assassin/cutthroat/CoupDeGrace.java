@@ -21,7 +21,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class CoupDeGrace extends AssassinBaseSpell {
+public class CoupDeGrace extends CutthroatBaseSpell {
 
     // Ultimate ability: Jumps to a target, slashing their throat, dealing massive damage.
     // Damage increased by 10% for each stack of bleeding on the target. Scales with advantage_magical.

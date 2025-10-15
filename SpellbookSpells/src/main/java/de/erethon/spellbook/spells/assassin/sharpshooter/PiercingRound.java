@@ -21,7 +21,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PiercingRound extends AssassinBaseSpell {
+public class PiercingRound extends SharpshooterBaseSpell {
 
     // Consume a portion of your charge to fire a fast, uncharged energy lance that pierces through all enemies in a line.
     // Deals moderate damage to each target hit. If this ability scores a headshot, 50% of its Focus cost is refunded.
@@ -56,7 +56,7 @@ public class PiercingRound extends AssassinBaseSpell {
         caster.getWorld().playSound(startLoc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 0.6f, 2.0f);
         caster.getWorld().playSound(startLoc, Sound.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS, 1.0f, 1.8f);
 
-        startLoc.getWorld().spawnParticle(Particle.FLASH, startLoc, 1, 0, 0, 0, 0);
+        startLoc.getWorld().spawnParticle(Particle.FLASH, startLoc, 1, 0, 0, 0, 0, Color.RED);
         startLoc.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, startLoc, 8, 0.2, 0.2, 0.2, 0.3);
 
         List<LivingEntity> hitTargets = new ArrayList<>();

@@ -15,7 +15,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-public class ConcussiveBlast extends AssassinBaseSpell {
+public class ConcussiveBlast extends SharpshooterBaseSpell {
 
     // Instantly unleash a short-range (4-block cone) blast of kinetic energy in front of you.
     // Deals minor damage but knocks back all enemies hit and applies a brief "Disorient" effect (Minecraft's Nausea for 1s).

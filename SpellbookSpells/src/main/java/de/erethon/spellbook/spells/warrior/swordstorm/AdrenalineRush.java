@@ -17,7 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AdrenalineRush extends WarriorBaseSpell {
+public class AdrenalineRush extends SwordstormBaseSpell {
 
     // Instantly gain a large burst of Fury and Power for a moderate duration.
     // If below 30% health when activated: Also gain Stability and Resistance for a short duration.

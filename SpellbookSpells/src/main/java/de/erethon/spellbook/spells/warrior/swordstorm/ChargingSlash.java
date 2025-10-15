@@ -10,7 +10,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-public class ChargingSlash extends WarriorBaseSpell {
+public class ChargingSlash extends SwordstormBaseSpell {
 
     // Perform a powerful forward slash. If Sprinting when activated: Deals significantly increased damage and applies increased Knockback to the target.
     // If not Sprinting: Deals moderate damage with normal knockback.

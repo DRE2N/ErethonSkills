@@ -12,7 +12,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class ShieldBreaker extends WarriorBaseSpell {
+public class ShieldBreaker extends VanguardBaseSpell {
 
     // A powerful overhead chop that deals moderate damage. If the target has Stability or Resistance,
     // this ability consumes those effects and briefly Stuns them. If they have neither, it applies a moderate Slow instead.

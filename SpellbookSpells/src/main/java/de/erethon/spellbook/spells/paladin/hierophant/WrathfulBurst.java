@@ -14,7 +14,7 @@ import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
-public class WrathfulBurst extends PaladinBaseSpell {
+public class WrathfulBurst extends HierophantBaseSpell {
 
     // The Hierophant unleashes a burst of energy, damaging all enemies in the area.
     // If the Hierophant has more than 50% wrath, the burst deals additional damage and applies a burning effect.

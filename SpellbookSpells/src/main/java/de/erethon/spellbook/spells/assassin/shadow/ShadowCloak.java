@@ -30,7 +30,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ShadowCloak extends AssassinBaseSpell implements Listener {
+public class ShadowCloak extends ShadowBaseSpell implements Listener {
 
     // Cloaks the caster in shadows, making them invisible and increasing their movement speed.
     // Attacking will break the cloak and deal massive bonus damage.

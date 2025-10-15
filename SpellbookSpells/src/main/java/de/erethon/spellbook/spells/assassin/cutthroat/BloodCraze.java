@@ -17,7 +17,7 @@ import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
-public class BloodCraze extends AssassinBaseSpell {
+public class BloodCraze extends CutthroatBaseSpell {
 
     // The Cutthroat enters a blood frenzy, increasing their movement speed and dealing cleaving damage to nearby enemies.
     // The Cutthroat heals for a portion of the damage dealt. The healing scales with resistance_magical.

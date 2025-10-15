@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ShoutOfResolve extends PaladinBaseSpell implements Listener {
+public class ShoutOfResolve extends GuardianBaseSpell implements Listener {
 
     // The Guardian creates a radiant aura of unbreakable resolve, becoming immune to all negative effects.
     // Allies within the aura gain significant damage reduction and reflect damage back to attackers.

@@ -18,7 +18,7 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class AvatarOfWrath extends PaladinBaseSpell {
+public class AvatarOfWrath extends HierophantBaseSpell {
 
     // The Hierophant becomes an avatar of wrath, gaining increased damage and attack range, cleaving attacks and emits a pulse of holy fire on every attack.
     // The holy fire deals magic damage, burns and weakens nearby enemies.

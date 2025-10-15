@@ -22,7 +22,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-public class SealOfDeath extends AssassinBaseSpell implements Listener {
+public class SealOfDeath extends ShadowBaseSpell implements Listener {
 
     private final int range = data.getInt("range", 15);
     private final double bonusDamageMultiplier = data.getDouble("bonusDamageMultiplier", 1.4);

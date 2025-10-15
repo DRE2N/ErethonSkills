@@ -9,7 +9,7 @@ import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
-public class ExecutionersSwing extends WarriorBaseSpell {
+public class ExecutionersSwing extends VanguardBaseSpell {
 
     // Channel for 1.5 seconds, then unleash a single, devastating overhead blow on a target.
     // Deals massive physical damage, which is significantly increased based on the target's missing health.

@@ -9,7 +9,7 @@ import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
-public class UnflinchingStance extends WarriorBaseSpell {
+public class UnflinchingStance extends VanguardBaseSpell {
 
     // For a few seconds, gain a significant amount of Resistance and Stability.
     // Your Momentum stacks will not be consumed when using an ability during this time.

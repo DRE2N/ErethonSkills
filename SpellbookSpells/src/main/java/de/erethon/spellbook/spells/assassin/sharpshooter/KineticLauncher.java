@@ -21,7 +21,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-public class KineticLauncher extends AssassinBaseSpell {
+public class KineticLauncher extends SharpshooterBaseSpell {
 
     // RMB: Fire a kinetic anchor that attaches to terrain or structures.
     // Pressing RMB again while the anchor is active propels you rapidly towards the anchor's location, launching you into the air at the end of the pull.

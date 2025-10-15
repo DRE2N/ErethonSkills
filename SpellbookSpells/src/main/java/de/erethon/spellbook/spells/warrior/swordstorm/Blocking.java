@@ -24,7 +24,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class Blocking extends WarriorBaseSpell implements Listener {
+public class Blocking extends SwordstormBaseSpell implements Listener {
 
     // RMB: Block with your sword, reducing incoming damage but also reducing your movement speed.
 

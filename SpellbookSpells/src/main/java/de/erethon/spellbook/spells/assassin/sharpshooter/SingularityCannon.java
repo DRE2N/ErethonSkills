@@ -22,7 +22,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SingularityCannon extends AssassinBaseSpell {
+public class SingularityCannon extends SharpshooterBaseSpell {
 
     // After a 1.5-second channel (caster is immobile), unleash a global-range, terrain-piercing beam of pure energy.
     // The beam deals immense damage to the first enemy player hit and 50% damage to any subsequent targets.
@@ -105,7 +105,7 @@ public class SingularityCannon extends AssassinBaseSpell {
             new Particle.DustOptions(Color.fromRGB((int)(255 * progress), 0, (int)(255 * (1 - progress))), 1.5f));
 
         if (currentTicks % 5 == 0) {
-            eyeLoc.getWorld().spawnParticle(Particle.FLASH, eyeLoc, 1, 0, 0, 0, 0);
+            eyeLoc.getWorld().spawnParticle(Particle.FLASH, eyeLoc, 1, 0, 0, 0, 0, Color.BLUE);
             eyeLoc.getWorld().playSound(eyeLoc, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 0.3f, (float) (1.5f + progress));
         }
 
@@ -133,7 +133,7 @@ public class SingularityCannon extends AssassinBaseSpell {
         caster.getWorld().playSound(startLoc, Sound.ENTITY_ENDER_DRAGON_SHOOT, SoundCategory.PLAYERS, 2.0f, 0.5f);
 
         startLoc.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, startLoc, 1, 0, 0, 0, 0, null, true);
-        startLoc.getWorld().spawnParticle(Particle.FLASH, startLoc, 3, 0.5, 0.5, 0.5, 0, null, true);
+        startLoc.getWorld().spawnParticle(Particle.FLASH, startLoc, 3, 0.5, 0.5, 0.5, 0, Color.RED, true);
         startLoc.getWorld().spawnParticle(Particle.END_ROD, startLoc, 50, 2, 2, 2, 0.5, null, true);
 
         Location endLoc = startLoc.clone().add(targetDirection.clone().multiply(beamRange));
@@ -222,7 +222,7 @@ public class SingularityCannon extends AssassinBaseSpell {
 
         if (isPrimary) {
             targetLoc.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, targetLoc, 1, 0, 0, 0, 0,null, true);
-            targetLoc.getWorld().spawnParticle(Particle.FLASH, targetLoc, 3, 0.5, 0.5, 0.5, 0, null, true);
+            targetLoc.getWorld().spawnParticle(Particle.FLASH, targetLoc, 3, 0.5, 0.5, 0.5, 0, Color.RED, true);
             targetLoc.getWorld().playSound(targetLoc, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 2.0f, 0.8f);
         } else {
             targetLoc.getWorld().spawnParticle(Particle.EXPLOSION, targetLoc, 2, 0.3, 0.3, 0.3, 0,null, true);
@@ -239,7 +239,7 @@ public class SingularityCannon extends AssassinBaseSpell {
 
     private void createKillVFX(Location killLoc) {
         killLoc.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, killLoc, 30, 1, 1, 1, 0.5,null, true);
-        killLoc.getWorld().spawnParticle(Particle.FLASH, killLoc, 5, 1, 1, 1, 0,null, true);
+        killLoc.getWorld().spawnParticle(Particle.FLASH, killLoc, 5, 1, 1, 1, 0,Color.RED, true);
         killLoc.getWorld().playSound(killLoc, Sound.ITEM_TOTEM_USE, SoundCategory.PLAYERS, 1.0f, 1.8f);
     }
 

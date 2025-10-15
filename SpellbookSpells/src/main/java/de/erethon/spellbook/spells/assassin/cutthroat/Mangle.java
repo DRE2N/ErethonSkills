@@ -19,7 +19,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class Mangle extends AssassinBaseSpell {
+public class Mangle extends CutthroatBaseSpell {
 
     // Powerful execution attack that silences and weakens a target if they are bleeding.
     // Creates a terror aura that spreads fear to nearby enemies and leaves lingering wounds.

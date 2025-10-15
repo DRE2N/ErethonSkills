@@ -7,6 +7,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.LineEffect;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -52,7 +53,7 @@ public class HolySmite extends InquisitorBaseSpell {
                 .onEnter((aoe, entity) -> {
                     if (entity == target) {
                         entity.getWorld().spawnParticle(Particle.EXPLOSION, entity.getLocation(), 2, 0.5, 0.5, 0.5);
-                        entity.getWorld().spawnParticle(Particle.FLASH, entity.getLocation(), 5, 0.3, 0.3, 0.3);
+                        entity.getWorld().spawnParticle(Particle.FLASH, entity.getLocation(), 5, 0.3, 0.3, 0.3, Color.AQUA);
                     } else if (Spellbook.canAttack(caster, entity)) {
                         double consecrationDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, false, Attribute.ADVANTAGE_MAGICAL) * 0.4;
                         entity.damage(consecrationDamage, caster);

@@ -27,7 +27,7 @@ import org.bukkit.util.Vector;
 /**
  * @author Fyreum
  */
-public class DaggerThrow extends AssassinBaseSpell implements Listener {
+public class DaggerThrow extends ShadowBaseSpell implements Listener {
 
     // Throws a dagger at the target, dealing physical damage and applying a slow effect. Marks the target for a short duration.
     // Slow scales with advantage_magical.

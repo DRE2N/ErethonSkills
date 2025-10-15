@@ -12,7 +12,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class WarStomp extends WarriorBaseSpell {
+public class WarStomp extends VanguardBaseSpell {
 
     // Slam your foot down, creating a shockwave that damages and briefly stuns
 

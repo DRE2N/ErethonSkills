@@ -14,7 +14,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
-public class ChainOfPurification extends PaladinBaseSpell {
+public class ChainOfPurification extends HierophantBaseSpell {
 
     // The hierophant launches a chain of holy energy in front of him. The first enemy hit is pulled halfway to the caster and stunned for 2 seconds.
     // If the wrath is above 50, the chain also pulls additional enemies in a 3-block radius to the target and creates crackling energy ground effects.

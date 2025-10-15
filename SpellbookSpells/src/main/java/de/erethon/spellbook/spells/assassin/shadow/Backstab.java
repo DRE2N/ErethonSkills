@@ -27,7 +27,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class Backstab extends AssassinBaseSpell implements Listener {
+public class Backstab extends ShadowBaseSpell implements Listener {
 
     // Teleports behind the target and deals a powerful attack, granting energy if the target dies within a short time.
     // Deals massive bonus damage if the target is marked and refunds energy if the target dies.

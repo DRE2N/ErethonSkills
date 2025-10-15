@@ -23,7 +23,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.util.Vector;
 
-public class ShadowJump extends AssassinBaseSpell implements Listener {
+public class ShadowJump extends ShadowBaseSpell implements Listener {
 
     // Dash forward quickly, passing through enemies. If you pass through an enemy, you become invisible for a short duration.
     // You can influence your dash direction slightly by moving left or right.

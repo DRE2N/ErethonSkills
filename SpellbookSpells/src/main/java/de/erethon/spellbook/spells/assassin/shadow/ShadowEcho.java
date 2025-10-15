@@ -20,7 +20,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-public class ShadowEcho extends AssassinBaseSpell {
+public class ShadowEcho extends ShadowBaseSpell {
 
     private final int energyRestoreOnMarkedDamage = data.getInt("energyRestoreOnMarkedDamage", 25);
     private final int resistanceMinDuration = data.getInt("resistanceMinDuration", 6) * 20;

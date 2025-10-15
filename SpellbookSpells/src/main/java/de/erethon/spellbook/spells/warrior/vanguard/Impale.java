@@ -10,7 +10,7 @@ import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
-public class Impale extends WarriorBaseSpell {
+public class Impale extends VanguardBaseSpell {
 
     // A powerful forward thrust with your axe. Deals high damage and applies Bleed.
     // If the target is below 40% health, the Bleed effect's duration is doubled.

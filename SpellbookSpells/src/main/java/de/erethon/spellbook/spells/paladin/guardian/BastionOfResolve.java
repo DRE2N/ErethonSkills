@@ -13,7 +13,7 @@ import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
-public class BastionOfResolve extends PaladinBaseSpell {
+public class BastionOfResolve extends GuardianBaseSpell {
 
     // The Guardian creates a protective bastion that follows them, granting nearby allies increased resistance, stability and power.
     // The bastion creates pillars of light that strengthen allies and weaken enemies who dare approach.

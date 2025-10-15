@@ -23,7 +23,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Set;
 
-public class GravitySnare extends AssassinBaseSpell {
+public class GravitySnare extends SharpshooterBaseSpell {
 
     // Launch a small projectile that, upon impact with a surface or player, deploys a 4-block radius gravitational field for 3 seconds.
     // Enemies caught in the field are slowed, and slightly pulled towards the center.

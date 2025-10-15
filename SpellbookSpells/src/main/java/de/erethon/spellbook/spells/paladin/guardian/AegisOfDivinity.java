@@ -22,10 +22,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.util.Vector;
 
+import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AegisOfDivinity extends PaladinBaseSpell implements Listener {
+public class AegisOfDivinity extends GuardianBaseSpell implements Listener {
 
     // The Guardian creates a massive sanctuary of divine protection, forming concentric rings of power.
     // The inner sanctum grants resurrection and massive healing, while outer rings push enemies away and destroy projectiles.
@@ -99,7 +100,7 @@ public class AegisOfDivinity extends PaladinBaseSpell implements Listener {
 
                         target.getWorld().spawnParticle(Particle.FLASH,
                             target.getLocation(),
-                            1, 0, 0, 0, 0);
+                            1, 0, 0, 0, 0, Color.ORANGE);
                         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.RECORDS, 0.5f, 2.0f);
                     }
                 })
@@ -110,7 +111,7 @@ public class AegisOfDivinity extends PaladinBaseSpell implements Listener {
                 .onTick(aoe -> destroyHostileProjectiles());
 
         center.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, center, 3, 2, 1, 2, 0);
-        center.getWorld().spawnParticle(Particle.FLASH, center, 1, 0, 0, 0, 0);
+        center.getWorld().spawnParticle(Particle.FLASH, center, 1, 0, 0, 0, 0, Color.ORANGE);
 
         return super.onCast();
     }
@@ -176,7 +177,7 @@ public class AegisOfDivinity extends PaladinBaseSpell implements Listener {
     private void destroyHostileProjectiles() {
         for (Projectile projectile : center.getNearbyEntitiesByType(Projectile.class, outerRadius + 2)) {
             if (projectile.getShooter() instanceof LivingEntity shooter && Spellbook.canAttack(caster, shooter)) {
-                projectile.getWorld().spawnParticle(Particle.FLASH, projectile.getLocation(), 1, 0, 0, 0, 0);
+                projectile.getWorld().spawnParticle(Particle.FLASH, projectile.getLocation(), 1, 0, 0, 0, 0, Color.YELLOW);
                 projectile.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, projectile.getLocation(), 8, 0.5, 0.5, 0.5, 0.1);
                 projectile.getWorld().playSound(projectile.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.RECORDS, 0.3f, 2.0f);
                 projectile.remove();
@@ -203,7 +204,7 @@ public class AegisOfDivinity extends PaladinBaseSpell implements Listener {
 
         deadPlayer.getWorld().playSound(deadPlayer.getLocation(), Sound.ITEM_TOTEM_USE, SoundCategory.RECORDS, 1.5f, 0.8f);
         deadPlayer.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, deadPlayer.getLocation(), 50, 1, 2, 1, 0.2);
-        deadPlayer.getWorld().spawnParticle(Particle.FLASH, deadPlayer.getLocation(), 2, 0.5, 1, 0.5, 0);
+        deadPlayer.getWorld().spawnParticle(Particle.FLASH, deadPlayer.getLocation(), 2, 0.5, 1, 0.5, 0, Color.ORANGE);
 
         for (int y = 0; y < 10; y++) {
             Location pillarLoc = deadPlayer.getLocation().clone().add(0, y, 0);

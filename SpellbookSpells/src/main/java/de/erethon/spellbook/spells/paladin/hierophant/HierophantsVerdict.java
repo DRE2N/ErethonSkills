@@ -14,7 +14,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
-public class HierophantsVerdict extends PaladinBaseSpell {
+public class HierophantsVerdict extends HierophantBaseSpell {
 
     // The Hierophant slams his weapon down, creating a shockwave that deals damage in a cone in front of him.
     // There is damage falloff based on distance from the caster, which is lessened by the caster's wrath.

@@ -15,7 +15,7 @@ import org.bukkit.entity.LivingEntity;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WaveOfHealing extends PaladinBaseSpell {
+public class WaveOfHealing extends GuardianBaseSpell {
 
     // The Guardian creates a wave of healing that flows forward in a cone, healing all allies it touches.
     // Heal is increased based on the current devotion of the caster.

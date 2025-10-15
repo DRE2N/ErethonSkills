@@ -26,7 +26,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ShieldOfFaith extends PaladinBaseSpell implements Listener {
+public class ShieldOfFaith extends GuardianBaseSpell implements Listener {
 
     // RMB: The Guardian raises his shield, protecting himself from attacks from the front.
     // For blocked attacks, the Paladin and his allies are healed.

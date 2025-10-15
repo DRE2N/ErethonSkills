@@ -4,6 +4,7 @@ import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -56,7 +57,7 @@ public class RighteousBlow extends PaladinBaseSpell {
                     });
 
             target.getWorld().spawnParticle(Particle.EXPLOSION, target.getLocation().add(0, 1, 0), 1);
-            target.getWorld().spawnParticle(Particle.FLASH, target.getLocation().add(0, 1, 0), 3, 0.5, 0.5, 0.5);
+            target.getWorld().spawnParticle(Particle.FLASH, target.getLocation().add(0, 1, 0), 3, 0.5, 0.5, 0.5, Color.AQUA);
             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.8f, 1.5f);
 
             caster.setEnergy(0);

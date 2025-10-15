@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class WhirlingBlades extends AssassinBaseSpell {
+public class WhirlingBlades extends CutthroatBaseSpell {
 
     // Spins around the caster, dealing damage to all nearby enemies.
     // If an enemy is affected by bleeding, they take bonus damage and spread the effect to nearby enemies.

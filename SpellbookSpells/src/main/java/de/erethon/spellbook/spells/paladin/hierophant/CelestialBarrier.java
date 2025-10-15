@@ -19,7 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class CelestialBarrier extends PaladinBaseSpell implements Listener {
+public class CelestialBarrier extends HierophantBaseSpell implements Listener {
 
     // The Hierophant creates a celestial barrier of light that absorbs damage for a short duration.
     // When the barrier expires or breaks, it explodes, dealing damage to nearby enemies equal to 100% of the damage absorbed.

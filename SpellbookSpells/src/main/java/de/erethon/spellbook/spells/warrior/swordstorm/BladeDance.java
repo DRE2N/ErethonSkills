@@ -17,7 +17,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 
-public class BladeDance extends WarriorBaseSpell {
+public class BladeDance extends SwordstormBaseSpell {
 
     // For several seconds, the Swordstorm enters a focused trance. Each basic attack during Blade Dance unleashes a secondary shockwave of energy that damages
     // all other enemies in a small radius around the primary target, Scaling with phys damage The model size is reduced and speed and jump height is increased, allowing the Swordstorm to move quickly between targets.

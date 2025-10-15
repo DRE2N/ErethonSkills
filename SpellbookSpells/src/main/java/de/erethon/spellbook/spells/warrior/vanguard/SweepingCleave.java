@@ -11,7 +11,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
-public class SweepingCleave extends WarriorBaseSpell {
+public class SweepingCleave extends VanguardBaseSpell {
 
     // Perform a wide, horizontal swing, striking all enemies in a cone in front of you.
     // Enemies hit are slightly knocked back sideways.

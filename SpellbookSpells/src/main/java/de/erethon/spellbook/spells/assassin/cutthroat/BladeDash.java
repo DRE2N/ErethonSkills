@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BladeDash extends AssassinBaseSpell {
+public class BladeDash extends CutthroatBaseSpell {
 
     // The Cutthroat dashes forward, dealing damage to all enemies in its path.
     // Affected enemies are weakened.
