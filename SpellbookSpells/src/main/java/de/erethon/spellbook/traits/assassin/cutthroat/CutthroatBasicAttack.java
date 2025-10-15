@@ -33,7 +33,7 @@ public class CutthroatBasicAttack extends SpellTrait {
     @Override
     protected void onAdd() {
         super.onAdd();
-        //caster.setMaxEnergy(100);
+        caster.setMaxEnergy(100);
     }
 
     @Override

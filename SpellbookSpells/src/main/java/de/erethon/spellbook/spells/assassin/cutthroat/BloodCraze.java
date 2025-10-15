@@ -172,8 +172,8 @@ public class BloodCraze extends AssassinBaseSpell {
 
     private void playHealingEffect() {
         Location casterLoc = caster.getLocation().add(0, 1, 0);
-        caster.getWorld().spawnParticle(Particle.HEART, casterLoc, 3, 0.3, 0.3, 0.3, 0);
-        caster.getWorld().spawnParticle(Particle.DUST, casterLoc, 4, 0.4, 0.4, 0.4, 0,
+        caster.getWorld().spawnParticle(Particle.HEART, casterLoc, 1, 0.3, 0.3, 0.3, 0);
+        caster.getWorld().spawnParticle(Particle.DUST, casterLoc, 1, 0.4, 0.4, 0.4, 0,
             new Particle.DustOptions(org.bukkit.Color.RED, 1.0f));
     }
 

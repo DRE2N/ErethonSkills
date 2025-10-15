@@ -36,6 +36,7 @@ public class PaladinBaseSpell extends SpellbookBaseSpell {
     @Override
     public boolean onCast() {
         caster.getUsedSpells().put(data, System.currentTimeMillis());
+        caster.setEnergy(caster.getEnergy() - energyCost);
         return super.onCast();
     }
 

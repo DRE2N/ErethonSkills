@@ -193,7 +193,7 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
         CraftPlayer craftPlayer = (CraftPlayer) caster;
         nmsPlayer = craftPlayer.getHandle();
-        //craftPlayer.setMaxEnergy(100);
+        craftPlayer.setMaxEnergy(100);
     }
 
     @Override

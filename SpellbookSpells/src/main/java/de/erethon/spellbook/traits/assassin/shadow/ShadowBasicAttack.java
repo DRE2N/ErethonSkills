@@ -41,7 +41,7 @@ public class ShadowBasicAttack extends SpellTrait implements Listener {
     protected void onAdd() {
         super.onAdd();
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
-        //caster.setMaxEnergy(100);
+        caster.setMaxEnergy(100);
         caster.getAttribute(Attribute.SAFE_FALL_DISTANCE).addTransientModifier(noFallDamageModifier);
     }
 

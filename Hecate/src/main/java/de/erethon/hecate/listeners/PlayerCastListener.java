@@ -1,11 +1,14 @@
 package de.erethon.hecate.listeners;
 
 import com.destroystokyo.paper.event.player.PlayerPickupExperienceEvent;
+import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.casting.SpecialActionKey;
 import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.data.HCharacter;
+import de.erethon.hecate.data.HPlayer;
 import de.erethon.hecate.events.CombatModeReason;
+import de.erethon.hecate.ui.BankInventory;
 import de.erethon.hecate.ui.DamageColor;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.papyrus.PDamageType;
@@ -13,6 +16,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.beastmaster.pet.RangerPet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Display;
@@ -21,6 +25,7 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -167,6 +172,28 @@ public class PlayerCastListener implements Listener {
         }
         if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
             castLeftclickAction(event.getPlayer());
+        }
+        // Handle bank access
+        if (event.getAction().isRightClick() && event.hasBlock() && event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.ENDER_CHEST) {
+            Player player = event.getPlayer();
+            HPlayer hPlayer = cache.getHPlayer(player);
+            Hecate.getInstance().getDatabaseManager().loadBankData(hPlayer.getPlayerId()).thenAccept(bank -> {
+                if (bank == null) {
+                    MessageUtil.sendMessage(player, "<red>Failed to load bank data.");
+                    return;
+                }
+
+                Bukkit.getScheduler().runTask(Hecate.getInstance(), () -> {
+                    new BankInventory(bank, player, true);
+                    Hecate.log("Opened bank for " + player.getName() + ".");
+                });
+            }).exceptionally(ex -> {
+                MessageUtil.sendMessage(player, "<red>Error loading bank: " + ex.getMessage());
+                ex.printStackTrace();
+                return null;
+            });
+            event.setUseInteractedBlock(Event.Result.DENY);
+            event.setCancelled(true);
         }
     }
 
