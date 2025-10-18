@@ -1,6 +1,7 @@
 package de.erethon.spellbook.spells;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.animation.Animation;
 import de.erethon.spellbook.aoe.AoE;
 import de.erethon.spellbook.aoe.AoEParameters;
 import de.erethon.spellbook.aoe.AoEShape;
@@ -22,8 +23,10 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targeted {
 
@@ -58,6 +61,8 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
     protected List<Component> spellAddedPlaceholders = new ArrayList<>();
     protected List<String> placeholderNames = new ArrayList<>();
 
+    protected Set<Animation> activeAnimations = new HashSet<>();
+
     public int range = data.getInt("range", 32);
     public int targetRaytraceSize = data.getInt("targetRaySize", 1);
     public LivingEntity target;
@@ -67,8 +72,47 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
     }
 
     @Override
+    protected void onTick() {
+        // Tick all active animations
+        activeAnimations.removeIf(animation -> {
+            if (animation.isFinished()) {
+                animation.stop(); // Ensure cleanup is called
+                return true; // Remove finished animations
+            }
+            animation.tick();
+            return false;
+        });
+    }
+
+    @Override
     public boolean onCast() {
         return super.onCast();
+    }
+
+    /**
+     * Adds an animation to be ticked by this spell
+     */
+    protected void addAnimation(Animation animation) {
+        activeAnimations.add(animation);
+    }
+
+    /**
+     * Removes and stops an animation
+     */
+    protected void removeAnimation(Animation animation) {
+        if (activeAnimations.remove(animation)) {
+            animation.stop();
+        }
+    }
+
+    /**
+     * Cleans up all active animations
+     */
+    protected void cleanupAnimations() {
+        for (Animation animation : activeAnimations) {
+            animation.stop();
+        }
+        activeAnimations.clear();
     }
 
     protected void addSpellPlaceholders() {

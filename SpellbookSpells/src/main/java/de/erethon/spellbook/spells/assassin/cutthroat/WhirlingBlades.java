@@ -1,6 +1,8 @@
 package de.erethon.spellbook.spells.assassin.cutthroat;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.animation.Animation;
+import de.erethon.spellbook.animation.AnimationBuilder;
 import de.erethon.spellbook.aoe.AoE;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
@@ -16,6 +18,7 @@ import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Collection;
@@ -39,6 +42,7 @@ public class WhirlingBlades extends CutthroatBaseSpell {
 
     public WhirlingBlades(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
+        keepAliveTicks = whirlDuration + 100; // Keep alive for windup + whirl duration + cleanup buffer
     }
 
     @Override
@@ -84,6 +88,8 @@ public class WhirlingBlades extends CutthroatBaseSpell {
         Location center = caster.getLocation();
         Set<LivingEntity> affectedTargets = new HashSet<>();
         int bleedingDuration = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, bleedingMinDuration, bleedingMaxDuration, "bleedingDuration");
+
+        createSpinningSwordAnimation();
 
         List<Entity> nearbyEntities = caster.getNearbyEntities(radius, radius, radius);
 
@@ -211,6 +217,28 @@ public class WhirlingBlades extends CutthroatBaseSpell {
         location.getWorld().playSound(location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.5f, 0.8f);
         location.getWorld().playSound(location, Sound.ITEM_TRIDENT_RETURN, 1.0f, 1.5f);
         location.getWorld().playSound(location, Sound.ENTITY_ENDER_DRAGON_FLAP, 0.4f, 1.8f);
+    }
+
+    private void createSpinningSwordAnimation() {
+        Location playerLocation = caster.getLocation().add(0, 1, 0);
+
+        Animation swordAnimation = AnimationBuilder.create(whirlDuration / 2)
+            .followEntity(caster)
+            .addItemTrack("sword1", new ItemStack(Material.IRON_SWORD))
+                .interpolationDuration(1)
+                .circle(0, whirlDuration / 2, 3.0f, 0.5f, 0, 1.0f, 1)
+                .at(0).rotation(0, 0, 0).scale(2.0f)
+                .endTrack()
+            .addItemTrack("sword2", new ItemStack(Material.IRON_SWORD))
+                .interpolationDuration(1)
+                .circle(0, whirlDuration / 2, 3.0f, 0.5f, 180, 1.0f, 1)
+                .at(0).rotation(0, 180, 180).scale(2.0f)
+                .endTrack()
+            .build();
+
+        swordAnimation.setOrigin(playerLocation);
+        swordAnimation.start();
+        addAnimation(swordAnimation);
     }
 
     @Override

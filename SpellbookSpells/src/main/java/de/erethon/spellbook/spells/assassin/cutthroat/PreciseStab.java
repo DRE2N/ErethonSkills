@@ -2,6 +2,8 @@ package de.erethon.spellbook.spells.assassin.cutthroat;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.animation.Animation;
+import de.erethon.spellbook.animation.AnimationBuilder;
 import de.erethon.spellbook.aoe.AoE;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
@@ -16,8 +18,10 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.joml.Vector3f;
 
 public class PreciseStab extends CutthroatBaseSpell {
 
@@ -37,6 +41,7 @@ public class PreciseStab extends CutthroatBaseSpell {
 
     public PreciseStab(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
+        keepAliveTicks = 60; // Animation duration
     }
 
     @Override
@@ -60,7 +65,6 @@ public class PreciseStab extends CutthroatBaseSpell {
 
     private void playPreciseStabBuildup() {
         Location targetLoc = target.getEyeLocation();
-        Vector direction = targetLoc.subtract(caster.getEyeLocation()).toVector().normalize();
 
         EffectManager effectManager = Spellbook.getInstance().getEffectManager();
         if (effectManager != null) {
@@ -134,6 +138,37 @@ public class PreciseStab extends CutthroatBaseSpell {
                 });
 
         caster.getWorld().playSound(waveOrigin, Sound.ENTITY_ENDER_DRAGON_GROWL, 0.3f, 1.5f);
+
+        // Blood wave visual animation
+        Vector3f waveDir = new Vector3f((float) direction.getX(), 0, (float) direction.getZ()).normalize();
+
+        Animation bloodWaveAnim = AnimationBuilder.create(10)
+                .atLocation(waveOrigin)
+                .addBlockTrack("wave1", Material.REDSTONE_BLOCK)
+                    .interpolationDuration(2)
+                    .arc(0, 20, (float) furyWaveRange * 0.7f, 0.3f, -30, 30, 2)
+                    .at(0).scale(0.4f, 0.6f, 0.4f)
+                    .at(5).scale(0.6f, 0.8f, 0.6f)
+                    .at(10).scale(0.2f, 0.4f, 0.2f)
+                    .endTrack()
+                .addBlockTrack("wave2", Material.REDSTONE_BLOCK)
+                    .interpolationDuration(2)
+                    .arc(0, 20, (float) furyWaveRange * 0.7f, 0.3f, 30, -30, 2)
+                    .at(0).scale(0.4f, 0.6f, 0.4f)
+                    .at(5).scale(0.6f, 0.8f, 0.6f)
+                    .at(10).scale(0.2f, 0.4f, 0.2f)
+                    .endTrack()
+                .addBlockTrack("center", Material.CRIMSON_HYPHAE)
+                    .interpolationDuration(2)
+                    .line(0, 20, (float) furyWaveRange, waveDir, 2)
+                    .at(0).scale(0.5f, 0.5f, 0.5f)
+                    .at(5).scale(0.8f, 0.8f, 0.8f)
+                    .at(10).scale(0.3f, 0.3f, 0.3f)
+                    .endTrack()
+                .build();
+
+        bloodWaveAnim.start();
+        addAnimation(bloodWaveAnim);
 
         new BukkitRunnable() {
             int ticks = 0;
