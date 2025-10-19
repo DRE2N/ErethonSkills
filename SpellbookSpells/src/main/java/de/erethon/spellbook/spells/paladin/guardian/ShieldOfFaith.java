@@ -1,11 +1,13 @@
 package de.erethon.spellbook.spells.paladin.guardian;
 
+import com.magmaguy.freeminecraftmodels.customentity.VFXEntity;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.aoe.AoE;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
+import de.erethon.spellbook.utils.VFXUtil;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.BlocksAttacks;
 import io.papermc.paper.event.player.PlayerStopUsingItemEvent;
@@ -46,6 +48,7 @@ public class ShieldOfFaith extends GuardianBaseSpell implements Listener {
     private boolean currentlyBlocking = false;
     private AoE holyGroundAoE;
     private int healCooldownTicks = 0;
+    private VFXEntity shieldVFX;
 
     public ShieldOfFaith(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -76,6 +79,10 @@ public class ShieldOfFaith extends GuardianBaseSpell implements Listener {
         mainHand.setData(DataComponentTypes.BLOCKS_ATTACKS, blocksAttacks);
 
         createHolyGroundAoE();
+        shieldVFX = VFXUtil.spawn(caster, "Spellbook_Guardian_ShieldOfFaith");
+        if (shieldVFX != null) {
+            shieldVFX.setScaleModifier(5.0f);
+        }
 
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
         return super.onCast();
@@ -200,6 +207,9 @@ public class ShieldOfFaith extends GuardianBaseSpell implements Listener {
 
         if (holyGroundAoE != null) {
             holyGroundAoE.revertBlockChanges();
+        }
+        if (shieldVFX != null) {
+            shieldVFX.remove();
         }
     }
 
