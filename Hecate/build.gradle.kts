@@ -36,7 +36,7 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-val papyrusVersion = "1.21.9-R0.1-SNAPSHOT"
+val papyrusVersion = "1.21.10-R0.1-SNAPSHOT"
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
