@@ -79,7 +79,7 @@ public class CharacterSelection extends BaseSelection {
         // Clean up any existing entities before creating new ones
         cleanupExistingEntities();
 
-        boolean tp = player.teleport(lobby.getOrigin(), PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+        boolean tp = player.teleport(lobby.getOrigin(), PlayerTeleportEvent.TeleportCause.PLUGIN);
         if (!tp) {
             player.sendMessage("Character selection failed: could not teleport to lobby");
             return;

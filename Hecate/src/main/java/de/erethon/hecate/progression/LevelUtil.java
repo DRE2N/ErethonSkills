@@ -202,6 +202,9 @@ public class LevelUtil {
         });
     }
 
+    // XP for a level X is calculated as:
+    // Level 1 to 2: baseXp * (growthFactor ^ 0)
+    // Level 2 to 3: baseXp * (growthFactor ^ 1)
     public static int getLevelFromXp(long totalXp, double baseXp, double growthFactor) {
         if (totalXp < 0 || baseXp <= 0 || growthFactor <= 1.0) {
             return 1;

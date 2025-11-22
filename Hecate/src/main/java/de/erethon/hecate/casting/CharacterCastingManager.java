@@ -69,6 +69,25 @@ public class CharacterCastingManager implements Listener {
     private final NamespacedKey castingMarker = new NamespacedKey(plugin, "casting_marker");
     private long castingItemNameSetTick = -1;
 
+    // Global caches to prevent recreation on first entry
+    private static final Component HEALTH_ICON = Component.text("\u2665", NamedTextColor.RED);
+    private static final Component BETWEEN_SPACER = Component.text("     ");
+    private static final Component DARK_GRAY_OPEN_BRACKET = Component.text("[", NamedTextColor.DARK_GRAY);
+    private static final Component DARK_GRAY_CLOSE_BRACKET = Component.text("]", NamedTextColor.DARK_GRAY);
+    private static final Component SPACE = Component.space();
+    private static final Component EMPTY_COMPONENT = Component.empty();
+    private static final Component RMB_TEXT = Component.text("RMB", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
+    private static final String DEFAULT_ENERGY_ICON = "\u26A1";
+    private static final Key AIR_MODEL_KEY = Key.key("minecraft:air");
+    private static final TooltipDisplay HIDDEN_TOOLTIP = TooltipDisplay.tooltipDisplay().hideTooltip(true).build();
+
+    private static final Map<String, Map<String, Component>> SPELL_NAME_CACHE = new HashMap<>();
+
+    // Key: spellId + "." + lineIndex -> Component
+    private static final Map<String, Component> SPELL_DESCRIPTION_CACHE = new HashMap<>();
+
+    private static final ItemStack[] EMPTY_STACK_CACHE = new ItemStack[9];
+
     public CharacterCastingManager(HCharacter character) {
         this.character = character;
         this.player = character.getHPlayer().getPlayer();
@@ -111,20 +130,21 @@ public class CharacterCastingManager implements Listener {
 
     public void updateCastingItemName(SpellData data) {
         if (data == null) {
-            castingItem.setData(DataComponentTypes.CUSTOM_NAME, Component.empty());
+            castingItem.setData(DataComponentTypes.CUSTOM_NAME, EMPTY_COMPONENT);
             player.getInventory().setItem(8, castingItem);
             return;
         }
-        TextColor energyColor = character.getTraitline().getEnergyColor();
-        Component name = Component.empty();
-        Component spellName = Component.translatable("hecate.spellbook.spell.name." + data.getId());
-        spellName = spellName.decoration(TextDecoration.ITALIC, false).color(energyColor);
-        Component energyCostText = Component.empty();
+        Traitline traitline = character.getTraitline();
+        TextColor energyColor = traitline != null ? traitline.getEnergyColor() : null;
+        Component spellName = getCachedSpellName(data.getId(), energyColor);
+        Component energyCostText = EMPTY_COMPONENT;
         if (data.get("energyCost") != null) {
             int energyCost = data.getInt("energyCost", 0);
-            energyCostText = Component.text("[", NamedTextColor.DARK_GRAY).append(Component.text("-" + energyCost, energyColor)).append(Component.text("]", NamedTextColor.DARK_GRAY));
+            energyCostText = DARK_GRAY_OPEN_BRACKET
+                    .append(Component.text("-" + energyCost, energyColor != null ? energyColor : NamedTextColor.WHITE))
+                    .append(DARK_GRAY_CLOSE_BRACKET);
         }
-        name = name.append(spellName).append(Component.text(" ")).append(energyCostText);
+        Component name = spellName.append(SPACE).append(energyCostText);
         castingItem.setData(DataComponentTypes.CUSTOM_NAME, name);
 
         castingItemNameSetTick = player.getTicksLived();
@@ -135,19 +155,22 @@ public class CharacterCastingManager implements Listener {
         List<Component> lore = new ArrayList<>();
 
         // Attack modifier description
-        lore.addAll(character.getTraitline().getAttackModifierDescription());
-        lore.add(Component.text(" "));
+        Traitline traitline = character.getTraitline();
+        if (traitline != null) {
+            lore.addAll(traitline.getAttackModifierDescription());
+        }
+        lore.add(SPACE);
 
         // RMB spell description
         if (rightClickSpell != null) {
-            lore.add(Component.text("RMB", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+            lore.add(RMB_TEXT);
             SpellbookSpell activeSpell = rightClickSpell.getActiveSpell(player);
-            Component name = Component.translatable("hecate.spellbook.spell.name." + rightClickSpell.getId());
-            name = name.decoration(TextDecoration.ITALIC, false).color(character.getTraitline().getEnergyColor());
+            TextColor energyColor = traitline != null ? traitline.getEnergyColor() : null;
+            Component name = getCachedSpellName(rightClickSpell.getId(), energyColor);
             lore.add(name);
             List<Component> placeholders = activeSpell.getPlaceholders(player);
             for (int i = 0; i < rightClickSpell.getDescriptionLineCount(); i++) {
-                lore.add(Component.translatable("hecate.spellbook.spell.description." + rightClickSpell.getId() + "." + i, placeholders));
+                lore.add(getCachedSpellDescription(rightClickSpell.getId(), i, placeholders));
             }
         }
 
@@ -271,9 +294,8 @@ public class CharacterCastingManager implements Listener {
         int health = (int) player.getHealth();
         int maxHealth = (int) player.getMaxHealth();
 
-        Component healthIcon = Component.text("\u2665", NamedTextColor.RED);
         Component healthNumbers = Component.text(health + "/" + maxHealth, NamedTextColor.RED);
-        Component healthText = healthIcon.append(Component.space()).append(healthNumbers);
+        Component healthText = HEALTH_ICON.append(SPACE).append(healthNumbers);
 
         Traitline traitline = character.getTraitline();
         if (traitline == null) {
@@ -283,18 +305,17 @@ public class CharacterCastingManager implements Listener {
         TextColor energyColor = traitline.getEnergyColor();
         String energyIconUnicode = traitline.getEnergySymbol();
         if (energyIconUnicode == null || energyIconUnicode.isBlank()) {
-            energyIconUnicode = "\u26A1"; // Default to lightning bolt
+            energyIconUnicode = DEFAULT_ENERGY_ICON;
         }
         Component energyIcon = Component.text(energyIconUnicode, energyColor);
         Component energyNumbers = Component.text(energy + "/" + maxEnergy, energyColor);
-        Component energyText = energyIcon.append(Component.space()).append(energyNumbers);
+        Component energyText = energyIcon.append(SPACE).append(energyNumbers);
 
         Component[] formatted = EffectDisplayFormatter.formatEffects(player.getEffects());
         updateBossbarUI(formatted[0], formatted[1]);
 
-        Component betweenSpacer = Component.text("     ");
         Component actionbar = healthText
-                .append(betweenSpacer)
+                .append(BETWEEN_SPACER)
                 .append(energyText);
         actionbar = actionbar.shadowColor(ShadowColor.none());
         player.sendActionBar(actionbar);
@@ -364,21 +385,28 @@ public class CharacterCastingManager implements Listener {
     }
 
     private ItemStack emptyStack() {
+        int emptySlot = 8; // Use slot 8 for the cache since it's for empty items
+        if (EMPTY_STACK_CACHE[emptySlot] != null) {
+            return EMPTY_STACK_CACHE[emptySlot].clone();
+        }
+
         ItemStack emptyItem = new ItemStack(CastingStatics.SLOT_DYES[8]);
-        emptyItem.setData(DataComponentTypes.ITEM_MODEL, Key.key("minecraft:air"));
-        emptyItem.setData(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplay.tooltipDisplay().hideTooltip(true).build());
-        return  emptyItem;
+        emptyItem.setData(DataComponentTypes.ITEM_MODEL, AIR_MODEL_KEY);
+        emptyItem.setData(DataComponentTypes.TOOLTIP_DISPLAY, HIDDEN_TOOLTIP);
+        EMPTY_STACK_CACHE[emptySlot] = emptyItem.clone();
+        return emptyItem;
     }
 
     private ItemStack getItemStackFromSpellData(int slot, SpellData spellData) {
         ItemStack item = new ItemStack(CastingStatics.SLOT_DYES[slot]);
-        Component name = Component.translatable("hecate.spellbook.spell.name." + spellData.getId());
-        name = name.decoration(TextDecoration.ITALIC, false).color(character.getTraitline().getEnergyColor());
+        Traitline traitline = character.getTraitline();
+        TextColor energyColor = traitline != null ? traitline.getEnergyColor() : null;
+        Component name = getCachedSpellName(spellData.getId(), energyColor);
         item.setData(DataComponentTypes.CUSTOM_NAME, name);
         List<Component> placeholders = spellData.getActiveSpell(player).getPlaceholders(player);
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < spellData.getDescriptionLineCount(); i++) {
-            lore.add(Component.translatable("hecate.spellbook.spell.description." + spellData.getId() + "." + i, placeholders));
+            lore.add(getCachedSpellDescription(spellData.getId(), i, placeholders));
         }
         item.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
         return item;
@@ -389,8 +417,9 @@ public class CharacterCastingManager implements Listener {
             return;
         }
         List<Component> lore = new ArrayList<>();
+        List<Component> placeholders = spell.getPlaceholders(player);
         for (int i = 0; i < spell.getData().getDescriptionLineCount(); i++) {
-            lore.add(Component.translatable("hecate.spellbook.spell.description." + spell.getId() + "." + i, spell.getPlaceholders(player)));
+            lore.add(getCachedSpellDescription(spell.getId(), i, placeholders));
         }
         stack.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
     }
@@ -636,8 +665,37 @@ public class CharacterCastingManager implements Listener {
             currentWidth += charWidth;
         }
 
-        // Try to preserve the original component's color if possible
         return Component.text(truncated.toString(), NamedTextColor.WHITE);
+    }
+
+    private static Component getCachedSpellName(String spellId, TextColor energyColor) {
+        if (energyColor == null) {
+            energyColor = NamedTextColor.WHITE;
+        }
+
+        String colorKey = energyColor.asHexString();
+
+        Map<String, Component> colorMap = SPELL_NAME_CACHE.computeIfAbsent(colorKey, k -> new HashMap<>());
+
+        TextColor finalEnergyColor = energyColor;
+        return colorMap.computeIfAbsent(spellId, id -> {
+            Component name = Component.translatable("hecate.spellbook.spell.name." + id);
+            return name.decoration(TextDecoration.ITALIC, false).color(finalEnergyColor);
+        });
+    }
+
+    private static Component getCachedSpellDescription(String spellId, int lineIndex, List<Component> placeholders) {
+        String cacheKey = spellId + "." + lineIndex;
+
+        Component baseComponent = SPELL_DESCRIPTION_CACHE.computeIfAbsent(cacheKey, key ->
+            Component.translatable("hecate.spellbook.spell.description." + key)
+        );
+
+        if (placeholders != null && !placeholders.isEmpty()) {
+            return Component.translatable("hecate.spellbook.spell.description." + cacheKey, placeholders);
+        }
+
+        return baseComponent;
     }
 
 
