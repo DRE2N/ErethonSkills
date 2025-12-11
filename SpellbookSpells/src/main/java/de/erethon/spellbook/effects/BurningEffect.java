@@ -33,7 +33,7 @@ public class BurningEffect extends SpellEffect {
         tick++;
         if (tick >= 20) {
             tick = 0;
-            target.damage(Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL), PDamageType.PHYSICAL);
+            target.damage(Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL), caster, PDamageType.PHYSICAL);
         }
     }
 }

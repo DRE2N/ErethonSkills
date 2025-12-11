@@ -50,7 +50,7 @@ public class ShadowEcho extends ShadowBaseSpell {
             caster.getWorld().playSound(caster.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 0.8f);
             caster.getWorld().playSound(returnLoc, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.2f);
 
-            caster.teleport(returnLoc, PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+            caster.teleport(returnLoc, PlayerTeleportEvent.TeleportCause.PLUGIN);
             caster.addEffect(caster, resistanceData, (int) Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, resistanceMinDuration, resistanceMaxDuration,"resistanceDuration"), 1);
 
             if (echo.hasDamagedMarkedTarget()) {

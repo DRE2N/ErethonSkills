@@ -30,19 +30,19 @@ public class ChargingSlash extends SwordstormBaseSpell {
 
     @Override
     public boolean onCast() {
-        Player player = (Player) caster;
-        if (player.isSprinting()) {
+        if (caster instanceof Player player && player.isSprinting()) {
             double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL, "sprintingDamage");
             target.damage(damage, caster, PDamageType.PHYSICAL);
             Vector knockback = caster.getLocation().getDirection().multiply(knockbackMultiplier);
             target.setVelocity(target.getVelocity().add(knockback));
-        } else {
+            player.swingMainHand();
+        }
+        else {
             double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL, "normalDamage");
             target.damage(damage, caster, PDamageType.PHYSICAL);
             Vector knockback = caster.getLocation().getDirection().multiply(knockbackMultiplierNormal);
             target.setVelocity(target.getVelocity().add(knockback));
         }
-        player.swingMainHand();
         return super.onCast();
     }
 

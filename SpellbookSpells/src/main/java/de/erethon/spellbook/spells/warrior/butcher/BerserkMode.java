@@ -34,7 +34,7 @@ public class BerserkMode extends WarriorBaseSpell {
         fakeBorder.setCenter(0, 0);
         fakeBorder.setSize(1);
         fakeBorder.setWarningDistance(100000);
-        fakeBorder.setWarningTime(1);
+        fakeBorder.setWarningTimeTicks(1);
     }
 
     @Override

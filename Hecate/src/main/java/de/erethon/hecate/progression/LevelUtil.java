@@ -25,8 +25,8 @@ public class LevelUtil {
     private final static TychePlugin tychePlugin = (TychePlugin) Bukkit.getPluginManager().getPlugin("Tyche");
     private final static EconomyService economyService = tychePlugin.getEco();
 
-    public final static double CHARACTER_BASE_XP = 500.0;
-    public final static double CHARACTER_GROWTH_FACTOR = 1.15;
+    public final static double CHARACTER_BASE_XP = 200.0;
+    public final static double CHARACTER_GROWTH_FACTOR = 1.1;
     public final static long MAX_CHARACTER_XP = calculateMaxXp(20, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR);
     public final static double ALLIANCE_BASE_XP = 5000.0;
     public final static double ALLIANCE_GROWTH_FACTOR = 1.12;
@@ -34,8 +34,8 @@ public class LevelUtil {
     public final static double WORLD_SEEKER_BASE_XP = 1500.0;
     public final static double WORLD_SEEKER_GROWTH_FACTOR = 1.05;
     public final static long MAX_WORLD_SEEKER_XP = calculateMaxXp(20, WORLD_SEEKER_BASE_XP, WORLD_SEEKER_GROWTH_FACTOR);
-    public final static long JOB_BASE_XP = 1000L;
-    public final static double JOB_GROWTH_FACTOR = 1.1;
+    public final static long JOB_BASE_XP = 100L;
+    public final static double JOB_GROWTH_FACTOR = 1.085;
     public final static long MAX_JOB_XP = calculateMaxXp(20, JOB_BASE_XP, JOB_GROWTH_FACTOR);
 
     // Per-(owner,currency) queue to serialize XP updates and avoid race conditions
@@ -203,8 +203,7 @@ public class LevelUtil {
     }
 
     // XP for a level X is calculated as:
-    // Level 1 to 2: baseXp * (growthFactor ^ 0)
-    // Level 2 to 3: baseXp * (growthFactor ^ 1)
+    // Formula for Level L to L+1: baseXp * (growthFactor ^ (L-1))
     public static int getLevelFromXp(long totalXp, double baseXp, double growthFactor) {
         if (totalXp < 0 || baseXp <= 0 || growthFactor <= 1.0) {
             return 1;

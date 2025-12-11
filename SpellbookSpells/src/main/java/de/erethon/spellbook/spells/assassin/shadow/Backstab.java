@@ -140,7 +140,7 @@ public class Backstab extends ShadowBaseSpell implements Listener {
         location.getWorld().spawnParticle(Particle.PORTAL, location.clone().add(0, 1, 0), 25, 1, 1, 1, 1);
 
         caster.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 15, 1));
-        caster.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN, TeleportFlag.EntityState.RETAIN_PASSENGERS);
+        caster.teleport(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
 
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.RECORDS, 1.0f, 1.2f);
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_PHANTOM_FLAP, SoundCategory.RECORDS, 0.8f, 0.8f);

@@ -1,22 +1,18 @@
 package de.erethon.spellbook.utils;
 
 import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftEntity;
-import org.bukkit.craftbukkit.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -44,7 +40,7 @@ public class NMSUtils {
     // less stupid than ItemMeta at least
     public static org.bukkit.inventory.ItemStack getItemStackWithModelData(Material material, String modelData) {
         ItemStack itemStack = ItemStack.fromBukkitCopy(new org.bukkit.inventory.ItemStack(material, 1));
-        itemStack.applyComponents(DataComponentMap.builder().set(DataComponents.ITEM_MODEL, ResourceLocation.parse(modelData)).build());
+        itemStack.applyComponents(DataComponentMap.builder().set(DataComponents.ITEM_MODEL, Identifier.parse(modelData)).build());
         return itemStack.getBukkitStack();
     }
 

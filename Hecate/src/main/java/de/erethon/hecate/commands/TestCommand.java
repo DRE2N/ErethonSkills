@@ -22,8 +22,6 @@ public class TestCommand extends ECommand {
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
-        for (Particle particle : Particle.values()) {
-            MessageUtil.sendMessage(player, particle.name());
-        }
+        player.getInventory().getItem(0).setAmount(6969);
     }
 }

@@ -16,7 +16,7 @@ public class ConfusionEffect extends SpellEffect {
     @Override
     public double onAttack(LivingEntity attackTarget, double damage, PDamageType type) {
         for (int i = 0; i <= stacks; i++) {
-            target.damage(data.getDouble("attackDamage", 1.0), PDamageType.PHYSICAL);
+            target.damage(data.getDouble("attackDamage", 1.0), caster, PDamageType.PHYSICAL);
         }
         return super.onAttack(target, damage, type);
     }
@@ -24,7 +24,7 @@ public class ConfusionEffect extends SpellEffect {
     @Override
     public boolean onCast(SpellbookSpell spell) {
         for (int i = 0; i <= stacks; i++) {
-            target.damage(data.getDouble("castDamage", 1.0), PDamageType.MAGIC);
+            target.damage(data.getDouble("castDamage", 1.0), caster, PDamageType.MAGIC);
         }
         return true;
     }
