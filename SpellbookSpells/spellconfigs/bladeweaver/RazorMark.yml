@@ -1,0 +1,7 @@
+class: warrior.RazorMarkEffect
+stackable: true
+maxStacks: 5
+name:
+  de: Rasierklingen-Markierung
+  en: Razor Mark
+icon: ✴

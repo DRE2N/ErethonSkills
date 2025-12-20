@@ -1,0 +1,59 @@
+class: warrior.bladeweaver.BladeChains
+cooldown: 14
+energyBuildUpFromUse: 15
+chainRange: 12.0
+chainAngle: 60.0
+tetherDuration: 60
+pullStrength: 0.15
+chainBreakDistance: 15.0
+demonDotInterval: 10
+coefficients:
+  players:
+    singleTargetDamage:
+      minecraft:advantage_physical: 0.8
+    chainHitDamage:
+      minecraft:advantage_physical: 0.5
+    dotDamage:
+      minecraft:advantage_physical: 0.3
+  entities:
+    singleTargetDamage:
+      minecraft:advantage_physical: 1.2
+    chainHitDamage:
+      minecraft:advantage_physical: 0.8
+    dotDamage:
+      minecraft:advantage_physical: 0.5
+name:
+  de: Klingenketten
+  en: Blade Chains
+description:
+  en:
+  - <!i><#757575>Bladeweaver | Control
+  - ' '
+  - <#94958B>Throw chains in a cone that tether enemies together.
+  - <#94958B>Tethered enemies are pulled towards each other over time.
+  - <#94958B>Requires at least 2 targets for full effect.
+  - ' '
+  - <#FF6600>⚔ Demon Form: <#94958B>Chains also apply Razor Marks and
+  - <#94958B>deal damage over time to all tethered enemies.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energy Gain: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
+  - '<!i><yellow>📐 <#94958B>Cone Angle: <arg:3>°'
+  - '<!i><yellow>⏱️ <#94958B>Tether Duration: <arg:4> ticks'
+  de:
+  - <!i><#757575>Klingenweaver | Kontrolle
+  - ' '
+  - <#94958B>Wirf Ketten in einem Kegel, die Feinde aneinander fesseln.
+  - <#94958B>Gefesselte Feinde werden im Laufe der Zeit zueinander gezogen.
+  - <#94958B>Benötigt mindestens 2 Ziele für volle Wirkung.
+  - ' '
+  - <#FF6600>⚔ Dämonenform: <#94958B>Ketten geben auch Rasierklingen-Markierungen
+  - <#94958B>und verursachen Schaden über Zeit bei allen gefesselten Feinden.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energiegewinn: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Blöcke'
+  - '<!i><yellow>📐 <#94958B>Kegelwinkel: <arg:3>°'
+  - '<!i><yellow>⏱️ <#94958B>Fesseldauer: <arg:4> Ticks'
+

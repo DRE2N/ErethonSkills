@@ -1,0 +1,48 @@
+class: warrior.bladeweaver.BladeWhirl
+cooldown: 8
+energyBuildUpFromUse: 10
+whirlRadius: 4.0
+whirlHeight: 2.5
+bonusDamagePerStack: 0.15
+demonFormDuration: 60
+demonFormTickInterval: 10
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_physical: 1.5
+  entities:
+    damage:
+      minecraft:advantage_physical: 2.0
+name:
+  de: Klingenwirbel
+  en: Blade Whirl
+description:
+  en:
+  - <!i><#757575>Bladeweaver | AoE
+  - ' '
+  - <#94958B>Spin attack with orbiting spectral swords that damages
+  - <#94958B>all nearby enemies. Consumes Razor Marks for bonus damage.
+  - ' '
+  - <#FFD700>✦ Razor Mark Bonus: <#94958B>+<arg:5> damage per stack consumed
+  - ' '
+  - <#FF6600>⚔ Demon Form: <#94958B>Creates a persistent whirlwind with
+  - <#94958B>extra swords that continues damaging enemies for <arg:6> ticks.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energy Gain: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Radius: <arg:2> blocks'
+  de:
+  - <!i><#757575>Klingenweaver | Flächenangriff
+  - ' '
+  - <#94958B>Drehangriff mit kreisenden Geisterschwertern, der
+  - <#94958B>alle nahen Feinde trifft. Verbraucht Rasierklingen-Markierungen für Bonusschaden.
+  - ' '
+  - <#FFD700>✦ Rasierklingen-Bonus: <#94958B>+<arg:5> Schaden pro verbrauchtem Stapel
+  - ' '
+  - <#FF6600>⚔ Dämonenform: <#94958B>Erzeugt einen anhaltenden Wirbelwind mit
+  - <#94958B>zusätzlichen Schwertern, der Feinde für <arg:6> Ticks weiter verletzt.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energiegewinn: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Radius: <arg:2> Blöcke'
+
