@@ -1,0 +1,51 @@
+class: paladin.inquisitor.HolyFire
+cooldown: 20
+duration: 10
+rangeMin: 0.8
+rangeMax: 3.0
+baseFinishHeal: 15
+bonusHealPerJudgementStack: 25
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_magical: 1.2
+  entities:
+    damage:
+      minecraft:advantage_magical: 1.8
+name:
+  de: Heiliges Feuer
+  en: Holy Fire
+description:
+  en:
+  - '<!i><#757575>Inquisitor | Channeled'
+  - ' '
+  - '<#94958B>Channel an expanding circle of holy fire around you.'
+  - '<#94958B>Damages enemies and applies Weakness while healing'
+  - '<#94958B>allies and granting them Regeneration.'
+  - ' '
+  - '<#FFD700>✦ Judgement:'
+  - '<#94958B>Upon completion, heals based on Judgement stacks'
+  - '<#94958B>on damaged enemies.'
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⏱️ <#94958B>Duration: <arg:1>s'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2>-<arg:3> blocks'
+  - '<!i><yellow>❤️ <#94958B>Base Heal: <arg:4>'
+  - '<!i><yellow>✦ <#94958B>Bonus Heal per Judgement: <arg:5>'
+  de:
+  - '<!i><#757575>Inquisitor | Channeled'
+  - ' '
+  - '<#94958B>Kanalisiere einen sich ausdehnenden Kreis heiligen Feuers.'
+  - '<#94958B>Schadet Feinden und gibt Schwäche, während Verbündete'
+  - '<#94958B>geheilt werden und Regeneration erhalten.'
+  - ' '
+  - '<#FFD700>✦ Urteil:'
+  - '<#94958B>Nach Abschluss heilt basierend auf Urteil-Stacks'
+  - '<#94958B>auf geschädigten Feinden.'
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⏱️ <#94958B>Dauer: <arg:1>s'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2>-<arg:3> Blöcke'
+  - '<!i><yellow>❤️ <#94958B>Basis Heilung: <arg:4>'
+  - '<!i><yellow>✦ <#94958B>Bonus Heilung pro Urteil: <arg:5>'
+

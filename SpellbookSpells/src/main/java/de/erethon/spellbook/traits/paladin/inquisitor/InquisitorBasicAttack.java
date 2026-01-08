@@ -9,13 +9,19 @@ import de.erethon.spellbook.api.TraitData;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class InquisitorBasicAttack extends SpellTrait {
 
     // The Inquisitor's basic attack applies a "Judgement" effect to the target, stacking up to a maximum number of stacks.
 
     private final int maximumJudgementStacks = data.getInt("maximumJudgementStacks", 7);
+    private final int soundCooldown = data.getInt("soundCooldown", 5000); // milliseconds
 
     protected final EffectData judgementData = Spellbook.getEffectData("Judgement");
+    private final Map<UUID, Long> soundCooldowns = new HashMap<>();
 
     public InquisitorBasicAttack(TraitData data, LivingEntity caster) {
         super(data, caster);
@@ -31,7 +37,12 @@ public class InquisitorBasicAttack extends SpellTrait {
             target.addEffect(caster, judgementData, 120, 1);
         }
         if (judgementStacks == maximumJudgementStacks) {
-            target.getWorld().playSound(target, Sound.BLOCK_CONDUIT_ACTIVATE, 0.7f, 0.5f);
+            long now = System.currentTimeMillis();
+            long lastPlayed = soundCooldowns.getOrDefault(target.getUniqueId(), 0L);
+            if (now - lastPlayed >= soundCooldown) {
+                target.getWorld().playSound(target, Sound.BLOCK_CONDUIT_ACTIVATE, 0.7f, 0.5f);
+                soundCooldowns.put(target.getUniqueId(), now);
+            }
         }
         return super.onAttack(target, damage, type);
     }
@@ -40,8 +51,8 @@ public class InquisitorBasicAttack extends SpellTrait {
         if (target == null) return 0;
         SpellEffect judgementEffect = null;
         for (SpellEffect effect : target.getEffects()) {
-            if (data == null) continue;
-            if (effect.data == judgementData) {
+            if (effect.data == null) continue;
+            if (effect.data.equals(judgementData)) {
                 judgementEffect = effect;
                 break;
             }

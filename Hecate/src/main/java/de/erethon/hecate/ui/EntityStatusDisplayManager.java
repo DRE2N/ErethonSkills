@@ -56,6 +56,9 @@ public class EntityStatusDisplayManager {
         BukkitRunnable later = new BukkitRunnable() {
             @Override
             public void run() {
+                if (!displays.containsKey(entity)) {
+                    return;
+                }
                 displays.get(entity).remove();
                 displays.remove(entity);
             }

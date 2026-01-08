@@ -23,12 +23,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Blade Step - Short range forward teleport with brief invincibility.
+ * Blade Step - Short range forward dash with brief invincibility.
  * In demon form: Leaves a damaging afterimage with orbiting spectral swords that explodes after a short delay.
  */
 public class BladeStep extends BladeweaverBaseSpell {
 
-    private final double teleportDistance = data.getDouble("teleportDistance", 6.0);
+    private final double dashSpeed = data.getDouble("dashSpeed", 1.1);
+    private final int dashDurationTicks = data.getInt("dashDurationTicks", 2);
     private final int invincibilityTicks = data.getInt("invincibilityTicks", 8);
     private final double afterimageDamageRadius = data.getDouble("afterimageDamageRadius", 3.0);
     private final int afterimageDelay = data.getInt("afterimageDelay", 15);
@@ -43,6 +44,9 @@ public class BladeStep extends BladeweaverBaseSpell {
     private Location afterimageLocation;
     private int afterimageTimer = -1;
     private boolean invincible = false;
+    private boolean dashing = false;
+    private Vector dashDirection;
+    private int dashTicksRemaining = 0;
 
     private final List<ItemDisplay> afterimageSwords = new ArrayList<>();
 
@@ -54,21 +58,22 @@ public class BladeStep extends BladeweaverBaseSpell {
     @Override
     public boolean onCast() {
         startLocation = caster.getLocation().clone();
-        Vector direction = caster.getLocation().getDirection().setY(0).normalize();
-        Location destination = findSafeDestination(startLocation, direction, teleportDistance);
+        dashDirection = caster.getLocation().getDirection().setY(0).normalize();
 
         spawnDepartureEffect(startLocation);
 
-        caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(invincibilityModifier);
-        caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(invincibilityModifier);
+        if (!caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).getModifiers().contains(invincibilityModifier)) {
+            caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).addTransientModifier(invincibilityModifier);
+        }
+        if (!caster.getAttribute(Attribute.RESISTANCE_MAGICAL).getModifiers().contains(invincibilityModifier)) {
+            caster.getAttribute(Attribute.RESISTANCE_MAGICAL).addTransientModifier(invincibilityModifier);
+        }
         invincible = true;
 
-        caster.teleport(destination);
-
-        spawnArrivalEffect(destination);
+        dashing = true;
+        dashTicksRemaining = dashDurationTicks;
 
         caster.getWorld().playSound(startLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8f, 1.5f);
-        caster.getWorld().playSound(destination, Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.8f);
 
         if (isInDemonForm()) {
             afterimageLocation = startLocation.clone();
@@ -80,8 +85,30 @@ public class BladeStep extends BladeweaverBaseSpell {
     }
 
     @Override
+    protected boolean onPrecast() {
+        return super.onPrecast();
+    }
+
+    @Override
     protected void onTick() {
         super.onTick();
+
+        // Handle dash velocity
+        if (dashing && dashTicksRemaining > 0) {
+            caster.setVelocity(dashDirection.clone().multiply(dashSpeed));
+            dashTicksRemaining--;
+
+            // Spawn trail particles
+            Particle.DustOptions dust = new Particle.DustOptions(getThemeColor(), 1.0f);
+            caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation().add(0, 1, 0), 5, 0.2, 0.3, 0.2, 0, dust);
+
+            if (dashTicksRemaining == 0) {
+                dashing = false;
+                spawnArrivalEffect(caster.getLocation());
+                caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.6f, 1.8f);
+            }
+        }
+
         if (invincible && currentTicks >= invincibilityTicks) {
             removeInvincibility();
         }
@@ -93,21 +120,6 @@ public class BladeStep extends BladeweaverBaseSpell {
                 triggerAfterimageExplosion();
             }
         }
-    }
-
-    private Location findSafeDestination(Location start, Vector direction, double distance) {
-        Location destination = start.clone().add(direction.clone().multiply(distance));
-
-        double currentDistance = distance;
-        while (!destination.getBlock().isPassable() && currentDistance > 1) {
-            currentDistance -= 0.5;
-            destination = start.clone().add(direction.clone().normalize().multiply(currentDistance));
-        }
-
-        destination.setYaw(start.getYaw());
-        destination.setPitch(start.getPitch());
-
-        return destination;
     }
 
     private void spawnDepartureEffect(Location loc) {
@@ -143,7 +155,7 @@ public class BladeStep extends BladeweaverBaseSpell {
 
                 Quaternionf rotation = new Quaternionf();
                 rotation.rotateY((float) angle);
-                rotation.rotateX((float) Math.PI / 4); // Tilted swords
+                rotation.rotateX((float) Math.PI / 4);
 
                 display.setTransformation(new Transformation(
                     new Vector3f(x, 0, z),
@@ -173,19 +185,18 @@ public class BladeStep extends BladeweaverBaseSpell {
             if (sword == null || !sword.isValid()) continue;
 
             double angle = (Math.PI * 2 * i / 3) + time;
-            float radius = 1.2f - (afterimageTimer / (float) afterimageDelay) * 0.4f; // Shrink inward
+            float radius = 1.2f - (afterimageTimer / (float) afterimageDelay) * 0.4f;
             float x = (float) (Math.cos(angle) * radius);
             float z = (float) (Math.sin(angle) * radius);
-            float y = (float) Math.sin(time * 2 + i) * 0.2f; // Bobbing
+            float y = (float) Math.sin(time * 2 + i) * 0.2f;
 
             Location swordLoc = center.clone().add(x, y, z);
             sword.teleport(swordLoc);
 
-            // Update rotation to face center
             Quaternionf rotation = new Quaternionf();
             rotation.rotateY((float) angle + (float) Math.PI / 2);
             rotation.rotateZ((float) Math.PI / 4);
-            rotation.rotateX(time); // Spin
+            rotation.rotateX(time);
 
             sword.setTransformation(new Transformation(
                 new Vector3f(0, 0, 0),
@@ -250,6 +261,7 @@ public class BladeStep extends BladeweaverBaseSpell {
     @Override
     protected void cleanup() {
         removeInvincibility();
+        dashing = false;
         for (ItemDisplay sword : afterimageSwords) {
             if (sword != null && sword.isValid()) {
                 sword.remove();
@@ -259,4 +271,3 @@ public class BladeStep extends BladeweaverBaseSpell {
         super.cleanup();
     }
 }
-

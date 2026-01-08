@@ -109,7 +109,7 @@ public class Weave extends BladeweaverBaseSpell {
     }
 
     private void createAuraSwords() {
-        Location center = caster.getLocation().add(0, 1.5, 0);
+        Location center = caster.getLocation().add(0, 2, 0);
 
         for (int i = 0; i < AURA_SWORD_COUNT; i++) {
             final int index = i;
@@ -201,7 +201,7 @@ public class Weave extends BladeweaverBaseSpell {
     }
 
     private void updateAuraSwords() {
-        Location center = caster.getLocation().add(0, 1.5, 0);
+        Location center = caster.getLocation().add(0, 2, 0);
         float time = currentTicks * 0.05f;
 
         for (int i = 0; i < auraSwords.size(); i++) {

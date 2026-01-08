@@ -3,9 +3,7 @@ package de.erethon.spellbook.spells.paladin.inquisitor;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
-import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -42,14 +40,15 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
 
     private final EffectData weakness = Spellbook.getEffectData("Weakness");
 
-    private int ticks = 0;
     private final World world = caster.getWorld();
     private final Set<LivingEntity> targets = new HashSet<>();
     private int range;
+    private Location targetLocation;
 
     public JudgementOfGod(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         keepAliveTicks = warmupTicks + 100;
+        tickInterval = 0; // Ensure onTick is called every game tick
     }
 
     @Override
@@ -60,8 +59,10 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
             return false;
         }
 
+        targetLocation = target.getLocation().clone();
+
         int totalJudgementInArea = 0;
-        for (LivingEntity entity : target.getLocation().getNearbyLivingEntities(range)) {
+        for (LivingEntity entity : targetLocation.getNearbyLivingEntities(range)) {
             if (Spellbook.canAttack(caster, entity)) {
                 totalJudgementInArea += getJudgementStacksOnTarget(entity);
             }
@@ -84,34 +85,34 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
     @Override
     protected void onTick() {
         super.onTick();
-        ticks++;
+        currentTicks++;
         // Sound the bell every 20 ticks
-        if ((ticks < warmupTicks) && (ticks % 20 == 0)) {
+        if ((currentTicks < warmupTicks) && (currentTicks % 20 == 0)) {
             world.playSound(caster, Sound.BLOCK_BELL_USE, 1.0f, 0.7f);
             return;
         }
         // Now count down with bell sounds
-        if (ticks == warmupTicks) {
+        if (currentTicks == warmupTicks) {
             world.playSound(caster, Sound.BLOCK_BELL_USE, 1.0f, 1.5f);
-            for (LivingEntity livingEntity : target.getLocation().getNearbyLivingEntities(range)) {
+            for (LivingEntity livingEntity : targetLocation.getNearbyLivingEntities(range)) {
                 if (livingEntity == caster) continue;
                 if (!Spellbook.canAttack(caster, livingEntity)) continue;
                 rayOfGod(livingEntity, 60, 20);
             }
             return;
         }
-        if (ticks == warmupTicks + 10) {
+        if (currentTicks == warmupTicks + 10) {
             world.playSound(caster, Sound.BLOCK_BELL_USE, 1.0f, 1.0f);
-            for (LivingEntity livingEntity : target.getLocation().getNearbyLivingEntities(range)) {
+            for (LivingEntity livingEntity : targetLocation.getNearbyLivingEntities(range)) {
                 if (livingEntity == caster) continue;
                 if (!Spellbook.canAttack(caster, livingEntity)) continue;
                 rayOfGod(livingEntity, 60, 40);
             }
             return;
         }
-        if (ticks == warmupTicks + 20) {
+        if (currentTicks == warmupTicks + 20) {
             world.playSound(caster, Sound.BLOCK_BELL_USE, 1.0f, 0.5f);
-            for (LivingEntity livingEntity : target.getLocation().getNearbyLivingEntities(range)) {
+            for (LivingEntity livingEntity : targetLocation.getNearbyLivingEntities(range)) {
                 if (livingEntity == caster) continue;
                 if (!Spellbook.canAttack(caster, livingEntity)) continue;
                 rayOfGod(livingEntity, 60, 60);
@@ -119,14 +120,17 @@ public class JudgementOfGod extends InquisitorBaseSpell implements Listener {
             return;
         }
         // Judgement time
-        if (ticks == warmupTicks + 30) {
+        if (currentTicks == warmupTicks + 30) {
             double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_MAGICAL);
-            for (LivingEntity livingEntity : target.getLocation().getNearbyLivingEntities(range)) {
+            for (LivingEntity livingEntity : targetLocation.getNearbyLivingEntities(range)) {
                 if (livingEntity == caster) continue;
                 if (!Spellbook.canAttack(caster, livingEntity)) continue;
                 world.playSound(livingEntity, Sound.ITEM_WOLF_ARMOR_BREAK, 1.0f, 1.0f);
                 rayOfGod(livingEntity, 60, 60);
                 targets.add(livingEntity);
+            }
+            if (targets.isEmpty()) {
+                return;
             }
             triggerTraits(targets);
             double damagePerTarget = damage / targets.size();

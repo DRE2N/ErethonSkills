@@ -36,7 +36,7 @@ public class GravitySnare extends SharpshooterBaseSpell {
     private final double maxSlowAmplifier = data.getDouble("maxSlowAmplifier", 3.0);
     private final double slowDuration = data.getDouble("slowDuration", 1.0) * 20;
 
-    private final EffectData slowEffectData = Spellbook.getEffectData("Slowness");
+    private final EffectData slowEffectData = Spellbook.getEffectData("Slow");
 
     public GravitySnare(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);

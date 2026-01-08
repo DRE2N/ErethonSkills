@@ -403,6 +403,7 @@ public class CharacterCastingManager implements Listener {
         TextColor energyColor = traitline != null ? traitline.getEnergyColor() : null;
         Component name = getCachedSpellName(spellData.getId(), energyColor);
         item.setData(DataComponentTypes.CUSTOM_NAME, name);
+        item.setData(DataComponentTypes.ITEM_MODEL, NamespacedKey.fromString("erethon:spellbook_icon_" + spellData.getId().toLowerCase()));
         List<Component> placeholders = spellData.getActiveSpell(player).getPlaceholders(player);
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < spellData.getDescriptionLineCount(); i++) {

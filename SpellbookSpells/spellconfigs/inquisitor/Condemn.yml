@@ -1,0 +1,55 @@
+class: paladin.inquisitor.Condemn
+healingPerJudgement: 20
+healRadiusMax: 5
+healRadiusMin: 3
+weaknessStacks: 1
+weaknessDurationMax: 20
+weaknessDuration: 12
+burningDurationMax: 8
+burningDurationMin: 4
+burningStacksPerJudgement: 1
+cooldown: 15
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_magical: 1.2
+  entities:
+    damage:
+      minecraft:advantage_magical: 1.8
+name:
+  de: Verurteilung
+  en: Condemn
+description:
+  en:
+  - '<!i><#757575>Inquisitor'
+  - ' '
+  - '<#94958B>Slam down your spear in a cone, dealing damage and'
+  - '<#94958B>applying Weakness to all enemies in front of you.'
+  - ' '
+  - '<#FFD700>✦ Judgement:'
+  - '<#94958B>Consumes all Judgement stacks on enemies, applying'
+  - '<#94958B>Burning per stack consumed. Heals nearby allies'
+  - '<#94958B>based on total Judgement consumed.'
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>🔥 <#94958B>Burning per Judgement: <arg:1> stacks'
+  - '<!i><yellow>⏱️ <#94958B>Burning Duration: <arg:2>-<arg:3>s'
+  - '<!i><yellow>💀 <#94958B>Weakness Duration: <arg:4>-<arg:5>s'
+  - '<!i><yellow>❤️ <#94958B>Healing per Judgement: <arg:7>'
+  de:
+  - '<!i><#757575>Inquisitor'
+  - ' '
+  - '<#94958B>Schlage mit deinem Speer in einem Kegel nach unten,'
+  - '<#94958B>verursache Schaden und verursache Schwäche bei allen'
+  - '<#94958B>Feinden vor dir.'
+  - ' '
+  - '<#FFD700>✦ Urteil:'
+  - '<#94958B>Verbraucht alle Urteil-Stack von Feinden und gibt'
+  - '<#94958B>Brennen pro verbrauchtem Stack. Heilt nahegelegene'
+  - '<#94958B>Verbündete basierend auf dem verbrauchten Urteil.'
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>🔥 <#94958B>Brennen pro Urteil: <arg:1> Stacks'
+  - '<!i><yellow>⏱️ <#94958B>Brennen Dauer: <arg:2>-<arg:3>s'
+  - '<!i><yellow>💀 <#94958B>Schwäche Dauer: <arg:4>-<arg:5>s'
+  - '<!i><yellow>❤️ <#94958B>Heilung pro Urteil: <arg:7>'

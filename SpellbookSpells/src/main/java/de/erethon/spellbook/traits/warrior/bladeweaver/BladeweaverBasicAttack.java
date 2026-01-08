@@ -21,11 +21,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class BladeweaverBasicAttack extends SpellTrait {
 
     private final int energyPerAttack = data.getInt("energyPerAttack", 5);
-    private final double bonusHealthPerHit = data.getDouble("bonusHealthPerHit", 2.0);
-    private final double maxBonusHealth = data.getDouble("maxBonusHealth", 20.0);
+    private final double bonusHealthPercentPerHit = data.getDouble("bonusHealthPercentPerHit", 1.0); // 1% per hit
+    private final double maxBonusHealthPercent = data.getDouble("maxBonusHealthPercent", 10.0); // 10% max
     private final int bonusHealthDuration = data.getInt("bonusHealthDurationTicks", 100); // 5 seconds
     private final int bonusHealthDecayInterval = data.getInt("bonusHealthDecayIntervalTicks", 20); // Every second
-    private final double bonusHealthDecayAmount = data.getDouble("bonusHealthDecayAmount", 2.0);
+    private final double bonusHealthDecayPercent = data.getDouble("bonusHealthDecayPercent", 1.0); // 1% per decay
 
     private static final NamespacedKey BONUS_HEALTH_KEY = NamespacedKey.fromString("spellbook:bladeweaver_bonus_health");
 
@@ -46,17 +46,28 @@ public class BladeweaverBasicAttack extends SpellTrait {
         // Grant energy
         caster.addEnergy(energyPerAttack);
 
-        // Grant bonus health
-        addBonusHealth(bonusHealthPerHit);
+        // Grant bonus health (calculate from percentage)
+        double baseMaxHealth = getBaseMaxHealth();
+        double bonusHealthAmount = baseMaxHealth * (bonusHealthPercentPerHit / 100.0);
+        addBonusHealth(bonusHealthAmount);
 
         return super.onAttack(target, damage, type);
+    }
+
+    /**
+     * Gets the caster's base max health without any modifiers
+     */
+    private double getBaseMaxHealth() {
+        return caster.getAttribute(Attribute.MAX_HEALTH).getBaseValue();
     }
 
     /**
      * Adds bonus health to the caster. Can be called from abilities too.
      */
     public void addBonusHealth(double amount) {
-        double newBonusHealth = Math.min(currentBonusHealth + amount, maxBonusHealth);
+        double baseMaxHealth = getBaseMaxHealth();
+        double maxBonus = baseMaxHealth * (maxBonusHealthPercent / 100.0);
+        double newBonusHealth = Math.min(currentBonusHealth + amount, maxBonus);
 
         if (newBonusHealth != currentBonusHealth) {
             currentBonusHealth = newBonusHealth;
@@ -122,8 +133,10 @@ public class BladeweaverBasicAttack extends SpellTrait {
                     return;
                 }
 
-                // Decay bonus health
-                currentBonusHealth = Math.max(0, currentBonusHealth - bonusHealthDecayAmount);
+                // Decay bonus health by percentage
+                double baseMaxHealth = getBaseMaxHealth();
+                double decayAmount = baseMaxHealth * (bonusHealthDecayPercent / 100.0);
+                currentBonusHealth = Math.max(0, currentBonusHealth - decayAmount);
                 updateHealthModifier();
 
                 if (currentBonusHealth <= 0) {
@@ -156,4 +169,3 @@ public class BladeweaverBasicAttack extends SpellTrait {
         }
     }
 }
-
