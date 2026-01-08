@@ -1,0 +1,62 @@
+class: assassin.shadow.Backstab
+range: 16
+energyCost: 50
+energyBonus: 50
+markedMinDamage: 1.0
+markedMaxDamage: 2.0
+damageMultiplierWhenCloaked: 1.5
+name:
+  de: Hinterhalt
+  en: Backstab
+description:
+  de:
+  - <!i><#757575>Schatten
+  - ' '
+  - <#94958B>Der Schatten teleportiert sich hinter das Ziel und
+  - <#94958B>führt einen mächtigen Angriff aus, der Energie
+  - <#94958B>gewährt, wenn das Ziel stirbt. Verursacht
+  - <#94958B>Bonus-Schaden bei markierten Zielen und verstärkt
+  - <#94958B>den Schaden um <arg:5>x wenn getarnt.
+  - ' '
+  - '<!i><yellow>⚡  <#94958B>Energie: <arg:1> Energie'
+  - '<!i><yellow>→  <#94958B>Reichweite: <arg:0> Blöcke'
+  - '<!i><yellow>+⚡ <#94958B>Energie-Bonus: <arg:2> Energie'
+  - '<!i><yellow>    <#94958B>Markierter Schaden: <arg:8>x <dark_gray>(<arg:3>-<arg:4>
+    <#f02607>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Getarnter Schaden: <arg:5>x'
+  en:
+  - <!i><#757575>Shadow
+  - ' '
+  - <#94958B>The Shadow teleports behind the target and deals a
+  - <#94958B>powerful attack, granting bonus energy if the target
+  - <#94958B>dies. Deal bonus damage to targets that
+  - <#94958B>are marked and <arg:5>x damage if cloaked.
+  - ' '
+  - '<!i><yellow>⚡  <#94958B>Energy: <arg:1> Energy'
+  - '<!i><yellow>→  <#94958B>Range: <arg:0> Blocks'
+  - '<!i><yellow>+⚡ <#94958B>Energy Bonus: <arg:2> Energy'
+  - '<!i><yellow>    <#94958B>Marked Damage: <arg:8>x <dark_gray>(<arg:3>-<arg:4>
+    <#f02607>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Cloaked Damage: <arg:5>x'
+coefficients:
+  players:
+    minecraft:advantage_physical: 1.3
+    marked:
+      minecraft:advantage_physical: 1.5
+  entities:
+    minecraft:advantage_physical: 1.3
+    marked:
+      minecraft:advantage_physical: 1.5
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': range
+  '1': energyCost
+  '2': energyBonus
+  '3': markedMinDamage
+  '4': markedMaxDamage
+  '5': damageMultiplierWhenCloaked
+  '6': coefficients.entities.minecraft:advantage_physical
+  '7': coefficients.entities.marked.minecraft:advantage_physical
+  '8': marked

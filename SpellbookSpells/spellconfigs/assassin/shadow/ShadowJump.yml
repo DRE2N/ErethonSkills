@@ -1,0 +1,37 @@
+class: assassin.shadow.ShadowJump
+durationTicks: 15
+cooldown: 1
+energyCost: 20
+dashMultiplier: 1.1
+sideDashStrength: 1.5
+invisibilityDuration: 7
+name:
+  de: Schattensprung
+  en: Shadow Jump
+description:
+  de:
+  - <!i><#757575>Schatten | Rechtsklick
+  - ' '
+  - <#94958B>Der Schatten springt vorwärts. Wenn
+  - <#94958B>dabei Gegner passiert werden, wird der
+  - <#94958B>Schatten unsichtbar.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:0> Energie'
+  en:
+  - <!i><#757575>Shadow | Right Click
+  - ' '
+  - <#94958B>The Shadow jumps forward. If the Shadow passes
+  - <#94958B>through enemies, the Shadow becomes invisible.
+  - ' '
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:0> Energy'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': durationTicks
+  '1': cooldown
+  '2': energyCost
+  '3': dashMultiplier
+  '4': sideDashStrength
+  '5': invisibilityDuration

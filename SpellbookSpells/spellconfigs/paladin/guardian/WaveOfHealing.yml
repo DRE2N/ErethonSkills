@@ -1,0 +1,70 @@
+class: paladin.guardian.WaveOfHealing
+cooldown: 20
+energyCost: 10
+rangeMin: 4
+rangeMax: 8
+duration: 2
+baseHealing: 5
+healPerDevotionMin: 0.5
+healPerDevotionMax: 5.0
+name:
+  de: Welle der Heilung
+  en: Wave of Healing
+description:
+  de:
+  - <!i><#757575>Wächter
+  - ' '
+  - <#94958B>Der Wächter erschafft eine Welle der Heilung,
+  - <#94958B>die Verbündete in der Nähe heilt. Die Heilung
+  - <#94958B>wird basierend auf der aktuellen Entschlossenheit
+  - <#94958B>des Wächters erhöht.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Entschlossenheit: <arg:1>'
+  - '<!i><yellow>↔  <#94958B>Reichweite: <arg:10> <dark_gray>(<arg:2>-<arg:3> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>⏳ <#94958B>Dauer: <arg:4> Sekunden'
+  - '<!i><yellow>   <#94958B>Basis Heilung: <arg:5>'
+  - '<!i><yellow>   <#94958B>Heilung pro Entschlossenheit: <arg:10> <dark_gray>(<arg:6>-<arg:7>
+    <#32ac21>♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Guardian
+  - ' '
+  - <#94958B>The Guardian creates a wave of healing that heals
+  - <#94958B>allies around him. The healing is increased
+  - <#94958B>based on the Guardians current Devotion.
+  - ' '
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
+  - '<!i><yellow>⚡ <#94958B>Devotion: <arg:1>'
+  - '<!i><yellow>↔  <#94958B>Range: <arg:10> <dark_gray>(<arg:2>-<arg:3> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>⏳ <#94958B>Duration: <arg:4> seconds'
+  - '<!i><yellow>   <#94958B>Base Healing: <arg:5>'
+  - '<!i><yellow>   <#94958B>Healing per Devotion: <arg:10> <dark_gray>(<arg:6>-<arg:7>
+    <#32ac21>♦<dark_gray>)</dark_gray>'
+
+coefficients:
+  players:
+    heal:
+      minecraft:stat_healing_power: 0.5
+    range:
+      minecraft:advantage_magical: 0.5
+  entities:
+    heal:
+      minecraft:stat_healing_power: 0.5
+    range:
+      minecraft:advantage_magical: 0.5
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': rangeMin
+  '3': rangeMax
+  '4': duration
+  '5': baseHealing
+  '6': healPerDevotionMin
+  '7': healPerDevotionMax
+  '8': coefficients.entities.range.minecraft:advantage_magical
+  '9': range
+  '10': healPerDevotion

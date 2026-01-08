@@ -1,0 +1,74 @@
+class: paladin.inquisitor.SpearThrust
+cooldown: 8
+velocity: 1.5
+weaknessDuration: 12
+weaknessStacksMin: 1
+weaknessStacksMax: 3
+slowDuration: 12
+burnDuration: 12
+burnStacksMin: 1
+burnStacksMax: 3
+minimumJudgementStacks: 3
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_physical: 1.4
+  entities:
+    damage:
+      minecraft:advantage_physical: 2.0
+name:
+  de: Speerstoß
+  en: Spear Thrust
+description:
+  en:
+  - <!i><#757575>Inquisitor
+  - ' '
+  - <#94958B>Thrust your spear forward, pushing the target away
+  - <#94958B>and applying Weakness and Judgement to them.
+  - ' '
+  - '<#FFD700>✦ Judgement:'
+  - <#94958B>If target has 3+ Judgement stacks, they are also
+  - <#94958B>Slowed and Burned. Creates a damaging area that
+  - <#94958B>punishes enemies who remain inside.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⬆️ <#94958B>Knockback Strength: <arg:1>'
+  - '<!i><yellow>💀 <#94958B>Weakness Duration: <arg:2>s'
+  - '<!i><yellow>❄️ <#94958B>Slow Duration: <arg:5>s'
+  - '<!i><yellow>🔥 <#94958B>Burn Duration: <arg:6>s'
+  - '<!i><yellow>✦ <#94958B>Required Judgement: <arg:9> stacks'
+  de:
+  - <!i><#757575>Inquisitor
+  - ' '
+  - <#94958B>Stoße mit deinem Speer nach vorne, stoße das Ziel
+  - <#94958B>zurück und gib ihm Schwäche und Urteil.
+  - ' '
+  - '<#FFD700>✦ Urteil Interaktion:'
+  - <#94958B>Wenn das Ziel 3+ Urteil-Stack hat, wird es auch
+  - <#94958B>verlangsamt und verbrannt. Erschafft einen schadenden
+  - <#94958B>Bereich, der Feinde bestraft, die darin bleiben.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⬆️ <#94958B>Rückstoß Stärke: <arg:1>'
+  - '<!i><yellow>💀 <#94958B>Schwäche: <arg:11> <dark_gray>(<arg:3>-<arg:4> <#0fdcfa>+♦<dark_gray>)</dark_gray> x <arg:2>s'
+  - '<!i><yellow>❄️ <#94958B>Verlangsamung Dauer: <arg:5>s'
+  - '<!i><yellow>🔥 <#94958B>Brennen: <arg:12> <dark_gray>(<arg:7>-<arg:8> <#0fdcfa>+♦<dark_gray>)</dark_gray> x <arg:6>s'
+  - '<!i><yellow>✦ <#94958B>Benötigtes Urteil: <arg:9> Stack'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': velocity
+  '2': weaknessDuration
+  '3': weaknessStacksMin
+  '4': weaknessStacksMax
+  '5': slowDuration
+  '6': burnDuration
+  '7': burnStacksMin
+  '8': burnStacksMax
+  '9': minimumJudgementStacks
+  '10': coefficients.entities.damage.minecraft:advantage_physical
+  '11': weaknessStacks
+  '12': burnStacks
+

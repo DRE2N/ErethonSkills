@@ -1,0 +1,53 @@
+class: warrior.vanguard.WarStomp
+cooldown: 14
+energyBuildUpFromUse: 15
+shockwaveRadius: 4.0
+shockwaveHeight: 3.0
+minStunDuration: 2
+maxStunDuration: 5
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_physical: 1.3
+  entities:
+    damage:
+      minecraft:advantage_physical: 2.0
+name:
+  de: Kriegsstampfer
+  en: War Stomp
+description:
+  en:
+  - <!i><#757575>Vanguard | Crowd Control
+  - ' '
+  - <#94958B>Slam your foot down, creating a shockwave that
+  - <#94958B>damages and briefly stuns all nearby enemies.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energy Gain: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Radius: <arg:2> blocks'
+  - '<!i><yellow>🛡️ <#94958B>Stun Duration: <arg:4>-<arg:5>s'
+  de:
+  - <!i><#757575>Vorhut | Massenkontrolle
+  - ' '
+  - <#94958B>Schlage mit dem Fuß auf den Boden und erzeuge eine
+  - <#94958B>Schockwelle, die alle nahen Feinde beschädigt und
+  - <#94958B>kurz betäubt.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energiegewinn: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Radius: <arg:2> Blöcke'
+  - '<!i><yellow>🛡️ <#94958B>Betäubungsdauer: <dark_gray>(<arg:4>-<arg:5> <#f02607>+♦<dark_gray>)</dark_gray>s'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyBuildUpFromUse
+  '2': shockwaveRadius
+  '3': shockwaveHeight
+  '4': minStunDuration
+  '5': maxStunDuration
+  '6': coefficients.entities.damage.minecraft:advantage_physical
+
+
+

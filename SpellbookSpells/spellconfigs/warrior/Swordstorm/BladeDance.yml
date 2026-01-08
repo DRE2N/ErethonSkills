@@ -1,0 +1,77 @@
+class: warrior.swordstorm.BladeDance
+cooldown: 99
+duration: 10
+energyCost: 75
+secondaryDamageRadiusMin: 2.0
+secondaryDamageRadiusMax: 5.0
+secondaryDamageMultiplierMin: 0.5
+secondaryDamageMultiplierMax: 1.5
+resistanceMultiplier: 0.66
+speedMultiplier: 1.05
+jumpMultiplier: 1.2
+sizeMultiplier: -0.5
+coefficients:
+  players:
+    secondaryDamageRadius:
+      minecraft:advantage_physical: 1.2
+    secondaryDamageMultiplier:
+      minecraft:advantage_physical: 1.5
+  entities:
+    secondaryDamageRadius:
+      minecraft:advantage_physical: 2.5
+    secondaryDamageMultiplier:
+      minecraft:advantage_physical: 1.8
+name:
+  de: Klingenwirbel
+  en: Blade Dance
+description:
+  en:
+  - <!i><#757575>Swordstorm | Ultimate
+  - ' '
+  - <#94958B>For several seconds, the Swordsturm enters a trance. Each
+  - <#94958B>basic attack deals damage to all enemies in a radius around the target.
+  - <#94958B>The Swordstorm gains Speed and Jump Height and their model size is
+  - <#94958B>reduced. However, all resistances are reduced. Can not use other abilities
+    while active.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Rage: <arg:1> Rage'
+  - '<!i><yellow>⌚ <#94958B>Duration: <arg:0> seconds'
+  - '<!i><yellow>    <#94958B>Secondary Damage Radius: <arg:8> <dark_gray>(<arg:2>-<arg:3>
+    <#f02607>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Secondary Damage Multiplier: <arg:9> <dark_gray>(<arg:4>-<arg:5>
+    <#f02607>+♦<dark_gray>)</dark_gray>'
+  de:
+  - <!i><#757575>Schwersturm | Ultimate
+  - ' '
+  - <#94958B>Für mehrere Sekunden gerät der Schwersturm in eine Trance. Jeder
+  - <#94958B>Basisangriff fügt allen Gegnern in einem Radius um das Ziel Schaden zu.
+  - <#94958B>Der Schwersturm erhält Geschwindigkeit und Sprunghöhe und seine Modellgröße
+    wird reduziert.
+  - <#94958B>Allerdings werden alle Widerstände reduziert. Kann während der Aktivierung
+    keine anderen Fähigkeiten nutzen.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Zorn: <arg:1> Zorn'
+  - '<!i><yellow>⌚ <#94958B>Dauer: <arg:0> Sekunden'
+  - '<!i><yellow>    <#94958B>Sekundärschaden-Radius: <arg:8> <dark_gray>(<arg:2>-<arg:3>
+    <#f02607>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Sekundärschaden-Multiplikator: <arg:9> <dark_gray>(<arg:4>-<arg:5>
+    <#f02607>+♦<dark_gray>)</dark_gray>'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': duration
+  '2': energyCost
+  '3': secondaryDamageRadiusMin
+  '4': secondaryDamageRadiusMax
+  '5': secondaryDamageMultiplierMin
+  '6': secondaryDamageMultiplierMax
+  '7': resistanceMultiplier
+  '8': speedMultiplier
+  '9': jumpMultiplier
+  '10': sizeMultiplier
+  '11': coefficients.entities.secondaryDamageRadius.minecraft:advantage_physical
+  '12': coefficients.entities.secondaryDamageMultiplier.minecraft:advantage_physical
+  '13': secondaryDamageRadius
+  '14': secondaryDamageMultiplier

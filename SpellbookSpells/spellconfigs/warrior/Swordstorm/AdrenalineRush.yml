@@ -1,0 +1,104 @@
+class: warrior.swordstorm.AdrenalineRush
+cooldown: 10
+energyCost: 30
+duration: 10
+healthThreshold: 0.3
+lifestealAmount: 0.1
+furyMinDuration: 5
+furyMaxDuration: 10
+powerMinDuration: 5
+powerMaxDuration: 10
+stabilityMinDuration: 5
+stabilityMaxDuration: 10
+resistanceMinDuration: 5
+resistanceMaxDuration: 10
+coefficients:
+  players:
+    minecraft:advantage_physical: 1.0
+    minecraft:resistance_physical: 1.0
+    furyDuration:
+      minecraft:advantage_physical: 1.5
+    powerDuration:
+      minecraft:advantage_physical: 1.2
+    stabilityDuration:
+      minecraft:resistance_physical: 1.5
+    resistanceDuration:
+      minecraft:resistance_physical: 1.8
+  entities:
+    minecraft:advantage_physical: 1.0
+    minecraft:resistance_physical: 1.0
+    furyDuration:
+      minecraft:advantage_physical: 1.5
+    powerDuration:
+      minecraft:advantage_physical: 1.2
+    stabilityDuration:
+      minecraft:resistance_physical: 1.5
+    resistanceDuration:
+      minecraft:resistance_physical: 1.8
+name:
+  de: Adrenalinschub
+  en: Adrenaline Rush
+description:
+  en:
+  - <!i><#757575>Swordstorm
+  - ' '
+  - <#94958B>The Swordstorm gains a burst of Fury, Power and Lifesteal.
+  - <#94958B>If below the health threshold, the Swordstorm also
+  - <#94958B>gains Stability and Resistance.
+  - <#94958B>Cleanses all negative effects on activation.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Rage: <arg:0> Rage'
+  - '<!i><yellow>⌚ <#94958B>Duration: <arg:1> seconds'
+  - '<!i><yellow>    <#94958B>Health Threshold: <arg:2>'
+  - '<!i><yellow>    <#94958B>Lifesteal: <arg:3>%'
+  - '<!i><yellow>    <#94958B>Fury: <arg:18>s <dark_gray>(<arg:4>-<arg:5> <#f02607>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Power: <arg:19>s <dark_gray>(<arg:6>-<arg:7> <#f02607>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Stability: <arg:20>s <dark_gray>(<arg:8>-<arg:9> <#f02607>-♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Resistance: <arg:21>s <dark_gray>(<arg:10>-<arg:11>
+    <#f02607>-♦<dark_gray>)</dark_gray>'
+  de:
+  - <!i><#757575>Schwersturm
+  - ' '
+  - <#94958B>Der Schwersturm erhält einen Adrenalinschub aus Wut, Macht und Lifesteal.
+  - <#94958B>Wenn unter dem Gesundheitsschwellenwert, erhält der Schwersturm auch
+  - <#94958B>Stabilität und Widerstand.
+  - <#94958B>Alle negativen Effekte werden bei Aktivierung entfernt.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Zorn: <arg:0> Zorn'
+  - '<!i><yellow>⌚ <#94958B>Dauer: <arg:1> Sekunden'
+  - '<!i><yellow>    <#94958B>Gesundheitsschwelle: <arg:2>'
+  - '<!i><yellow>    <#94958B>Lifesteal: <arg:3>%'
+  - '<!i><yellow>    <#94958B>Wut: <arg:16>s <dark_gray>(<arg:4>-<arg:5> <#f02607>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Macht: <arg:17>s <dark_gray>(<arg:6>-<arg:7> <#f02607>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Stabilität: <arg:18>s <dark_gray>(<arg:8>-<arg:9> <#f02607>-♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Resistenz: <arg:19>s <dark_gray>(<arg:10>-<arg:11> <#f02607>-♦<dark_gray>)</dark_gray>'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': duration
+  '3': healthThreshold
+  '4': lifestealAmount
+  '5': furyMinDuration
+  '6': furyMaxDuration
+  '7': powerMinDuration
+  '8': powerMaxDuration
+  '9': stabilityMinDuration
+  '10': stabilityMaxDuration
+  '11': resistanceMinDuration
+  '12': resistanceMaxDuration
+  '13': coefficients.entities.minecraft:advantage_physical
+  '14': coefficients.entities.minecraft:resistance_physical
+  '15': coefficients.entities.furyDuration.minecraft:advantage_physical
+  '16': coefficients.entities.powerDuration.minecraft:advantage_physical
+  '17': coefficients.entities.stabilityDuration.minecraft:resistance_physical
+  '18': coefficients.entities.resistanceDuration.minecraft:resistance_physical
+  '19': furyDuration
+  '20': powerDuration
+  '21': stabilityDuration
+  '22': resistanceDuration
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.

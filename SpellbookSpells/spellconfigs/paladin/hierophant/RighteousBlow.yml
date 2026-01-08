@@ -1,0 +1,60 @@
+class: paladin.hierophant.RighteousBlow
+cooldown: 3
+wrathOnHit: 10
+minimumCleaveWrath: 50
+cleaveRadius: 3
+cleaveDamageMultiplier: 0.5
+maxCleaveTargets: 3
+name:
+  de: Gerechter Schlag
+  en: Righteous Blow
+description:
+  de:
+  - <!i><#757575>Hierophant | Rechtsklick
+  - ' '
+  - <#94958B>Der Hierophant schlägt das Ziel mit einem gerechten Schlag,
+  - <#94958B>der physischen und magischen Schaden verursacht. Erzeugt Zorn.
+  - <#94958B>Verursache Cleaving mit genügend Zorn.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
+  - '<!i><yellow>    <#94958B>Magischer Schaden: <#0fdcfa><arg:6>'
+  - '<!i><yellow>    <#94958B>Physischer Schaden: <#f02607"><arg:7>'
+  - '<!i><yellow>⚡ <#94958B>Zorn bei Treffer: <arg:1>'
+  - '<!i><yellow>   <#94958B>Min. Zorn für Cleaving: <arg:2>'
+  - '<!i><yellow>   <#94958B>Cleave Radius: <arg:3>'
+  - '<!i><yellow>   <#94958B>Cleave Schaden Multiplikator: <arg:4>x'
+  - '<!i><yellow>   <#94958B>Max. Cleave Ziele: <arg:5>'
+  en:
+  - <!i><#757575>Hierophant | Right Click
+  - ' '
+  - <#94958B>The Hierophant strikes the target with a righteous blow,
+  - <#94958B>dealing physical and magical damage. Generates Wrath.
+  - <#94958B>If Wrath is above a certain threshold, the attack cleaves.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
+  - '<!i><yellow>    <#94958B>Magic Damage: <#0fdcfa><arg:6>'
+  - '<!i><yellow>    <#94958B>Physical Damage: <#f02607"><arg:7>'
+  - '<!i><yellow>⚡ <#94958B>Wrath on Hit: <arg:1>'
+  - '<!i><yellow>   <#94958B>Minimum Wrath for Cleave: <arg:2>'
+  - '<!i><yellow>   <#94958B>Cleave Radius: <arg:3>'
+  - '<!i><yellow>   <#94958B>Cleave Damage Multiplier: <arg:4>x'
+  - '<!i><yellow>   <#94958B>Max Cleave Targets: <arg:5>'
+coefficients:
+  players:
+    minecraft:advantage_magical: 1.5
+    minecraft:advantage_physical: 1.5
+  entities:
+    minecraft:advantage_magical: 1.5
+    minecraft:advantage_physical: 1.5
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': wrathOnHit
+  '2': minimumCleaveWrath
+  '3': cleaveRadius
+  '4': cleaveDamageMultiplier
+  '5': maxCleaveTargets
+  '6': coefficients.entities.minecraft:advantage_magical
+  '7': coefficients.entities.minecraft:advantage_physical

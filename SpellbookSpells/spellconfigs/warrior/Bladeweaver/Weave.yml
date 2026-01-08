@@ -1,0 +1,56 @@
+class: warrior.bladeweaver.Weave
+cooldown: 60
+energyBuildUpFromUse: 0
+transformDuration: 300
+damageBonus: 0.25
+speedBonus: 0.15
+resistanceBonus: 0.1
+energyRequired: 100
+name:
+  de: Weben
+  en: Weave
+description:
+  en:
+  - <!i><#757575>Bladeweaver | Ultimate
+  - ' '
+  - <#94958B>Transform into Demon Form, empowering all abilities
+  - <#94958B>and granting powerful stat bonuses.
+  - ' '
+  - <#FF6600>⚔ Requires full energy (<arg:7>) to activate.
+  - <#FF6600>⚔ All abilities gain enhanced Demon Form versions.
+  - ' '
+  - '<#FFD700>✦ Stat Bonuses while transformed: '
+  - '  <#94958B>• Physical Damage: +<arg:4>'
+  - '  <#94958B>• Movement Speed: +<arg:5>'
+  - '  <#94958B>• Resistances: +<arg:6>'
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⏱️ <#94958B>Duration: <arg:3> ticks (<#94958B>15 seconds)'
+  - '<!i><yellow>⚡ <#94958B>Energy Required: <arg:7>'
+  de:
+  - <!i><#757575>Klingenweaver | Ultimate
+  - ' '
+  - <#94958B>Verwandle dich in die Dämonenform und verstärke alle
+  - <#94958B>Fähigkeiten mit mächtigen Statusboni.
+  - ' '
+  - <#FF6600>⚔ Benötigt volle Energie (<arg:7>) zur Aktivierung.
+  - <#FF6600>⚔ Alle Fähigkeiten erhalten verbesserte Dämonenform-Versionen.
+  - '<#FFD700>✦ Statusboni während der Verwandlung: '
+  - '  <#94958B>• Physischer Schaden: +<arg:4>'
+  - '  <#94958B>• Bewegungsgeschwindigkeit: +<arg:5>'
+  - '  <#94958B>• Widerstände: +<arg:6>'
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⏱️ <#94958B>Dauer: <arg:3> Ticks (<#94958B>15 Sekunden)'
+  - '<!i><yellow>⚡ <#94958B>Benötigte Energie: <arg:7>'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyBuildUpFromUse
+  '2': transformDuration
+  '3': damageBonus
+  '4': speedBonus
+  '5': resistanceBonus
+  '6': energyRequired

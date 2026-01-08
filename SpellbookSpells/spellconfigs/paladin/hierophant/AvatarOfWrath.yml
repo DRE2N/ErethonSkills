@@ -1,0 +1,108 @@
+class: paladin.hierophant.AvatarOfWrath
+cooldown: 99
+duration: 15
+magicDamageBonus: 1.5
+attackRangeBonus: 4.0
+cleaveDamageMultiplier: 1.5
+cleaveRadius: 3.0
+weaknessDurationMin: 6
+weaknessDurationMax: 12
+burningDurationMin: 6
+burningDurationMax: 12
+burningStacksMin: 1
+burningStacksMax: 3
+sizeIncrease: 1.2
+name:
+  de: Avatar des Zorns
+  en: Avatar of Wrath
+description:
+  de:
+  - <!i><#757575>Hierophant | Ultimate
+  - ' '
+  - <#94958B>Der Hierophant wird zum Avatar des Zorns und erhält
+  - <#94958B>erhöhten Schaden und Reichweite, sowie cleaving
+  - <#94958B>Angriffe. Bei jedem Angriff stößt der Hierophant
+  - <#94958B>einen Puls aus heiligem Feuer aus, der Gegner in der
+  - <#94958B>Nähe schädigt, schwächt und verbrennt.
+  - <#94958B>Die Größe des Hierophanten wird erhöht und er kann
+  - <#94958B>in dieser Form keine anderen Zauber wirken.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
+  - '<!i><yellow>⏳ <#94958B>Dauer: <arg:1> Sekunden'
+  - '<!i><yellow>  <#94958B>Magie-Schaden Bonus: <arg:2>'
+  - '<!i><yellow>↔  <#94958B>Reichweiten-Bonus: <arg:3>'
+  - '<!i><yellow>   <#94958B>Cleave-Schaden Multiplikator: <arg:4>'
+  - '<!i><yellow>   <#94958B>Cleave-Radius: <arg:5>'
+  - '<!i><yellow>   <#94958B>Schwäche-Dauer: <arg:18>s <dark_gray>(<arg:6>-<arg:7>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Verbrennungs-Dauer: <arg:19>s <dark_gray>(<arg:8>-<arg:9>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Verbrennungs-Stacks: <arg:20> <dark_gray>(<arg:10>-<arg:11>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Hierophant | Ultimate
+  - ' '
+  - <#94958B>The Hierophant becomes an avatar of wrath, gaining
+  - <#94958B>increased damage and attack range, cleaving attacks.
+  - <#94958B>On every attack, the Hierophant emits a pulse of holy fire,
+  - <#94958B>damaging, weakening and burning enemies nearby.
+  - <#94958B>The Hierophant's size is increased and he is unable to
+  - <#94958B>use other spells while in this form.
+  - ' '
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
+  - '<!i><yellow>⏳ <#94958B>Duration: <arg:1> seconds'
+  - '<!i><yellow>  <#94958B>Magic Damage Bonus: <arg:2>'
+  - '<!i><yellow>↔  <#94958B>Attack Range Bonus: <arg:3>'
+  - '<!i><yellow>   <#94958B>Cleave Damage Multiplier: <arg:4>'
+  - '<!i><yellow>   <#94958B>Cleave Radius: <arg:5>'
+  - '<!i><yellow>   <#94958B>Weakness Duration: <arg:18>s <dark_gray>(<arg:6>-<arg:7>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Burning Duration: <arg:19>s <dark_gray>(<arg:8>-<arg:9>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Burning Stacks: <arg:20> <dark_gray>(<arg:10>-<arg:11>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+coefficients:
+  players:
+    minecraft:advantage_magical: 1.8
+    weaknessDuration:
+      minecraft:advantage_magical: 0.5
+    burningDuration:
+      minecraft:advantage_magical: 0.5
+    burningStacks:
+      minecraft:advantage_magical: 0.5
+  entities:
+    minecraft:advantage_magical: 1.8
+    cleaveDamageMultiplier:
+      minecraft:advantage_magical: 0.5
+    weaknessDuration:
+      minecraft:advantage_magical: 0.5
+    burningDuration:
+      minecraft:advantage_magical: 0.5
+    burningStacks:
+      minecraft:advantage_magical: 0.5
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': duration
+  '2': magicDamageBonus
+  '3': attackRangeBonus
+  '4': cleaveDamageMultiplier
+  '5': cleaveRadius
+  '6': weaknessDurationMin
+  '7': weaknessDurationMax
+  '8': burningDurationMin
+  '9': burningDurationMax
+  '10': burningStacksMin
+  '11': burningStacksMax
+  '12': sizeIncrease
+  '13': coefficients.entities.minecraft:advantage_magical
+  '14': coefficients.entities.cleaveDamageMultiplier.minecraft:advantage_magical
+  '15': coefficients.entities.weaknessDuration.minecraft:advantage_magical
+  '16': coefficients.entities.burningDuration.minecraft:advantage_magical
+  '17': coefficients.entities.burningStacks.minecraft:advantage_magical
+  '18': weaknessDuration
+  '19': burningDuration
+  '20': burningStacks

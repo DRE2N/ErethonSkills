@@ -86,6 +86,9 @@ public class CharacterCastingManager implements Listener {
     // Key: spellId + "." + lineIndex -> Component
     private static final Map<String, Component> SPELL_DESCRIPTION_CACHE = new HashMap<>();
 
+    // Key: spellId -> max valid line count
+    private static final Map<String, Integer> VALID_DESCRIPTION_LINE_CACHE = new HashMap<>();
+
     private static final ItemStack[] EMPTY_STACK_CACHE = new ItemStack[9];
 
     public CharacterCastingManager(HCharacter character) {
@@ -170,7 +173,12 @@ public class CharacterCastingManager implements Listener {
             lore.add(name);
             List<Component> placeholders = activeSpell.getPlaceholders(player);
             for (int i = 0; i < rightClickSpell.getDescriptionLineCount(); i++) {
-                lore.add(getCachedSpellDescription(rightClickSpell.getId(), i, placeholders));
+                Component description = getCachedSpellDescription(rightClickSpell.getId(), i, placeholders);
+                if (isValidTranslation(description, rightClickSpell.getId(), i)) {
+                    lore.add(description);
+                } else {
+                    break; // Stop adding lines once we hit a missing translation
+                }
             }
         }
 
@@ -407,7 +415,12 @@ public class CharacterCastingManager implements Listener {
         List<Component> placeholders = spellData.getActiveSpell(player).getPlaceholders(player);
         List<Component> lore = new ArrayList<>();
         for (int i = 0; i < spellData.getDescriptionLineCount(); i++) {
-            lore.add(getCachedSpellDescription(spellData.getId(), i, placeholders));
+            Component description = getCachedSpellDescription(spellData.getId(), i, placeholders);
+            if (isValidTranslation(description, spellData.getId(), i)) {
+                lore.add(description);
+            } else {
+                break; // Stop adding lines once we hit a missing translation
+            }
         }
         item.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
         return item;
@@ -420,7 +433,12 @@ public class CharacterCastingManager implements Listener {
         List<Component> lore = new ArrayList<>();
         List<Component> placeholders = spell.getPlaceholders(player);
         for (int i = 0; i < spell.getData().getDescriptionLineCount(); i++) {
-            lore.add(getCachedSpellDescription(spell.getId(), i, placeholders));
+            Component description = getCachedSpellDescription(spell.getId(), i, placeholders);
+            if (isValidTranslation(description, spell.getId(), i)) {
+                lore.add(description);
+            } else {
+                break; // Stop adding lines once we hit a missing translation
+            }
         }
         stack.setData(DataComponentTypes.LORE, ItemLore.lore(lore));
     }
@@ -667,6 +685,26 @@ public class CharacterCastingManager implements Listener {
         }
 
         return Component.text(truncated.toString(), NamedTextColor.WHITE);
+    }
+
+    private boolean isValidTranslation(Component component, String spellId, int lineIndex) {
+        if (component == null) {
+            return false;
+        }
+        Integer cachedMaxLine = VALID_DESCRIPTION_LINE_CACHE.get(spellId);
+        if (cachedMaxLine != null) {
+            return lineIndex < cachedMaxLine;
+        }
+        String rendered = PlainTextComponentSerializer.plainText().serialize(component);
+        String expectedMissingKey = "hecate.spellbook.spell.description." + spellId + "." + lineIndex;
+
+        boolean isValid = !rendered.equals(expectedMissingKey);
+
+        if (!isValid) {
+            VALID_DESCRIPTION_LINE_CACHE.put(spellId, lineIndex);
+        }
+
+        return isValid;
     }
 
     private static Component getCachedSpellName(String spellId, TextColor energyColor) {

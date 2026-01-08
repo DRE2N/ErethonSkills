@@ -1,0 +1,53 @@
+class: paladin.hierophant.CelestialBarrier
+cooldown: 30
+range: 5
+duration: 6
+explosionRadius: 4
+minWrathForBonusReflect: 50
+reflectDamageMultiplier: 1.0
+bonusReflectDamageMultiplier: 1.5
+name:
+  de: Himmlische Barriere
+  en: Celestial Barrier
+description:
+  de:
+  - <!i><#757575>Hierophant
+  - ' '
+  - <#94958B>Der Hierophant erschafft eine himmlische Barriere aus Licht,
+  - <#94958B>die Schaden absorbiert. Wenn die Barriere abläuft oder zerbricht,
+  - <#94958B>explodiert sie und gibt den Schaden an nahegelegene Gegner zurück.
+  - <#94958B>Wenn der Hierophant genug Zorn hat, wird der Schaden erhöht.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
+  - '<!i><yellow>↔  <#94958B>Reichweite: <arg:1>'
+  - '<!i><yellow>⏳ <#94958B>Dauer: <arg:2> Sekunden'
+  - '<!i><yellow>   <#94958B>Explosionsradius: <arg:3>'
+  - '<!i><yellow>   <#94958B>Min. Zorn für Bonus-Reflektion: <arg:4>'
+  - '<!i><yellow>   <#94958B>Reflektion-Schaden Multiplikator: <arg:5>x'
+  - '<!i><yellow>   <#94958B>Bonus-Reflektion-Schaden Multiplikator: <arg:6>x'
+  en:
+  - <!i><#757575>Hierophant
+  - ' '
+  - <#94958B>The Hierophant creates a celestial barrier of light that
+  - <#94958B>absord damage. When the barrier is expires or breaks,
+  - <#94958B>it explodes, dealing back the damage to nearby enemies.
+  - <#94958B>If the Hierophant has enough Wrath, the damage is increased.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
+  - '<!i><yellow>↔  <#94958B>Range: <arg:1>'
+  - '<!i><yellow>⏳ <#94958B>Duration: <arg:2> seconds'
+  - '<!i><yellow>   <#94958B>Explosion Radius: <arg:3>'
+  - '<!i><yellow>   <#94958B>Min Wrath for Bonus Reflect: <arg:4>'
+  - '<!i><yellow>   <#94958B>Reflect Damage Multiplier: <arg:5>x'
+  - '<!i><yellow>   <#94958B>Bonus Reflect Damage Multiplier: <arg:6>x'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': range
+  '2': duration
+  '3': explosionRadius
+  '4': minWrathForBonusReflect
+  '5': reflectDamageMultiplier
+  '6': bonusReflectDamageMultiplier

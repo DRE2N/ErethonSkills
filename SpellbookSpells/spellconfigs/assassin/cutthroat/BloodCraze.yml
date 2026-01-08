@@ -1,0 +1,80 @@
+class: assassin.cutthroat.BloodCraze
+energyCost: 20
+cleavingRange: 3.0
+cleavingDamageMultiplier: 0.8
+damageAsHealingMultiplierMin: 0.15
+damageAsHealingMultiplierMax: 0.25
+bloodAuraRadius: 4.0
+speedDurationMin: 5
+speedDurationMax: 10
+duration: 10
+name:
+  de: Blutrausch
+  en: Blood Craze
+description:
+  de:
+  - <!i><#757575>Meuchelmörder
+  - ' '
+  - <#94958B>Der Meuchelmörder stürzt sich in einen Blutrausch,
+  - <#94958B>und erhält Geschwindigkeit. Erzeugt eine Blut-Aura,
+  - <#94958B>die nahe Gegner jede Sekunde verletzt.
+  - <#94958B>Bei jedem Treffer wird ein Teil des Schadens als
+  - <#94958B>Heilung wiederhergestellt. Angriffe des Meuchelmörders
+  - <#94958B>verursachen außerdem Cleaving-Schaden an
+  - <#94958B>Gegnern in der Nähe des Ziels.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:0> Energie'
+  - '<!i><yellow>   <#94958B>Dauer: <arg:8>s'
+  - '<!i><yellow>   <#94958B>Cleaving-Radius: <arg:1> Blöcke'
+  - '<!i><yellow>   <#94958B>Cleaving-Schaden: <arg:2>x'
+  - '<!i><yellow>   <#94958B>Blut-Aura Radius: <arg:5> Blöcke'
+  - '<!i><yellow>   <#94958B>Heilung pro Schaden: <arg:7> <dark_gray>(<arg:3>-<arg:4>
+    <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Cutthroat
+  - ' '
+  - <#94958B>The cutthroat enters a blood craze,
+  - <#94958B>gaining speed. Creates a blood aura that
+  - <#94958B>damages nearby enemies every second.
+  - <#94958B>With each hit, a portion of the damage is
+  - <#94958B>restored as healing. The cutthroat's attacks
+  - <#94958B>also deal cleaving damage to enemies
+  - <#94958B>near the target.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:0> Energy'
+  - '<!i><yellow>   <#94958B>Duration: <arg:8>s'
+  - '<!i><yellow>   <#94958B>Cleaving Range: <arg:1> Blocks'
+  - '<!i><yellow>   <#94958B>Cleaving Damage: <arg:2>x'
+  - '<!i><yellow>   <#94958B>Blood Aura Radius: <arg:5> Blocks'
+  - '<!i><yellow>   <#94958B>Healing per Damage: <arg:7> <dark_gray>(<arg:3>-<arg:4>
+    <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+
+
+coefficients:
+  players:
+    healing:
+      minecraft:resistance_magical: 1.3
+    speedDuration:
+      minecraft:advantage_magical: 1.0
+  entities:
+    healing:
+      minecraft:resistance_magical: 1.3
+    speedDuration:
+      minecraft:advantage_magical: 1.0
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': energyCost
+  '1': cleavingRange
+  '2': cleavingDamageMultiplier
+  '3': damageAsHealingMultiplierMin
+  '4': damageAsHealingMultiplierMax
+  '5': bloodAuraRadius
+  '6': speedDurationMin
+  '7': speedDurationMax
+  '8': duration
+  '9': coefficients.entities.healing.minecraft:resistance_magical
+  '10': coefficients.entities.speedDuration.minecraft:advantage_magical
+  '11': healing
+  '12': speedDuration

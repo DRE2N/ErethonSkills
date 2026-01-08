@@ -1,0 +1,66 @@
+class: warrior.vanguard.Impale
+cooldown: 10
+energyBuildUpFromUse: 12
+range: 4
+healthThreshold: 0.4
+minBleedDuration: 4
+maxBleedDuration: 8
+minBleedStacks: 2
+maxBleedStacks: 4
+windupTicks: 8
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_physical: 1.6
+  entities:
+    damage:
+      minecraft:advantage_physical: 2.4
+name:
+  de: Aufspießen
+  en: Impale
+description:
+  en:
+  - <!i><#757575>Vanguard | Basic
+  - ' '
+  - <#94958B>A powerful forward thrust with your axe that deals
+  - <#94958B>high damage and applies Bleed.
+  - ' '
+  - <#FF6600>⚔ If the target is below 40% health, the Bleed
+  - <#FF6600>⚔ effect's duration is doubled.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energy Gain: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
+  - '<!i><yellow>🩸 <#94958B>Bleed Duration: <arg:4>-<arg:5>s'
+  - '<!i><yellow>🩸 <#94958B>Bleed Stacks: <arg:6>-<arg:7>'
+  de:
+  - <!i><#757575>Vorhut | Basis
+  - ' '
+  - <#94958B>Ein kraftvoller Vorstoß mit deiner Axt, der hohen
+  - <#94958B>Schaden verursacht und Blutung anwendet.
+  - ' '
+  - <#FF6600>⚔ Wenn das Ziel unter 40% Gesundheit hat, wird die
+  - <#FF6600>⚔ Dauer des Blutungseffekts verdoppelt.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energiegewinn: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Blöcke'
+  - '<!i><yellow>🩸 <#94958B>Blutungsdauer: <arg:4>-<arg:5>s'
+  - '<!i><yellow>🩸 <#94958B>Blutungsstapel: <arg:6>-<arg:7>'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyBuildUpFromUse
+  '2': range
+  '3': healthThreshold
+  '4': minBleedDuration
+  '5': maxBleedDuration
+  '6': minBleedStacks
+  '7': maxBleedStacks
+  '8': windupTicks
+  '9': coefficients.entities.damage.minecraft:advantage_physical
+
+
+

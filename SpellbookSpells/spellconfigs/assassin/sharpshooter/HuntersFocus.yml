@@ -1,0 +1,39 @@
+class: assassin.sharpshooter.HuntersFocus
+cooldown: 2
+minFocusDrain: 10.0
+maxFocusDrain: 20.0
+trueSightRadius: 30.0
+name:
+  de: Jägerfokus
+  en: Hunter's Focus
+description:
+  en:
+  - <!i><#757575>Sharpshooter
+  - ' '
+  - <#94958B>Toggle ability. Drains Focus per second while active.
+  - <#94958B>Grants True Sight, revealing invisible enemies within
+  - <#94958B>range, and makes Charged Shot charge 50% faster.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Toggle Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Focus Drain: <arg:1>/s'
+  - '<!i><yellow>👁️ <#94958B>True Sight Radius: <arg:2> blocks'
+  de:
+  - <!i><#757575>Sharpshooter
+  - ' '
+  - <#94958B>Umschaltbare Fähigkeit. Verbraucht Fokus pro Sekunde.
+  - <#94958B>Gewährt Wahre Sicht, die unsichtbare Feinde in
+  - <#94958B>Reichweite aufdeckt, und beschleunigt Charged Shot um 50%.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Umschalt-Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Fokus Verbrauch: <arg:4>/s <dark_gray>(<arg:1>-<arg:2> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>👁️ <#94958B>Wahre Sicht Radius: <arg:3> Blöcke'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': minFocusDrain
+  '2': maxFocusDrain
+  '3': trueSightRadius
+  '4': focusDrain
+

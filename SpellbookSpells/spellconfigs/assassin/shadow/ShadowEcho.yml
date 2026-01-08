@@ -1,0 +1,57 @@
+class: assassin.shadow.ShadowEcho
+duration: 30
+energyCost: 60
+energyRestoreOnMarkedDamage: 40
+resistanceMinDuration: 6
+resistanceMaxDuration: 12
+name:
+  de: Schattenecho
+  en: Shadow Echo
+description:
+  de:
+  - <!i><#757575>Schatten
+  - ' '
+  - <#94958B>Markiert einen Ort. Der Schatten kann mit dem
+  - <#94958B>Spell zum Ort zurückkehren.
+  - <#94958B>Bei der Rückkehr gewährt dem Schatten Resistenz.
+  - <#94958B>Wenn ein markiertes Ziel während der Dauer
+  - <#94958B>angegriffen wurde, stellt der Schatten Energie
+  - <#94958B>wieder her.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:1> Energie'
+  - '<!i><yellow>⌛ <#94958B>Dauer: <arg:0>s'
+  - '<!i><yellow>  <#94958B>Energie-Wiederherstellung: <arg:2>'
+  - '<!i><yellow>  <#94958B>Resistenz-Dauer: <arg:6> <dark_gray>(<arg:3>-<arg:4> <#94958B>-♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Shadow
+  - ' '
+  - <#94958B>Marks a location. The Shadow can return to the
+  - <#94958B>market location by using the spell again.
+  - <#94958B>Upon return, grant resistance to the Shadow. If
+  - <#94958B>a marked target was damaged during the duration,
+  - <#94958B>the Shadow restores energy.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:1> Energy'
+  - '<!i><yellow>⌛ <#94958B>Duration: <arg:0>s'
+  - '<!i><yellow>  <#94958B>Energy Restore: <arg:2>'
+  - '<!i><yellow>  <#94958B>Resistance Duration: <arg:6> <dark_gray>(<arg:3>-<arg:4>
+    <#94958B>-♦<dark_gray>)</dark_gray>'
+coefficients:
+  players:
+    resistanceDuration:
+      minecraft:resistance_magical: 0.5
+  entities:
+    resistanceDuration:
+      minecraft:resistance_magical: 0.5
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': duration
+  '1': energyCost
+  '2': energyRestoreOnMarkedDamage
+  '3': resistanceMinDuration
+  '4': resistanceMaxDuration
+  '5': coefficients.entities.resistanceDuration.minecraft:resistance_magical
+  '6': resistanceDuration
+  '7': resistanceDuration

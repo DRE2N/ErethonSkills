@@ -1,0 +1,82 @@
+class: assassin.cutthroat.Mangle
+energyCost: 50
+range: 6.0
+targetRaySize: 2.0
+bleedingStacksRequired: 3
+silenceMinDuration: 5
+silenceMaxDuration: 20
+weaknessMinDuration: 10
+weaknessMaxDuration: 20
+terrorAuraRadius: 4.0
+bonusDamagePerStack: 0.2
+fearDuration: 3
+woundDuration: 5
+name:
+  de: Zerfetzen
+  en: Mangle
+description:
+  de:
+  - <!i><#757575>Meuchelmörder
+  - ' '
+  - <#94958B>Der Meuchelmörder zerfetzt einen bereits blutenden Gegner und
+  - <#94958B>fügt ihm physischen Schaden zu.
+  - <#94958B>Der Gegner erhält Schwäche und wird gesilenced.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:0> Energie'
+  - '<!i><yellow>   <#94958B>Reichweite: <arg:1> Blöcke'
+  - '<!i><yellow>   <#94958B>Schaden: <arg:7>'
+  - '<!i><yellow>   <#94958B>Benötigte Blutung-Stacks: <arg:2>'
+  - '<!i><yellow>   <#94958B>Silence-Dauer: <arg:10> <dark_gray>(<arg:3>-<arg:4> <#0fdcfa>+♦<dark_gray>)</dark_gray>
+    <#94958B>s'
+  - '<!i><yellow>   <#94958B>Schwäche-Dauer: <arg:11> <dark_gray>(<arg:5>-<arg:6>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray> <#94958B>s'
+  en:
+  - <!i><#757575>Cutthroat
+  - ' '
+  - <#94958B>The cutthroat mangles an already bleeding target.
+  - <#94958B>Dealing physical damage.
+  - <#94958B>The target is silenced and receives weakness.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:0> Energy'
+  - '<!i><yellow>   <#94958B>Range: <arg:1> Blocks'
+  - '<!i><yellow>   <#94958B>Damage: <arg:7>'
+  - '<!i><yellow>   <#94958B>Bleeding Stacks Required: <arg:2>'
+  - '<!i><yellow>   <#94958B>Silence Duration: <arg:10> <dark_gray>(<arg:3>-<arg:4>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray> <#94958B>s'
+  - '<!i><yellow>   <#94958B>Weakness Duration: <arg:11> <dark_gray>(<arg:5>-<arg:6>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray> <#94958B>s'
+
+coefficients:
+  players:
+    minecraft:advantage_physical: 1.8
+    silenceDuration:
+      minecraft:advantage_magical: 2.0
+    weaknessDuration:
+      minecraft:advantage_magical: 2.0
+  entities:
+    minecraft:advantage_physical: 1.8
+    silenceDuration:
+      minecraft:advantage_magical: 2.0
+    weaknessDuration:
+      minecraft:advantage_magical: 2.0
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': energyCost
+  '1': range
+  '2': targetRaySize
+  '3': bleedingStacksRequired
+  '4': silenceMinDuration
+  '5': silenceMaxDuration
+  '6': weaknessMinDuration
+  '7': weaknessMaxDuration
+  '8': terrorAuraRadius
+  '9': bonusDamagePerStack
+  '10': fearDuration
+  '11': woundDuration
+  '12': coefficients.entities.minecraft:advantage_physical
+  '13': coefficients.entities.silenceDuration.minecraft:advantage_magical
+  '14': coefficients.entities.weaknessDuration.minecraft:advantage_magical
+  '15': silenceDuration
+  '16': weaknessDuration

@@ -1,0 +1,67 @@
+class: assassin.shadow.DaggerThrow
+duration: 10
+energyCost: 40
+speed: 2.0
+divergence: 1
+slowDurationMin: 6
+slowDurationMax: 12
+slowStacksMin: 1
+slowStacksMax: 5
+name:
+  de: Dolchwurf
+  en: Dagger Throw
+description:
+  de:
+  - <!i><#757575>Schatten
+  - ' '
+  - <#94958B>Der Schatten wirft einen Dolch auf das Ziel und verursacht Schaden
+  - <#94958B>und wendet einen Verlangsamungseffekt an.
+  - <#94958B>Das Ziel wird für kurze Zeit markiert.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:0> Energie'
+  - '<!i><yellow>  <#94958B>Schaden: <arg:7>'
+  - '<!i><yellow>  <#94958B>Verlangsamungs-Dauer: <arg:10> <dark_gray>(<arg:3>-<arg:4>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>  <#94958B>Verlangsamungs-Stacks: <arg:11> <dark_gray>(<arg:5>-<arg:6>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Shadow
+  - ' '
+  - <#94958B>The Shadow throws a dagger at the target, dealing damage
+  - <#94958B>and applying a slow effect.
+  - <#94958B>The target is marked for a short duration.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:0> Energy'
+  - '<!i><yellow>  <#94958B>Damage: <arg:7>'
+  - '<!i><yellow>  <#94958B>Slow Duration: <arg:10> <dark_gray>(<arg:3>-<arg:4> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>  <#94958B>Slow Stacks: <arg:11> <dark_gray>(<arg:5>-<arg:6> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+coefficients:
+  players:
+    minecraft:advantage_physical: 1.5
+    slowDuration:
+      minecraft:advantage_magical: 0.5
+    slowStacks:
+      minecraft:advantage_magical: 0.1
+  entities:
+    minecraft:advantage_physical: 1.8
+    slowDuration:
+      minecraft:advantage_magical: 0.5
+    slowStacks:
+      minecraft:advantage_magical: 0.1
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': duration
+  '1': energyCost
+  '2': speed
+  '3': divergence
+  '4': slowDurationMin
+  '5': slowDurationMax
+  '6': slowStacksMin
+  '7': slowStacksMax
+  '8': coefficients.entities.minecraft:advantage_physical
+  '9': coefficients.entities.slowDuration.minecraft:advantage_magical
+  '10': coefficients.entities.slowStacks.minecraft:advantage_magical
+  '11': slowDuration
+  '12': slowStacks

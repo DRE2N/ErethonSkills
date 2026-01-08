@@ -1,0 +1,56 @@
+class: warrior.swordstorm.Harpoon
+cooldown: 10
+energyCost: 40
+pullStrength: 1.2
+pullDistance: 3.0
+tridentVelocity: 1.5
+backwardPullModifier: 2.0
+coefficients:
+  players:
+    minecraft:advantage_physical: 0.8
+  entities:
+    minecraft:advantage_physical: 0.8
+name:
+  de: Harpune
+  en: Harpoon
+description:
+  en:
+  - <!i><#757575>Swordstorm
+  - ' '
+  - <#94958B>Throw a harpoon that pulls enemies towards the Swordstorm.
+  - <#94958B>Enemies hit by the harpoon are pulled towards the Swordstorm.
+  - <#94958B>If moving backward, the pull is stronger.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Rage: <arg:0> Rage'
+  - '<!i><yellow>↔  <#94958B>Pull Strength: <arg:1>'
+  - '<!i><yellow>↔  <#94958B>Pull Distance: <arg:2>'
+  - '<!i><yellow>↔  <#94958B>Trident Velocity: <arg:3>'
+  - '<!i><yellow>    <#94958B>Backward Pull Modifier: <arg:4>'
+  de:
+  - <!i><#757575>Schwersturm
+  - ' '
+  - <#94958B>Wirf eine Harpune, die Gegner zum Schwertsturm zieht.
+  - <#94958B>Gegner, die von der Harpune getroffen werden, werden zum Schwertsturm
+    gezogen.
+  - <#94958B>Wenn rückwärts bewegt wird, ist die Ziehkraft stärker.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Zorn: <arg:1> Zorn'
+  - '<!i><yellow>↔  <#94958B>Ziehkraft: <arg:2>'
+  - '<!i><yellow>↔  <#94958B>Ziehdistanz: <arg:3>'
+  - '<!i><yellow>↔  <#94958B>Tridentgeschwindigkeit: <arg:4>'
+  - '<!i><yellow>    <#94958B>Rückwärtsziehkraft-Modifikator: <arg:5>'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': pullStrength
+  '3': pullDistance
+  '4': tridentVelocity
+  '5': backwardPullModifier
+  '6': coefficients.entities.minecraft:advantage_physical
+  '7': pullStrength
+  '8': pullDistance
+  '9': tridentVelocity
+  '10': backwardPullMultiplier

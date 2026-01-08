@@ -1,0 +1,78 @@
+class: assassin.cutthroat.BladeDash
+distance: 1.5
+energyCost: 20
+speedMultiplier: 0.7
+sideDashStrength: 0.8
+damageWidth: 1.5
+energyPerTarget: 5.0
+weaknessDurationMin: 2
+weaknessDurationMax: 10
+weaknessStacksMin: 1
+weaknessStacksMax: 3
+name:
+  de: Klingensprung
+  en: Blade Dash
+description:
+  de:
+  - <!i><#757575>Meuchelmörder | Rechtsklick
+  - ' '
+  - <#94958B>Der Meuchelmörder springt nach vorn, wobei er Schaden
+  - <#94958B>und Schwäche an allen Gegnern in seinem
+  - <#94958B>Pfad verursacht. Nach dem Sprung
+  - <#94958B>erhält der Meuchelmörder Energie, basierend auf der Anzahl
+  - <#94958B>der getroffenen Ziele.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:1> Energie'
+  - '<!i><yellow>    <#94958B>Schaden: <arg:10>'
+  - '<!i><yellow>    <#94958B>Energie pro Ziel: <arg:5> Energie'
+  - '<!i><yellow>    <#94958B>Schwäche: <arg:14> <dark_gray>(<arg:8>-<arg:9> <#0fdcfa>+♦<dark_gray>)</dark_gray>
+    x <arg:13> <dark_gray>(<arg:6>-<arg:7> <#0fdcfa>+♦<dark_gray>)</dark_gray>s'
+  
+  en:
+  - <!i><#757575>Mobility | Right Click
+  - ' '
+  - <#94958B>The cutthroat dashes forward, dealing damage
+  - <#94958B>and weakness to all enemies in their
+  - <#94958B>path. After the dash, the cutthroat
+  - <#94958B>gains energy based on the number
+  - <#94958B>of targets hit.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:1> Energy'
+  - '<!i><yellow>   <#94958B>Damage: <arg:10>'
+  - '<!i><yellow>   <#94958B>Energy per Target: <arg:5> Energy'
+  - '<!i><yellow>   <#94958B>Weakness: <arg:14> <dark_gray>(<arg:8>-<arg:9> <#0fdcfa>+♦<dark_gray>)</dark_gray>
+    <#94958B>x <arg:13> <dark_gray>(<arg:6>-<arg:7> <#0fdcfa>+♦<dark_gray>)</dark_gray>
+    <#94958B>s'
+
+coefficients:
+  players:
+    minecraft:advantage_physical: 0.3
+    weaknessDuration:
+      minecraft:advantage_magical: 1.5
+    weaknessStacks:
+      minecraft:advantage_magical: 0.05
+  entities:
+    minecraft:advantage_physical: 0.3
+    weaknessDuration:
+      minecraft:advantage_magical: 1.5
+    weaknessStacks:
+      minecraft:advantage_magical: 0.05
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': distance
+  '1': energyCost
+  '2': speedMultiplier
+  '3': sideDashStrength
+  '4': damageWidth
+  '5': energyPerTarget
+  '6': weaknessDurationMin
+  '7': weaknessDurationMax
+  '8': weaknessStacksMin
+  '9': weaknessStacksMax
+  '10': coefficients.entities.minecraft:advantage_physical
+  '11': coefficients.entities.weaknessDuration.minecraft:advantage_magical
+  '12': coefficients.entities.weaknessStacks.minecraft:advantage_magical
+  '13': weaknessDuration
+  '14': weaknessStacks

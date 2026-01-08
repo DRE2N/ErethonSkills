@@ -1,0 +1,62 @@
+class: assassin.sharpshooter.PiercingRound
+cooldown: 10
+energyCost: 50
+lanceSpeed: 3.0
+lanceRange: 48.0
+lanceWidth: 0.8
+headshotRangeFromEye: 0.4
+headshotMultiplier: 1.5
+focusRefundPercentage: 0.5
+focusPerHeadshot: 25
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_magical: 1.6
+  entities:
+    damage:
+      minecraft:advantage_magical: 2.2
+name:
+  de: Durchschlagende Ladung
+  en: Piercing Round
+description:
+  en:
+  - <!i><#757575>Sharpshooter
+  - ' '
+  - <#94958B>Fire a fast energy lance that pierces through all
+  - <#94958B>enemies in a line, dealing moderate damage to each.
+  - <#94958B>Headshots refund 50% of the Energy cost plus bonus Energy.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energy Cost: <arg:1> Energy'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:3> blocks'
+  - '<!i><yellow>🎯 <#94958B>Headshot Multiplier: <arg:10>x'
+  - '<!i><yellow>⚡ <#94958B>Headshot Refund: <arg:11>%'
+  de:
+  - <!i><#757575>Sharpshooter
+  - ' '
+  - <#94958B>Feuere eine schnelle Energielanze, die alle Feinde
+  - <#94958B>in einer Linie durchdringt und jedem moderaten
+  - <#94958B>Schaden zufügt. Kopfschüsse erstatten 50% der Energie plus Bonus.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energiekosten: <arg:1> Energie'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:3> Blöcke'
+  - '<!i><yellow>🎯 <#94958B>Kopfschuss Multiplikator: <arg:10>x'
+  - '<!i><yellow>⚡ <#94958B>Kopfschuss Rückerstattung: <arg:11>%'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': lanceSpeed
+  '3': lanceRange
+  '4': lanceWidth
+  '5': headshotRangeFromEye
+  '6': headshotMultiplier
+  '7': focusRefundPercentage
+  '8': focusPerHeadshot
+  '9': coefficients.entities.damage.minecraft:advantage_magical
+  '10': headshotMultiplier
+  '11': focusRefundPercentage
+

@@ -1,0 +1,94 @@
+class: assassin.shadow.ShadowCloak
+duration: 30
+energyCost: 55
+bonusDamage: 100
+blindnessDurationMin: 10
+blindnessDurationMax: 26
+speedDurationMin: 5
+speedDurationMax: 10
+bonusDamageMin: 25
+bonusDamageMax: 200
+healthRegenMin: 5
+healthRegenMax: 15
+name:
+  de: Schattenumhang
+  en: Shadow Cloak
+description:
+  de:
+  - <!i><#757575>Schatten
+  - ' '
+  - <#94958B>Der Schatten umhüllt sich mit Schatten,
+  - <#94958B>gewährt ihm Unsichtbarkeit und erhöht seine Geschwindigkeit.
+  - <#94958B>Entfernt negative Effekte und regeneriert Gesundheit.
+  - <#94958B>Angreifen bricht den Umhang, verursacht
+  - <#94958B>aber Bonus-Schaden am Ziel. Wenn das Ziel
+  - <#94958B>markiert ist, wird es zusätzlich geblendet.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:1> Energie'
+  - '<!i><yellow>⌛ <#94958B>Dauer: <arg:0>s'
+  - '<!i><yellow>  <#94958B>Bonus-Schaden: <#f02607><arg:2>'
+  - '<!i><yellow>  <#94958B>Gesundheit: <arg:10>-<arg:11>'
+  - '<!i><yellow>  <#94958B>Blindheit-Dauer: <arg:7>s <dark_gray>(<arg:3>-<arg:4>
+    <#94958B>+♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Shadow
+  - ' '
+  - <#94958B>Clouds the Shadow in shadows, granting them
+  - <#94958B>invisibility and inceasing their movement speed.
+  - <#94958B>Removes negative effects and regenerates health.
+  - <#94958B>Attacking will break the cloak, but deals bonus
+  - <#94958B>damage to the target. If the target is marked,
+  - <#94958B>they will additionally be blinded.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:1> Energy'
+  - '<!i><yellow>⌛ <#94958B>Duration: <arg:0>s'
+  - '<!i><yellow>   <#94958B>Bonus Damage: <#f02607><arg:2>'
+  - '<!i><yellow>   <#94958B>Health Regen: <arg:10>-<arg:11>'
+  - '<!i><yellow>   <#94958B>Blindness Duration: <arg:7>s <dark_gray>(<arg:3>-<arg:4>'
+coefficients:
+  players:
+    minecraft:advantage_physical: 1.5
+    blindnessDuration:
+      minecraft:advantage_magical: 0.5
+    bonusDamage:
+      minecraft:advantage_physical: 0.5
+    speedDuration:
+      minecraft:advantage_magical: 0.5
+    healthRegen:
+      minecraft:stat_healingpower: 0.3
+  entities:
+    minecraft:advantage_physical: 1.5
+    blindnessDuration:
+      minecraft:advantage_magical: 0.5
+    bonusDamage:
+      minecraft:advantage_physical: 0.5
+    speedDuration:
+      minecraft:advantage_magical: 0.5
+    healthRegen:
+      minecraft:stat_healingpower: 0.3
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': duration
+  '1': energyCost
+  '2': bonusDamage
+  '3': blindnessDurationMin
+  '4': blindnessDurationMax
+  '5': speedDurationMin
+  '6': speedDurationMax
+  '7': bonusDamageMin
+  '8': bonusDamageMax
+  '9': healthRegenMin
+  '10': healthRegenMax
+  '11': coefficients.entities.minecraft:advantage_physical
+  '12': coefficients.entities.blindnessDuration.minecraft:advantage_magical
+  '13': coefficients.entities.bonusDamage.minecraft:advantage_physical
+  '14': coefficients.entities.speedDuration.minecraft:advantage_magical
+  '15': blindnessDuration
+  '16': speedDuration
+  '17': bonusDamage
+  '18': healthRegen
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.

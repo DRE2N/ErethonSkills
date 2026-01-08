@@ -1,0 +1,60 @@
+class: assassin.cutthroat.CoupDeGrace
+energyCost: 90
+bleedingBonusMin: 5
+bleedingBonusMax: 30
+executionThreshold: 0.15
+executionAuraRadius: 4.0
+name:
+  de: Gnadenstoß
+  en: Coup de Grace
+description:
+  de:
+  - <!i><#757575>Meuchelmörder | Ultimate
+  - ' '
+  - <#94958B>Der Meuchelmörder springt zu einem Ziel
+  - <#94958B>und fügt massiven Schaden zu. Der Schaden wird erhöht
+  - <#94958B>um <arg:1>%-<arg:2>% <dark_gray>(<#0fdcfa>+♦<dark_gray>)</dark_gray>
+  - <#94958B>für jeden Blutungs-Effekt auf dem Ziel.
+  - <#94958B>Wenn das Ziel unter <#027DCA>25% <#94958B>Gesundheit fällt,
+  - <#94958B>wird es sofort <dark_red>exekutiert<#94958B>.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:0> Energie'
+  - '<!i><yellow>   <#94958B>Blutung Bonus: <arg:1>%-<arg:2>% <dark_gray>pro Stack
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Gesundheits Schwelle: <#027DCA>25%'
+  en:
+  - <!i><#757575>Cutthroat | Ultimate
+  - ' '
+  - <#94958B>The cutthroat jumps to a target, dealing
+  - <#94958B>massive damage. Damage is increased
+  - <#94958B>by <arg:1>%-<arg:2>% <dark_gray>(<#0fdcfa>+♦<dark_gray>)</dark_gray>
+  - <#94958B>for each bleeding stack on the target.
+  - <#94958B>If the target falls below <#027DCA>25% <#94958B>health,
+  - <#94958B>they are instantly <dark_red>executed<#94958B>.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:0> Energy'
+  - '<!i><yellow>   <#94958B>Bleeding Bonus: <arg:1>%-<arg:2>% <dark_gray>per Stack
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Health Threshold: <#027DCA>25%'
+coefficients:
+  players:
+    minecraft:advantage_physical: 1.5
+    bleedingBonus:
+      minecraft:advantage_magical: 1.3
+  entities:
+    minecraft:advantage_physical: 1.5
+    bleedingBonus:
+      minecraft:advantage_magical: 1.3
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': energyCost
+  '1': bleedingBonusMin
+  '2': bleedingBonusMax
+  '3': executionThreshold
+  '4': executionAuraRadius
+  '5': coefficients.entities.minecraft:advantage_physical
+  '6': coefficients.entities.bleedingBonus.minecraft:advantage_magical
+  '7': bleedingBonus
+

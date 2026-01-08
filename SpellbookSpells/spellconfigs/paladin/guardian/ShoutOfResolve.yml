@@ -1,0 +1,106 @@
+class: paladin.guardian.ShoutOfResolve
+cooldown: 20
+energyCost: 30
+range: 6
+duration: 10
+guardianDamageMultiplierMin: 1.3
+guardianDamageMultiplierMax: 1.8
+allyDamageMultiplierMin: 1.3
+allyDamageMultiplierMax: 1.8
+guardianDamageReflectMin: 0.2
+guardianDamageReflectMax: 0.8
+allyDamageReflectMin: 0.2
+allyDamageReflectMax: 0.8
+allyHealDamageMultiplier: 0.5
+allyHealPerDevotionMin: 0.5
+allyHealPerDevotionMax: 3.0
+name:
+  de: Ruf der Entschlossenheit
+  en: Shout of Resolve
+description:
+  de:
+  - <!i><#757575>Wächter
+  - ' '
+  - <#94958B>Der Wächter nimmt weniger Schaden, wird immun gegen
+  - <#94958B>alle negativen Effekte und reflektiert einen Teil des
+  - <#94958B>Schadens, der ihm zugefügt wird, zurück an den Angreifer.
+  - <#94958B>Nahe Verbündete erhalten einen Teil der Buffs und werden
+  - <#94958B>für einen Teil des erlittenen Schadens geheilt, basierend
+  - <#94958B>auf der aktuellen Entschlossenheit des Wächters.
+  - <#94958B>Der Wächter erhält alle Heilung von Verbündeten.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Entschlossenheit: <arg:1>'
+  - '<!i><yellow>↔  <#94958B>Reichweite: <arg:2>'
+  - '<!i><yellow>⏳ <#94958B>Dauer: <arg:3> Sekunden'
+  - '<!i><yellow>   <#94958B>Wächter Schaden Multiplikator: <arg:17>x <dark_gray>(<arg:4>-<arg:5>
+    <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Verbündeten Schaden Multiplikator: <arg:15>x <dark_gray>(<arg:6>-<arg:7>
+    <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Wächter Schaden Reflektieren: <arg:18>x <dark_gray>(<arg:8>-<arg:9>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Verbündeten Schaden Reflektieren: <arg:16>x <dark_gray>(<arg:10>-<arg:11>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Verbündeten Heilung pro Entschlossenheit: <arg:16> <dark_gray>(<arg:13>-<arg:14>
+    <#32ac21>♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Guardian
+  - ' '
+  - <#94958B>The Guardian takes less damage, becomes immune to
+  - <#94958B>all negative effects and reflects a portion of the damage
+  - <#94958B>dealt to him back to the attacker. Nearby allies gain a
+  - <#94958B>portion of the buffs and are healed for some of the damage
+  - <#94958B>taken, based on the Guardians current Devotion.
+  - <#94958B>The Guardian receives all healing done to allies.
+  - ' '
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
+  - '<!i><yellow>⚡ <#94958B>Devotion: <arg:1>'
+  - '<!i><yellow>↔  <#94958B>Range: <arg:2>'
+  - '<!i><yellow>⏳ <#94958B>Duration: <arg:3> seconds'
+  - '<!i><yellow>   <#94958B>Guardian Damage Multiplier: <arg:17>x <dark_gray>(<arg:4>-<arg:5>
+    <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Ally Damage Multiplier: <arg:15>x <dark_gray>(<arg:6>-<arg:7>
+    <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Guardian Damage Reflect: <arg:18>x <dark_gray>(<arg:8>-<arg:9>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Ally Damage Reflect: <arg:16>x <dark_gray>(<arg:10>-<arg:11>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Ally Heal per Devotion: <arg:16> <dark_gray>(<arg:13>-<arg:14>
+    <#32ac21>♦<dark_gray>)</dark_gray>'
+coefficients:
+  players:
+    guardianDamageMultiplier:
+      minecraft:resistance_magical: 0.5
+    allyDamageMultiplier:
+      minecraft:resistance_magical: 0.5
+    allyHealPerDevotion:
+      minecraft:stat_healing_power: 0.5
+    allyDamageReflect:
+      minecraft:advantage_magical: 0.5
+    guardianDamageReflect:
+      minecraft:advantage_magical: 0.5
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': range
+  '3': duration
+  '4': guardianDamageMultiplierMin
+  '5': guardianDamageMultiplierMax
+  '6': allyDamageMultiplierMin
+  '7': allyDamageMultiplierMax
+  '8': guardianDamageReflectMin
+  '9': guardianDamageReflectMax
+  '10': allyDamageReflectMin
+  '11': allyDamageReflectMax
+  '12': allyHealDamageMultiplier
+  '13': allyHealPerDevotionMin
+  '14': allyHealPerDevotionMax
+  '15': allyDamageMultiplier
+  '16': allyDamageReflect
+  '17': guardianDamageMultiplier
+  '18': guardianDamageReflect
+  '19': allyHealPerDevotion

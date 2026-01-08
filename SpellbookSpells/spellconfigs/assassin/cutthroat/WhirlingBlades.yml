@@ -1,0 +1,61 @@
+class: assassin.cutthroat.WhirlingBlades
+energyCost: 50
+radius: 3.0
+bonusDamageMultiplier: 1.5
+bleedingSpreadRadius: 3.0
+bleedingMinDuration: 5
+bleedingMaxDuration: 15
+whirlDuration: 20
+name:
+  de: Wirbelklingen
+  en: Whirling Blades
+description:
+  de:
+  - <!i><#757575>Meuchelmörder
+  - ' '
+  - <#94958B>Der Meuchelmörder wirbelt mit seinen Klingen und fügt Gegnern
+  - <#94958B>in der Nähe <arg:7> <#94958B>physischen Schaden zu.
+  - <#94958B>Der Schaden auf blutenden Gegnern ist um <arg:2>x erhöht
+  - <#94958B>und verbreitet Blutung auf nahe Feinde.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:0> Energie'
+  - '<!i><yellow>   <#94958B>Radius: <arg:1> Blöcke'
+  - '<!i><yellow>   <#94958B>Schaden: <arg:7>'
+  - '<!i><yellow>   <#94958B>Blutungs-Bonus-Schaden: <arg:2>x'
+  - '<!i><yellow>   <#94958B>Blutungs-Verbreitungs-Radius: <arg:3> Blöcke'
+  en:
+  - <!i><#757575>Cutthroat
+  - ' '
+  - <#94958B>The cutthroat whirls with his blades, dealing
+  - <#94958B><arg:7> <#94958B>physical damage to enemies.
+  - <#94958B>Damage is increased by <arg:2>x on bleeding targets
+  - <#94958B>and spreads bleeding to nearby enemies.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:0> Energy'
+  - '<!i><yellow>   <#94958B>Radius: <arg:1> Blocks'
+  - '<!i><yellow>   <#94958B>Damage: <arg:7>'
+  - '<!i><yellow>   <#94958B>Bleeding Bonus Damage: <arg:2>x'
+  - '<!i><yellow>   <#94958B>Bleeding Spread Radius: <arg:3> Blocks'
+coefficients:
+  players:
+    minecraft:advantage_physical: 1.3
+    bleedingDuration:
+      minecraft:advantage_magical: 1.2
+  entities:
+    minecraft:advantage_physical: 1.3
+    bleedingDuration:
+      minecraft:advantage_magical: 1.2
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': energyCost
+  '1': radius
+  '2': bonusDamageMultiplier
+  '3': bleedingSpreadRadius
+  '4': bleedingMinDuration
+  '5': bleedingMaxDuration
+  '6': whirlDuration
+  '7': coefficients.entities.minecraft:advantage_physical
+  '8': coefficients.entities.bleedingDuration.minecraft:advantage_magical
+  '9': bleedingDuration

@@ -1,0 +1,63 @@
+class: paladin.inquisitor.HolySmite
+cooldown: 12
+range: 10
+bonusDamagePerStack: 25
+furyStacksPerStack: 1
+furyDurationMin: 5
+furyDurationMax: 15
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_physical: 1.8
+  entities:
+    damage:
+      minecraft:advantage_physical: 2.5
+name:
+  de: Heiliger Schlag
+  en: Holy Smite
+description:
+  en:
+  - <!i><#757575>Inquisitor
+  - ' '
+  - <#94958B>Deliver a powerful overhead strike from the heavens
+  - <#94958B>to a single target, dealing physical damage and
+  - <#94958B>creating a consecrated ground that weakens enemies.
+  - ' '
+  - '<#FFD700>✦ Judgement:'
+  - <#94958B>Consumes all Judgement stacks for massive bonus
+  - <#94958B>magic damage per stack. Grants you Fury per stack.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:1> blocks'
+  - '<!i><yellow>⚔ <#94958B>Bonus Damage per Judgement: <arg:2>'
+  - '<!i><yellow>💪 <#94958B>Fury per Judgement: <arg:3> stacks'
+  - '<!i><yellow>⏱️ <#94958B>Fury Duration: <arg:4>-<arg:5>s'
+  de:
+  - <!i><#757575>Inquisitor
+  - ' '
+  - <#94958B>Führe einen mächtigen Überkopfschlag aus dem Himmel
+  - <#94958B>auf ein einzelnes Ziel aus, verursache physischen Schaden
+  - <#94958B>und erschaffe geweihten Boden, der Feinde schwächt.
+  - ' '
+  - '<#FFD700>✦ Urteil:'
+  - <#94958B>Verbraucht alle Urteil-Stack für massiven Bonus-
+  - <#94958B>Magieschaden pro Stack. Gewährt dir Wut pro Stack.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:1> Blöcke'
+  - '<!i><yellow>⚔ <#94958B>Bonus Schaden pro Urteil: <arg:2>'
+  - '<!i><yellow>💪 <#94958B>Wut pro Urteil: <arg:3> Stacks'
+  - '<!i><yellow>⏱️ <#94958B>Wut Dauer: <arg:7>s <dark_gray>(<arg:4>-<arg:5> <#f02607>+♦<dark_gray>)</dark_gray>'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': range
+  '2': bonusDamagePerStack
+  '3': furyStacksPerStack
+  '4': furyDurationMin
+  '5': furyDurationMax
+  '6': coefficients.entities.damage.minecraft:advantage_physical
+  '7': furyDuration
+

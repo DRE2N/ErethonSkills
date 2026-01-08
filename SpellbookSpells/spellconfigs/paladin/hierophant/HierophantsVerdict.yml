@@ -1,0 +1,62 @@
+class: paladin.hierophant.HierophantsVerdict
+cooldown: 30
+radius: 4
+damageFalloffPerBlock: 0.5
+weaknessDuration: 6
+weaknessStacks: 1
+minWrathForWeakness: 50
+name:
+  de: Urteil des Hierophanten
+  en: Hierophant's Verdict
+description:
+  de:
+  - <!i><#757575>Hierophant
+  - ' '
+  - <#94958B>Der Hierophant schlägt mit seiner Waffe auf den Boden
+  - <#94958B>und verursacht physischen und magischen Schaden
+  - <#94958B>an Gegnern in der Nähe. Der Schaden nimmt mit der Entfernung ab.
+  - <#94958B>Wenn der Hierophant genug Zorn hat, schwächt er die Gegner.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
+  - '<!i><yellow>    <#94958B>Magischer Schaden: <#0fdcfa><arg:5>'
+  - '<!i><yellow>    <#94958B>Physischer Schaden: <#f02607"><arg:6>'
+  - '<!i><yellow>↔  <#94958B>Radius: <arg:1>'
+  - '<!i><yellow>   <#94958B>Schaden-Reduktion pro Block: <arg:2>'
+  - '<!i><yellow>   <#94958B>Min. Zorn für Schwäche: <arg:5>'
+  - '<!i><yellow>   <#94958B>Schwäche-Dauer: <arg:3>s'
+  - '<!i><yellow>   <#94958B>Schwäche-Stacks: <arg:4>'
+  en:
+  - <!i><#757575>Hierophant
+  - ' '
+  - <#94958B>The Hierophant slams his weapon down, dealing
+  - <#94958B>physical and magical damage to nearby enemies.
+  - <#94958B>The damage falloff is lessened by the caster's wrath.
+  - <#94958B>If the Hierophant has enough wrath, he weakens enemies hit.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
+  - '<!i><yellow>    <#94958B>Magic Damage: <#0fdcfa><arg:5>'
+  - '<!i><yellow>    <#94958B>Physical Damage: <#f02607"><arg:6>'
+  - '<!i><yellow>↔  <#94958B>Radius: <arg:1>'
+  - '<!i><yellow>   <#94958B>Damage Falloff per Block: <arg:2>'
+  - '<!i><yellow>   <#94958B>Min Wrath for Weakness: <arg:5>'
+  - '<!i><yellow>   <#94958B>Weakness Duration: <arg:3>s'
+  - '<!i><yellow>   <#94958B>Weakness Stacks: <arg:4>'
+coefficients:
+  players:
+    minecraft:advantage_magical: 1.5
+    minecraft:advantage_physical: 1.5
+  entities:
+    minecraft:advantage_magical: 1.5
+    minecraft:advantage_physical: 1.5
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': radius
+  '2': damageFalloffPerBlock
+  '3': weaknessDuration
+  '4': weaknessStacks
+  '5': minWrathForWeakness
+  '6': coefficients.entities.minecraft:advantage_magical
+  '7': coefficients.entities.minecraft:advantage_physical

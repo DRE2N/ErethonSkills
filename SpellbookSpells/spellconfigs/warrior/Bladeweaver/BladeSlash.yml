@@ -1,0 +1,54 @@
+class: warrior.bladeweaver.BladeSlash
+cooldown: 3
+energyBuildUpFromUse: 8
+projectileSpeed: 1.5
+maxDistance: 20.0
+hitboxWidth: 1.0
+razorMarkStacksPerHit: 1
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_physical: 1.2
+  entities:
+    damage:
+      minecraft:advantage_physical: 1.8
+name:
+  de: Klingenwurf
+  en: Blade Slash
+description:
+  en:
+  - <!i><#757575>Bladeweaver
+  - ' '
+  - <#94958B>Throw a spectral sword that pierces through enemies,
+  - <#94958B>applying Razor Mark to each target hit.
+  - ' '
+  - '<#FF6600>⚔ Demon Form: <#94958B>The blade returns like a boomerang,'
+  - <#94958B>hitting enemies twice.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energy Gain: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:3> blocks'
+  de:
+  - <!i><#757575>Klingenweaver
+  - ' '
+  - <#94958B>Wirf ein Geisterschwert, das Feinde durchbohrt
+  - <#94958B>und jedem getroffenen Ziel eine Rasierklingen-Markierung gibt.
+  - ' '
+  - '<#FF6600>⚔ Dämonenform: <#94958B>Die Klinge kehrt wie ein Bumerang zurück'
+  - <#94958B>und trifft Feinde zweimal.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energiegewinn: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:3> Blöcke'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyBuildUpFromUse
+  '2': projectileSpeed
+  '3': maxDistance
+  '4': hitboxWidth
+  '5': razorMarkStacksPerHit
+  '6': coefficients.entities.damage.minecraft:advantage_physical
+

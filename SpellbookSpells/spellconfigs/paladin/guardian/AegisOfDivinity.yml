@@ -1,0 +1,65 @@
+class: paladin.guardian.AegisOfDivinity
+cooldown: 99
+energyCost: 100
+radius: 12
+duration: 10
+resurrectionRange: 16
+healMin: 25
+healMax: 50
+name:
+  de: Aegis der Göttlichkeit
+  en: Aegis of Divinity
+description:
+  de:
+  - <!i><#757575>Wächter | Ultimate
+  - ' '
+  - <#94958B>Der Wächter erschafft eine große Schutzkuppel
+  - <#94958B>an einem Ort, die Feinde zurückstößt und
+  - <#94958B>Verbündete innerhalb der Kuppel stark heilt. Außerdem
+  - <#94958B>zerstört die Kuppel feindliche Projektile. Verbündete,
+  - <#94958B>die innerhalb oder in der Nähe der Kuppel sterben,
+  - <#94958B>werden mit voller Gesundheit im Zentrum wiederbelebt.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Entschlossenheit: <arg:1>'
+  - '<!i><yellow>↔  <#94958B>Radius: <arg:2>'
+  - '<!i><yellow>⌛ <#94958B>Dauer: <arg:3> Sekunden'
+  - '<!i><yellow>↔  <#94958B>Wiederbelebungs-Reichweite: <arg:4>'
+  - '<!i><yellow>   <#94958B>Heilung: <arg:7> <dark_gray>(<arg:5>-<arg:6> <#32ac21>♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Guardian | Ultimate
+  - ' '
+  - <#94958B>The Guardian creates a large dome of protection
+  - <#94958B>at a location, pushing enemies away and
+  - <#94958B>strongly healing allies within the dome. Additionally,
+  - <#94958B>the dome destroys enemy projectiles. Allies that die within
+  - <#94958B>or close to the dome are resurrected with full health at
+  - <#94958B>the center in case they die.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
+  - '<!i><yellow>⚡ <#94958B>Devotion: <arg:1>'
+  - '<!i><yellow>↔  <#94958B>Radius: <arg:2>'
+  - '<!i><yellow>⌛ <#94958B>Duration: <arg:3> seconds'
+  - '<!i><yellow>↔  <#94958B>Resurrection Range: <arg:4>'
+  - '<!i><yellow>   <#94958B>Healing: <arg:7> <dark_gray>(<arg:5>-<arg:6> <#32ac21>♦<dark_gray>)</dark_gray>'
+coefficients:
+  players:
+    heal:
+      minecraft:stat_healing_power: 2.1
+  entities:
+    heal:
+      minecraft:stat_healing_power: 2.1
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': radius
+  '3': duration
+  '4': resurrectionRange
+  '5': healMin
+  '6': healMax
+  '7': heal
+  '8': innerRadius
+  '9': outerRadius

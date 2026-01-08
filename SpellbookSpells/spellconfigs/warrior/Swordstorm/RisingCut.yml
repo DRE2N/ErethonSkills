@@ -1,0 +1,70 @@
+class: warrior.swordstorm.RisingCut
+cooldown: 24
+energyCost: 40
+range: 5
+ticksForFollowUp: 20
+upwardLaunchVelocityMin: 0.5
+upwardLaunchVelocityMax: 1.0
+followUpDamageMultiplierMin: 1.5
+followUpDamageMultiplierMax: 2.0
+coefficients:
+  players:
+    upwardLaunchVelocity:
+      minecraft:advantage_magical: 1.0
+    followUpDamageMultiplier:
+      minecraft:advantage_physical: 10.0
+  entities:
+    upwardLaunchVelocity:
+      minecraft:advantage_magical: 1.5
+    followUpDamageMultiplier:
+      minecraft:advantage_physical: 10.0
+name:
+  de: Aufsteigender Schnitt
+  en: Rising Cut
+description:
+  en:
+  - <!i><#757575>Swordstorm
+  - ' '
+  - <#94958B>Perform a powerful upward slash. If Jumping, launch
+  - <#94958B>the target into the air, interrupting their actions.
+  - <#94958B>Attacks while the target is airborne deal additional damage.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Rage: <arg:1> Rage'
+  - '<!i><yellow>↔  <#94958B>Range: <arg:2>'
+  - '<!i><yellow>    <#94958B>Upward Launch Velocity: <arg:9> <dark_gray>(<arg:3>-<arg:4>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Follow-Up Damage Multiplier: <arg:10> <dark_gray>(<arg:5>-<arg:6>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  de:
+  - <!i><#757575>Schwersturm
+  - ' '
+  - <#94958B>Führe einen kraftvollen aufsteigenden Schnitt aus. Wenn gesprungen wird,
+  - <#94958B>wird das Ziel in die Luft katapultiert, was Aktionen unterbricht.
+  - <#94958B>Angriffe, während das Ziel in der Luft ist, fügen zusätzlichen Schaden
+    zu.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Zorn: <arg:1> Zorn'
+  - '<!i><yellow>↔  <#94958B>Reichweite: <arg:2>'
+  - '<!i><yellow>    <#94958B>Aufwärtsgeschwindigkeit: <arg:10> <dark_gray>(<arg:4>-<arg:5>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>    <#94958B>Folgeangriff-Schaden-Multiplikator: <arg:11> <dark_gray>(<arg:6>-<arg:7>
+    <#f02607>+♦<dark_gray>)</dark_gray>'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': range
+  '3': ticksForFollowUp
+  '4': upwardLaunchVelocityMin
+  '5': upwardLaunchVelocityMax
+  '6': followUpDamageMultiplierMin
+  '7': followUpDamageMultiplierMax
+  '8': coefficients.entities.upwardLaunchVelocity.minecraft:advantage_magical
+  '9': coefficients.entities.followUpDamageMultiplier.minecraft:advantage_physical
+  '10': upwardLaunchVelocity
+  '11': followUpDamageMultiplier
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.

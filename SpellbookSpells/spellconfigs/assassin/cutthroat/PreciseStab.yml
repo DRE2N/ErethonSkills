@@ -1,0 +1,63 @@
+class: assassin.cutthroat.PreciseStab
+energyCost: 40
+targetRaySize: 2.0
+bleedStacksRequired: 2
+furyMinDuration: 8
+furyMaxDuration: 20
+furyWaveRange: 6.0
+furyWaveAngle: 60.0
+name:
+  de: Präziser Stich
+  en: Precise Stab
+description:
+  de:
+  - <!i><#757575>Meuchelmörder
+  - ' '
+  - <#94958B>Der Meuchelmörder sticht einen Gegner mit einem präzisen Stich.
+  - <#94958B>Wenn der Gegner bereits blutet, erhält der Meuchelmörder
+  - <#94958B>Wut, wobei die Blutung des Gegners entfernt wird.
+  - <#94958B>Dies erzeugt eine Blutwelle, die nahe Gegnern Schaden zufügt.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:0> Energie'
+  - '<!i><yellow>   <#94958B>Schaden: <arg:7>'
+  - '<!i><yellow>   <#94958B>Benötigte Blutung-Stacks: <arg:2>'
+  - '<!i><yellow>   <#94958B>Blutwelle Reichweite: <arg:5> Blöcke'
+  - '<!i><yellow>   <#94958B>Blutwelle Winkel: <arg:6>°'
+  - '<!i><yellow>   <#94958B>Wut-Dauer: <arg:9>s <dark_gray>(<arg:3>-<arg:4> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Cutthroat
+  - ' '
+  - <#94958B>The cutthroat stabs a target with a precise stab.
+  - <#94958B>If the target is already bleeding, the cutthroat gains
+  - <#94958B>fury, removing the target's bleeding.
+  - <#94958B>This creates a blood wave that damages nearby enemies.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:0> Energy'
+  - '<!i><yellow>   <#94958B>Damage: <arg:7>'
+  - '<!i><yellow>   <#94958B>Bleeding Stacks Required: <arg:2>'
+  - '<!i><yellow>   <#94958B>Blood Wave Range: <arg:5> Blocks'
+  - '<!i><yellow>   <#94958B>Blood Wave Angle: <arg:6>°'
+  - '<!i><yellow>   <#94958B>Fury Duration: <arg:9>s <dark_gray>(<arg:3>-<arg:4> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+coefficients:
+  players:
+    minecraft:advantage_physical: 1.3
+    furyDuration:
+      minecraft:advantage_magical: 1.3
+  entities:
+    minecraft:advantage_physical: 1.3
+    furyDuration:
+      minecraft:advantage_magical: 1.3
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': energyCost
+  '1': targetRaySize
+  '2': bleedStacksRequired
+  '3': furyMinDuration
+  '4': furyMaxDuration
+  '5': furyWaveRange
+  '6': furyWaveAngle
+  '7': coefficients.entities.minecraft:advantage_physical
+  '8': coefficients.entities.furyDuration.minecraft:advantage_magical
+  '9': furyDuration

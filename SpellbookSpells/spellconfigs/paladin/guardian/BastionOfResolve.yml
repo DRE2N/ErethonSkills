@@ -1,0 +1,80 @@
+class: paladin.guardian.BastionOfResolve
+cooldown: 40
+energyCost: 60
+range: 6
+duration: 15
+powerDurationMin: 6
+powerDurationMax: 24
+resistanceDurationMin: 6
+resistanceDurationMax: 24
+stabilityDurationMin: 6
+stabilityDurationMax: 24
+weaknessDamage: 2
+name:
+  de: Bastion der Entschlossenheit
+  en: Bastion of Resolve
+description:
+  de:
+  - <!i><#757575>Wächter
+  - ' '
+  - <#94958B>Der Wächter erschafft eine schützende Barriere,
+  - <#94958B>welche Macht, Resistenz und Stabilität
+  - <#94958B>allen Verbündeten in der Nähe gewährt.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Entschlossenheit: <arg:1>'
+  - '<!i><yellow>↔  <#94958B>Radius: <arg:2>'
+  - '<!i><yellow>⌛ <#94958B>Dauer: <arg:3> Sekunden'
+  - '<!i><yellow>   <#94958B>Resistenz: <arg:13>s <dark_gray>(<arg:6>-<arg:7> <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Macht: <arg:14>s <dark_gray>(<arg:4>-<arg:5> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Stabilität: <arg:15>s <dark_gray>(<arg:8>-<arg:9> <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Guardian
+  - ' '
+  - <#94958B>The guardian creates a protective barrier,
+  - <#94958B>granting power, resistance, and stability to
+  - <#94958B>allies nearby.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> Sekunden'
+  - '<!i><yellow>⚡ <#94958B>Devotion: <arg:1>'
+  - '<!i><yellow>↔  <#94958B>Radius: <arg:2>'
+  - '<!i><yellow>⏳ <#94958B>Duration: <arg:3> Sekunden'
+  - '<!i><yellow>   <#94958B>Resistance: <arg:13>s <dark_gray>(<arg:6>-<arg:7> <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Power: <arg:14>s <dark_gray>(<arg:4>-<arg:5> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  - '<!i><yellow>   <#94958B>Stability: <arg:15>s <dark_gray>(<arg:8>-<arg:9> <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+coefficients:
+  players:
+    powerDuration:
+      minecraft:advantage_magical: 0.5
+    resistanceDuration:
+      minecraft:resistance_magical: 0.5
+    stabilityDuration:
+      minecraft:resistance_magical: 0.5
+  entities:
+    powerDuration:
+      minecraft:advantage_magical: 0.5
+    resistanceDuration:
+      minecraft:resistance_magical: 0.5
+    stabilityDuration:
+      minecraft:resistance_magical: 0.5
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': range
+  '3': duration
+  '4': powerDurationMin
+  '5': powerDurationMax
+  '6': resistanceDurationMin
+  '7': resistanceDurationMax
+  '8': stabilityDurationMin
+  '9': stabilityDurationMax
+  '10': weaknessDamage
+  '11': coefficients.entities.powerDuration.minecraft:advantage_magical
+  '12': coefficients.entities.resistanceDuration.minecraft:resistance_magical
+  '13': coefficients.entities.stabilityDuration.minecraft:resistance_magical
+  '14': resistanceDuration
+  '15': powerDuration
+  '16': stabilityDuration

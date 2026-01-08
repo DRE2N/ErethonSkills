@@ -1,0 +1,14 @@
+class: warrior.swordstorm.Blocking
+blockDamageMultiplier: 0.5
+movementSpeedReduction: -0.05
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': blockDamageMultiplier
+  '1': movementSpeedReduction
+  '2': rageCost
+  '3': duration
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.

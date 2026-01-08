@@ -1,0 +1,50 @@
+class: assassin.sharpshooter.KineticLauncher
+cooldown: 20
+range: 32
+duration: 5
+pullSpeed: 2.0
+launchThreshold: 2.5
+forwardLaunchPower: 1.0
+upwardLaunchPower: 1.2
+name:
+  de: Kinetischer Werfer
+  en: Kinetic Launcher
+description:
+  en:
+  - <!i><#757575>Sharpshooter
+  - ' '
+  - <#94958B>Fire a kinetic anchor that attaches to terrain.
+  - <#94958B>Pressing again propels you rapidly towards the anchor,
+  - <#94958B>launching you into the air at the end.
+  - ' '
+  - <#94958B>The anchor expires after 5 seconds if not used.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:1> blocks'
+  - '<!i><yellow>⏱️ <#94958B>Anchor Duration: <arg:2>s'
+  - '<!i><yellow>🚀 <#94958B>Pull Speed: <arg:3>'
+  de:
+  - <!i><#757575>Sharpshooter
+  - ' '
+  - <#94958B>Feuere einen kinetischen Anker, der sich am Gelände
+  - <#94958B>befestigt. Erneutes Drücken zieht dich schnell zum
+  - <#94958B>Anker und katapultiert dich am Ende in die Luft.
+  - ' '
+  - <#94958B>Der Anker läuft nach 5 Sekunden ab, wenn nicht benutzt.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:1> Blöcke'
+  - '<!i><yellow>⏱️ <#94958B>Anker Dauer: <arg:2>s'
+  - '<!i><yellow>🚀 <#94958B>Zuggeschwindigkeit: <arg:3>'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': range
+  '2': duration
+  '3': pullSpeed
+  '4': launchThreshold
+  '5': forwardLaunchPower
+  '6': upwardLaunchPower
+

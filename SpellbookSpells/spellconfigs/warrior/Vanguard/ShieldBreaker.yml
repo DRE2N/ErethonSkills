@@ -1,0 +1,56 @@
+class: warrior.vanguard.ShieldBreaker
+slowStacks: 2
+slowDuration: 4
+stunDuration: 3
+range: 4
+energyBuildUpFromUse: 10
+cooldown: 8
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_physical: 1.3
+  entities:
+    damage:
+      minecraft:advantage_physical: 2.0
+name:
+  en: Shield Breaker
+  de: Schildbrecher
+description:
+  en:
+  - '<!i><yellow>🐌 <#94958B>Verlangsamungsdauer: <arg:4>s (wenn kein Buff)'
+  - '<!i><yellow>🛡️ <#94958B>Betäubungsdauer: <arg:3>s (wenn Buff entfernt)'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Blöcke'
+  - '<!i><yellow>⚡ <#94958B>Energiegewinn: <arg:1>'
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - ' '
+  - <#94958B>moderate Verlangsamung angewendet.
+  - <#94958B>Wenn es keines von beiden hat, wird stattdessen eine
+  - <#94958B>Fähigkeit diese Effekte und betäubt das Ziel kurz.
+  - <#94958B>Wenn das Ziel Stabilität oder Resistenz hat, entfernt diese
+  - <#94958B>Ein kraftvoller Überkopfhieb, der moderaten Schaden verursacht.
+  - ' '
+  - <!i><#757575>Vorhut | Basis
+  de:
+  - '<!i><yellow>🐌 <#94958B>Slow Duration: <arg:4>s (if no buff)'
+  - '<!i><yellow>🛡️ <#94958B>Stun Duration: <arg:3>s (if buff removed)'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
+  - '<!i><yellow>⚡ <#94958B>Energy Gain: <arg:1>'
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - ' '
+  - <#94958B>If they have neither, it applies a moderate Slow instead.
+  - <#94958B>consumes those effects and briefly Stuns them.
+  - <#94958B>If the target has Stability or Resistance, this ability
+  - <#94958B>A powerful overhead chop that deals moderate damage.
+  - ' '
+  - <!i><#757575>Vanguard | Basic
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': slowStacks
+  '1': slowDuration
+  '2': stunDuration
+  '3': range
+  '4': energyBuildUpFromUse
+  '5': cooldown
+  '6': coefficients.entities.damage.minecraft:advantage_physical

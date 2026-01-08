@@ -1,0 +1,76 @@
+class: assassin.shadow.SealOfDeath
+duration: 6
+range: 15
+energyCost: 90
+bonusDamageMultiplier: 1.3
+executionThreshold: 0.15
+blindnessRadius: 5.0
+blindnessDurationMin: 6
+blindnessDurationMax: 24
+name:
+  de: Todessiegel
+  en: Seal of Death
+description:
+  de:
+  - <!i><#757575>Schatten | Ultimate
+  - ' '
+  - <#94958B>Markiert ein Ziel mit einem tödlichen Siegel. Erfordert,
+  - <#94958B>das das Ziel bereits mit einem Dolch markiert wurde.
+  - <#94958B>Verursacht für die nächsten <arg:0> Sekunden
+  - <#94958B>Bonus-Schaden. Wenn das Ziel unter 15% Gesundheit
+  - <#94958B>fällt, detoniert das Siegel und tötet das Ziel
+  - <#94958B>und erschafft eine Dunkelheitswolke um es herum,
+  - <#94958B>die die Sicht der Gegner verdeckt.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energie: <arg:2>'
+  - '<!i><yellow>⌛ <#94958B>Dauer: <arg:0>s'
+  - '<!i><yellow>→  <#94958B>Reichweite: <arg:1>'
+  - '<!i><yellow>   <#94958B>Ziel-Schaden: <arg:3>x'
+  - '<!i><yellow>↔  <#94958B>Dunkelheit-Radius: <arg:5>'
+  - '<!i><yellow>   <#94958B>Dunkelheit-Dauer: <arg:10>s <dark_gray>(<arg:6>-<arg:7>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+  en:
+  - <!i><#757575>Shadow | Ultimate
+  - ' '
+  - <#94958B>Marks a target with a deadly seal. Requires the target
+  - <#94958B>to be marked with a dagger already (consumes the mark).
+  - <#94958B>For the next <arg:0> seconds, all damage you deal to
+  - <#94958B>the target is increased. If the target drops below
+  - <#94958B>15% health, the seal detonates, executing the target
+  - <#94958B>and creatng a cloud of darkness around it, which
+  - <#94958B>obscures vision for enemies.
+  - ' '
+  - '<!i><yellow>⚡ <#94958B>Energy: <arg:2>'
+  - '<!i><yellow>⌛ <#94958B>Duration: <arg:0>s'
+  - '<!i><yellow>→  <#94958B>Range: <arg:1>'
+  - '<!i><yellow>   <#94958B>Target damage: <arg:3>x'
+  - '<!i><yellow>↔  <#94958B>Darkness radius: <arg:5>'
+  - '<!i><yellow>   <#94958B>Darkness duration: <arg:10>s <dark_gray>(<arg:6>-<arg:7>
+    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
+coefficients:
+  players:
+    minecraft:advantage_physical: 1.8
+    blindnessDuration:
+      minecraft:advantage_magical: 0.5
+  entities:
+    minecraft:advantage_physical: 1.8
+    blindnessDuration:
+      minecraft:advantage_magical: 0.5
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': duration
+  '1': range
+  '2': energyCost
+  '3': bonusDamageMultiplier
+  '4': executionThreshold
+  '5': blindnessRadius
+  '6': blindnessDurationMin
+  '7': blindnessDurationMax
+  '8': coefficients.entities.minecraft:advantage_physical
+  '9': coefficients.entities.blindnessDuration.minecraft:advantage_magical
+  '10': blindnessDuration
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.

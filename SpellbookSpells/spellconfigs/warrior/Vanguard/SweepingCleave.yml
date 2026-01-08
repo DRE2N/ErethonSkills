@@ -1,0 +1,61 @@
+class: warrior.vanguard.SweepingCleave
+cooldown: 12
+energyBuildUpFromUse: 14
+coneRange: 6.0
+coneAngle: 120.0
+coneHeight: 3.0
+minKnockback: 0.8
+maxKnockback: 1.5
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_physical: 1.5
+  entities:
+    damage:
+      minecraft:advantage_physical: 2.2
+name:
+  de: Fegender Spalt
+  en: Sweeping Cleave
+description:
+  en:
+  - <!i><#757575>Vanguard | Area Attack
+  - ' '
+  - <#94958B>Perform a wide, horizontal swing, striking all
+  - <#94958B>enemies in a cone in front of you.
+  - ' '
+  - <#FF6600>⚔ Enemies hit are slightly knocked back sideways.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energy Gain: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
+  - '<!i><yellow>📐 <#94958B>Cone Angle: <arg:3>°'
+  - '<!i><yellow>💨 <#94958B>Knockback: <arg:5>-<arg:6>'
+  de:
+  - <!i><#757575>Vorhut | Flächenangriff
+  - ' '
+  - <#94958B>Führe einen weiten, horizontalen Schwung aus und
+  - <#94958B>triff alle Feinde in einem Kegel vor dir.
+  - ' '
+  - <#FF6600>⚔ Getroffene Feinde werden leicht zur Seite
+  - <#FF6600>⚔ zurückgestoßen.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energiegewinn: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Blöcke'
+  - '<!i><yellow>📐 <#94958B>Kegelwinkel: <arg:3>°'
+  - '<!i><yellow>💨 <#94958B>Rückstoß: <dark_gray>(<arg:5>-<arg:6> <#f02607>+♦<dark_gray>)</dark_gray>'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': energyBuildUpFromUse
+  '2': coneRange
+  '3': coneAngle
+  '4': coneHeight
+  '5': minKnockback
+  '6': maxKnockback
+  '7': coefficients.entities.damage.minecraft:advantage_physical
+
+
+
