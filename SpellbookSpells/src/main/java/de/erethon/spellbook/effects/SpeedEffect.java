@@ -25,8 +25,10 @@ public class SpeedEffect extends SpellEffect {
     @Override
     public void onApply() {
         value = data.getDouble("bonus", 0.2);
-        modifier = new org.bukkit.attribute.AttributeModifier(key, value, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        instance.addModifier(modifier);
+        modifier = new AttributeModifier(key, value, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
+        if (!instance.getModifiers().contains(modifier)) {
+            instance.addTransientModifier(modifier);
+        }
     }
 
     @Override

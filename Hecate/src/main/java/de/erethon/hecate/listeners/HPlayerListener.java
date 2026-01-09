@@ -17,6 +17,7 @@ import de.erethon.hecate.ui.DamageColor;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.ranger.beastmaster.pet.RangerPet;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
@@ -38,6 +39,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -237,7 +239,10 @@ public class HPlayerListener implements Listener {
         if (cache.getCurrentCharacter(event.getPlayer()).isInCastMode()) {
             cache.getCurrentCharacter(event.getPlayer()).switchCastMode(CombatModeReason.PLUGIN, false);
         }
-        Hecate.log("Disconnected " + event.getPlayer().getName() + " (" + event.getPlayer().getUniqueId() + ")");
+        // Remove lingering spell effects
+        for (SpellEffect effect : event.getPlayer().getEffects()) {
+            effect.onRemove();
+        }
     }
 
     @EventHandler
@@ -255,6 +260,14 @@ public class HPlayerListener implements Listener {
     @EventHandler
     private void onRespawn(PlayerPostRespawnEvent event) {
         LevelUtil.displayCharLevel(event.getPlayer());
+    }
+
+    @EventHandler
+    private void onDeath(PlayerDeathEvent event) {
+        // Remove lingering spell effects
+        for (SpellEffect effect : event.getPlayer().getEffects()) {
+            effect.onRemove();
+        }
     }
 
     private void castRightclickAction(Player player) {

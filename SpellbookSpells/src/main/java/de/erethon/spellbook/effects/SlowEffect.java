@@ -28,8 +28,10 @@ public class SlowEffect extends SpellEffect {
 
     @Override
     public void onApply() {
-        modifier = new org.bukkit.attribute.AttributeModifier(key, -strength, org.bukkit.attribute.AttributeModifier.Operation.MULTIPLY_SCALAR_1, EquipmentSlotGroup.ANY);
-        instance.addTransientModifier(modifier);
+        modifier = new AttributeModifier(key, -strength, org.bukkit.attribute.AttributeModifier.Operation.MULTIPLY_SCALAR_1, EquipmentSlotGroup.ANY);
+        if (!instance.getModifiers().contains(modifier)) {
+            instance.addTransientModifier(modifier);
+        }
     }
 
     @Override

@@ -25,8 +25,10 @@ public class FuryEffect extends SpellEffect {
     @Override
     public void onApply() {
         value = data.getDouble("bonus", 1.0) * stacks;
-        modifier = new org.bukkit.attribute.AttributeModifier(key, value, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        instance.addTransientModifier(modifier);
+        modifier = new AttributeModifier(key, value, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
+        if (!instance.getModifiers().contains(modifier)) {
+            instance.addTransientModifier(modifier);
+        }
     }
 
     @Override

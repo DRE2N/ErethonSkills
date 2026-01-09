@@ -26,6 +26,7 @@ public class StunEffect extends SpellEffect {
     private final Random random = new Random();
 
     private AttributeModifier modifier = new AttributeModifier(key, 20, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
+    private AttributeModifier speedModifier = new AttributeModifier(key, -10.0, AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
 
     public StunEffect(EffectData data, LivingEntity caster, LivingEntity target, int duration, int stacks) {
         super(data, caster, target, duration, stacks);
@@ -53,7 +54,9 @@ public class StunEffect extends SpellEffect {
             return;
         }
         prevMoveSpeed = target.getAttribute(Attribute.MOVEMENT_SPEED).getBaseValue();
-        target.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0);
+        if (!target.getAttribute(Attribute.MOVEMENT_SPEED).getModifiers().contains(speedModifier)) {
+            target.getAttribute(Attribute.MOVEMENT_SPEED).addTransientModifier(speedModifier);
+        }
     }
 
     @Override
@@ -63,6 +66,6 @@ public class StunEffect extends SpellEffect {
             player.setWalkSpeed((float) prevMoveSpeed);
             return;
         }
-        target.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(prevMoveSpeed);
+        target.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(speedModifier);
     }
 }
