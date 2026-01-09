@@ -5,6 +5,7 @@ import de.erethon.spellbook.aoe.AoE;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -82,7 +83,7 @@ public class WaveOfHealing extends GuardianBaseSpell {
                     if (caster.getTicksLived() % 8 == 0) {
                         aoe.getCenter().getWorld().spawnParticle(Particle.INSTANT_EFFECT,
                             aoe.getCenter().add(0, 0.2, 0),
-                            4, range * 0.4, 0.5, range * 0.4, 0);
+                            4, range * 0.4, 0.5, range * 0.4, 0, new Particle.Spell(Color.BLUE, 1.0f));
                     }
                 })
                 .addBlockChange(Material.BLUE_CONCRETE)
