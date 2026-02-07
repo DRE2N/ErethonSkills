@@ -161,7 +161,7 @@ public class HPlayerListener implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
         HCharacter hCharacter = cache.getCurrentCharacter(event.getPlayer());
-        if (hCharacter == null || hCharacter.isInCastMode()) {
+        if (hCharacter != null && hCharacter.isInCastMode()) {
             event.setCancelled(true);
             if (hCharacter.getTraitline() != null && hCharacter.getTraitline().getSpecialAction(SpecialActionKey.Q) != null) {
                 hCharacter.getTraitline().getSpecialAction(SpecialActionKey.Q).queue(event.getPlayer());
