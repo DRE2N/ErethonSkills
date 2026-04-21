@@ -104,6 +104,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS selected_traits INTEGER[]",
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP",
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS deleted_by VARCHAR(255)",
+                "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS gamemode VARCHAR(20)",
                 "ALTER TABLE Banks ADD COLUMN IF NOT EXISTS bank_contents BYTEA",
                 "ALTER TABLE Banks ADD COLUMN IF NOT EXISTS unlocked_pages INT DEFAULT 1"
         );
@@ -159,6 +160,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         String skillsString = String.join(",", character.getSkills());
         String traitlineId = character.getTraitline() != null ? character.getTraitline().getId() : null;
         Integer[] selectedTraitsArray = character.getSelectedTraits();
+        String gamemode = character.getGamemode() != null ? character.getGamemode() : "SURVIVAL";
 
         return queryAsync(handle -> characterDao.upsertCharacter(
                 character.getCharacterID(),
@@ -168,7 +170,8 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 playerData,
                 skillsString,
                 traitlineId,
-                selectedTraitsArray
+                selectedTraitsArray,
+                gamemode
         ) > 0)
         .exceptionally(ex -> {
             Hecate.log("Error saving character " + character.getCharacterID() + " for player " + character.getHPlayer().getPlayerId() + ": " + ex.getMessage());
@@ -226,7 +229,8 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 flatData.getLockedBy(),
                 skills,
                 flatData.getTraitline(),
-                selectedTraits
+                selectedTraits,
+                flatData.getGamemode()
         );
     }
 
@@ -610,6 +614,11 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             CompletableFuture<Void> saveFuture = savePlayerData(hPlayer);
 
             if (character != null) {
+                // Save the current gamemode before saving the character
+                String currentGamemode = player.getGameMode().toString();
+                character.setGamemode(currentGamemode);
+                Hecate.log("Saving character " + character.getCharacterID() + " with gamemode: " + currentGamemode);
+
                 saveFuture = saveFuture.thenCompose(v -> createOrUpdateCharacter(character))
                         .thenCompose(v -> unlockCharacter(character.getCharacterID()));
             }
@@ -677,6 +686,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             characterFuture.thenAccept(character -> {
                 if (character != null) {
                     try {
+                        Hecate.log("Loading character " + character.getCharacterID() + " with gamemode: " + character.getGamemode());
                         finalHPlayer.setSelectedCharacter(character, false);
                         BukkitRunnable mainTask = new BukkitRunnable() {
                             @Override
@@ -755,6 +765,8 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             Hecate.log("PlayerDataSaveEvent triggered for " + hPlayer.getPlayerId());
             savePlayerData(hPlayer);
             if (hPlayer.getSelectedCharacter() != null) {
+                String currentGamemode = event.getPlayer().getGameMode().toString();
+                hPlayer.getSelectedCharacter().setGamemode(currentGamemode);
                 createOrUpdateCharacter(hPlayer.getSelectedCharacter());
             }
         }

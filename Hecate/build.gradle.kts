@@ -52,7 +52,7 @@ tasks {
             project.buildDir.mkdir()
         }
         val f = File(project.buildDir,  "server.jar");
-        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-mojmap.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
         runDirectory.set(file("C:\\Dev\\Erethon"))
     }

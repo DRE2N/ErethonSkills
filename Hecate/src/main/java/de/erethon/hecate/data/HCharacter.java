@@ -62,6 +62,7 @@ public class HCharacter {
     private CompoundTag playerData;
     private boolean saveInventory = true;
     private boolean shouldSaveHotbarSeparately = false;
+    private String gamemode;
 
     private CharacterCastingManager castingManager;
     private boolean isInCastMode = false;
@@ -85,7 +86,7 @@ public class HCharacter {
         }
     }
 
-    public HCharacter(UUID characterID, HPlayer hPlayer, int level, String classId, Timestamp createdAt, String lockedBy, List<String> skills, String traitlineId, Integer[] traits) {
+    public HCharacter(UUID characterID, HPlayer hPlayer, int level, String classId, Timestamp createdAt, String lockedBy, List<String> skills, String traitlineId, Integer[] traits, String gamemode) {
         this.characterID = characterID;
         this.hPlayer = hPlayer;
         this.level = level;
@@ -93,6 +94,7 @@ public class HCharacter {
         this.createdAt = createdAt;
         this.lockedBy = lockedBy;
         this.skills = skills;
+        this.gamemode = gamemode;
         this.selectedTraits = (traits != null) ? traits : new Integer[]{-1, -1, -1};
 
         if (classId != null) {
@@ -131,6 +133,7 @@ public class HCharacter {
         String skillsString = (skills != null) ? String.join(",", skills) : "";
         String currentTraitlineId = (traitline != null) ? traitline.getId() : null;
         Integer[] currentSelectedTraits = (selectedTraits != null) ? selectedTraits : new Integer[0];
+        String currentGamemode = (gamemode != null) ? gamemode : "SURVIVAL";
 
         return dbManager.executeAsync(handle -> {
             CharacterDao dao = handle.attach(CharacterDao.class);
@@ -142,7 +145,8 @@ public class HCharacter {
                     playerDataBytes,
                     skillsString,
                     currentTraitlineId,
-                    currentSelectedTraits
+                    currentSelectedTraits,
+                    currentGamemode
             );
             if (rows == 0) {
                 Hecate.log("Warning: upsertCharacter affected 0 rows for " + characterID);
@@ -641,6 +645,8 @@ public class HCharacter {
     public Integer[] getSelectedTraits() { return selectedTraits; }
     public Player getPlayer() { return hPlayer.getPlayer(); }
     public CompoundTag getPlayerDataNBT() { return playerData; }
+    public String getGamemode() { return gamemode; }
+    public void setGamemode(String gamemode) { this.gamemode = gamemode; }
 
     public void setLevel(int level) { this.level = level; }
     public void setSelectedTraits(Integer[] selectedTraits) { this.selectedTraits = selectedTraits; }

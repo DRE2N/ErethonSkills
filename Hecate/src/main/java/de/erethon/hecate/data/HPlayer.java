@@ -7,7 +7,10 @@ import de.erethon.hecate.progression.LevelUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
+import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.world.entity.player.Abilities;
 import org.bukkit.GameMode;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -91,6 +94,8 @@ public class HPlayer {
         try {
             try {
                 if (this.selectedCharacter != null) {
+                        // Save the current gamemode before switching
+                        this.selectedCharacter.setGamemode(player.getGameMode().toString());
                         if (!dontSave) {
                             this.selectedCharacter.saveCharacterPlayerData(false)
                                     .thenCompose(v -> {
@@ -154,7 +159,31 @@ public class HPlayer {
                     player.removePotionEffect(PotionEffectType.BLINDNESS);
                     Title endTitle = Title.title(Component.empty(), Component.empty());
                     player.showTitle(endTitle);
-                    //player.setGameMode(GameMode.SURVIVAL); // We currently do not save this data, so let's just set it to survival
+                    // Restore the saved gamemode if it exists
+                    String savedGamemode = selectedCharacter.getGamemode();
+                    if (savedGamemode != null && !savedGamemode.isEmpty()) {
+                        try {
+                            GameMode gameMode = GameMode.valueOf(savedGamemode);
+                            player.setGameMode(gameMode);
+                        } catch (IllegalArgumentException e) {
+                            player.setGameMode(GameMode.SURVIVAL);
+                            MessageUtil.log("Invalid gamemode '" + savedGamemode + "' for character " + selectedCharacter.getCharacterID() + " of player " + player.getName() + ". Defaulting to SURVIVAL.");
+                        }
+                    } else {
+                        player.setGameMode(GameMode.SURVIVAL);
+                        MessageUtil.log("No gamemode saved for character " + selectedCharacter.getCharacterID() + " of player " + player.getName());
+                    }
+                    // This is incredibly buggy, but I am annoyed by the complaints
+                    CraftPlayer craftPlayer = (CraftPlayer) player;
+                    craftPlayer.getHandle().onUpdateAbilities();
+                    float modeId = switch (player.getGameMode()) {
+                        case SURVIVAL -> 0;
+                        case CREATIVE -> 1;
+                        case ADVENTURE -> 2;
+                        case SPECTATOR -> 3;
+                    };
+                    craftPlayer.getHandle().connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.CHANGE_GAME_MODE, modeId));
+
                     LevelUtil.displayCharLevel(player.getPlayer());
                 }
             };

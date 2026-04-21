@@ -26,6 +26,7 @@ public interface CharacterDao {
         public byte[] playerdata;
         public Timestamp deletedAt;
         public String deletedBy;
+        public String gamemode;
 
         public UUID getCharacterId() { return characterId; }
         public UUID getPlayerId() { return playerId; }
@@ -39,6 +40,7 @@ public interface CharacterDao {
         public byte[] getPlayerdata() { return playerdata; }
         public Timestamp getDeletedAt() { return deletedAt; }
         public String getDeletedBy() { return deletedBy; }
+        public String getGamemode() { return gamemode; }
 
         public void setCharacterId(UUID characterId) { this.characterId = characterId; }
         public void setPlayerId(UUID playerId) { this.playerId = playerId; }
@@ -52,18 +54,20 @@ public interface CharacterDao {
         public void setPlayerdata(byte[] playerdata) { this.playerdata = playerdata; }
         public void setDeletedAt(Timestamp deletedAt) { this.deletedAt = deletedAt; }
         public void setDeletedBy(String deletedBy) { this.deletedBy = deletedBy; }
+        public void setGamemode(String gamemode) { this.gamemode = gamemode; }
     }
 
 
-    @SqlUpdate("INSERT INTO Characters (character_id, player_id, level, class_id, playerdata, created_at, skills, traitline, selected_traits, locked_by) " +
-            "VALUES (:characterId, :playerId, :level, :classId, :playerdata, NOW(), :skills, :traitline, :selectedTraits, NULL) " +
+    @SqlUpdate("INSERT INTO Characters (character_id, player_id, level, class_id, playerdata, created_at, skills, traitline, selected_traits, locked_by, gamemode) " +
+            "VALUES (:characterId, :playerId, :level, :classId, :playerdata, NOW(), :skills, :traitline, :selectedTraits, NULL, :gamemode) " +
             "ON CONFLICT (character_id) DO UPDATE SET " +
             "level = EXCLUDED.level, " +
             "class_id = EXCLUDED.class_id, " +
             "playerdata = EXCLUDED.playerdata, " +
             "skills = EXCLUDED.skills, " +
             "traitline = EXCLUDED.traitline, " +
-            "selected_traits = EXCLUDED.selected_traits")
+            "selected_traits = EXCLUDED.selected_traits, " +
+            "gamemode = EXCLUDED.gamemode")
     int upsertCharacter(@Bind("characterId") UUID characterId,
                         @Bind("playerId") UUID playerId,
                         @Bind("level") int level,
@@ -71,15 +75,16 @@ public interface CharacterDao {
                         @Bind("playerdata") byte[] playerdata,
                         @Bind("skills") String skills,
                         @Bind("traitline") String traitline,
-                        @Bind("selectedTraits") Integer[] selectedTraits);
+                        @Bind("selectedTraits") Integer[] selectedTraits,
+                        @Bind("gamemode") String gamemode);
 
 
     // Regular queries that exclude deleted characters
-    @SqlQuery("SELECT character_id, player_id, level, class_id, created_at, locked_by, skills, traitline, selected_traits, deleted_at, deleted_by " +
+    @SqlQuery("SELECT character_id, player_id, level, class_id, created_at, locked_by, skills, traitline, selected_traits, deleted_at, deleted_by, gamemode " +
             "FROM Characters WHERE player_id = :playerId AND deleted_at IS NULL")
     List<FlatData> findCharactersByPlayerId(@Bind("playerId") UUID playerId);
 
-    @SqlQuery("SELECT character_id, player_id, level, class_id, created_at, locked_by, skills, traitline, selected_traits, deleted_at, deleted_by " +
+    @SqlQuery("SELECT character_id, player_id, level, class_id, created_at, locked_by, skills, traitline, selected_traits, deleted_at, deleted_by, gamemode " +
             "FROM Characters WHERE character_id = :characterId AND deleted_at IS NULL")
     Optional<FlatData> findCharacterById(@Bind("characterId") UUID characterId);
 
@@ -87,15 +92,15 @@ public interface CharacterDao {
     Optional<byte[]> findCharacterPlayerData(@Bind("characterId") UUID characterId);
 
     // Admin queries that include deleted characters
-    @SqlQuery("SELECT character_id, player_id, level, class_id, created_at, locked_by, skills, traitline, selected_traits, deleted_at, deleted_by " +
+    @SqlQuery("SELECT character_id, player_id, level, class_id, created_at, locked_by, skills, traitline, selected_traits, deleted_at, deleted_by, gamemode " +
             "FROM Characters WHERE player_id = :playerId")
     List<FlatData> findAllCharactersByPlayerId(@Bind("playerId") UUID playerId);
 
-    @SqlQuery("SELECT character_id, player_id, level, class_id, created_at, locked_by, skills, traitline, selected_traits, deleted_at, deleted_by " +
+    @SqlQuery("SELECT character_id, player_id, level, class_id, created_at, locked_by, skills, traitline, selected_traits, deleted_at, deleted_by, gamemode " +
             "FROM Characters WHERE character_id = :characterId")
     Optional<FlatData> findCharacterByIdIncludingDeleted(@Bind("characterId") UUID characterId);
 
-    @SqlQuery("SELECT character_id, player_id, level, class_id, created_at, locked_by, skills, traitline, selected_traits, deleted_at, deleted_by " +
+    @SqlQuery("SELECT character_id, player_id, level, class_id, created_at, locked_by, skills, traitline, selected_traits, deleted_at, deleted_by, gamemode " +
             "FROM Characters WHERE player_id = :playerId AND deleted_at IS NOT NULL")
     List<FlatData> findDeletedCharactersByPlayerId(@Bind("playerId") UUID playerId);
 
