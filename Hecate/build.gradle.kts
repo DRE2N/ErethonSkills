@@ -36,10 +36,10 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
-val papyrusVersion = "26.1.2-SNAPSHOT"
+val papyrusVersion = "26.1.2"
 
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
+    paperweight.devBundle("de.erethon.papyrus", "$papyrusVersion-SNAPSHOT") { isChanging = true }
     implementation(project(":SpellbookSpells"))
     compileOnly("de.erethon.tyche:Tyche:1.0-SNAPSHOT")
     compileOnly("de.erethon.aergia:Aergia:1.0.1")

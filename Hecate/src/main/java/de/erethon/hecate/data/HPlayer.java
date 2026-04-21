@@ -154,7 +154,7 @@ public class HPlayer {
                     player.removePotionEffect(PotionEffectType.BLINDNESS);
                     Title endTitle = Title.title(Component.empty(), Component.empty());
                     player.showTitle(endTitle);
-                    player.setGameMode(GameMode.SURVIVAL); // We currently do not save this data, so let's just set it to survival
+                    //player.setGameMode(GameMode.SURVIVAL); // We currently do not save this data, so let's just set it to survival
                     LevelUtil.displayCharLevel(player.getPlayer());
                 }
             };
