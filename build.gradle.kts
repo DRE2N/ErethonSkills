@@ -1,7 +1,7 @@
 plugins {
     id("java")
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17" apply false
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21" apply false
 }
 
 repositories {
@@ -23,8 +23,12 @@ tasks {
     }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(21)
+        options.release.set(25)
         targetCompatibility = JavaVersion.VERSION_21.name
         sourceCompatibility = JavaVersion.VERSION_21.name
     }
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }

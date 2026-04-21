@@ -27,16 +27,20 @@ configurations.all {
 }
 
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", "1.21.11-R0.1-SNAPSHOT") { isChanging = true }
+    paperweight.devBundle("de.erethon.papyrus", "26.1.2-SNAPSHOT") { isChanging = true }
     implementation("com.elmakers.mine.bukkit:EffectLib:10.12-SNAPSHOT")
     implementation("de.erethon:Daedalus:1.4-SNAPSHOT")
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 tasks {
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(21)
-        targetCompatibility = JavaVersion.VERSION_21.name
-        sourceCompatibility = JavaVersion.VERSION_21.name
+        options.release.set(25)
+        targetCompatibility = JavaVersion.VERSION_25.name
+        sourceCompatibility = JavaVersion.VERSION_25.name
     }
 }

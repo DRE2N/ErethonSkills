@@ -17,8 +17,8 @@ plugins {
     `java-library`
     `maven-publish`
     id("io.papermc.paperweight.userdev")
-    id("xyz.jpenilla.run-paper") version "2.3.1"// Adds runServer and runMojangMappedServer tasks for testing
-    id("io.github.goooler.shadow") version "8.1.5"
+    id("xyz.jpenilla.run-paper") version "3.0.2"// Adds runServer and runMojangMappedServer tasks for testing
+    id("com.gradleup.shadow") version "9.3.1"
     id("de.eldoria.plugin-yml.paper") version "0.7.1"
 }
 
@@ -33,10 +33,10 @@ version = "1.2-SNAPSHOT"
 description = "Spell plugin for Erethon"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
-val papyrusVersion = "1.21.11-R0.1-SNAPSHOT"
+val papyrusVersion = "26.1.2-SNAPSHOT"
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", papyrusVersion) { isChanging = true }
@@ -58,9 +58,9 @@ tasks {
     }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(21)
-        targetCompatibility = JavaVersion.VERSION_21.name
-        sourceCompatibility = JavaVersion.VERSION_21.name
+        options.release.set(25)
+        targetCompatibility = JavaVersion.VERSION_25.name
+        sourceCompatibility = JavaVersion.VERSION_25.name
     }
     processResources {
         filteringCharset = Charsets.UTF_8.name()
