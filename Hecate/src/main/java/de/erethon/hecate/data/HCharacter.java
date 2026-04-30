@@ -239,7 +239,7 @@ public class HCharacter {
             String serializedHotbar = "";
             String serializedOffhand = "";
             String serializedCastingItem = "";
-            if (shouldSaveHotbarSeparately || castModeSwitch) {
+            if (isInCastMode || shouldSaveHotbarSeparately || castModeSwitch) {
                 // Serialize hotbar
                 for (int i = 0; i < 9; i++) {
                     ItemStack item = hotbar[i];
@@ -444,21 +444,26 @@ public class HCharacter {
                                 String offhandData = offhandDataOpt.get();
                                 if (offhandData.equals("empty")) {
                                     offhandItem = null;
+                                    bukkitPlayer.getInventory().setItemInOffHand(null);
                                 } else {
                                     try {
                                         byte[] bytes = Base64.getDecoder().decode(offhandData);
                                         if (bytes.length > 0) {
                                             offhandItem = ItemStack.deserializeBytes(bytes);
+                                            bukkitPlayer.getInventory().setItemInOffHand(offhandItem);
                                             Hecate.log("Restored offhand item for " + characterID);
                                         } else {
                                             offhandItem = null;
+                                            bukkitPlayer.getInventory().setItemInOffHand(null);
                                         }
                                     } catch (IllegalArgumentException e) {
                                         Hecate.log("Failed to decode Base64 offhand item for " + characterID + ": " + e.getMessage());
                                         offhandItem = null;
+                                        bukkitPlayer.getInventory().setItemInOffHand(null);
                                     } catch (Exception e) {
                                         Hecate.log("Failed to deserialize offhand item for " + characterID + ": " + e.getMessage());
                                         offhandItem = null;
+                                        bukkitPlayer.getInventory().setItemInOffHand(null);
                                     }
                                 }
                             } else {

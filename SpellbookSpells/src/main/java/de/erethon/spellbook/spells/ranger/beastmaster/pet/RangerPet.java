@@ -1,5 +1,6 @@
 package de.erethon.spellbook.spells.ranger.beastmaster.pet;
 
+import de.erethon.spellbook.Spellbook;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minecraft.core.Holder;
@@ -91,7 +92,7 @@ public class RangerPet extends net.minecraft.world.entity.animal.wolf.Wolf {
     public void makeAttack(org.bukkit.entity.LivingEntity bukkitLiving) {
         CraftLivingEntity craftLiving = (CraftLivingEntity) bukkitLiving;
         LivingEntity living = craftLiving.getHandle();
-        if (living == this || living == owner) return; // Don't attack yourself or your owner
+        if (living == this || living == owner || !Spellbook.canAttack(this.getBukkitLivingEntity(), bukkitLiving)) return; // Don't attack yourself or your owner
         setTarget(living, EntityTargetEvent.TargetReason.CUSTOM);
         statusDisplay.text(Component.text("⚔").color(NamedTextColor.RED));
     }
