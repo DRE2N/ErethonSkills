@@ -60,6 +60,9 @@ public class Lifeweave extends DruidBaseSpell {
         AttributeInstance maxHealth = weaveTarget.getAttribute(Attribute.MAX_HEALTH);
         if (maxHealth != null && shield > 0) {
             shieldModifier = new AttributeModifier(shieldKey, shield, AttributeModifier.Operation.ADD_NUMBER);
+            if (maxHealth.getModifier(shieldKey) != null) {
+                return false;
+            }
             maxHealth.addTransientModifier(shieldModifier);
             weaveTarget.heal(shield);
         }
