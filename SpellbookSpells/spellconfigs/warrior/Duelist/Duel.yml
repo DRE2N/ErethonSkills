@@ -1,0 +1,33 @@
+class: warrior.duelist.Duel
+cooldown: 20
+energyCost: 20
+duration: 8
+maxDistance: 12
+furyStacks: 3
+powerStacks: 3
+name:
+  de: Duell
+  en: Duel
+description:
+  en:
+  - <!i><#757575>Duelist | Setup
+  - ' '
+  - <#94958B>Challenge your target to a duel. Gain Fury and Power
+  - <#94958B>for the duration. Other players cannot interfere.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energy Cost: <arg:1>'
+  - '<!i><yellow>⏱ <#94958B>Duration: <arg:2>s'
+  de:
+  - <!i><#757575>Duellant | Vorbereitung
+  - ' '
+  - <#94958B>Fordere dein Ziel zum Duell heraus. Erhalte Fury und
+  - <#94958B>Power für die Dauer. Andere Spieler können nicht eingreifen.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energiekosten: <arg:1>'
+  - '<!i><yellow>⏱ <#94958B>Dauer: <arg:2>s'
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': duration

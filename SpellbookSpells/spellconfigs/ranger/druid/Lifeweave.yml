@@ -1,0 +1,76 @@
+class: ranger.druid.Lifeweave
+cooldown: 18
+manaCost: 30
+range: 18
+healMin: 45
+healMax: 110
+shieldMin: 80
+shieldMax: 190
+seedShieldBonus: 0.3
+shieldDuration: 100
+regenerationDuration: 60
+resistanceDuration: 40
+seedDuration: 140
+maxSeedStacks: 3
+name:
+  en: Lifeweave
+  de: Lebensgeflecht
+description:
+  en:
+  - <!i><#757575>Druid
+  - ' '
+  - <#94958B>Weave living bark around an ally or yourself,
+  - <#94958B>restoring health and granting a temporary shield.
+  - ' '
+  - '<#62D106>✦ Seeded: <#94958B>Consumes ally Seeded stacks to increase'
+  - <#94958B>the shield and grant brief resistance.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
+  - '<!i><yellow>✚ <#94958B>Heal: <arg:13>'
+  - '<!i><yellow>🛡️ <#94958B>Shield: <arg:14>'
+  de:
+  - <!i><#757575>Druide
+  - ' '
+  - <#94958B>Webe lebende Rinde um dich oder einen Verbuendeten,
+  - <#94958B>heile das Ziel und gewaehre einen temporaeren Schild.
+  - ' '
+  - '<#62D106>✦ Saat: <#94958B>Verbraucht Saat-Stapel von Verbuendeten,'
+  - <#94958B>um Schild und kurze Resistenz zu verstaerken.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Bloecke'
+  - '<!i><yellow>✚ <#94958B>Heilung: <arg:13>'
+  - '<!i><yellow>🛡️ <#94958B>Schild: <arg:14>'
+coefficients:
+  players:
+    heal:
+      minecraft:stat_healing_power: 0.65
+    shield:
+      minecraft:stat_healing_power: 0.9
+  entities:
+    heal:
+      minecraft:stat_healing_power: 0.65
+    shield:
+      minecraft:stat_healing_power: 0.9
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': manaCost
+  '2': range
+  '3': healMin
+  '4': healMax
+  '5': shieldMin
+  '6': shieldMax
+  '7': seedShieldBonus
+  '8': shieldDuration
+  '9': regenerationDuration
+  '10': resistanceDuration
+  '11': seedDuration
+  '12': maxSeedStacks
+  '13': heal
+  '14': shield

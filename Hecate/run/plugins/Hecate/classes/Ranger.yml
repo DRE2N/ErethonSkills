@@ -5,6 +5,7 @@ traitlines:
   - RangerBeast
   - RangerDeathEye
   - RangerPathfinder
+  - RangerDruid
 attributeLevels:
   1:
     generic_max_health: 4800

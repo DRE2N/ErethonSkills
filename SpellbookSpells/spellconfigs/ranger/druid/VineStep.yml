@@ -1,0 +1,55 @@
+class: ranger.druid.VineStep
+cooldown: 10
+manaCost: 15
+range: 22
+maxHeight: 16
+terrainPullStrength: 1.25
+enemyPullStrength: 1.05
+normalSlowDuration: 30
+seededSlowDuration: 55
+seedDuration: 140
+maxSeedStacks: 3
+name:
+  en: Vine Step
+  de: Rankenritt
+description:
+  en:
+  - <!i><#757575>Druid
+  - ' '
+  - <#94958B>Launch a vine to terrain or an enemy,
+  - <#94958B>pulling yourself across the battlefield or dragging a foe.
+  - ' '
+  - '<#62D106>✦ Seeded: <#94958B>Consume Seeded stacks to pull enemies'
+  - <#94958B>harder and slow them for longer.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
+  - '<!i><yellow>⬍ <#94958B>Max Height: <arg:3> blocks'
+  de:
+  - <!i><#757575>Druide
+  - ' '
+  - <#94958B>Schleudere eine Ranke zu Gelaende oder Feind,
+  - <#94958B>um dich zu ziehen oder ein Ziel heranzureissen.
+  - ' '
+  - '<#62D106>✦ Saat: <#94958B>Verbraucht Saat-Stapel, um Feinde'
+  - <#94958B>staerker zu ziehen und laenger zu verlangsamen.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Bloecke'
+  - '<!i><yellow>⬍ <#94958B>Max. Hoehe: <arg:3> Bloecke'
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': manaCost
+  '2': range
+  '3': maxHeight
+  '4': terrainPullStrength
+  '5': enemyPullStrength
+  '6': normalSlowDuration
+  '7': seededSlowDuration
+  '8': seedDuration
+  '9': maxSeedStacks

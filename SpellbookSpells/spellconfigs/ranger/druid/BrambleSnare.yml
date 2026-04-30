@@ -1,0 +1,68 @@
+class: ranger.druid.BrambleSnare
+cooldown: 16
+manaCost: 25
+range: 22
+radius: 3.5
+damageMin: 25
+damageMax: 70
+slowDuration: 45
+seededSlowDuration: 85
+aoeDuration: 60
+seedDuration: 140
+maxSeedStacks: 3
+name:
+  en: Bramble Snare
+  de: Dornenschlinge
+description:
+  en:
+  - <!i><#757575>Druid
+  - ' '
+  - <#94958B>Raise brambles from target ground, damaging enemies
+  - <#94958B>and tangling their movement in the thorns.
+  - ' '
+  - '<#62D106>✦ Seeded: <#94958B>Seeded enemies take increased damage'
+  - <#94958B>and are held in the brambles longer.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
+  - '<!i><yellow>◎ <#94958B>Radius: <arg:3> blocks'
+  - '<!i><yellow>✦ <#94958B>Damage: <arg:12>'
+  de:
+  - <!i><#757575>Druide
+  - ' '
+  - <#94958B>Laesst Dornen am Zielort wachsen, die Feinde
+  - <#94958B>verletzen und ihre Bewegung fesseln.
+  - ' '
+  - '<#62D106>✦ Saat: <#94958B>Besaete Feinde erleiden mehr Schaden'
+  - <#94958B>und werden laenger in den Dornen gehalten.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Bloecke'
+  - '<!i><yellow>◎ <#94958B>Radius: <arg:3> Bloecke'
+  - '<!i><yellow>✦ <#94958B>Schaden: <arg:12>'
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_magical: 0.5
+  entities:
+    damage:
+      minecraft:advantage_magical: 0.7
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': manaCost
+  '2': range
+  '3': radius
+  '4': damageMin
+  '5': damageMax
+  '6': slowDuration
+  '7': seededSlowDuration
+  '8': aoeDuration
+  '9': seedDuration
+  '10': maxSeedStacks
+  '11': coefficients.entities.damage.minecraft:advantage_magical
+  '12': damage

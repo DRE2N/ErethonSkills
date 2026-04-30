@@ -1,0 +1,88 @@
+class: ranger.druid.SpiritGrove
+cooldown: 28
+manaCost: 35
+range: 22
+groveDuration: 7
+radius: 5.5
+healMin: 18
+healMax: 55
+damageMin: 10
+damageMax: 35
+seedPulseBonus: 0.25
+pulseInterval: 20
+regenerationDuration: 40
+slowDuration: 30
+slowStacks: 1
+seedDuration: 140
+maxSeedStacks: 3
+name:
+  en: Spirit Grove
+  de: Geisterhain
+description:
+  en:
+  - <!i><#757575>Druid
+  - ' '
+  - <#94958B>Create a spirit grove at the target location.
+  - <#94958B>Each pulse heals allies and wears down enemies inside.
+  - ' '
+  - '<#62D106>✦ Seeded: <#94958B>Pulses consume Seeded stacks for'
+  - <#94958B>stronger healing, stronger damage and longer slows.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
+  - '<!i><yellow>◎ <#94958B>Radius: <arg:4> blocks'
+  - '<!i><yellow>⏱️ <#94958B>Duration: <arg:3>s'
+  - '<!i><yellow>✚ <#94958B>Heal per Pulse: <arg:18>'
+  - '<!i><yellow>✦ <#94958B>Damage per Pulse: <arg:19>'
+  de:
+  - <!i><#757575>Druide
+  - ' '
+  - <#94958B>Erschaffe an der Zielposition einen Geisterhain.
+  - <#94958B>Jeder Puls heilt Verbuendete und zermuerbt Feinde im Inneren.
+  - ' '
+  - '<#62D106>✦ Saat: <#94958B>Pulse verbrauchen Saat-Stapel fuer'
+  - <#94958B>staerkere Heilung, mehr Schaden und laengere Verlangsamung.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Bloecke'
+  - '<!i><yellow>◎ <#94958B>Radius: <arg:4> Bloecke'
+  - '<!i><yellow>⏱️ <#94958B>Dauer: <arg:3>s'
+  - '<!i><yellow>✚ <#94958B>Heilung pro Puls: <arg:18>'
+  - '<!i><yellow>✦ <#94958B>Schaden pro Puls: <arg:19>'
+coefficients:
+  players:
+    heal:
+      minecraft:stat_healing_power: 0.45
+    damage:
+      minecraft:advantage_magical: 0.3
+  entities:
+    heal:
+      minecraft:stat_healing_power: 0.45
+    damage:
+      minecraft:advantage_magical: 0.45
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': manaCost
+  '2': range
+  '3': groveDuration
+  '4': radius
+  '5': healMin
+  '6': healMax
+  '7': damageMin
+  '8': damageMax
+  '9': seedPulseBonus
+  '10': pulseInterval
+  '11': regenerationDuration
+  '12': slowDuration
+  '13': slowStacks
+  '14': seedDuration
+  '15': maxSeedStacks
+  '16': coefficients.entities.heal.minecraft:stat_healing_power
+  '17': coefficients.entities.damage.minecraft:advantage_magical
+  '18': heal
+  '19': damage

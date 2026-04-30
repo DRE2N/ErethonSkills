@@ -1,0 +1,38 @@
+class: warrior.duelist.StanceLastStand
+cooldown: 18
+energyCost: 0
+duration: 6
+damageTakenMultiplier: 0.7
+attackMultiplier: 0.2
+hitsForParry: 3
+name:
+  de: Letzter Stand
+  en: Last Stand
+description:
+  en:
+  - <!i><#757575>Duelist | Defense
+  - ' '
+  - <#94958B>Enter a defensive stance for <arg:2>s.
+  - <#94958B>Take <arg:3>% damage but deal only <arg:4>% damage.
+  - <#94958B>Every <arg:5> hits taken grants a <#3A7CC9>Parry<#94958B> window.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⏱ <#94958B>Duration: <arg:2>s'
+  - '<!i><yellow>🛡️ <#94958B>Damage Taken: <arg:3>%'
+  de:
+  - <!i><#757575>Duellant | Verteidigung
+  - ' '
+  - <#94958B>Nimm für <arg:2>s eine Verteidigungshaltung ein.
+  - <#94958B>Erhalte nur <arg:3>% Schaden, teile aber nur <arg:4>% aus.
+  - <#94958B>Alle <arg:5> erlittenen Treffer gewähren ein <#3A7CC9>Parieren<#94958B>-Fenster.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⏱ <#94958B>Dauer: <arg:2>s'
+  - '<!i><yellow>🛡️ <#94958B>Erlittener Schaden: <arg:3>%'
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': duration
+  '3': damageTakenMultiplier
+  '4': attackMultiplier
+  '5': hitsForParry

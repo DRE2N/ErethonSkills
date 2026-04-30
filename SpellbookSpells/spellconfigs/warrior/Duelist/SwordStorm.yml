@@ -1,0 +1,43 @@
+class: warrior.duelist.SwordStorm
+cooldown: 10
+energyCost: 30
+startRadius: 2.0
+radiusPerTick: 0.2
+attackModifier: -5
+duration: 3
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_physical: 1.2
+  entities:
+    damage:
+      minecraft:advantage_physical: 1.8
+name:
+  de: Schwertwirbel
+  en: Sword Storm
+description:
+  en:
+  - <!i><#757575>Duelist | Finisher
+  - ' '
+  - <#94958B>Spin in place, striking all nearby enemies with a
+  - <#94958B>growing storm of blades for <arg:3> seconds.
+  - <#94958B>Consumes an active <#3A7CC9>Parry<#94958B> window for bonus radius and damage.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energy Cost: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Radius: <arg:2> → growing'
+  de:
+  - <!i><#757575>Duellant | Finisher
+  - ' '
+  - <#94958B>Drehe dich und triff alle nahen Feinde mit einem
+  - <#94958B>wachsenden Klingensturm für <arg:3> Sekunden.
+  - <#94958B>Verbraucht ein aktives <#3A7CC9>Parieren<#94958B>-Fenster für Bonus.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energiekosten: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Radius: <arg:2> → wächst'
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost
+  '2': startRadius
+  '3': duration

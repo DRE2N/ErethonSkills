@@ -1,0 +1,96 @@
+class: ranger.druid.AncientCanopy
+cooldown: 60
+manaCost: 70
+range: 24
+canopyDuration: 9
+pulseInterval: 20
+radius: 7.0
+healMin: 30
+healMax: 80
+damageMin: 18
+damageMax: 50
+seedBurstFactor: 0.45
+resistanceDuration: 45
+stabilityDuration: 35
+slowDuration: 45
+seedDuration: 140
+maxSeedStacks: 3
+name:
+  en: Ancient Canopy
+  de: Uraltes Blätterdach
+description:
+  en:
+  - <!i><#757575>Druid | Ultimate
+  - ' '
+  - <#94958B>Call down an ancient sanctuary that protects allies
+  - <#94958B>and punishes enemies beneath its living canopy.
+  - ' '
+  - '<#62D106>✦ Seeded: <#94958B>Every pulse converts Seeded stacks into'
+  - <#94958B>burst healing for allies or rootlash damage for enemies.
+  - ' '
+  - '<#FFD700>✦ Sanctuary Pulses:'
+  - '  <#94958B>• Allies gain healing and Resistance.'
+  - '  <#94958B>• Seeded allies also gain brief Stability.'
+  - '  <#94958B>• Enemies are damaged and slowed.'
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
+  - '<!i><yellow>◎ <#94958B>Radius: <arg:5> blocks'
+  - '<!i><yellow>⏱️ <#94958B>Duration: <arg:3>s'
+  - '<!i><yellow>✚ <#94958B>Heal per Pulse: <arg:16>'
+  - '<!i><yellow>✦ <#94958B>Damage per Pulse: <arg:17>'
+  de:
+  - <!i><#757575>Druide | Ultimate
+  - ' '
+  - <#94958B>Rufe ein uraltes Schutzdach herab, das Verbuendete schuetzt
+  - <#94958B>und Feinde unter seinem lebenden Dach bestraft.
+  - ' '
+  - '<#62D106>✦ Saat: <#94958B>Jeder Puls wandelt Saat-Stapel in'
+  - <#94958B>Heilung fuer Verbuendete oder Rankenschaden fuer Feinde um.
+  - ' '
+  - '<#FFD700>✦ Schutzpulse:'
+  - '  <#94958B>• Verbuendete erhalten Heilung und Resistenz.'
+  - '  <#94958B>• Besaete Verbuendete erhalten kurz Stabilitaet.'
+  - '  <#94958B>• Feinde erleiden Schaden und Verlangsamung.'
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Bloecke'
+  - '<!i><yellow>◎ <#94958B>Radius: <arg:5> Bloecke'
+  - '<!i><yellow>⏱️ <#94958B>Dauer: <arg:3>s'
+  - '<!i><yellow>✚ <#94958B>Heilung pro Puls: <arg:16>'
+  - '<!i><yellow>✦ <#94958B>Schaden pro Puls: <arg:17>'
+coefficients:
+  players:
+    heal:
+      minecraft:stat_healing_power: 0.5
+    damage:
+      minecraft:advantage_magical: 0.35
+  entities:
+    heal:
+      minecraft:stat_healing_power: 0.5
+    damage:
+      minecraft:advantage_magical: 0.5
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': manaCost
+  '2': range
+  '3': canopyDuration
+  '4': pulseInterval
+  '5': radius
+  '6': healMin
+  '7': healMax
+  '8': damageMin
+  '9': damageMax
+  '10': seedBurstFactor
+  '11': resistanceDuration
+  '12': stabilityDuration
+  '13': slowDuration
+  '14': seedDuration
+  '15': maxSeedStacks
+  '16': heal
+  '17': damage

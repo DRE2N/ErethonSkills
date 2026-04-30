@@ -1,0 +1,30 @@
+class: warrior.duelist.SideStep
+cooldown: 6
+energyCost: 10
+velocity: 1.2
+rotationAngle: 45
+name:
+  de: Seitwärtsschritt
+  en: Side Step
+description:
+  en:
+  - <!i><#757575>Duelist | Mobility
+  - ' '
+  - <#94958B>Quickly sidestep in your movement direction.
+  - <#94958B>Grants a <#3A7CC9>Parry<#94958B> window for 3 seconds —
+  - <#94958B>your next attack will be a <#3A7CC9>Riposte<#94958B> (160% damage).
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energy Cost: <arg:1>'
+  de:
+  - <!i><#757575>Duellant | Beweglichkeit
+  - ' '
+  - <#94958B>Weiche schnell zur Seite aus.
+  - <#94958B>Gewährt ein <#3A7CC9>Parieren<#94958B>-Fenster für 3 Sekunden —
+  - <#94958B>dein nächster Angriff ist ein <#3A7CC9>Riposte<#94958B> (160% Schaden).
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Energiekosten: <arg:1>'
+availablePlaceholders:
+  '0': cooldown
+  '1': energyCost

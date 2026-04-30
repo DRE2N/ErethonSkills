@@ -1,0 +1,86 @@
+class: ranger.druid.VerdantBloom
+cooldown: 14
+manaCost: 20
+range: 20
+healMin: 40
+healMax: 120
+splashHealFactor: 0.5
+seedHealBonus: 0.25
+seedDamageBonus: 0.3
+damageMin: 20
+damageMax: 60
+radius: 4.5
+regenerationDuration: 60
+slowDuration: 40
+slowStacks: 1
+seedDuration: 140
+maxSeedStacks: 3
+name:
+  en: Verdant Bloom
+  de: Gruenende Bluete
+description:
+  en:
+  - <!i><#757575>Druid
+  - ' '
+  - <#94958B>Bloom restorative magic on a target or yourself,
+  - <#94958B>healing allies and lashing enemies near the bloom.
+  - ' '
+  - '<#62D106>✦ Seeded: <#94958B>Consumes Seeded stacks for stronger'
+  - <#94958B>healing on allies or heavier rootlash damage on enemies.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
+  - '<!i><yellow>◎ <#94958B>Radius: <arg:10> blocks'
+  - '<!i><yellow>✚ <#94958B>Primary Heal: <arg:18>'
+  - '<!i><yellow>✦ <#94958B>Enemy Damage: <arg:19>'
+  de:
+  - <!i><#757575>Druide
+  - ' '
+  - <#94958B>Lass Naturmagie auf einem Ziel oder dir selbst erbluehen,
+  - <#94958B>heile Verbuendete und triff Feinde im Umkreis mit Ranken.
+  - ' '
+  - '<#62D106>✦ Saat: <#94958B>Verbraucht Saat-Stapel fuer staerkere'
+  - <#94958B>Heilung an Verbuendeten oder mehr Rankenschaden an Feinden.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>⚡ <#94958B>Mana: <arg:1>'
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Bloecke'
+  - '<!i><yellow>◎ <#94958B>Radius: <arg:10> Bloecke'
+  - '<!i><yellow>✚ <#94958B>Heilung: <arg:18>'
+  - '<!i><yellow>✦ <#94958B>Schaden: <arg:19>'
+coefficients:
+  players:
+    heal:
+      minecraft:stat_healing_power: 0.7
+    damage:
+      minecraft:advantage_magical: 0.45
+  entities:
+    heal:
+      minecraft:stat_healing_power: 0.7
+    damage:
+      minecraft:advantage_magical: 0.65
+# This list contains all placeholders that can be used in this spell.
+# You can use those placeholders in the description with
+# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+availablePlaceholders:
+  '0': cooldown
+  '1': manaCost
+  '2': range
+  '3': healMin
+  '4': healMax
+  '5': splashHealFactor
+  '6': seedHealBonus
+  '7': seedDamageBonus
+  '8': damageMin
+  '9': damageMax
+  '10': radius
+  '11': regenerationDuration
+  '12': slowDuration
+  '13': slowStacks
+  '14': seedDuration
+  '15': maxSeedStacks
+  '16': coefficients.entities.heal.minecraft:stat_healing_power
+  '17': coefficients.entities.damage.minecraft:advantage_magical
+  '18': heal
+  '19': damage
