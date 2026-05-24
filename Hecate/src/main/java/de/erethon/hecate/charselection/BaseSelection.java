@@ -3,6 +3,7 @@ package de.erethon.hecate.charselection;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.data.DatabaseManager;
 import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
@@ -39,6 +40,19 @@ public abstract class BaseSelection implements Listener {
 
     public void done() {
         HandlerList.unregisterAll(this);
+    }
+
+    protected void showPrivateEntity(Entity entity) {
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            if (player.isOnline() && entity.isValid()) {
+                player.showEntity(plugin, entity);
+            }
+        }, 2L);
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            if (player.isOnline() && entity.isValid()) {
+                player.showEntity(plugin, entity);
+            }
+        }, 10L);
     }
 
     @EventHandler

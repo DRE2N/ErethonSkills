@@ -97,9 +97,7 @@ public class CharacterSelection extends BaseSelection {
                         spawnCharacterInfoDisplay(characterDisplay.getCharacter(), locations.get(i));
                     }
                 } else {
-                    spawnEmptySlotDisplay(locations.get(i));
-                    Interaction interaction = spawnInteractionEntity(locations.get(i));
-                    interactions[i] = interaction;
+                    spawnEmptySlot(locations.get(i), i);
                 }
             }
         } catch (Exception e) {
@@ -180,7 +178,7 @@ public class CharacterSelection extends BaseSelection {
     }
 
     public void onRightClick(BaseDisplay display) {
-        // Regular right-click - could be used for character info or other features
+        // Regular right-click - could be used for character info or other features.
     }
 
     public void onSneakRightClick(BaseDisplay display) {
@@ -315,11 +313,20 @@ public class CharacterSelection extends BaseSelection {
                 }
             } else {
                 // Empty slot
-                spawnEmptySlotDisplay(locations.get(i));
-                if (interactions[i] == null) {
-                    interactions[i] = spawnInteractionEntity(locations.get(i));
-                }
+                spawnEmptySlot(locations.get(i), i);
             }
+        }
+    }
+
+    private void spawnEmptySlot(Location location, int index) {
+        if (interactions[index] == null || !interactions[index].isValid()) {
+            interactions[index] = spawnInteractionEntity(location);
+        }
+        try {
+            spawnEmptySlotDisplay(location);
+        } catch (Exception e) {
+            Hecate.log("CharacterSelection: Failed to spawn empty slot text display for slot " + index + ": " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -359,7 +366,7 @@ public class CharacterSelection extends BaseSelection {
             textDisplay.setTransformation(transformation);
             textDisplay.setPersistent(false);
         });
-        player.showEntity(plugin, display);
+        showPrivateEntity(display);
         characterInfoDisplays.add(display);
     }
 
@@ -392,7 +399,7 @@ public class CharacterSelection extends BaseSelection {
             textDisplay.setPersistent(false);
         });
 
-        player.showEntity(plugin, display);
+        showPrivateEntity(display);
         emptySlotDisplays.add(display);
     }
 
@@ -405,7 +412,7 @@ public class CharacterSelection extends BaseSelection {
         TextDisplay display = locCopy.getWorld().spawn(locCopy, TextDisplay.class, textDisplay -> {
             textDisplay.setVisibleByDefault(false);
 
-            Component text = Component.text("✚", NamedTextColor.GREEN)
+            Component text = Component.text("+", NamedTextColor.GREEN)
                 .decoration(TextDecoration.BOLD, true)
                 .append(Component.newline())
                 .append(Component.translatable("hecate.character.slot.empty", NamedTextColor.GRAY));
@@ -424,7 +431,7 @@ public class CharacterSelection extends BaseSelection {
             textDisplay.setPersistent(false);
         });
 
-        player.showEntity(plugin, display);
+        showPrivateEntity(display);
         emptySlotDisplays.add(display);
     }
 
@@ -439,7 +446,7 @@ public class CharacterSelection extends BaseSelection {
             entity.setVisibleByDefault(false);
             entity.setPersistent(false);
         });
-        player.showEntity(plugin, interaction);
+        showPrivateEntity(interaction);
         return interaction;
     }
 

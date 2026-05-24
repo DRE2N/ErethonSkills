@@ -169,7 +169,7 @@ public class ClassSelection extends BaseSelection {
             Transformation transformation = new Transformation(new Vector3f(0f), new AxisAngle4f(), new Vector3f(0.7f), new AxisAngle4f());
             textDisplay.setTransformation(transformation);
         });
-        player.showEntity(plugin, display);
+        showPrivateEntity(display);
         emptySlotDisplays.add(display);
     }
 

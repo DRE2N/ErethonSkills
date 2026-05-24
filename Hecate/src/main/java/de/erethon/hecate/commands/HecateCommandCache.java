@@ -15,6 +15,7 @@ public class HecateCommandCache extends ECommandCache {
     public HecateCommandCache(EPlugin plugin) {
         super(LABEL, plugin, ALIASES, new HashSet<>());
         this.plugin = plugin;
+        addCommand(new ArenaCommand());
         addCommand(new SkillCommand());
         addCommand(new DisplayCommand());
         addCommand(new LearnSkillCommand());

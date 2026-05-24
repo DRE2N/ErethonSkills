@@ -11,6 +11,8 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,10 +30,12 @@ public class TeamManager {
 
     public void removeTeam(String id) {
         existingTeams.removeIf(team -> team.id().equals(id));
-        for (UUID uuid : teams.keySet()) {
-            Entity entity = Bukkit.getEntity(uuid);
-            if (teams.get(uuid).id().equals(id)) {
-                teams.remove(uuid);
+        Iterator<Map.Entry<UUID, SpellbookTeam>> iterator = teams.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<UUID, SpellbookTeam> entry = iterator.next();
+            Entity entity = Bukkit.getEntity(entry.getKey());
+            if (entry.getValue().id().equals(id)) {
+                iterator.remove();
                 if (entity != null) {
                     entity.getPersistentDataContainer().remove(teamKey);
                 }
@@ -60,8 +64,14 @@ public class TeamManager {
     }
 
     public void addEntityToTeam(LivingEntity entity, SpellbookTeam team) {
+        addEntityToTeam(entity, team, true);
+    }
+
+    public void addEntityToTeam(LivingEntity entity, SpellbookTeam team, boolean persistent) {
         teams.put(entity.getUniqueId(), team);
-        entity.getPersistentDataContainer().set(teamKey, PersistentDataType.STRING, team.id());
+        if (persistent) {
+            entity.getPersistentDataContainer().set(teamKey, PersistentDataType.STRING, team.id());
+        }
     }
 
     public void removeEntityFromTeam(LivingEntity entity) {

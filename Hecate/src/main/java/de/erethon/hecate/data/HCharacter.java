@@ -560,6 +560,10 @@ public class HCharacter {
         }
         Player player = getPlayer();
         if (player == null || !player.isOnline()) return;
+        if (!newMode && reason != CombatModeReason.ARENA && plugin.getArenaManager() != null && plugin.getArenaManager().isInMatch(player.getUniqueId())) {
+            player.sendMessage(net.kyori.adventure.text.Component.translatable("hecate.arena.match.combat_locked"));
+            return;
+        }
 
         if (newMode) {
             for (int i = 0; i < 9; i++) {
@@ -612,8 +616,17 @@ public class HCharacter {
         }
     }
 
+    public void setScaledPvP(boolean scaledPvP, int scaledLevel) {
+        if (castingManager != null) {
+            castingManager.setScaledPvPMode(scaledPvP, scaledLevel);
+            Hecate.log("Scaled PvP mode set to " + scaledPvP + " at level " + scaledLevel + " for character " + characterID);
+        }
+    }
+
 
     public boolean isInCastMode() { return isInCastMode; }
+    public void setSaveInventory(boolean saveInventory) { this.saveInventory = saveInventory; }
+    public boolean shouldSaveInventory() { return saveInventory; }
     public CharacterCastingManager getCastingManager() { return castingManager; }
     public UUID getCharacterID() { return characterID; }
     public HPlayer getHPlayer() { return hPlayer; }

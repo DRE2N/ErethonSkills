@@ -6,6 +6,7 @@ public enum CombatModeReason {
     ATTACKING,
     ATTACKED,
     AREA,
+    ARENA,
     PLUGIN,
     DEATH;
 }

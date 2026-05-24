@@ -58,6 +58,7 @@ public class CharacterCastingManager implements Listener {
     private int previousSlot;
     private boolean scaledPvPMode = false;
     private static final int LEVEL_FOR_SCALED_PVP = 18;
+    private int scaledPvPLevel = LEVEL_FOR_SCALED_PVP;
 
     private BukkitRunnable updateTask;
     private final Set<TraitData> combatOnlyTraits = new HashSet<>();
@@ -195,8 +196,8 @@ public class CharacterCastingManager implements Listener {
         };
         updateTask.runTaskTimer(plugin, 0, 20);
         int level = character.getLevel();
-        if (scaledPvPMode && level < LEVEL_FOR_SCALED_PVP) {
-            level = LEVEL_FOR_SCALED_PVP;
+        if (scaledPvPMode) {
+            level = scaledPvPLevel;
         }
         setAttributesForLevel(level);
         for (TraitData trait : combatOnlyTraits) {
@@ -519,11 +520,16 @@ public class CharacterCastingManager implements Listener {
     }
 
     public void setScaledPvPMode(boolean scaledPvPMode) {
+        setScaledPvPMode(scaledPvPMode, LEVEL_FOR_SCALED_PVP);
+    }
+
+    public void setScaledPvPMode(boolean scaledPvPMode, int scaledPvPLevel) {
         this.scaledPvPMode = scaledPvPMode;
+        this.scaledPvPLevel = Math.max(1, scaledPvPLevel);
         if (isInCastMode) {
             int level = character.getLevel();
-            if (scaledPvPMode && level < LEVEL_FOR_SCALED_PVP) {
-                level = LEVEL_FOR_SCALED_PVP;
+            if (scaledPvPMode) {
+                level = this.scaledPvPLevel;
             }
             setAttributesForLevel(level);
             updateUI();

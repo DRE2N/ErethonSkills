@@ -5,6 +5,7 @@ import de.erethon.bedrock.database.BedrockDBConnection;
 import de.erethon.bedrock.plugin.EPlugin;
 import de.erethon.bedrock.plugin.EPluginSettings;
 import de.erethon.hecate.charselection.CharacterLobby;
+import de.erethon.hecate.arenas.ArenaManager;
 import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
@@ -24,12 +25,10 @@ import de.erethon.spellbook.api.TraitData;
 import de.erethon.spellbook.spells.SpellbookBaseSpell;
 import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Pig;
 import org.bukkit.event.HandlerList;
 
@@ -52,6 +51,7 @@ public final class Hecate extends EPlugin {
 
     private Spellbook spellbook;
     private HecateCommandCache commands;
+    private ArenaManager arenaManager;
     private DatabaseManager databaseManager;
     private EntityStatusDisplayManager statusDisplayManager;
     private TranslationManager translationManager;
@@ -250,6 +250,9 @@ public final class Hecate extends EPlugin {
 
     @Override
     public void onDisable() {
+        if (arenaManager != null) {
+            arenaManager.shutdown();
+        }
         Bukkit.getScheduler().cancelTasks(this);
         HandlerList.unregisterAll(this);
         databaseManager.close();
@@ -297,8 +300,7 @@ public final class Hecate extends EPlugin {
 
     public void instantiate() {
         statusDisplayManager = new EntityStatusDisplayManager();
-        Server server = Bukkit.getServer();
-        CraftServer craftServer = (CraftServer) server;
+        arenaManager = new ArenaManager(this);
     }
 
     public void registerCommands() {
@@ -326,6 +328,10 @@ public final class Hecate extends EPlugin {
 
     public HecateCommandCache getCommands() {
         return commands;
+    }
+
+    public ArenaManager getArenaManager() {
+        return arenaManager;
     }
 
     public static Hecate getInstance() {

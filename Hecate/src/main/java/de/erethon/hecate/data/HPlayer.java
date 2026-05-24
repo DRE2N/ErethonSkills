@@ -87,6 +87,10 @@ public class HPlayer {
             this.selectedCharacter = null; // Player is most likely in character selection screen and has no character selected yet
             return;
         }
+        if (player != null && Hecate.getInstance().getArenaManager() != null && Hecate.getInstance().getArenaManager().isInMatch(player.getUniqueId())) {
+            player.sendMessage(Component.translatable("hecate.arena.match.no_character_switch"));
+            return;
+        }
         lock.lock();
         Title.Times times = Title.Times.times(Duration.ZERO, Duration.ofSeconds(999999), Duration.ZERO);
         Title title = Title.title(Component.empty(), Component.text("Loading character...", NamedTextColor.YELLOW), times);

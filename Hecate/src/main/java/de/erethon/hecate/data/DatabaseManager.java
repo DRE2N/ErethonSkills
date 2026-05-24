@@ -4,6 +4,12 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.database.BedrockDBConnection;
 import de.erethon.bedrock.database.EDatabaseManager;
 import de.erethon.hecate.Hecate;
+import de.erethon.hecate.arenas.ArenaLeaderboardEntry;
+import de.erethon.hecate.arenas.ArenaMatch;
+import de.erethon.hecate.arenas.ArenaRatingChange;
+import de.erethon.hecate.arenas.ArenaTeamEntry;
+import de.erethon.hecate.arenas.GlickoConstants;
+import de.erethon.hecate.arenas.Rating;
 import de.erethon.hecate.data.dao.BankDao;
 import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.data.dao.PlayerDao;
@@ -34,6 +40,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -87,6 +95,33 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 "unlocked_pages INT DEFAULT 1," +
                 "FOREIGN KEY (player_id) REFERENCES Players(player_id) ON DELETE CASCADE)";
 
+        String createArenaRatingsTable = "CREATE TABLE IF NOT EXISTS ArenaRatings (" +
+                "player_id UUID PRIMARY KEY," +
+                "rating DOUBLE PRECISION," +
+                "deviation DOUBLE PRECISION," +
+                "volatility DOUBLE PRECISION," +
+                "updated_at TIMESTAMP)";
+
+        String createArenaMatchesTable = "CREATE TABLE IF NOT EXISTS ArenaMatches (" +
+                "match_id UUID PRIMARY KEY," +
+                "arena_id TEXT," +
+                "mode TEXT," +
+                "ranked BOOLEAN," +
+                "team_size INT," +
+                "started_at TIMESTAMP," +
+                "ended_at TIMESTAMP," +
+                "winner_team INT," +
+                "reason TEXT)";
+
+        String createArenaMatchPlayersTable = "CREATE TABLE IF NOT EXISTS ArenaMatchPlayers (" +
+                "match_id UUID," +
+                "player_id UUID," +
+                "character_id UUID," +
+                "team INT," +
+                "rating_before DOUBLE PRECISION," +
+                "rating_after DOUBLE PRECISION," +
+                "PRIMARY KEY (match_id, player_id))";
+
         String addForeignKeyToPlayers = "DO $$ BEGIN " +
                 "IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'fk_last_character' AND conrelid = 'players'::regclass) THEN " +
                 "ALTER TABLE Players ADD CONSTRAINT fk_last_character FOREIGN KEY (last_character) REFERENCES Characters(character_id) ON DELETE SET NULL; " +
@@ -125,6 +160,12 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     handle.execute(createBanksTable);
                     Hecate.log("Schema setup: Finished createBanksTable.");
 
+                    Hecate.log("Schema setup: Executing arena tables...");
+                    handle.execute(createArenaRatingsTable);
+                    handle.execute(createArenaMatchesTable);
+                    handle.execute(createArenaMatchPlayersTable);
+                    Hecate.log("Schema setup: Finished arena tables.");
+
                     Hecate.log("Schema setup: Executing alter table statements...");
                     alterTableStatements.forEach(statement -> {
                         Hecate.log("Schema setup: Altering -> " + statement);
@@ -156,6 +197,10 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
 
     public CompletableFuture<Boolean> createOrUpdateCharacter(HCharacter character) {
+        if (!character.shouldSaveInventory()) {
+            Hecate.log("Skipping character save for " + character.getCharacterID() + " because inventory saving is disabled.");
+            return CompletableFuture.completedFuture(true);
+        }
         byte[] playerData = character.serializePlayerDataToBlob(false); // Assume this method exists
         String skillsString = String.join(",", character.getSkills());
         String traitlineId = character.getTraitline() != null ? character.getTraitline().getId() : null;
@@ -614,10 +659,14 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             CompletableFuture<Void> saveFuture = savePlayerData(hPlayer);
 
             if (character != null) {
-                // Save the current gamemode before saving the character
-                String currentGamemode = player.getGameMode().toString();
-                character.setGamemode(currentGamemode);
-                Hecate.log("Saving character " + character.getCharacterID() + " with gamemode: " + currentGamemode);
+                if (character.shouldSaveInventory()) {
+                    // Save the current gamemode before saving the character
+                    String currentGamemode = player.getGameMode().toString();
+                    character.setGamemode(currentGamemode);
+                    Hecate.log("Saving character " + character.getCharacterID() + " with gamemode: " + currentGamemode);
+                } else {
+                    Hecate.log("Skipping arena character playerdata/gamemode save for " + character.getCharacterID() + " on quit.");
+                }
 
                 saveFuture = saveFuture.thenCompose(v -> createOrUpdateCharacter(character))
                         .thenCompose(v -> unlockCharacter(character.getCharacterID()));
@@ -765,9 +814,14 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             Hecate.log("PlayerDataSaveEvent triggered for " + hPlayer.getPlayerId());
             savePlayerData(hPlayer);
             if (hPlayer.getSelectedCharacter() != null) {
-                String currentGamemode = event.getPlayer().getGameMode().toString();
-                hPlayer.getSelectedCharacter().setGamemode(currentGamemode);
-                createOrUpdateCharacter(hPlayer.getSelectedCharacter());
+                HCharacter character = hPlayer.getSelectedCharacter();
+                if (character.shouldSaveInventory()) {
+                    String currentGamemode = event.getPlayer().getGameMode().toString();
+                    character.setGamemode(currentGamemode);
+                    createOrUpdateCharacter(character);
+                } else {
+                    Hecate.log("Skipping arena character playerdata/gamemode save for " + character.getCharacterID() + " during PlayerDataSaveEvent.");
+                }
             }
         }
     }
@@ -833,6 +887,132 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     ex.printStackTrace();
                     return false;
                 });
+    }
+
+    // --- Arena Methods ---
+
+    public CompletableFuture<Rating> getArenaRating(UUID playerId) {
+        return queryAsync(handle -> getArenaRating(handle, playerId)).exceptionally(ex -> {
+            Hecate.log("Error loading arena rating for " + playerId + ": " + ex.getMessage());
+            ex.printStackTrace();
+            return new Rating(playerId);
+        });
+    }
+
+    private Rating getArenaRating(Handle handle, UUID playerId) {
+        Map<String, Object> row = handle.createQuery("SELECT rating, deviation, volatility FROM ArenaRatings WHERE player_id = :playerId")
+                .bind("playerId", playerId)
+                .mapToMap()
+                .findOne()
+                .orElse(null);
+        if (row == null) {
+            return new Rating(playerId);
+        }
+        return new Rating(playerId,
+                ((Number) row.get("rating")).doubleValue(),
+                ((Number) row.get("deviation")).doubleValue(),
+                ((Number) row.get("volatility")).doubleValue());
+    }
+
+    public CompletableFuture<List<ArenaLeaderboardEntry>> getTopArenaRatings(int limit) {
+        int safeLimit = Math.max(1, Math.min(100, limit));
+        return queryAsync(handle -> handle.createQuery("SELECT player_id, rating, deviation FROM ArenaRatings ORDER BY rating DESC LIMIT :limit")
+                .bind("limit", safeLimit)
+                .map((rs, ctx) -> new ArenaLeaderboardEntry(
+                        rs.getObject("player_id", UUID.class),
+                        rs.getDouble("rating"),
+                        rs.getDouble("deviation")))
+                .list()).exceptionally(ex -> {
+            Hecate.log("Error loading arena leaderboard: " + ex.getMessage());
+            ex.printStackTrace();
+            return List.of();
+        });
+    }
+
+    public CompletableFuture<Void> recordArenaMatch(ArenaMatch match, String reason) {
+        return executeAsync(handle -> {
+            handle.createUpdate("INSERT INTO ArenaMatches (match_id, arena_id, mode, ranked, team_size, started_at, ended_at, winner_team, reason) " +
+                            "VALUES (:matchId, :arenaId, :mode, :ranked, :teamSize, NOW(), NOW(), :winnerTeam, :reason) " +
+                            "ON CONFLICT (match_id) DO NOTHING")
+                    .bind("matchId", match.getId())
+                    .bind("arenaId", match.getArena().getId())
+                    .bind("mode", match.getArena().getMode().name())
+                    .bind("ranked", match.getQueueType() == de.erethon.hecate.arenas.ArenaQueueType.RANKED)
+                    .bind("teamSize", match.getArena().getTeamSize())
+                    .bind("winnerTeam", match.getWinner())
+                    .bind("reason", reason)
+                    .execute();
+            for (ArenaTeamEntry team : match.getTeams()) {
+                for (UUID playerId : team.getPlayers()) {
+                    HPlayer hPlayer = getHPlayer(playerId);
+                    UUID characterId = hPlayer != null && hPlayer.getSelectedCharacter() != null ? hPlayer.getSelectedCharacter().getCharacterID() : null;
+                    Rating rating = getArenaRating(handle, playerId);
+                    handle.createUpdate("INSERT INTO ArenaMatchPlayers (match_id, player_id, character_id, team, rating_before, rating_after) " +
+                                    "VALUES (:matchId, :playerId, :characterId, :team, :before, :after) " +
+                                    "ON CONFLICT (match_id, player_id) DO UPDATE SET rating_after = EXCLUDED.rating_after")
+                            .bind("matchId", match.getId())
+                            .bind("playerId", playerId)
+                            .bind("characterId", characterId)
+                            .bind("team", team.getId())
+                            .bind("before", rating.getRating())
+                            .bind("after", rating.getRating())
+                            .execute();
+                }
+            }
+        }).exceptionally(ex -> {
+            Hecate.log("Error recording arena match " + match.getId() + ": " + ex.getMessage());
+            ex.printStackTrace();
+            return null;
+        });
+    }
+
+    public CompletableFuture<Map<UUID, ArenaRatingChange>> updateArenaRatings(ArenaMatch match) {
+        return queryAsync(handle -> {
+            Map<UUID, Rating> ratings = new HashMap<>();
+            Map<UUID, ArenaRatingChange> changes = new LinkedHashMap<>();
+            for (ArenaTeamEntry team : match.getTeams()) {
+                for (UUID playerId : team.getPlayers()) {
+                    ratings.put(playerId, getArenaRating(handle, playerId));
+                }
+            }
+            double[] teamAverages = new double[2];
+            for (ArenaTeamEntry team : match.getTeams()) {
+                double total = 0;
+                for (UUID playerId : team.getPlayers()) {
+                    total += ratings.get(playerId).getRating();
+                }
+                teamAverages[team.getId()] = total / Math.max(1, team.getPlayers().size());
+            }
+            for (ArenaTeamEntry team : match.getTeams()) {
+                int opponentTeam = 1 - team.getId();
+                double score = team.getId() == match.getWinner() ? 1.0 : 0.0;
+                for (UUID playerId : team.getPlayers()) {
+                    Rating rating = ratings.get(playerId);
+                    double before = rating.getRating();
+                    Rating opponent = new Rating(UUID.nameUUIDFromBytes(("arena-team-" + opponentTeam).getBytes()), teamAverages[opponentTeam], GlickoConstants.DEFAULT_DEVIATION, GlickoConstants.DEFAULT_VOLATILITY);
+                    GlickoConstants.updateRating(rating, List.of(opponent), List.of(score));
+                    handle.createUpdate("INSERT INTO ArenaRatings (player_id, rating, deviation, volatility, updated_at) " +
+                                    "VALUES (:playerId, :rating, :deviation, :volatility, NOW()) " +
+                                    "ON CONFLICT (player_id) DO UPDATE SET rating = EXCLUDED.rating, deviation = EXCLUDED.deviation, volatility = EXCLUDED.volatility, updated_at = NOW()")
+                            .bind("playerId", playerId)
+                            .bind("rating", rating.getRating())
+                            .bind("deviation", rating.getDeviation())
+                            .bind("volatility", rating.getVolatility())
+                            .execute();
+                    handle.createUpdate("UPDATE ArenaMatchPlayers SET rating_after = :rating WHERE match_id = :matchId AND player_id = :playerId")
+                            .bind("rating", rating.getRating())
+                            .bind("matchId", match.getId())
+                            .bind("playerId", playerId)
+                            .execute();
+                    changes.put(playerId, new ArenaRatingChange(playerId, before, rating.getRating(), rating.getDeviation()));
+                }
+            }
+            return changes;
+        }).exceptionally(ex -> {
+            Hecate.log("Error updating arena ratings for match " + match.getId() + ": " + ex.getMessage());
+            ex.printStackTrace();
+            return Map.of();
+        });
     }
 
     // --- Shutdown handling ---
