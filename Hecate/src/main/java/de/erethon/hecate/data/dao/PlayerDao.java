@@ -24,6 +24,11 @@ public interface PlayerDao {
                      @Bind("lastOnline") Timestamp lastOnline,
                      @Bind("lastCharacter") UUID lastCharacter); // Can be null
 
+    @SqlUpdate("INSERT INTO Players (player_id, last_online, last_known_name) " +
+               "VALUES (:playerId, NOW(), :lastKnownName) " +
+               "ON CONFLICT (player_id) DO UPDATE SET last_online = EXCLUDED.last_online, last_known_name = EXCLUDED.last_known_name")
+    int updateLastKnownName(@Bind("playerId") UUID playerId, @Bind("lastKnownName") String lastKnownName);
+
     @SqlUpdate("INSERT INTO Players (player_id, last_online) VALUES (:playerId, NOW()) " +
                "ON CONFLICT (player_id) DO UPDATE SET last_online = EXCLUDED.last_online")
     int updateLastOnline(@Bind("playerId") UUID playerId);

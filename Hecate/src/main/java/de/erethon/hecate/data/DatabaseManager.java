@@ -87,7 +87,8 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         String createPlayersTable = "CREATE TABLE IF NOT EXISTS Players (" +
                 "player_id UUID PRIMARY KEY," +
                 "last_online TIMESTAMP," +
-                "last_character UUID)";
+                "last_character UUID," +
+                "last_known_name VARCHAR(16))";
 
         String createBanksTable = "CREATE TABLE IF NOT EXISTS Banks (" +
                 "player_id UUID PRIMARY KEY," +
@@ -140,6 +141,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP",
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS deleted_by VARCHAR(255)",
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS gamemode VARCHAR(20)",
+                "ALTER TABLE Players ADD COLUMN IF NOT EXISTS last_known_name VARCHAR(16)",
                 "ALTER TABLE Banks ADD COLUMN IF NOT EXISTS bank_contents BYTEA",
                 "ALTER TABLE Banks ADD COLUMN IF NOT EXISTS unlocked_pages INT DEFAULT 1"
         );
@@ -715,6 +717,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     private void onLogin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID uuid = player.getUniqueId();
+        updateLastKnownName(player);
         HPlayer hPlayer = uuidToHPlayerMap.get(uuid);
 
         if (hPlayer == null) {
@@ -916,10 +919,14 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
     public CompletableFuture<List<ArenaLeaderboardEntry>> getTopArenaRatings(int limit) {
         int safeLimit = Math.max(1, Math.min(100, limit));
-        return queryAsync(handle -> handle.createQuery("SELECT player_id, rating, deviation FROM ArenaRatings ORDER BY rating DESC LIMIT :limit")
+        return queryAsync(handle -> handle.createQuery("SELECT ar.player_id, p.last_known_name, ar.rating, ar.deviation " +
+                        "FROM ArenaRatings ar " +
+                        "LEFT JOIN Players p ON p.player_id = ar.player_id " +
+                        "ORDER BY ar.rating DESC LIMIT :limit")
                 .bind("limit", safeLimit)
                 .map((rs, ctx) -> new ArenaLeaderboardEntry(
                         rs.getObject("player_id", UUID.class),
+                        rs.getString("last_known_name"),
                         rs.getDouble("rating"),
                         rs.getDouble("deviation")))
                 .list()).exceptionally(ex -> {
@@ -1013,6 +1020,19 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             ex.printStackTrace();
             return Map.of();
         });
+    }
+
+    public CompletableFuture<Void> updateLastKnownName(Player player) {
+        String name = player.getName();
+        if (name == null || name.isBlank()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return executeAsync(handle -> handle.attach(PlayerDao.class).updateLastKnownName(player.getUniqueId(), name))
+                .exceptionally(ex -> {
+                    Hecate.log("Error updating last known name for " + player.getUniqueId() + ": " + ex.getMessage());
+                    ex.printStackTrace();
+                    return null;
+                });
     }
 
     // --- Shutdown handling ---

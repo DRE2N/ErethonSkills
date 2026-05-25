@@ -159,7 +159,7 @@ public class ArenaCommand extends ECommand implements TabCompleter {
         }
         int rank = 1;
         for (ArenaLeaderboardEntry entry : entries) {
-            String name = Bukkit.getOfflinePlayer(entry.playerId()).getName();
+            String name = entry.playerName();
             if (name == null || name.isBlank()) {
                 name = entry.playerId().toString();
             }
