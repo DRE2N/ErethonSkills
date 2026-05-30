@@ -142,6 +142,10 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS deleted_by VARCHAR(255)",
                 "ALTER TABLE Characters ADD COLUMN IF NOT EXISTS gamemode VARCHAR(20)",
                 "ALTER TABLE Players ADD COLUMN IF NOT EXISTS last_known_name VARCHAR(16)",
+                "ALTER TABLE Players ADD COLUMN IF NOT EXISTS web_password_hash TEXT",
+                "ALTER TABLE Players ADD COLUMN IF NOT EXISTS web_enabled_at TIMESTAMP",
+                "ALTER TABLE Players ADD COLUMN IF NOT EXISTS web_last_login_at TIMESTAMP",
+                "ALTER TABLE Players ADD COLUMN IF NOT EXISTS web_session_version INT DEFAULT 0",
                 "ALTER TABLE Banks ADD COLUMN IF NOT EXISTS bank_contents BYTEA",
                 "ALTER TABLE Banks ADD COLUMN IF NOT EXISTS unlocked_pages INT DEFAULT 1"
         );

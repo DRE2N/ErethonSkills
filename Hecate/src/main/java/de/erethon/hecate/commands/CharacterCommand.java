@@ -30,6 +30,7 @@ public class CharacterCommand extends ECommand implements TabCompleter {
         setMaxArgs(4);
         setPlayerCommand(true);
         setConsoleCommand(false);
+        setRegisterSeparately(true);
         setHelp("Character management - /char [list|select|create|info]");
     }
 

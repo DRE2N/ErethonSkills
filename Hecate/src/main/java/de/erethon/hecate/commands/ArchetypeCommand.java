@@ -9,30 +9,31 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class ClassCommand extends ECommand {
+public class ArchetypeCommand extends ECommand {
 
     private final Hecate plugin = Hecate.getInstance();
 
-    public ClassCommand() {
-        setCommand("class");
+    public ArchetypeCommand() {
+        setCommand("archetype");
         setAliases("c");
         setMinArgs(1);
         setMaxArgs(4);
-        setHelp("<red>Invalid syntax. Use /h class <class/list> [player]");
+        setHelp("<red>Invalid syntax. Use /archetype <archetype/list> [player]");
         setPermission("hecate.class");
         setPlayerCommand(true);
         setConsoleCommand(false);
+        setRegisterSeparately(true);
     }
     @Override
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
         HCharacter hCharacter = plugin.getDatabaseManager().getCurrentCharacter(player);
         if (args.length < 2) {
-            MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /h class <class/list>");
+            MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /archetype <archetype/list>");
             return;
         }
         if (args[1].equalsIgnoreCase("list")) {
-            MessageUtil.sendMessage(player, "<green>Loaded classes (" + plugin.getHClasses().size() + "):");
+            MessageUtil.sendMessage(player, "<green>Loaded archetypes (" + plugin.getHClasses().size() + "):");
             for (HClass hClass : plugin.getHClasses()) {
                 MessageUtil.sendMessage(player, "<green>- <gray>" + hClass.getId());
             }
@@ -40,16 +41,16 @@ public class ClassCommand extends ECommand {
         }
         HClass hClass = plugin.getHClass(args[1]);
         if (hClass == null) {
-            MessageUtil.sendMessage(player, "<red>Class " + args[1] + " not found.");
+            MessageUtil.sendMessage(player, "<red>Archetype " + args[1] + " not found.");
             return;
         }
         if (args.length < 3) {
             hCharacter.setHClass(hClass);
-            MessageUtil.sendMessage(player, "<green>Class " + hClass.getDisplayName() + " set.");
+            MessageUtil.sendMessage(player, "<green>Archetype " + hClass.getDisplayName() + " set.");
             return;
         }
         if (args.length < 4) {
-            MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /h class <class/list> [player]");
+            MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /archetype <archetype/list> [player]");
             return;
         }
         Player targetPlayer = Bukkit.getPlayer(args[2]);
@@ -59,6 +60,6 @@ public class ClassCommand extends ECommand {
             return;
         }
         target.setHClass(hClass);
-        MessageUtil.sendMessage(player, "<green>Class " + hClass.getDisplayName() + " set for " + target.getPlayer().getName() + ".");
+        MessageUtil.sendMessage(player, "<green>Archetype " + hClass.getDisplayName() + " set for " + target.getPlayer().getName() + ".");
     }
 }

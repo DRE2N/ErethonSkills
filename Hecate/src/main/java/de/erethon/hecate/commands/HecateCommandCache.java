@@ -26,14 +26,15 @@ public class HecateCommandCache extends ECommandCache {
         addCommand(new TraitCommand());
         addCommand(new TeamCommand());
         addCommand(new EffectCommand());
-        addCommand(new ClassCommand());
+        addCommand(new ArchetypeCommand());
         addCommand(new CharacterCommand());
         addCommand(new ResourcepackCommand());
         addCommand(new ToggleCommand()); // Temporary
         addCommand(new AdminCommand());
         addCommand(new BankCommand());
+        addCommand(new WebAccountCommand());
         addCommand(new TestCommand());
-        addCommand(new TraitlineCommand());
+        addCommand(new DisciplineCommand());
         addCommand(new XpCommand());
     }
 }

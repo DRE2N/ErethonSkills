@@ -623,6 +623,13 @@ public class HCharacter {
         }
     }
 
+    public void setScaledLevel(boolean scaledLevelMode, int scaledLevel) {
+        if (castingManager != null) {
+            castingManager.setScaledLevelMode(scaledLevelMode, scaledLevel);
+            Hecate.log("Scaled level mode set to " + scaledLevelMode + " at level " + scaledLevel + " for character " + characterID);
+        }
+    }
+
 
     public boolean isInCastMode() { return isInCastMode; }
     public void setSaveInventory(boolean saveInventory) { this.saveInventory = saveInventory; }

@@ -16,6 +16,8 @@ import de.erethon.hecate.progression.LevelMessages;
 import de.erethon.hecate.progression.LevelUtil;
 import de.erethon.hecate.translations.TranslationManager;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
+import de.erethon.hecate.web.WebAccountService;
+import de.erethon.hecate.web.WebInventoryService;
 import de.erethon.spellbook.utils.SpellbookTranslator;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
@@ -34,7 +36,9 @@ import org.bukkit.event.HandlerList;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -53,6 +57,8 @@ public final class Hecate extends EPlugin {
     private HecateCommandCache commands;
     private ArenaManager arenaManager;
     private DatabaseManager databaseManager;
+    private WebAccountService webAccountService;
+    private WebInventoryService webInventoryService;
     private EntityStatusDisplayManager statusDisplayManager;
     private TranslationManager translationManager;
     private final Set<Traitline> traitlines = new HashSet<>();
@@ -84,13 +90,16 @@ public final class Hecate extends EPlugin {
         // Initialize translation manager early
         translationManager = new TranslationManager(this);
 
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(Bukkit.getWorldContainer(), "environment.yml"));
+        File environmentFile = environmentFile();
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(environmentFile);
         try {
             BedrockDBConnection connection = new BedrockDBConnection(config.getString("dbUrl"),
                     config.getString("dbUser"),
                     config.getString("dbPassword"),
                     "org.postgresql.ds.PGSimpleDataSource");
             databaseManager = new DatabaseManager(connection);
+            webAccountService = new WebAccountService(databaseManager, config.getString("webSessionSecret"));
+            webInventoryService = new WebInventoryService(databaseManager);
         }
         catch (Exception e) {
             Hecate.log("Failed to connect to database. Hecate will not work.");
@@ -215,6 +224,24 @@ public final class Hecate extends EPlugin {
         }
     }
 
+    private String ensureWebSessionSecret(YamlConfiguration config, File environmentFile) throws IOException {
+        String configured = config.getString("webSessionSecret");
+        if (configured != null && !configured.isBlank()) {
+            return configured;
+        }
+        byte[] bytes = new byte[32];
+        new SecureRandom().nextBytes(bytes);
+        String generated = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+        config.set("webSessionSecret", generated);
+        config.save(environmentFile);
+        Hecate.log("Generated webSessionSecret in " + environmentFile.getName() + ". Existing web sessions will need to log in once.");
+        return generated;
+    }
+
+    private File environmentFile() {
+        return new File(Bukkit.getWorldContainer(), "environment.yml");
+    }
+
     private void createPlaceholderDefinitions(World world ) {
         Hecate.log("Creating placeholder definitions...");
         Pig pig = world.spawn(world.getSpawnLocation(), Pig.class);
@@ -258,8 +285,29 @@ public final class Hecate extends EPlugin {
         databaseManager.close();
     }
 
+    public void reloadContent() {
+        File environmentFile = environmentFile();
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(environmentFile);
+        try {
+            ensureWebSessionSecret(config, environmentFile);
+        } catch (IOException e) {
+            Hecate.log("Failed to save webSessionSecret to " + environmentFile.getName() + ".");
+            e.printStackTrace();
+        }
+        traitlines.clear();
+        hClasses.clear();
+        loadTraitlines();
+        loadClasses();
+        registerTranslations();
+    }
+
     private void loadClasses() {
-        for (File file : CLASSES.listFiles()) {
+        File[] files = CLASSES.listFiles();
+        if (files == null) {
+            Hecate.log("Loaded 0 classes.");
+            return;
+        }
+        for (File file : files) {
             if (file.getName().endsWith(".yml")) {
                 try {
                     hClasses.add(new HClass(file));
@@ -272,7 +320,12 @@ public final class Hecate extends EPlugin {
     }
 
     private void loadTraitlines() {
-        for (File file : TRAITLINES.listFiles()) {
+        File[] files = TRAITLINES.listFiles();
+        if (files == null) {
+            Hecate.log("Loaded 0 traitlines.");
+            return;
+        }
+        for (File file : files) {
             if (file.getName().endsWith(".yml")) {
                 try {
                     traitlines.add(new Traitline(file));
@@ -320,6 +373,14 @@ public final class Hecate extends EPlugin {
 
     public DatabaseManager getDatabaseManager() {
         return databaseManager;
+    }
+
+    public WebAccountService getWebAccountService() {
+        return webAccountService;
+    }
+
+    public WebInventoryService getWebInventoryService() {
+        return webInventoryService;
     }
 
     public CharacterLobby getLobbyInUse() {

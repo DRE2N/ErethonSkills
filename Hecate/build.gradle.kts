@@ -29,7 +29,7 @@ configurations.all {
 }
 
 group = "de.erethon"
-version = "1.2-SNAPSHOT"
+version = "1.3-SNAPSHOT"
 description = "Spell plugin for Erethon"
 
 java {

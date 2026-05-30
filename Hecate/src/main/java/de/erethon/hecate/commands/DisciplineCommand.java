@@ -12,19 +12,20 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TraitlineCommand extends ECommand {
+public class DisciplineCommand extends ECommand {
 
     private final Hecate plugin = Hecate.getInstance();
 
-    public TraitlineCommand() {
-        setCommand("traitline");
+    public DisciplineCommand() {
+        setCommand("discipline");
         setAliases("tl");
         setMinArgs(1);
         setMaxArgs(3);
-        setHelp("<red>Invalid syntax. Use /traitline <traitline> [<player>] [force]");
-        setPermission("hecate.traitline");
+        setHelp("<red>Invalid syntax. Use /discipline <discipline> [<player>] [force]");
+        setPermission("hecate.discipline");
         setPlayerCommand(true);
         setConsoleCommand(false);
+        setRegisterSeparately(true);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class TraitlineCommand extends ECommand {
         HPlayer hPlayer;
 
         if (args.length < 2) {
-            MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /traitline <traitline> [<player>] [force]");
+            MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /discipline <discipline> [<player>] [force]");
             return;
         }
 
@@ -68,7 +69,7 @@ public class TraitlineCommand extends ECommand {
 
         Traitline traitlineData = plugin.getTraitline(traitline);
         if (traitlineData == null) {
-            MessageUtil.sendMessage(player, "<red>Traitline " + traitline + " not found.");
+            MessageUtil.sendMessage(player, "<red>Discipline " + traitline + " not found.");
             return;
         }
 
@@ -79,16 +80,16 @@ public class TraitlineCommand extends ECommand {
 
         // Check permission unless force is used
         if (!force && !targetPlayer.hasPermission("hecate.traitline." + traitlineData.getId())) {
-            MessageUtil.sendMessage(player, "<red>Traitline " + traitlineData.getId() + " is not yet unlocked" + (targetPlayer == player ? "" : " for " + targetPlayer.getName()) + ".");
+            MessageUtil.sendMessage(player, "<red>Discipline " + traitlineData.getId() + " is not yet unlocked" + (targetPlayer == player ? "" : " for " + targetPlayer.getName()) + ".");
             return;
         }
 
         hPlayer.getSelectedCharacter().setTraitline(traitlineData);
         if (targetPlayer == player) {
-            MessageUtil.sendMessage(player, "<green>Traitline " + traitlineData.getId() + " set.");
+            MessageUtil.sendMessage(player, "<green>Discipline " + traitlineData.getId() + " set.");
         } else {
-            MessageUtil.sendMessage(player, "<green>Traitline " + traitlineData.getId() + " set for " + targetPlayer.getName() + ".");
-            MessageUtil.sendMessage(targetPlayer, "<green>Your traitline has been set to " + traitlineData.getId() + ".");
+            MessageUtil.sendMessage(player, "<green>Discipline " + traitlineData.getId() + " set for " + targetPlayer.getName() + ".");
+            MessageUtil.sendMessage(targetPlayer, "<green>Your discipline has been set to " + traitlineData.getId() + ".");
         }
     }
 
