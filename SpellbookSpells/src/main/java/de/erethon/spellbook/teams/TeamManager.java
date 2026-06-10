@@ -25,7 +25,6 @@ public class TeamManager {
 
     public void createTeam(String id, String name, Color color) {
         existingTeams.add(new SpellbookTeam(id, name, color));
-        Spellbook.log("Registered team " + id + " with name " + name + " and color " + color.toString() + ".");
     }
 
     public void removeTeam(String id) {

@@ -49,7 +49,6 @@ public class ResourcepackHandler implements Listener {
                 "<br><gray><i>You will only have to do this once every update.");
         pack.thenAccept(info -> {
             player.sendResourcePacks(ResourcePackRequest.resourcePackRequest().required(false).replace(true).packs(info).prompt(message));
-            Hecate.log("Sending resource pack to " + player.getName() + " with hash " + info.hash() + " and UUID " + info.id());
         });
         pack.orTimeout(10, java.util.concurrent.TimeUnit.SECONDS).exceptionally(throwable -> {
             Hecate.log("Failed to send resource pack to " + player.getName() + ". Timed out. Did the GitHub action fail?");
@@ -85,7 +84,6 @@ public class ResourcepackHandler implements Listener {
                 return;
             }
             if (event.getStatus() == PlayerResourcePackStatusEvent.Status.SUCCESSFULLY_LOADED) {
-                Hecate.log("Resource pack applied successfully for " + player.getName());
                 finishApply();
                 return;
             }

@@ -196,10 +196,11 @@ public class CharacterCastingManager implements Listener {
         };
         updateTask.runTaskTimer(plugin, 0, 20);
         int level = character.getLevel();
+        int movementSpeedLevel = level;
         if (scaledLevelMode) {
             level = scaledLevel;
         }
-        setAttributesForLevel(level);
+        setAttributesForLevel(level, movementSpeedLevel);
         for (TraitData trait : combatOnlyTraits) {
             player.addTrait(trait);
         }
@@ -465,6 +466,11 @@ public class CharacterCastingManager implements Listener {
 
     @SuppressWarnings("removal")
     public void setAttributesForLevel(int characterLevel) {
+        setAttributesForLevel(characterLevel, characterLevel);
+    }
+
+    @SuppressWarnings("removal")
+    private void setAttributesForLevel(int characterLevel, int movementSpeedLevel) {
         HCharacter hCharacter = character;
         Traitline traitline = hCharacter.getTraitline();
         if (traitline == null) {
@@ -476,6 +482,9 @@ public class CharacterCastingManager implements Listener {
         if (levelInfoMap == null || levelInfoMap.isEmpty()) {
             return;
         }
+
+        double previousMaxHealth = player.getMaxHealth();
+        double healthPercentage = previousMaxHealth > 0 ? player.getHealth() / previousMaxHealth : 1.0;
 
         // First, reset all attributes to their default values to prevent stacking
         Attributable defaultAttributeInstance = player.getType().getDefaultAttributes();
@@ -489,11 +498,16 @@ public class CharacterCastingManager implements Listener {
         // Calculate cumulative attribute bonuses up to the character's level
         Map<Attribute, Double> cumulativeAttributes = new HashMap<>();
 
-        for (int level = 1; level <= characterLevel; level++) {
+        int maxLevelToCheck = Math.max(characterLevel, movementSpeedLevel);
+        for (int level = 1; level <= maxLevelToCheck; level++) {
             LevelInfo levelInfo = levelInfoMap.get(level);
             if (levelInfo != null && levelInfo.getBaseAttributeBonus() != null) {
                 for (Map.Entry<Attribute, Double> entry : levelInfo.getBaseAttributeBonus().entrySet()) {
                     Attribute attribute = entry.getKey();
+                    int effectiveLevel = attribute == Attribute.MOVEMENT_SPEED ? movementSpeedLevel : characterLevel;
+                    if (level > effectiveLevel) {
+                        continue;
+                    }
                     Double bonus = entry.getValue();
                     cumulativeAttributes.merge(attribute, bonus, Double::sum);
                 }
@@ -510,13 +524,11 @@ public class CharacterCastingManager implements Listener {
 
                 double finalBaseValue = defaultBase + totalBonus;
                 player.getAttribute(attribute).setBaseValue(finalBaseValue);
-
-                Hecate.log("Set base value for " + attribute.name() + " to " +
-                          finalBaseValue + " (default: " + defaultBase + " + bonus: " + totalBonus + ")");
             }
         }
         player.setHealthScaled(true);
         player.setHealthScale(20.0);
+        player.setHealth(Math.min(player.getMaxHealth(), Math.max(0.0, player.getMaxHealth() * healthPercentage)));
     }
 
     public void setScaledPvPMode(boolean scaledPvPMode) {
@@ -535,7 +547,7 @@ public class CharacterCastingManager implements Listener {
             if (scaledLevelMode) {
                 level = this.scaledLevel;
             }
-            setAttributesForLevel(level);
+            setAttributesForLevel(level, character.getLevel());
             updateUI();
         }
     }

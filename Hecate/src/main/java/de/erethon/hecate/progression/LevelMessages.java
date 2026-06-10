@@ -53,7 +53,6 @@ public class LevelMessages extends YamlConfiguration {
                 }
                 allianceLevelMessages.put(level, "alliancelvl." + level);
             }
-            Hecate.log("Loaded " + allianceLevelMessages.size() + " alliance level messages");
         }
         if (contains("explorationLevelMessages")) {
             for (String outerKey : getConfigurationSection("explorationLevelMessages").getKeys(false)) {
@@ -71,7 +70,6 @@ public class LevelMessages extends YamlConfiguration {
                 }
                 explorationLevelMessages.put(level, "explorationlvl." + level);
             }
-            Hecate.log("Loaded " + explorationLevelMessages.size() + " character level messages");
         }
     }
 

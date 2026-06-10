@@ -75,7 +75,7 @@ public class LevelUtil {
                 "XP",
                 "character",
                 "character",
-                () -> Hecate.log("Character " + character.getCharacterID() + " leveled up.")
+                () -> { }
         );
     }
 
@@ -92,7 +92,7 @@ public class LevelUtil {
                 "Alliance XP",
                 "player",
                 "alliance",
-                () -> Hecate.log("Player " + player.getPlayerId() + " leveled up in Alliance.")
+                () -> { }
         );
     }
 
@@ -109,7 +109,7 @@ public class LevelUtil {
                 "World Seeker XP",
                 "player",
                 "exploration",
-                () -> Hecate.log("Player " + player.getPlayerId() + " leveled up in World Seeker.")
+                () -> { }
         );
     }
 
@@ -126,7 +126,7 @@ public class LevelUtil {
                 "Job XP",
                 "character",
                 "job",
-                () -> Hecate.log("Job " + character.getCharacterID() + " leveled up.")
+                () -> { }
         );
     }
 
@@ -169,9 +169,6 @@ public class LevelUtil {
                         long updatedXp = result.updatedXp();
                         int currentLevel = result.currentLevel();
                         int newLevel = getLevelFromXp(updatedXp, baseXp, growthFactor);
-
-                        Hecate.log("Gave " + result.xpGiven() + " " + xpLabel + " to " + targetLabel + " " + ownerId + ". New total: " + updatedXp);
-                        Hecate.log("Old level: " + currentLevel + ", new level: " + newLevel);
 
                         if (newLevel > currentLevel) {
                             levelUpLoggerSupplier.run();
@@ -299,7 +296,6 @@ public class LevelUtil {
             economyService.defineCurrency(allianceLevel);
             economyService.defineCurrency(worldSeekerLevel);
             economyService.defineCurrency(jobLevel);
-            Hecate.log("XP currencies created successfully.");
         } catch (Exception e) {
             Hecate.log("Failed to create currencies: " + e.getMessage());
         }

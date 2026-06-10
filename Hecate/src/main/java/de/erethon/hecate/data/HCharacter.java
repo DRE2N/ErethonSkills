@@ -151,8 +151,6 @@ public class HCharacter {
             if (rows == 0) {
                 Hecate.log("Warning: upsertCharacter affected 0 rows for " + characterID);
             }
-        }).thenRun(() -> {
-            Hecate.log("Successfully saved core data and player NBT for character: " + characterID);
         }).exceptionally(ex -> {
             Hecate.log("Failed to save character " + characterID + " to database: " + ex.getMessage());
             ex.printStackTrace();
@@ -173,9 +171,7 @@ public class HCharacter {
                 }).thenAcceptAsync(optionalData -> {
                     if (optionalData.isPresent() && optionalData.get().length > 0) {
                         deserializePlayerDataFromBlob(optionalData.get());
-                        Hecate.log("Loaded character player data from DB for: " + getCharacterID());
                     } else {
-                        Hecate.log("No character player data found in DB for: " + getCharacterID() + ". Player might need initial setup.");
                         this.playerData = new CompoundTag();
                     }
                 }, runnable -> Bukkit.getScheduler().runTask(plugin, runnable))
@@ -194,7 +190,6 @@ public class HCharacter {
      */
     public CompletableFuture<Void> saveCharacterPlayerData(boolean castModeSwitch) {
         if (!saveInventory && !castModeSwitch) { // Don't save if inventory saving is off AND it's not a cast mode switch
-            Hecate.log("Skipping player data save for " + characterID + " (saveInventory=false, not castModeSwitch)");
             return CompletableFuture.completedFuture(null);
         }
 
@@ -209,9 +204,6 @@ public class HCharacter {
             int rows = dao.updateCharacterPlayerData(characterID, blobData);
             if (rows == 0) {
                 Hecate.log("Failed to update player data for character " + characterID + ": Character not found in DB (0 rows affected).");
-            } else {
-                Hecate.log("Saved player data blob for character " + characterID + " (" + rows + " rows affected).");
-                Hecate.log("Location: " + hPlayer.getPlayer().getLocation());
             }
         }).exceptionally(ex -> {
             Hecate.log("Failed to save character player data for " + characterID + ": " + ex.getMessage());
@@ -280,9 +272,6 @@ public class HCharacter {
                 } else {
                     serializedCastingItem = "empty";
                 }
-                Hecate.log("Serialized hotbar separately for " + characterID + ": " + serializedHotbar.length() + " length.");
-                Hecate.log("Serialized offhand for " + characterID + ": " + serializedOffhand.length() + " length.");
-                Hecate.log("Serialized casting item for " + characterID + ": " + serializedCastingItem.length() + " length.");
                 shouldSaveHotbarSeparately = false;
             }
 
@@ -318,7 +307,6 @@ public class HCharacter {
                         }
                     }
                     builtTag.put("Inventory", filteredInventory);
-                    Hecate.log("Filtered out hotbar slots from inventory for cast mode character " + characterID);
                 }
 
                 // Save the real hotbar separately
@@ -399,7 +387,6 @@ public class HCharacter {
                         }
 
                         if (wasInCastMode) {
-                            Hecate.log("Player " + characterID + " was in cast mode, restoring hotbar and offhand...");
                             Optional<String> hotbarDataOpt = finalTag.getString("HecateHotbar");
                             if (hotbarDataOpt.isPresent() && !hotbarDataOpt.get().isEmpty()) {
                                 String hotbarData = hotbarDataOpt.get();
@@ -451,7 +438,6 @@ public class HCharacter {
                                         if (bytes.length > 0) {
                                             offhandItem = ItemStack.deserializeBytes(bytes);
                                             bukkitPlayer.getInventory().setItemInOffHand(offhandItem);
-                                            Hecate.log("Restored offhand item for " + characterID);
                                         } else {
                                             offhandItem = null;
                                             bukkitPlayer.getInventory().setItemInOffHand(null);
@@ -482,7 +468,6 @@ public class HCharacter {
                                         byte[] bytes = Base64.getDecoder().decode(castingItemData);
                                         if (bytes.length > 0) {
                                             castingItem = ItemStack.deserializeBytes(bytes);
-                                            Hecate.log("Restored casting item for " + characterID);
                                         } else {
                                             castingItem = null;
                                         }
@@ -502,7 +487,6 @@ public class HCharacter {
                             finalTag.remove("HecateHotbar");
                             finalTag.remove("HecateOffhand");
                             finalTag.remove("HecateCastingItem");
-                            Hecate.log("Hotbar, offhand, and casting item restoration attempt finished for " + characterID + ".");
                         }
 
                         serverPlayer.onUpdateAbilities();
@@ -537,9 +521,6 @@ public class HCharacter {
                                 craftPlayer.getUnlockedSpells().add(sData);
                             }
                         }
-
-                        Hecate.log("Successfully applied deserialized player data for character " + characterID);
-                        Hecate.log("Location: " + craftPlayer.getLocation());
 
                     } catch (Exception e) {
                         Hecate.log("Critical error applying deserialized player data for character " + characterID + " on main thread:");
@@ -612,21 +593,18 @@ public class HCharacter {
     public void setScaledPvP(boolean scaledPvP) {
         if (castingManager != null) {
             castingManager.setScaledPvPMode(scaledPvP);
-            Hecate.log("Scaled PvP mode set to " + scaledPvP + " for character " + characterID);
         }
     }
 
     public void setScaledPvP(boolean scaledPvP, int scaledLevel) {
         if (castingManager != null) {
             castingManager.setScaledPvPMode(scaledPvP, scaledLevel);
-            Hecate.log("Scaled PvP mode set to " + scaledPvP + " at level " + scaledLevel + " for character " + characterID);
         }
     }
 
     public void setScaledLevel(boolean scaledLevelMode, int scaledLevel) {
         if (castingManager != null) {
             castingManager.setScaledLevelMode(scaledLevelMode, scaledLevel);
-            Hecate.log("Scaled level mode set to " + scaledLevelMode + " at level " + scaledLevel + " for character " + characterID);
         }
     }
 

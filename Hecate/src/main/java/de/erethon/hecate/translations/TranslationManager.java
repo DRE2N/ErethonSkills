@@ -31,8 +31,6 @@ public class TranslationManager {
 
         this.messageHandler = new MessageHandler(languagesDir, "hecate");
         this.messageHandler.setDefaultLanguage("english");
-
-        Hecate.log("Loaded translations from languages directory");
     }
 
     public MessageHandler getMessageHandler() {

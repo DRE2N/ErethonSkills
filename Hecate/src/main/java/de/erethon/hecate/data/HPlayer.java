@@ -78,7 +78,6 @@ public class HPlayer {
         if (!characters.isEmpty()) {
             this.selectedCharacter = null;
         }
-        Hecate.log("Loaded " + characters.size() + " characters for player " + playerId);
     }
 
     public void setSelectedCharacter(HCharacter selectedCharacter, boolean dontSave) {
@@ -107,7 +106,6 @@ public class HPlayer {
                                         return selectedCharacter.loadCharacterPlayerData();
                                     })
                                     .thenRun(() -> {
-                                        Hecate.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                                         setLastCharacter(selectedCharacter.getCharacterID());
                                         clearBlindnessAndTitle();
                                     })
@@ -120,7 +118,6 @@ public class HPlayer {
                             this.selectedCharacter = selectedCharacter;
                             selectedCharacter.loadCharacterPlayerData()
                                     .thenRun(() -> {
-                                        Hecate.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                                         setLastCharacter(selectedCharacter.getCharacterID());
                                         clearBlindnessAndTitle();
                                     })
@@ -137,7 +134,6 @@ public class HPlayer {
                                 if (!dontSave) {
                                     selectedCharacter.saveCharacterPlayerData(false);
                                 }
-                                Hecate.log("Switched to character " + selectedCharacter.getCharacterID() + " for player " + player.getName());
                                 setLastCharacter(selectedCharacter.getCharacterID());
                                 clearBlindnessAndTitle();
                             })

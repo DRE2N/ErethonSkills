@@ -152,42 +152,24 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
         return CompletableFuture.runAsync(() -> { // Use our own future here as the normal one is not ready yet
             jdbi.useHandle(handle -> {
-                Hecate.log("Schema setup: Starting...");
                 try {
-                    Hecate.log("Schema setup: Executing createPlayersTable...");
                     handle.execute(createPlayersTable);
-                    Hecate.log("Schema setup: Finished createPlayersTable.");
 
-                    Hecate.log("Schema setup: Executing createCharactersTable...");
                     handle.execute(createCharactersTable);
-                    Hecate.log("Schema setup: Finished createCharactersTable.");
 
-                    Hecate.log("Schema setup: Executing createBanksTable...");
                     handle.execute(createBanksTable);
-                    Hecate.log("Schema setup: Finished createBanksTable.");
 
-                    Hecate.log("Schema setup: Executing arena tables...");
                     handle.execute(createArenaRatingsTable);
                     handle.execute(createArenaMatchesTable);
                     handle.execute(createArenaMatchPlayersTable);
-                    Hecate.log("Schema setup: Finished arena tables.");
 
-                    Hecate.log("Schema setup: Executing alter table statements...");
                     alterTableStatements.forEach(statement -> {
-                        Hecate.log("Schema setup: Altering -> " + statement);
                         handle.execute(statement);
                     });
-                    Hecate.log("Schema setup: Finished alter table statements.");
 
-                    Hecate.log("Schema setup: Executing addForeignKeyToCharacters...");
                     handle.execute(addForeignKeyToCharacters);
-                    Hecate.log("Schema setup: Finished addForeignKeyToCharacters.");
 
-                    Hecate.log("Schema setup: Executing addForeignKeyToPlayers...");
                     handle.execute(addForeignKeyToPlayers);
-                    Hecate.log("Schema setup: Finished addForeignKeyToPlayers.");
-
-                    Hecate.log("Schema setup: All statements executed successfully.");
                 } catch (Exception e) {
                     Hecate.log("!!! Critical error with schema setup async task !!!");
                     e.printStackTrace();
@@ -204,7 +186,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
 
     public CompletableFuture<Boolean> createOrUpdateCharacter(HCharacter character) {
         if (!character.shouldSaveInventory()) {
-            Hecate.log("Skipping character save for " + character.getCharacterID() + " because inventory saving is disabled.");
             return CompletableFuture.completedFuture(true);
         }
         byte[] playerData = character.serializePlayerDataToBlob(false); // Assume this method exists
@@ -235,7 +216,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         return queryAsync(handle -> {
             // Check if player exists first
             if (!playerDao.playerExists(playerId)) {
-                Hecate.log("Player " + playerId + " not found in DB. Will create on demand.");
                 return null;
             }
 
@@ -246,7 +226,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             for (CharacterDao.FlatData flatData : charDataList) {
                 try {
                     characters.add(mapFlatDataToHCharacter(flatData, hPlayer, handle)); // Pass handle for array conversion
-                    Hecate.log("Loaded character " + flatData.getCharacterId() + " for player " + playerId);
                 } catch (Exception e) {
                     Hecate.log("Error mapping character data for " + flatData.getCharacterId() + ": " + e.getMessage());
                     e.printStackTrace();
@@ -254,7 +233,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             }
             hPlayer.setCharacters(characters);
             hPlayer.setLastCharacter(playerDao.findLastCharacterId(playerId).orElse(null));
-            Hecate.log("Loaded player data and " + characters.size() + " characters for " + playerId);
             return hPlayer;
         }).exceptionally(ex -> {
             Hecate.log("Error loading player data for " + playerId + ": " + ex.getMessage());
@@ -382,7 +360,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                         })
                                 .thenApply(found -> {
                                     if (found) {
-                                        Hecate.log("Character " + characterId + " confirmed locked by " + lockOwner + " and exists.");
                                         return true;
                                     } else {
                                         Hecate.log("Character " + characterId + " was locked by " + lockOwner + " but NOT found! Releasing lock.");
@@ -399,7 +376,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     ex.printStackTrace();
                     checkIfLockedBy(characterId, lockOwner).thenAccept(isLockedByMe -> {
                         if(isLockedByMe) {
-                            Hecate.log("Unlocking character " + characterId + " due to exception during selectAndUseCharacter.");
                             unlockCharacter(characterId);
                         }
                     });
@@ -462,9 +438,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         })
                 .thenApply(rowsAffected -> {
                     boolean success = rowsAffected > 0;
-                    if (success) {
-                        Hecate.log("Character " + characterId + " locked successfully by " + lockOwner);
-                    } else {
+                    if (!success) {
                         Hecate.log("Failed to acquire lock for character " + characterId + " by " + lockOwner + " (already locked or not found).");
                     }
                     return success;
@@ -482,8 +456,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             int rowsAffected = dao.unlockCharacter(characterId);
             if (rowsAffected == 0) {
                 Hecate.log("Unlock command for character " + characterId + " affected 0 rows (was likely already unlocked or not found).");
-            } else {
-                Hecate.log("Character " + characterId + " unlocked successfully.");
             }
         })
                 // No .thenApply needed here, executeAsync already returns CompletableFuture<Void>
@@ -532,21 +504,17 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 .thenApply(rowsAffected -> {
                     boolean success = rowsAffected > 0;
                     if (success) {
-                        Hecate.log("Character " + characterId + " soft deleted by " + deletedBy);
-
                         // If this character was someone's last selected character, clear it
                         uuidToHPlayerMap.values().forEach(hPlayer -> {
                             if (characterId.equals(hPlayer.getLastCharacter())) {
                                 hPlayer.setLastCharacter(null);
                                 savePlayerData(hPlayer);
-                                Hecate.log("Cleared last character reference for player " + hPlayer.getPlayerId());
                             }
 
                             // If this character is currently selected, deselect it
                             if (hPlayer.getSelectedCharacter() != null &&
                                 characterId.equals(hPlayer.getSelectedCharacter().getCharacterID())) {
                                 hPlayer.setSelectedCharacter(null, false);
-                                Hecate.log("Deselected character " + characterId + " for player " + hPlayer.getPlayerId());
                             }
 
                             // Remove from character list
@@ -570,15 +538,12 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 .thenApply(rowsAffected -> {
                     boolean success = rowsAffected > 0;
                     if (success) {
-                        Hecate.log("Character " + characterId + " restored successfully");
-
                         // Reload the character data and add it back to the player's character list
                         getCharacterData(characterId).thenAccept(character -> {
                             if (character != null) {
                                 HPlayer hPlayer = uuidToHPlayerMap.get(character.getHPlayer().getPlayerId());
                                 if (hPlayer != null) {
                                     hPlayer.getCharacters().add(character);
-                                    Hecate.log("Added restored character " + characterId + " back to player " + hPlayer.getPlayerId());
                                 }
                             }
                         });
@@ -669,9 +634,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     // Save the current gamemode before saving the character
                     String currentGamemode = player.getGameMode().toString();
                     character.setGamemode(currentGamemode);
-                    Hecate.log("Saving character " + character.getCharacterID() + " with gamemode: " + currentGamemode);
-                } else {
-                    Hecate.log("Skipping arena character playerdata/gamemode save for " + character.getCharacterID() + " on quit.");
                 }
 
                 saveFuture = saveFuture.thenCompose(v -> createOrUpdateCharacter(character))
@@ -682,11 +644,8 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 if (throwable != null) {
                     Hecate.log("Error during quit save/unlock for " + uuid + ": " + throwable.getMessage());
                     throwable.printStackTrace();
-                } else {
-                    Hecate.log("Saved and unlocked data for player " + uuid + " on quit.");
                 }
                 uuidToHPlayerMap.remove(uuid);
-                Hecate.log("Removed player " + uuid + " from cache.");
             });
         } else {
             Hecate.log("Player " + uuid + " not found in cache during quit event.");
@@ -696,20 +655,16 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     @EventHandler
     private void onLogin(AsyncPlayerPreLoginEvent event) {
         UUID uuid = event.getUniqueId();
-        Hecate.log("AsyncPlayerPreLoginEvent for " + uuid);
 
         try {
             HPlayer hPlayer = loadPlayerData(uuid).join(); // Block here, we need to wait until the data is loaded to proceed.
             if (hPlayer == null) {
-                Hecate.log("No data found for " + uuid + ". Creating new entry.");
                 HPlayer newHPlayer = new HPlayer(uuid);
                 uuidToHPlayerMap.put(uuid, newHPlayer);
-                Hecate.log("Created shell HPlayer for new player " + uuid);
 
             } else {
                 // Player data loaded successfully, cache it
                 uuidToHPlayerMap.put(uuid, hPlayer);
-                Hecate.log("Cached loaded HPlayer for " + uuid);
             }
         } catch (Exception e) {
             Hecate.log("Error loading HPlayer for " + uuid + ": " + e.getMessage());
@@ -733,16 +688,13 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         }
 
         hPlayer.setPlayer(player);
-        Hecate.log("Associated Player object with HPlayer for " + uuid);
 
         if (hPlayer.getLastCharacter() != null) {
             CompletableFuture<HCharacter> characterFuture = getCharacterData(hPlayer.getLastCharacter());
             HPlayer finalHPlayer = hPlayer;
-            Hecate.log("Found last character ID " + hPlayer.getLastCharacter() + " for player " + uuid);
             characterFuture.thenAccept(character -> {
                 if (character != null) {
                     try {
-                        Hecate.log("Loading character " + character.getCharacterID() + " with gamemode: " + character.getGamemode());
                         finalHPlayer.setSelectedCharacter(character, false);
                         BukkitRunnable mainTask = new BukkitRunnable() {
                             @Override
@@ -765,8 +717,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
             });
         } else {
             if (hPlayer.getCharacters().isEmpty()) {
-                Hecate.log("New player " + uuid + " has no characters. Starting character selection.");
-
                 BukkitRunnable startCharacterSelection = new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -788,8 +738,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                 };
                 startCharacterSelection.runTaskLater(Hecate.getInstance(), 40L);
             } else {
-                Hecate.log("Player " + uuid + " has characters but no last selected character. Starting character selection.");
-
                 BukkitRunnable startCharacterSelection = new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -818,7 +766,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
     private void onPlayerDataSave(PlayerDataSaveEvent event) {
         HPlayer hPlayer = uuidToHPlayerMap.get(event.getPlayer().getUniqueId());
         if (hPlayer != null) {
-            Hecate.log("PlayerDataSaveEvent triggered for " + hPlayer.getPlayerId());
             savePlayerData(hPlayer);
             if (hPlayer.getSelectedCharacter() != null) {
                 HCharacter character = hPlayer.getSelectedCharacter();
@@ -826,8 +773,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
                     String currentGamemode = event.getPlayer().getGameMode().toString();
                     character.setGamemode(currentGamemode);
                     createOrUpdateCharacter(character);
-                } else {
-                    Hecate.log("Skipping arena character playerdata/gamemode save for " + character.getCharacterID() + " during PlayerDataSaveEvent.");
                 }
             }
         }
@@ -839,7 +784,6 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         UUID uuid = UUID.fromString(event.getUUID());
         HPlayer hPlayer = getHPlayer(uuid);
         UUID lastCharacterId = hPlayer != null ? hPlayer.getLastCharacter() : null;
-        Hecate.log("PlayerDataRequestEvent triggered for " + uuid);
         if (lastCharacterId != null) {
             CompoundTag playerDataTag = getPlayerDataTag(lastCharacterId);
             if (playerDataTag != null) {
@@ -1048,7 +992,7 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         int saved = 0;
         for (HPlayer hPlayer : getLoadedPlayers()) {
             try {
-                savePlayerData(hPlayer).join();
+                saveLoadedPlayerForShutdown(hPlayer).join();
                 saved++;
             } catch (Exception e) {
                 Hecate.log("Error saving player " + hPlayer.getPlayerId() + " data during shutdown: " + e.getMessage());
@@ -1057,6 +1001,30 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         }
         Hecate.log("Saved " + saved + "/" + players + " players before shutdown.");
         super.close();
+    }
+
+    private CompletableFuture<Void> saveLoadedPlayerForShutdown(HPlayer hPlayer) {
+        hPlayer.setLastSeen(Timestamp.from(Instant.now()));
+        HCharacter character = hPlayer.getSelectedCharacter();
+        CompletableFuture<Void> saveFuture = savePlayerData(hPlayer);
+
+        if (character == null) {
+            return saveFuture;
+        }
+
+        Player player = hPlayer.getPlayer();
+        if (player != null && character.shouldSaveInventory()) {
+            String currentGamemode = player.getGameMode().toString();
+            character.setGamemode(currentGamemode);
+        } else if (!character.shouldSaveInventory()) {
+            // Arena characters skip playerdata/gamemode persistence but still need unlocking.
+        } else {
+            Hecate.log("Skipping character playerdata save for " + character.getCharacterID() + " during shutdown because Player reference is missing.");
+            return saveFuture.thenCompose(v -> unlockCharacter(character.getCharacterID()));
+        }
+
+        return saveFuture.thenCompose(v -> createOrUpdateCharacter(character))
+                .thenCompose(v -> unlockCharacter(character.getCharacterID()));
     }
 }
 

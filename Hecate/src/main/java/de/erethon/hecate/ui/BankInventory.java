@@ -190,9 +190,7 @@ public class BankInventory implements InventoryHolder, Listener {
             bank.getOwner().getPlayerId(),
             bank.serialize(),
             bank.getUnlockedPages()
-        ).thenRun(() -> {
-            Hecate.log("Saved bank for player " + bank.getOwner().getPlayerId());
-        });
+        );
         if (bank.getOwner().getPlayerId().equals(viewer.getUniqueId()) || isOwner) {
             // Save to ensure data consistency if the owner is the viewer
             Hecate.getInstance().getDatabaseManager().savePlayerData(bank.getOwner());

@@ -296,7 +296,6 @@ public class Traitline extends YamlConfiguration {
                     try {
                         Attribute attribute = Attribute.valueOf(attributeName.toUpperCase());
                         attributes.put(attribute, attributeSection.getDouble(attributeName));
-                        Hecate.log("Set " + attribute.name() + " to " + attributeSection.getDouble(attributeName));
                     } catch (IllegalArgumentException e) {
                         Hecate.log("Unknown attribute '" + attributeName + "' found under 'attributes' in class file " + getId());
                     }
@@ -315,8 +314,6 @@ public class Traitline extends YamlConfiguration {
                 LevelInfo info = new LevelInfo(level, "characterlevel." + id + "." + level, attributes);
                 levelInfo.put(level, info);
             }
-            Hecate.log("Loaded " + levelInfo.size() + " character levels for " + id);
         }
-        Hecate.log("Loaded traitline " + id + " from " + file.getName() + " with " + levelInfo.size() + " levels and " + traitMap.values().stream().mapToInt(List::size).sum() + " traits.");
     }
 }

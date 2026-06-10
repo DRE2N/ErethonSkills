@@ -189,7 +189,6 @@ public class HPlayerListener implements Listener {
 
                 Bukkit.getScheduler().runTask(Hecate.getInstance(), () -> {
                     new BankInventory(bank, player, true);
-                    Hecate.log("Opened bank for " + player.getName() + ".");
                 });
             }).exceptionally(ex -> {
                 MessageUtil.sendMessage(player, "<red>Error loading bank: " + ex.getMessage());
@@ -225,7 +224,6 @@ public class HPlayerListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        Hecate.log("Joined " + event.getPlayer().getName() + " (" + event.getPlayer().getUniqueId() + ")");
         // Fixes for spell effects after server crash
         Player player = event.getPlayer();
         player.setInvisible(false);
@@ -289,7 +287,6 @@ public class HPlayerListener implements Listener {
     // Lets handle resourcepacks on the proxy in the config phase instead.
     /*private void finishResourcepack(Player player, HPlayer hPlayer) {
         if (hPlayer.isAutoJoinWithLastCharacter() && hPlayer.getSelectedCharacterID() != 0) {
-            Hecate.log("Auto-joining with last character for " + player.getName() + ".");
             CraftPlayer craftPlayer = (CraftPlayer) player;
             ServerPlayer serverPlayer = craftPlayer.getHandle();
             serverPlayer.server.getPlayerList().switchProfile(serverPlayer, hPlayer.getSelectedCharacterID());

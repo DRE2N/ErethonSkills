@@ -23,8 +23,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -41,11 +43,15 @@ public class Spellbook {
 
     private final PetLookup petLookup;
 
-    private boolean DEBUG = true;
+    private boolean DEBUG = false;
 
     private static final Random random = new Random();
 
     private final Set<EffectData> ccEffects = new HashSet<>();
+    private final Set<MissingAttribute> missingAttributes = new LinkedHashSet<>();
+
+    public record MissingAttribute(String contentID, String attributeName, String id) {
+    }
 
     private final EffectData stability = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Stability");
     private final EffectData resistance = Bukkit.getServer().getSpellbookAPI().getLibrary().getEffectByID("Resistance");
@@ -140,6 +146,14 @@ public class Spellbook {
 
     public boolean isDebug() {
         return DEBUG;
+    }
+
+    public void recordMissingAttribute(String contentID, String attributeName, String id) {
+        missingAttributes.add(new MissingAttribute(contentID, attributeName, id));
+    }
+
+    public Set<MissingAttribute> getMissingAttributes() {
+        return Collections.unmodifiableSet(missingAttributes);
     }
 
 
@@ -243,9 +257,6 @@ public class Spellbook {
      * @return the value of the attribute after applying the coefficients defined in the SpellData file and the multiplier
      */
     public static double getScaledValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, double multiplier) {
-        if (getInstance().DEBUG) {
-            //Spellbook.log("Caster: " + (caster == null ? "null" : caster.getName())  + " Target: " + (target == null ? "null" : target.getName()) + " Attribute: " + attribute.getKey() + " Multiplier: " + multiplier);
-        }
         if (target instanceof Player) {
             return getScaledValue(data, caster, true, attribute, multiplier);
         }
@@ -253,9 +264,6 @@ public class Spellbook {
     }
 
     public static double getScaledValue(YamlConfiguration data, LivingEntity caster, LivingEntity target, Attribute attribute, String id) {
-        if (getInstance().DEBUG) {
-            //Spellbook.log("Caster: " + (caster == null ? "null" : caster.getName())  + " Target: " + (target == null ? "null" : target.getName()) + " Attribute: " + attribute.getKey() + " Multiplier: " + id);
-        }
         if (target instanceof Player) {
             return getScaledValue(data, caster, true, attribute, id);
         }
@@ -265,22 +273,15 @@ public class Spellbook {
     private static double getScaledValue(YamlConfiguration data, LivingEntity caster, boolean pvp, Attribute attribute, double multiplier) {
         if (pvp) {
             if (!data.contains("coefficients.players." + attribute.getKey())) {
-                if (getInstance().DEBUG) {
-                    Spellbook.log("Coefficients for " + attribute.getKey() + " not found. Using default values.");
-                }
+                recordMissingAttribute(data, attribute, "players.default");
                 return caster.getAttribute(attribute).getValue() * multiplier;
             }
         }
         else {
             if (!data.contains("coefficients.entities." + attribute.getKey())) {
-                if (getInstance().DEBUG) {
-                    Spellbook.log("Coefficients for " + attribute.getKey() + " not found. Using default values.");
-                }
+                recordMissingAttribute(data, attribute, "entities.default");
                 return caster.getAttribute(attribute).getValue() * multiplier;
             }
-        }
-        if (getInstance().DEBUG) {
-            //Spellbook.log("Scaled value for " + attribute.getKey() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + attribute.getKey(), 1.0));
         }
         return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + attribute.getKey(), 1.0)) * multiplier;
     }
@@ -288,22 +289,15 @@ public class Spellbook {
     private static double getScaledValue(YamlConfiguration data, LivingEntity caster, boolean pvp, Attribute attribute, String id) {
         if (pvp) {
             if (!data.contains("coefficients.players." + id + "." + attribute.getKey())) {
-                if (getInstance().DEBUG) {
-                    Spellbook.log("Coefficients for " + id + " for " + attribute.getKey() + " not found. Using default values.");
-                }
+                recordMissingAttribute(data, attribute, "players." + id);
                 return getScaledValue(data, caster, true, attribute, 1.0);
             }
         }
         else {
             if (!data.contains("coefficients.entities." + id + "." + attribute.getKey())) {
-                if (getInstance().DEBUG) {
-                    Spellbook.log("Coefficients for " + id + " for " + attribute.getKey() + " not found. Using default values.");
-                }
+                recordMissingAttribute(data, attribute, "entities." + id);
                 return getScaledValue(data, caster, false, attribute, 1.0);
             }
-        }
-        if (getInstance().DEBUG) {
-            //Spellbook.log("Scaled value for " + attribute.translationKey() + ": " + caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.entities." + id + "." + attribute.getKey(), 1.0));
         }
         return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + id + "." + attribute.getKey(), 1.0));
     }
@@ -324,9 +318,6 @@ public class Spellbook {
             if (crit < entity.getAttribute(Attribute.STAT_CRIT_CHANCE).getValue()) {
                 damage = (float) (damage + entity.getAttribute(Attribute.STAT_CRIT_DAMAGE).getValue());
             }
-        }
-        if (getInstance().DEBUG) {
-            //Spellbook.log("Entity: " + entity.getName() + " | Initial damage: " + damage + " | Variance: " + variance + " | Crit: " + canCrit + " | Final damage: " + damage);
         }
         return damage;
     }
@@ -383,6 +374,17 @@ public class Spellbook {
     
     public static void log(String message) {
         getInstance().getImplementer().getLogger().info("[Spellbook] " + message);
+    }
+
+    private static void recordMissingAttribute(YamlConfiguration data, Attribute attribute, String id) {
+        getInstance().recordMissingAttribute(contentID(data), attribute.getKey().toString(), id);
+    }
+
+    private static String contentID(YamlConfiguration data) {
+        if (data instanceof SpellData spellData) {
+            return spellData.getId();
+        }
+        return data.getString("id", "unknown");
     }
 
     public SpellbookTranslator getTranslator() {

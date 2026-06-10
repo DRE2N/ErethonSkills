@@ -7,6 +7,7 @@ import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -56,7 +57,7 @@ public class LightOfPurification extends GuardianBaseSpell {
                     if (currentTicks % 10 == 0) {
                         aoe.getCenter().getWorld().spawnParticle(Particle.INSTANT_EFFECT,
                                 aoe.getCenter().add(0, 0.1, 0),
-                                3, range * 0.8, 0, range * 0.8, 0);
+                                3, range * 0.8, 0, range * 0.8, 0, new Particle.Spell(Color.WHITE, 1.0f));
                     }
                 })
                 .addBlockChange(Material.BLUE_CONCRETE, Material.LIGHT_BLUE_CONCRETE, Material.WHITE_CONCRETE, Material.BLUE_STAINED_GLASS, Material.LIGHT_BLUE_STAINED_GLASS, Material.WHITE_STAINED_GLASS)
