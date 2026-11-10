@@ -6,6 +6,7 @@ import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookAPI;
 import de.erethon.spellbook.api.TraitData;
+import de.erethon.spellbook.combat.HealingContext;
 import de.erethon.spellbook.teams.TeamManager;
 import de.erethon.spellbook.utils.PetLookup;
 import de.erethon.spellbook.utils.SpellbookCommonMessages;
@@ -76,6 +77,7 @@ public class Spellbook {
         teamManager = new TeamManager();
         petLookup = new PetLookup();
         aoeManager = new AoEManager();
+        Bukkit.getPluginManager().registerEvents(new HealingContext(), implementer);
         ccEffects.add(api.getLibrary().getEffectByID("Stun"));
         ccEffects.add(api.getLibrary().getEffectByID("Fear"));
         ccEffects.add(api.getLibrary().getEffectByID("Slow"));
@@ -271,35 +273,43 @@ public class Spellbook {
     }
 
     private static double getScaledValue(YamlConfiguration data, LivingEntity caster, boolean pvp, Attribute attribute, double multiplier) {
+        String coefficientPath = coefficientPath(pvp, null, attribute.getKey().toString());
         if (pvp) {
-            if (!data.contains("coefficients.players." + attribute.getKey())) {
+            if (!data.contains(coefficientPath)) {
                 recordMissingAttribute(data, attribute, "players.default");
                 return caster.getAttribute(attribute).getValue() * multiplier;
             }
         }
         else {
-            if (!data.contains("coefficients.entities." + attribute.getKey())) {
+            if (!data.contains(coefficientPath)) {
                 recordMissingAttribute(data, attribute, "entities.default");
                 return caster.getAttribute(attribute).getValue() * multiplier;
             }
         }
-        return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + attribute.getKey(), 1.0)) * multiplier;
+        return (caster.getAttribute(attribute).getValue() * data.getDouble(coefficientPath, 1.0)) * multiplier;
     }
 
     private static double getScaledValue(YamlConfiguration data, LivingEntity caster, boolean pvp, Attribute attribute, String id) {
+        String coefficientPath = coefficientPath(pvp, id, attribute.getKey().toString());
         if (pvp) {
-            if (!data.contains("coefficients.players." + id + "." + attribute.getKey())) {
+            if (!data.contains(coefficientPath)) {
                 recordMissingAttribute(data, attribute, "players." + id);
                 return getScaledValue(data, caster, true, attribute, 1.0);
             }
         }
         else {
-            if (!data.contains("coefficients.entities." + id + "." + attribute.getKey())) {
+            if (!data.contains(coefficientPath)) {
                 recordMissingAttribute(data, attribute, "entities." + id);
                 return getScaledValue(data, caster, false, attribute, 1.0);
             }
         }
-        return (caster.getAttribute(attribute).getValue() * data.getDouble("coefficients.players." + id + "." + attribute.getKey(), 1.0));
+        return (caster.getAttribute(attribute).getValue() * data.getDouble(coefficientPath, 1.0));
+    }
+
+    static String coefficientPath(boolean pvp, String id, String attributeKey) {
+        String targetGroup = pvp ? "players" : "entities";
+        String metric = id == null || id.isBlank() ? "" : id + ".";
+        return "coefficients." + targetGroup + "." + metric + attributeKey;
     }
 
     /**
@@ -309,14 +319,18 @@ public class Spellbook {
      * @return the damage value after applying crit chance & damage, as well as random variation.
      */
     public static double getVariedDamage(double damage, LivingEntity entity, boolean canCrit) {
+        if (!Double.isFinite(damage) || damage <= 0) {
+            return 0;
+        }
         double maxVariance = damage / VARIANCE;
         maxVariance = Math.max(1, maxVariance);
         double variance = -maxVariance + random.nextDouble(maxVariance * 2);
-        damage += variance;
+        damage = Math.max(0, damage + variance);
         if (canCrit) {
-            int crit = random.nextInt(101);
-            if (crit < entity.getAttribute(Attribute.STAT_CRIT_CHANCE).getValue()) {
-                damage = (float) (damage + entity.getAttribute(Attribute.STAT_CRIT_DAMAGE).getValue());
+            double chance = Math.max(0, Math.min(100, entity.getAttribute(Attribute.STAT_CRIT_CHANCE).getValue()));
+            if (random.nextDouble(100) < chance) {
+                double bonus = Math.max(0, Math.min(250, entity.getAttribute(Attribute.STAT_CRIT_DAMAGE).getValue()));
+                damage *= 1.5 + bonus / 100.0;
             }
         }
         return damage;

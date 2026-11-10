@@ -1,63 +1,66 @@
 package de.erethon.spellbook.traits.paladin.inquisitor;
 
 import de.erethon.papyrus.PDamageType;
+import de.erethon.papyrus.combat.CombatSource;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
+import org.bukkit.Bukkit;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+/** Three confirmed spear contacts make a visible sentence, then a spender chooses its payoff. */
+public class InquisitorBasicAttack extends SpellTrait implements Listener {
 
-public class InquisitorBasicAttack extends SpellTrait {
-
-    // The Inquisitor's basic attack applies a "Judgement" effect to the target, stacking up to a maximum number of stacks.
-
-    private final int maximumJudgementStacks = data.getInt("maximumJudgementStacks", 7);
-    private final int soundCooldown = data.getInt("soundCooldown", 5000); // milliseconds
-
-    protected final EffectData judgementData = Spellbook.getEffectData("Judgement");
-    private final Map<UUID, Long> soundCooldowns = new HashMap<>();
+    private final int maximumJudgementStacks = data.getInt("maximumJudgementStacks", 3);
+    private final EffectData judgementData = Spellbook.getEffectData("Judgement");
 
     public InquisitorBasicAttack(TraitData data, LivingEntity caster) {
         super(data, caster);
-        if (judgementData == null) {
-            throw new IllegalArgumentException("Judgement effect not found. Make sure it is defined in the Spellbook configs.");
-        }
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, PDamageType type) {
-        int judgementStacks = getJudgementStacksOnTarget(target);
-        if (judgementStacks < maximumJudgementStacks) {
-            target.addEffect(caster, judgementData, 120, 1);
-        }
-        if (judgementStacks == maximumJudgementStacks) {
-            long now = System.currentTimeMillis();
-            long lastPlayed = soundCooldowns.getOrDefault(target.getUniqueId(), 0L);
-            if (now - lastPlayed >= soundCooldown) {
-                target.getWorld().playSound(target, Sound.BLOCK_CONDUIT_ACTIVATE, 0.7f, 0.5f);
-                soundCooldowns.put(target.getUniqueId(), now);
-            }
-        }
-        return super.onAttack(target, damage, type);
+    protected void onAdd() {
+        super.onAdd();
+        Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
     }
 
-    protected int getJudgementStacksOnTarget(LivingEntity target) {
-        if (target == null) return 0;
-        SpellEffect judgementEffect = null;
-        for (SpellEffect effect : target.getEffects()) {
-            if (effect.data == null) continue;
-            if (effect.data.equals(judgementData)) {
-                judgementEffect = effect;
-                break;
-            }
+    @Override
+    protected void onRemove() {
+        HandlerList.unregisterAll(this);
+        super.onRemove();
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onConfirmedSpearHit(EntityDamageByEntityEvent event) {
+        CombatSource source = event.getCombatSource();
+        if (event.getDamager() != caster || !(event.getEntity() instanceof LivingEntity target)
+                || !Spellbook.canAttack(caster, target)
+                || event.getDamageType() != PDamageType.PHYSICAL
+                || source == null || source.type() != CombatSource.Type.BASIC_ATTACK
+                || event.getFinalDamage() <= 0 || judgementData == null) return;
+        int current = stacks(target);
+        if (current >= maximumJudgementStacks) return;
+        target.addEffect(caster, judgementData, 120, 1);
+        if (current + 1 >= maximumJudgementStacks) {
+            target.getWorld().playSound(target.getLocation(), Sound.BLOCK_BELL_USE, 0.8f, 0.8f);
+            target.getWorld().spawnParticle(Particle.END_ROD, target.getEyeLocation(),
+                    12, 0.25, 0.3, 0.25, 0.02);
         }
-        if (judgementEffect == null) return 0;
-        return judgementEffect.getStacks();
+    }
+
+    private int stacks(LivingEntity target) {
+        for (SpellEffect effect : target.getEffects()) {
+            if (effect.data == judgementData) return effect.getStacks();
+        }
+        return 0;
     }
 }

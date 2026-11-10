@@ -18,12 +18,14 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -39,34 +41,39 @@ public class EntityListener implements Listener {
     private final EntityStatusDisplayManager displayManager = Hecate.getInstance().getStatusDisplayManager();
     private final TeamManager teamManager = Hecate.getInstance().getSpellbook().getTeamManager();
 
-    @EventHandler
+    private boolean isStatusDisplayExcluded(LivingEntity entity) {
+        return entity instanceof ArmorStand
+                || entity.getPersistentDataContainer().has(MARKER_KEY, PersistentDataType.BOOLEAN);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof LivingEntity living)  {
-            if (!displayManager.hasStatusDisplay(event.getEntity())) {
-                if (living.getPersistentDataContainer().has(MARKER_KEY, PersistentDataType.BOOLEAN)) {
+        if (event.getEntity() instanceof LivingEntity living) {
+            EntityStatusDisplay display = displayManager.getStatusDisplay(living);
+            if (display == null) {
+                if (isStatusDisplayExcluded(living)) {
                     return;
                 }
-                displayManager.addStatusDisplay(living, new EntityStatusDisplay(living));
+                display = new EntityStatusDisplay(living);
+                displayManager.addStatusDisplay(living, display);
             }
-            displayManager.getStatusDisplay(living).updateHealthDisplay(event.getDamage());
+            displayManager.queueHealthUpdate(display);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onHeal(EntityRegainHealthEvent event) {
+        EntityStatusDisplay display = displayManager.getStatusDisplay(event.getEntity());
+        if (display != null) {
+            displayManager.queueHealthUpdate(display);
         }
     }
 
     @EventHandler
-    public void onEntityDamage(EntityDamageByEntityEvent event) {
-        if (displayManager.hasStatusDisplay(event.getEntity())) {
+    public void onEntityAdd(EntityAddToWorldEvent event) {
+        if (event.getEntity() instanceof ArmorStand) {
             return;
         }
-        if (event.getEntity() instanceof LivingEntity living) {
-            if (living.getPersistentDataContainer().has(MARKER_KEY, PersistentDataType.BOOLEAN)) {
-                return;
-            }
-            displayManager.addStatusDisplay(living, new EntityStatusDisplay(living));
-            event.getEntity().setCustomNameVisible(true);
-        }
-    }
-    @EventHandler
-    public void onEntityAdd(EntityAddToWorldEvent event) {
         if (event.getEntity() instanceof LivingEntity living) {
             teamManager.loadEntity(living);
         }
@@ -77,7 +84,7 @@ public class EntityListener implements Listener {
             BukkitRunnable tickLater = new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (living.getPersistentDataContainer().has(MARKER_KEY, PersistentDataType.BOOLEAN)) {
+                    if (isStatusDisplayExcluded(living)) {
                         return;
                     }
                     if (displayManager.hasStatusDisplay(living)) {
@@ -89,7 +96,6 @@ public class EntityListener implements Listener {
                         return;
                     }
                     displayManager.addStatusDisplay(living, new EntityStatusDisplay(living));
-                    event.getEntity().setCustomNameVisible(true);
                     cancel();
                 }
             };
@@ -131,10 +137,10 @@ public class EntityListener implements Listener {
     @EventHandler
     public void onEffectAdd(SpellEffectAddEvent event) {
         LivingEntity entity = (LivingEntity) event.getTarget();
+        if (isStatusDisplayExcluded(entity)) {
+            return;
+        }
         if (!displayManager.hasStatusDisplay(entity)) {
-            if (entity.getPersistentDataContainer().has(MARKER_KEY, PersistentDataType.BOOLEAN)) {
-                return;
-            }
             displayManager.addStatusDisplay(entity, new EntityStatusDisplay(entity));
         }
         displayManager.getStatusDisplay(entity).updateStatusDisplay();
@@ -143,10 +149,10 @@ public class EntityListener implements Listener {
     @EventHandler
     public void onEffectRemove(SpellEffectRemoveEvent event) {
         LivingEntity entity = (LivingEntity) event.getTarget();
+        if (isStatusDisplayExcluded(entity)) {
+            return;
+        }
         if (!displayManager.hasStatusDisplay(entity)) {
-            if (entity.getPersistentDataContainer().has(MARKER_KEY, PersistentDataType.BOOLEAN)) {
-                return;
-            }
             displayManager.addStatusDisplay(entity, new EntityStatusDisplay(entity));
         }
         displayManager.getStatusDisplay(entity).updateStatusDisplay();
@@ -155,10 +161,10 @@ public class EntityListener implements Listener {
     @EventHandler
     public void onChannelStart(SpellChannelStartEvent event) {
         LivingEntity entity = (LivingEntity) event.getCaster();
+        if (isStatusDisplayExcluded(entity)) {
+            return;
+        }
         if (!displayManager.hasStatusDisplay(entity)) {
-            if (entity.getPersistentDataContainer().has(MARKER_KEY, PersistentDataType.BOOLEAN)) {
-                return;
-            }
             displayManager.addStatusDisplay(entity, new EntityStatusDisplay(entity));
         }
         displayManager.getStatusDisplay(entity).updateStatusDisplay();
@@ -192,10 +198,10 @@ public class EntityListener implements Listener {
     @EventHandler
     public void onChannelFinish(SpellChannelFinishEvent event) {
         LivingEntity entity = (LivingEntity) event.getCaster();
+        if (isStatusDisplayExcluded(entity)) {
+            return;
+        }
         if (!displayManager.hasStatusDisplay(entity)) {
-            if (entity.getPersistentDataContainer().has(MARKER_KEY, PersistentDataType.BOOLEAN)) {
-                return;
-            }
             displayManager.addStatusDisplay(entity, new EntityStatusDisplay(entity));
         }
         displayManager.getStatusDisplay(entity).updateStatusDisplay();

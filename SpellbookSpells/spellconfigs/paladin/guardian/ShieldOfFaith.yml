@@ -1,5 +1,11 @@
 class: paladin.guardian.ShieldOfFaith
-cooldown: 2
+cooldown: 6
+counterRange: 3.2
+counterDamage: 12
+maximumHoldTicks: 40
+healAmount: 8
+healRange: 6
+blockDamageMultiplier: 0.65
 energyCost: 5
 name:
   de: Schild des Glaubens
@@ -9,8 +15,8 @@ description:
   - <!i><#757575>Wächter | Rechtsklick
   - ' '
   - <#94958B>Der Wächter hebt sein Schild und schützt sich
-  - <#94958B>vor Angriffen von vorne. Für blockierte Angriffe
-  - <#94958B>werden der Wächter und nahe Verbündete geheilt.
+  - <#94958B>vor Angriffen von vorne. Nach einem gut getimten Block werden
+  - <#94958B>der Wächter und nahe Verbündete beim Loslassen geheilt.
   - ' '
   - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
   - '<!i><yellow>⚡ <#94958B>Entschlossenheit: <arg:1>'
@@ -18,8 +24,8 @@ description:
   - <!i><#757575>Guardian | Right Click
   - ' '
   - <#94958B>The Guardian raises his shield, protecting himself from
-  - <#94958B>attacks from the front. For blocked attacks, the Guardian
-  - <#94958B>and nearby allies are healed.
+  - <#94958B>attacks from the front. Release to bash nearby foes. A well-timed block empowers
+  - <#94958B>the bash and heals the Guardian and nearby allies.
   - ' '
   - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
   - '<!i><yellow>⚡ <#94958B>Energy: <arg:1>'

@@ -3,8 +3,8 @@ cooldown: 14
 energyBuildUpFromUse: 15
 shockwaveRadius: 4.0
 shockwaveHeight: 3.0
-minStunDuration: 2
-maxStunDuration: 5
+playerInterruptTicks: 4
+mobStaggerTicks: 10
 coefficients:
   players:
     damage:
@@ -13,41 +13,24 @@ coefficients:
     damage:
       minecraft:advantage_physical: 2.0
 name:
-  de: Kriegsstampfer
-  en: War Stomp
+  de: Schwerer Schritt
+  en: Heavy Step
 description:
   en:
-  - <!i><#757575>Vanguard | Crowd Control
-  - ' '
-  - <#94958B>Slam your foot down, creating a shockwave that
-  - <#94958B>damages and briefly stuns all nearby enemies.
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
-  - '<!i><yellow>⚡ <#94958B>Energy Gain: <arg:1>'
-  - '<!i><yellow>📏 <#94958B>Radius: <arg:2> blocks'
-  - '<!i><yellow>🛡️ <#94958B>Stun Duration: <arg:4>-<arg:5>s'
+    - <!i><#757575>Vanguard | Control
+    - ' '
+    - <#94958B>Commit to a visible one-second ground slam.
+    - <#94958B>Briefly interrupt players and stagger nearby mobs.
+    - <#94958B>Against bosses, pressure the active control bar instead.
+    - ' '
+    - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
   de:
-  - <!i><#757575>Vorhut | Massenkontrolle
-  - ' '
-  - <#94958B>Schlage mit dem Fuß auf den Boden und erzeuge eine
-  - <#94958B>Schockwelle, die alle nahen Feinde beschädigt und
-  - <#94958B>kurz betäubt.
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
-  - '<!i><yellow>⚡ <#94958B>Energiegewinn: <arg:1>'
-  - '<!i><yellow>📏 <#94958B>Radius: <arg:2> Blöcke'
-  - '<!i><yellow>🛡️ <#94958B>Betäubungsdauer: <dark_gray>(<arg:4>-<arg:5> <#f02607>+♦<dark_gray>)</dark_gray>s'
-# This list contains all placeholders that can be used in this spell.
-# You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+    - <!i><#757575>Vorhut | Kontrolle
+    - ' '
+    - <#94958B>Hole eine Sekunde sichtbar zum Bodenschlag aus.
+    - <#94958B>Unterbrich Spieler kurz und erschüttere nahe Kreaturen.
+    - <#94958B>Bei Bossen belastet der Treffer stattdessen die Kontrollleiste.
+    - ' '
+    - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
 availablePlaceholders:
   '0': cooldown
-  '1': energyBuildUpFromUse
-  '2': shockwaveRadius
-  '3': shockwaveHeight
-  '4': minStunDuration
-  '5': maxStunDuration
-  '6': coefficients.entities.damage.minecraft:advantage_physical
-
-
-

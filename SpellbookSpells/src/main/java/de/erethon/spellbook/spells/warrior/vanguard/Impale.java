@@ -4,19 +4,20 @@ import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.combat.BossControl;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Transformation;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.bukkit.util.Vector;
 
 public class Impale extends VanguardBaseSpell {
 
@@ -33,9 +34,13 @@ public class Impale extends VanguardBaseSpell {
     private int ticksElapsed = 0;
     private boolean hasStruck = false;
     private ItemDisplay windupDisplay;
+    private Location committedOrigin;
+    private Vector committedDirection;
+    private Location warnedPoint;
 
     public Impale(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
+        tickInterval = 0;
         keepAliveTicks = windupTicks + 5;
     }
 
@@ -46,27 +51,22 @@ public class Impale extends VanguardBaseSpell {
 
     @Override
     public boolean onCast() {
+        if (!super.onCast()) return false;
+        committedOrigin = caster.getLocation();
+        committedDirection = committedOrigin.getDirection().setY(0);
+        if (committedDirection.lengthSquared() < 0.01) committedDirection.setZ(1);
+        committedDirection.normalize();
+        warnedPoint = target.getLocation();
         spawnWindupDisplay();
+        SkillSignatureVfx.accent(warnedPoint, getClass(), "lead", 2.6f,
+                windupTicks + 2, true);
         playWindupEffect();
-        return super.onCast();
+        return true;
     }
 
     private void spawnWindupDisplay() {
-        Location loc = target.getLocation().add(0, 3.0, 0);
-        windupDisplay = loc.getWorld().spawn(loc, ItemDisplay.class, d -> {
-            d.setItemStack(new ItemStack(Material.IRON_SWORD));
-            d.setBillboard(Display.Billboard.FIXED);
-            d.setPersistent(false);
-            d.setGlowing(true);
-            d.setTeleportDuration(2);
-            d.setInterpolationDuration(windupTicks);
-            d.setTransformation(new Transformation(
-                new Vector3f(0, 0, 0),
-                new Quaternionf().rotateX((float) Math.PI),  // Point downward
-                new Vector3f(1.5f, 1.5f, 1.5f),
-                new Quaternionf()
-            ));
-        });
+        windupDisplay = trackVfx(SkillVfx.billboard(warnedPoint.clone().add(0, 1.2, 0),
+                "sig_warrior_vanguard_impale_wake_f4", 1.8f));
     }
 
     @Override
@@ -74,9 +74,8 @@ public class Impale extends VanguardBaseSpell {
         ticksElapsed++;
 
         // Track target with windup display
-        if (windupDisplay != null && windupDisplay.isValid() && !hasStruck) {
-            windupDisplay.teleport(target.getLocation().add(0, 3.0, 0));
-        }
+        if (windupDisplay != null && windupDisplay.isValid() && !hasStruck)
+            windupDisplay.teleport(warnedPoint.clone().add(0, 1.2, 0));
 
         if (ticksElapsed == windupTicks && !hasStruck) {
             executeThrust();
@@ -85,8 +84,18 @@ public class Impale extends VanguardBaseSpell {
     }
 
     private void executeThrust() {
+        if (target == null || !target.isValid() || target.isDead()
+                || target.getWorld() != committedOrigin.getWorld()
+                || caster.getLocation().distanceSquared(committedOrigin) > 6.25
+                || target.getLocation().distanceSquared(committedOrigin) > range * range
+                || !caster.hasLineOfSight(target)) return;
+        Vector toward = target.getLocation().toVector().subtract(committedOrigin.toVector()).setY(0);
+        if (toward.lengthSquared() < 0.01 || committedDirection.dot(toward.normalize()) < 0.85) return;
         double physicalDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
-        target.damage(physicalDamage, caster, PDamageType.PHYSICAL);
+        double before = target.getHealth() + target.getAbsorptionAmount();
+        CombatSourceContext.runSpell(this, () -> target.damage(physicalDamage, caster, PDamageType.PHYSICAL));
+        if (target.getHealth() + target.getAbsorptionAmount() >= before) return;
+        BossControl.apply(caster, target, 45);
 
         double currentHealthPercent = target.getHealth() / target.getAttribute(Attribute.MAX_HEALTH).getValue();
         boolean isLowHealth = currentHealthPercent <= healthThreshold;
@@ -100,38 +109,11 @@ public class Impale extends VanguardBaseSpell {
 
         target.addEffect(caster, bleedEffectData, bleedDuration, bleedStacks);
         playThrustEffects(isLowHealth);
-        slamDisplayToTarget(isLowHealth);
-
-        if (isLowHealth) {
-            reduceShieldBreakerCooldown();
-        }
-    }
-
-    private void slamDisplayToTarget(boolean isLowHealth) {
-        if (windupDisplay == null || !windupDisplay.isValid()) return;
-
-        if (isLowHealth) {
-            windupDisplay.setGlowColorOverride(org.bukkit.Color.RED);
-        }
-        windupDisplay.teleport(target.getLocation().add(0, 1, 0));
-        ItemDisplay finalDisplay = windupDisplay;
+        if (windupDisplay != null && windupDisplay.isValid()) windupDisplay.remove();
         windupDisplay = null;
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (finalDisplay.isValid()) finalDisplay.remove();
-            }
-        }.runTaskLater(Spellbook.getInstance().getImplementer(), 3L);
-    }
+        SkillSignatureVfx.accent(target.getLocation().add(0, 1, 0), getClass(),
+                isLowHealth ? "main" : "wake", isLowHealth ? 2.2f : 1.5f, 10, false);
 
-    private void reduceShieldBreakerCooldown() {
-        for (java.util.Map.Entry<SpellData, Long> entry : caster.getUsedSpells().entrySet()) {
-            if (entry.getKey().getId() != null && entry.getKey().getId().contains("ShieldBreaker")) {
-                long halfCooldownMs = (long) (entry.getKey().getCooldown() * 500L);
-                caster.getUsedSpells().put(entry.getKey(), Math.max(0L, entry.getValue() - halfCooldownMs));
-                break;
-            }
-        }
     }
 
     private void playWindupEffect() {
@@ -139,31 +121,30 @@ public class Impale extends VanguardBaseSpell {
         caster.getWorld().playSound(caster.getLocation(), Sound.ITEM_CROSSBOW_LOADING_START, 0.8f, 1.2f);
     }
 
-    private void playThrustEffects(boolean isLowHealth) {
-        target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 1, 0), 25, 0.4, 0.4, 0.4, 0.3);
-        target.getWorld().spawnParticle(Particle.ENCHANTED_HIT, target.getLocation().add(0, 1, 0), 12, 0.3, 0.3, 0.3, 0.2);
-
-        if (isLowHealth) {
-            target.getWorld().spawnParticle(Particle.DUST, target.getLocation().add(0, 1, 0), 20, 0.5, 0.5, 0.5, 0,
-                new Particle.DustOptions(org.bukkit.Color.MAROON, 2.0f));
-            target.getWorld().spawnParticle(Particle.BLOCK_CRUMBLE, target.getLocation().add(0, 0.5, 0), 10, 0.4, 0.3, 0.4, 0.1,
-                Material.NETHER_BRICK.createBlockData());
-            target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 0.7f);
-            target.getWorld().playSound(target.getLocation(), Sound.BLOCK_CONDUIT_ATTACK_TARGET, 0.8f, 1.5f);
-        } else {
-            target.getWorld().spawnParticle(Particle.DUST, target.getLocation().add(0, 1, 0), 12, 0.3, 0.3, 0.3, 0,
-                new Particle.DustOptions(org.bukkit.Color.RED, 1.5f));
-            target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.0f);
-        }
-
-        caster.getWorld().playSound(caster.getLocation(), Sound.ITEM_CROSSBOW_SHOOT, 1.0f, 1.3f);
+    private void playThrustEffects(boolean lowHealth) {
+        target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 1, 0),
+                lowHealth ? 8 : 4, 0.25, 0.25, 0.25, 0.1);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT,
+                1.0f, lowHealth ? 0.7f : 1.0f);
     }
-
     @Override
     protected void cleanup() {
         if (windupDisplay != null && windupDisplay.isValid()) {
             windupDisplay.remove();
             windupDisplay = null;
         }
+        super.cleanup();
+    }
+
+    @Override
+    protected void addSpellPlaceholders() {
+        double duration = Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL,
+                minBleedDuration, maxBleedDuration, "bleedDuration") / 20.0;
+        double stacks = Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL,
+                minBleedStacks, maxBleedStacks, "bleedStacks");
+        spellAddedPlaceholders.add(Component.text(Math.round(duration * 10.0) / 10.0, VALUE_COLOR));
+        placeholderNames.add("bleedDuration");
+        spellAddedPlaceholders.add(Component.text((int) stacks, VALUE_COLOR));
+        placeholderNames.add("bleedStacks");
     }
 }

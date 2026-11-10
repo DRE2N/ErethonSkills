@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.ranger.druid;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import org.bukkit.Particle;
@@ -37,12 +39,12 @@ public class VineStep extends DruidBaseSpell {
         }
         targetBlock = caster.getTargetBlockExact(range);
         if (targetBlock == null || !targetBlock.isSolid()) {
-            caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
+            SpellbookFeedback.send(caster, "<color:#ff0000>Kein gültiges Ziel!");
             return false;
         }
         int heightDiff = targetBlock.getY() - caster.getLocation().getBlockY();
         if (heightDiff < -4 || heightDiff > maxHeight) {
-            caster.sendParsedActionBar("<color:#ff0000>Zu hoch!");
+            SpellbookFeedback.send(caster, "<color:#ff0000>Zu hoch!");
             return false;
         }
         return true;

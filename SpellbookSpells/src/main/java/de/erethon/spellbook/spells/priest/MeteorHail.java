@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.priest;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import org.bukkit.Location;
@@ -27,7 +29,7 @@ public class MeteorHail extends PriestBaseSpell {
     protected boolean onPrecast() {
         targetBlock = caster.getTargetBlockExact(64);
         if (targetBlock == null) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         return super.onPrecast();

@@ -1,7 +1,7 @@
 class: warrior.bladeweaver.BladeDash
 cooldown: 5
 energyBuildUpFromUse: 12
-dashDistance: 8.0
+dashDistance: 8
 dashSpeed: 1.2
 launchHeight: 0.8
 hitboxWidth: 1.5
@@ -9,10 +9,10 @@ razorMarkStacks: 1
 coefficients:
   players:
     damage:
-      minecraft:advantage_physical: 1.3
+      minecraft:advantage_physical: 3
   entities:
     damage:
-      minecraft:advantage_physical: 2.0
+      minecraft:advantage_physical: 6
 name:
   de: Klingenstoß
   en: Blade Dash
@@ -55,4 +55,3 @@ availablePlaceholders:
   '5': hitboxWidth
   '6': razorMarkStacks
   '7': coefficients.entities.damage.minecraft:advantage_physical
-

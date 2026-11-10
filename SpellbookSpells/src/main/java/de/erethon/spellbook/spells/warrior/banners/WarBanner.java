@@ -43,6 +43,7 @@ public class WarBanner extends WarriorBaseSpell {
             wolf.setOwner((AnimalTamer) caster);
             banner = location.getWorld().spawn(location, ItemDisplay.class, itemDisplay -> {
                 itemDisplay.setItemStack(itemStack);
+                itemDisplay.setPersistent(false);
                 //itemDisplay.setTransformation(TransformationUtil.scale(itemDisplay.getTransformation(), 2));
             });
             wolf.addPassenger(banner);

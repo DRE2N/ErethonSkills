@@ -2,7 +2,8 @@ package de.erethon.hecate.commands;
 
 import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
-import de.erethon.hecate.util.ResourcepackHandler;
+import de.erethon.hecate.Hecate;
+import de.erethon.hecate.util.ResourcePackServer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,9 +23,7 @@ public class ResourcepackCommand extends ECommand {
     public void onExecute(String[] args, CommandSender commandSender) {
         Player player = (Player) commandSender;
         if (args.length == 1) {
-            new ResourcepackHandler(player, player1 -> {
-                MessageUtil.sendMessage(player, "<green>Resource pack sent and applied.");
-            });
+            sendPack(player, player);
         }
         if (args.length == 2) {
             Player target = player.getServer().getPlayer(args[1]);
@@ -32,10 +31,16 @@ public class ResourcepackCommand extends ECommand {
                 MessageUtil.sendMessage(player, "<red>Player not found.");
                 return;
             }
-            MessageUtil.sendMessage(player, "<gray>Sending resource pack to " + target.getName() + "...");
-            new ResourcepackHandler(target, player1 -> {
-                MessageUtil.sendMessage(player, "<green>Resource pack sent and applied to " + target.getName() + ".");
-            });
+            sendPack(player, target);
+        }
+    }
+
+    private void sendPack(Player sender, Player target) {
+        ResourcePackServer server = Hecate.getInstance().getResourcePackServer();
+        if (server != null && server.send(target)) {
+            MessageUtil.sendMessage(sender, "<green>Resource pack sent to " + target.getName() + ".");
+        } else {
+            MessageUtil.sendMessage(sender, "<red>Resource pack is not ready yet. Check the Hecate log.");
         }
     }
 }

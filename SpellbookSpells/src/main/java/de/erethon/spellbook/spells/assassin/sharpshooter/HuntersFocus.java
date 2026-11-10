@@ -2,19 +2,24 @@ package de.erethon.spellbook.spells.assassin.sharpshooter;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.SphereEffect;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
+
 import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HuntersFocus extends SharpshooterBaseSpell {
 
@@ -25,6 +30,7 @@ public class HuntersFocus extends SharpshooterBaseSpell {
     private final double maxFocusDrain = data.getDouble("maxFocusDrain", 20.0);
     private final double trueSightRadius = data.getDouble("trueSightRadius", 30.0);
     private final String huntersFocusTag = "hunters_focus_active";
+    private ItemDisplay sightDisplay;
 
     public HuntersFocus(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -73,13 +79,14 @@ public class HuntersFocus extends SharpshooterBaseSpell {
                 return;
             }
 
-            caster.setEnergy((int) (caster.getEnergy() - drainAmount));
+            caster.setEnergy(Math.max(0, (int) (caster.getEnergy() - drainAmount)));
         }
 
         if (currentTicks % 10 == 0) {
-            createTrueSightEffect();
             createActiveVFX();
         }
+
+        updateSight();
 
         if (currentTicks % 5 == 0) {
             revealInvisibleEnemies();
@@ -90,63 +97,35 @@ public class HuntersFocus extends SharpshooterBaseSpell {
     protected void onTickFinish() {
         super.onTickFinish();
         caster.getTags().remove(huntersFocusTag);
+        if (sightDisplay != null && sightDisplay.isValid()) sightDisplay.remove();
+        sightDisplay = null;
     }
 
     private void createActivationVFX() {
-        Location eyeLoc = caster.getEyeLocation();
-
-        EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-        if (effectManager != null) {
-            SphereEffect activationSphere = new SphereEffect(effectManager);
-            activationSphere.setLocation(eyeLoc);
-            activationSphere.radius = 2.0f;
-            activationSphere.particle = Particle.DUST;
-            activationSphere.color = Color.ORANGE;
-            activationSphere.particles = 30;
-            activationSphere.duration = 20;
-            activationSphere.start();
-        }
-
-        eyeLoc.getWorld().spawnParticle(Particle.ENCHANTED_HIT, eyeLoc, 15, 0.5, 0.5, 0.5, 0.2);
-        eyeLoc.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, eyeLoc, 8, 0.3, 0.3, 0.3, 0.1);
+        sightDisplay = trackVfx(SkillVfx.billboard(caster.getLocation().add(0, 2.25, 0),
+                "sig_assassin_sharpshooter_huntersfocus_wake_f4", 1.6f));
+        SkillSignatureVfx.accent(caster.getEyeLocation(), getClass(), "main", 2.2f, 18, false);
     }
 
     private void createDeactivationVFX() {
-        Location eyeLoc = caster.getEyeLocation();
-        eyeLoc.getWorld().spawnParticle(Particle.SMOKE, eyeLoc, 10, 0.3, 0.3, 0.3, 0.1);
-        eyeLoc.getWorld().spawnParticle(Particle.DUST, eyeLoc, 8, 0.3, 0.3, 0.3, 0,
-            new Particle.DustOptions(Color.GRAY, 1.0f));
+        if (sightDisplay != null && sightDisplay.isValid()) sightDisplay.remove();
+        sightDisplay = null;
+        SkillSignatureVfx.accent(caster.getEyeLocation(), getClass(), "wake", 1.7f, 14, false);
     }
 
     private void createActiveVFX() {
-        Location eyeLoc = caster.getEyeLocation();
-        eyeLoc.getWorld().spawnParticle(Particle.DUST, eyeLoc, 3, 0.2, 0.2, 0.2, 0,
-            new Particle.DustOptions(Color.ORANGE, 1.2f));
+        SkillSignatureVfx.accent(caster.getLocation(), getClass(), "lead", 1.4f, 12, true);
     }
 
-    private void createTrueSightEffect() {
-        Location center = caster.getLocation();
-
-        EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-        if (effectManager != null) {
-            SphereEffect trueSightSphere = new SphereEffect(effectManager);
-            trueSightSphere.setLocation(center);
-            trueSightSphere.radius = (float) trueSightRadius;
-            trueSightSphere.particle = Particle.DUST;
-            trueSightSphere.color = Color.YELLOW;
-            trueSightSphere.particles = 15;
-            trueSightSphere.duration = 15;
-            trueSightSphere.start();
-        }
+    private void updateSight() {
+        if (sightDisplay != null && sightDisplay.isValid())
+            sightDisplay.teleport(caster.getLocation().add(0, 2.25, 0));
     }
-
     private void revealInvisibleEnemies() {
         for (LivingEntity entity : caster.getLocation().getNearbyLivingEntities(trueSightRadius)) {
             if (entity != caster && Spellbook.canAttack(caster, entity)) {
-                if (entity.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-                    entity.getWorld().spawnParticle(Particle.DUST, entity.getLocation().add(0, 1, 0), 8, 0.3, 0.5, 0.3, 0,
-                        new Particle.DustOptions(Color.RED, 1.5f));
-                    entity.getWorld().spawnParticle(Particle.ENCHANTED_HIT, entity.getLocation().add(0, 1, 0), 3, 0.2, 0.3, 0.2, 0.1);
+                if (entity.isInvisible() || entity.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+                    if (currentTicks % 20 == 0) createRevealRune(entity);
 
                     entity.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 60, 0, false, false));
                 }
@@ -154,6 +133,10 @@ public class HuntersFocus extends SharpshooterBaseSpell {
         }
     }
 
+    private void createRevealRune(LivingEntity entity) {
+        Location center = entity.getLocation().add(0, entity.getHeight() + 0.45, 0);
+        SkillSignatureVfx.accent(center, getClass(), "lead", 2.3f, 18, false);
+    }
     @Override
     protected void addSpellPlaceholders() {
         spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, minFocusDrain, maxFocusDrain, "focusDrain"), VALUE_COLOR));

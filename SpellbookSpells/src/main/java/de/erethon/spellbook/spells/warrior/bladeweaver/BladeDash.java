@@ -3,14 +3,22 @@ package de.erethon.spellbook.spells.warrior.bladeweaver;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.combat.BossControl;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -59,6 +67,7 @@ public class BladeDash extends BladeweaverBaseSpell {
             return;
         }
         spawnDashTrail();
+        if (currentTicks % 3 == 0) spawnFixedAfterimage();
         checkHits();
         if (!isInDemonForm() && hasHitFirstTarget) {
             endDash();
@@ -77,10 +86,12 @@ public class BladeDash extends BladeweaverBaseSpell {
                 continue;
             }
             hitEntities.add(entity);
-            hasHitFirstTarget = true;
             double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, true, Attribute.ADVANTAGE_PHYSICAL);
-            entity.damage(damage, caster, PDamageType.PHYSICAL);
-            launchTarget(entity);
+            double before = entity.getHealth() + entity.getAbsorptionAmount();
+            CombatSourceContext.runSpell(this, () -> entity.damage(damage, caster, PDamageType.PHYSICAL));
+            if (entity.getHealth() + entity.getAbsorptionAmount() >= before) continue;
+            hasHitFirstTarget = true;
+            if (!BossControl.apply(caster, entity, 45)) launchTarget(entity);
             addRazorMarkStacks(entity, razorMarkStacks);
             grantBonusHealthForHit();
             playHitEffect(entity);
@@ -90,15 +101,17 @@ public class BladeDash extends BladeweaverBaseSpell {
     private void launchTarget(LivingEntity target) {
         // upward with slight knockback in dash direction
         Vector launch = dashDirection.clone().multiply(0.3);
-        launch.setY(launchHeight);
-        if (isInDemonForm()) {
-            launch.setY(launchHeight * 1.2); // Higher launch in demon form
-        }
+        double vertical = target instanceof Player
+                ? Math.min(0.35, launchHeight * 0.45)
+                : launchHeight * (isInDemonForm() ? 1.2 : 1.0);
+        launch.setY(vertical);
 
         target.setVelocity(target.getVelocity().add(launch));
     }
 
     private void playDashStartEffect() {
+        SkillSignatureVfx.accent(caster.getLocation().add(0, 0.9, 0), getClass(),
+                "wake", 2.4f, 12, false, dashDirection);
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.0f, 1.3f);
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 0.5f, 1.8f);
 
@@ -106,6 +119,10 @@ public class BladeDash extends BladeweaverBaseSpell {
         caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation().add(0, 1, 0), 15, 0.3, 0.5, 0.3, 0, dust);
     }
 
+    private void spawnFixedAfterimage() {
+        SkillSignatureVfx.accent(caster.getLocation().add(0, 0.8, 0), getClass(),
+                "wake", 2.0f, 10, false, dashDirection);
+    }
     private void spawnDashTrail() {
         Location loc = caster.getLocation().add(0, 0.5, 0);
         Particle.DustOptions dust = new Particle.DustOptions(getThemeColor(), 1.0f);
@@ -118,6 +135,7 @@ public class BladeDash extends BladeweaverBaseSpell {
     }
 
     private void playHitEffect(LivingEntity target) {
+        bladeImpact(target);
         target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 1, 0), 12, 0.3, 0.3, 0.3, 0.2);
         target.getWorld().spawnParticle(Particle.SWEEP_ATTACK, target.getLocation().add(0, 1, 0), 3, 0.2, 0.2, 0.2, 0);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1.0f, 1.0f);
@@ -128,6 +146,7 @@ public class BladeDash extends BladeweaverBaseSpell {
 
     private void endDash() {
         dashing = false;
+        bladeFlash(caster.getLocation().add(0, 0.9, 0), "", 1.7f, 12);
 
         Vector currentVel = caster.getVelocity();
         caster.setVelocity(new Vector(0, currentVel.getY(), 0));
@@ -150,7 +169,7 @@ public class BladeDash extends BladeweaverBaseSpell {
             double x = Math.cos(angle) * 0.5;
             double z = Math.sin(angle) * 0.5;
             caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation().add(x, 0.5, z), 3, 0.1, 0.2, 0.1, 0,
-                new Particle.DustOptions(BLADEWEAVER_DEMON, 1.0f));
+            new Particle.DustOptions(BLADEWEAVER_DEMON, 1.0f));
         }
     }
 

@@ -1,18 +1,26 @@
 package de.erethon.spellbook.traits.paladin.hierophant;
 
 import de.erethon.papyrus.PDamageType;
+import de.erethon.papyrus.combat.CombatSource;
+import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
+import de.erethon.spellbook.combat.BossControl;
+import org.bukkit.Bukkit;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-public class HierophantBasicAttack extends SpellTrait {
+/** Confirmed glaive hits earn Wrath for a chosen spell, rather than passive hoarding damage. */
+public class HierophantBasicAttack extends SpellTrait implements Listener {
 
-    // The Hierophant's basic attack generates wrath on damage taken and dealt, and increases magic damage based on the wrath accumulated.
-
-    private final double wrathPerDamageTaken = data.getDouble("wrathPerDamageTaken", 0.2);
-    private final double wrathPerDamageDealt = data.getDouble("wrathPerDamageDealt", 0.1);
-    private final double magicDamageBonusPerWrath = data.getDouble("magicDamageBonusPerWrath", 1);
+    private final int wrathPerHit = data.getInt("wrathPerHit", 8);
+    private int hits;
 
     public HierophantBasicAttack(TraitData data, LivingEntity caster) {
         super(data, caster);
@@ -22,24 +30,30 @@ public class HierophantBasicAttack extends SpellTrait {
     protected void onAdd() {
         super.onAdd();
         caster.setMaxEnergy(100);
+        Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
     }
 
     @Override
-    public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
-        if (attacker != null) {
-            caster.addEnergy((int) (damage * wrathPerDamageTaken));
-            caster.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, caster.getLocation(), 3, 0.5, 0.5, 0.5);
-        }
-        return super.onDamage(attacker, damage, type);
+    protected void onRemove() {
+        HandlerList.unregisterAll(this);
+        super.onRemove();
     }
 
-    @Override
-    public double onAttack(LivingEntity target, double damage, PDamageType type) {
-        if (target != null) {
-            caster.addEnergy((int) (damage * wrathPerDamageDealt));
-            damage += magicDamageBonusPerWrath * caster.getEnergy();
-            caster.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, caster.getLocation(), 3, 0.5, 0.5, 0.5);
-        }
-        return super.onAttack(target, damage, type);
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onConfirmedGlaiveHit(EntityDamageByEntityEvent event) {
+        CombatSource source = event.getCombatSource();
+        if (event.getDamager() != caster || !(event.getEntity() instanceof LivingEntity target)
+                || !Spellbook.canAttack(caster, target)
+                || event.getDamageType() != PDamageType.PHYSICAL
+                || source == null || source.type() != CombatSource.Type.BASIC_ATTACK
+                || event.getFinalDamage() <= 0) return;
+        caster.addEnergy(wrathPerHit);
+        BossControl.apply(caster, target, 10);
+        if (++hits < 3) return;
+        hits = 0;
+        target.getWorld().playSound(target.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT,
+                0.65f, 1.4f);
+        target.getWorld().spawnParticle(Particle.END_ROD, target.getEyeLocation(),
+                8, 0.25, 0.35, 0.25, 0.02);
     }
 }

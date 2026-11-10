@@ -1,0 +1,13 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "hecate:font/combat_overhead.png",
+      "ascent": 7,
+      "height": 9,
+      "chars": [
+        "\ue2a0\ue2a1\ue2a2\ue2a3\ue2a4\ue2a5\ue2a6\ue2a7\ue2a8\ue2a9\ue2aa\ue2ab\ue2ac\ue2ad\ue2ae\ue2af\ue2b0\ue2b1\ue2b2\ue2b3\ue2b4\ue2b5"
+      ]
+    }
+  ]
+}

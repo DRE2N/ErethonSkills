@@ -4,6 +4,7 @@ import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
+import de.erethon.spellbook.combat.CombatSourceContext;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
@@ -20,7 +21,9 @@ public class PoisonEffect extends SpellEffect {
         tick++;
         if (tick >= 20) {
             tick = 0;
-            target.damage(Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL), caster, PDamageType.MAGIC);
+            CombatSourceContext.runEffect(this, () ->
+                    target.damage(Spellbook.getScaledValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL),
+                            caster, PDamageType.MAGIC));
         }
     }
 }

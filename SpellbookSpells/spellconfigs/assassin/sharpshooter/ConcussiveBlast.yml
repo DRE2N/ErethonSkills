@@ -2,9 +2,9 @@ class: assassin.sharpshooter.ConcussiveBlast
 name:
   en: Concussive Blast
   de: Erschütternde Druckwelle
-disorientDuration: 1
-maxKnockbackStrength: 2.5
-minKnockbackStrength: 1.5
+windupTicks: 5
+maxKnockbackStrength: 0.7
+minKnockbackStrength: 0.45
 coneAngle: 60.0
 coneRange: 4.0
 cooldown: 12
@@ -21,23 +21,21 @@ description:
   - ' '
   - <#94958B>Unleash a short-range blast of kinetic energy,
   - <#94958B>dealing minor damage while knocking back enemies
-  - <#94958B>and disorienting them briefly.
+  - <#94958B>after a brief warning. No camera disruption.
   - ' '
-  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
   - '<!i><yellow>📏 <#94958B>Cone Range: <arg:1> blocks'
   - '<!i><yellow>⬆️ <#94958B>Knockback Strength: <arg:2>'
-  - '<!i><yellow>💫 <#94958B>Disorient Duration: <arg:3>s'
+
   de:
   - <!i><#757575>Sharpshooter
   - ' '
   - <#94958B>Entfessle eine kurzreichweitige kinetische Explosion,
   - <#94958B>die geringen Schaden verursacht, während Feinde
-  - <#94958B>zurückgestoßen und kurz desorientiert werden.
+  - <#94958B>nach kurzer Warnung zurückgestoßen werden.
   - ' '
-  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
   - '<!i><yellow>📏 <#94958B>Kegel Reichweite: <arg:1> Blöcke'
   - '<!i><yellow>⬆️ <#94958B>Rückstoß Stärke: <arg:2>'
-  - '<!i><yellow>💫 <#94958B>Desorientierung Dauer: <arg:3>s'
+
 # This list contains all placeholders that can be used in this spell.
 # You can use those placeholders in the description with
 # <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
@@ -50,4 +48,3 @@ availablePlaceholders:
   '5': cooldown
   '6': coefficients.entities.damage.minecraft:advantage_physical
   '7': knockbackStrength
-

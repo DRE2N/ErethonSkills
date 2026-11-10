@@ -1,135 +1,93 @@
 package de.erethon.spellbook.spells.paladin.hierophant;
 
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
-import de.slikey.effectlib.effect.LineEffect;
+import de.erethon.spellbook.combat.BossControl;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
-import org.bukkit.entity.Entity;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
+import java.util.Comparator;
+
+/** A committed luminous chain that controls one enemy or a small empowered cluster. */
 public class ChainOfPurification extends HierophantBaseSpell {
 
-    // The hierophant launches a chain of holy energy in front of him. The first enemy hit is pulled halfway to the caster and stunned for 2 seconds.
-    // If the wrath is above 50, the chain also pulls additional enemies in a 3-block radius to the target and creates crackling energy ground effects.
-
-    private final int range = data.getInt("range", 20);
-    private final double pullSpeed = data.getDouble("pullSpeed", 3.0);
-    private final int minimumEnergyForBonus = data.getInt("minimumEnergyForBonus", 50);
+    private final double range = data.getDouble("range", 16);
+    private final int empoweredCost = data.getInt("minimumEnergyForBonus", 50);
     private final int bonusEnemyCount = data.getInt("bonusEnemyCount", 2);
-
-    private LineEffect lineEffect;
-    private Location chainEndLocation;
-    private boolean hasHit = false;
+    private Location chainPoint;
+    private Vector direction;
+    private boolean empowered;
+    private boolean landed;
 
     public ChainOfPurification(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = duration * 20;
-    }
-
-    @Override
-    protected boolean onPrecast() {
-        return super.onPrecast();
+        keepAliveTicks = (int) Math.ceil(range / 1.2) + 2;
     }
 
     @Override
     public boolean onCast() {
-        chainEndLocation = caster.getLocation();
-        lineEffect = new LineEffect(Spellbook.getInstance().getEffectManager());
-        lineEffect.setEntity(caster);
-        lineEffect.setTarget(chainEndLocation);
-        lineEffect.particles = 20;
-        lineEffect.particle = org.bukkit.Particle.DRAGON_BREATH;
-        lineEffect.duration = duration * 20;
-        lineEffect.start();
-
-        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.5f, 1.5f);
-
-        return super.onCast();
+        empowered = caster.getEnergy() >= empoweredCost;
+        if (!super.onCast()) return false;
+        if (empowered) caster.setEnergy(Math.max(0, caster.getEnergy() - empoweredCost));
+        chainPoint = caster.getEyeLocation().clone();
+        direction = chainPoint.getDirection().normalize();
+        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_CHAIN_PLACE, 0.9f,
+                empowered ? 0.75f : 1.2f);
+        return true;
     }
 
     @Override
     protected void onTick() {
-        if (hasHit) {
-            lineEffect.cancel();
-            keepAliveTicks = 0;
-            onTickFinish();
-            return;
-        }
-        if (caster.getLocation().distance(chainEndLocation) > range) {
-            lineEffect.cancel();
-            keepAliveTicks = 0;
-            onTickFinish();
-            return;
-        }
-        Vector direction = caster.getEyeLocation().getDirection();
-        direction.multiply(0.5);
-        chainEndLocation.add(direction);
-        lineEffect.setTarget(chainEndLocation);
-
-        BoundingBox chainEndBoundingBox = new BoundingBox(
-                chainEndLocation.getX() - 1.5,
-                chainEndLocation.getY() - 1.5,
-                chainEndLocation.getZ() - 1.5,
-                chainEndLocation.getX() + 1.5,
-                chainEndLocation.getY() + 1.5,
-                chainEndLocation.getZ() + 1.5
-        );
-
-        int entityLimit = 1;
-        boolean hasHighWrath = caster.getEnergy() > minimumEnergyForBonus;
-        if (hasHighWrath) {
-            entityLimit += bonusEnemyCount;
-            caster.setEnergy(0);
-            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 0.8f, 0.8f);
-        }
-
-        int entities = 0;
-        for (Entity entity : caster.getWorld().getNearbyEntities(chainEndBoundingBox)) {
-            if (entity instanceof LivingEntity living && living != caster && Spellbook.canAttack(caster, living)) {
-                hasHit = true;
-                entities++;
-                if (entities > entityLimit) {
-                    break;
-                }
-
-                Vector pullDirection = caster.getLocation().toVector().subtract(entity.getLocation().toVector()).normalize();
-                living.setVelocity(pullDirection.multiply(pullSpeed));
-
-                living.getWorld().spawnParticle(Particle.ENCHANTED_HIT, living.getLocation().add(0, 1, 0), 10, 0.5, 0.5, 0.5);
-                living.getWorld().playSound(living.getLocation(), Sound.ENTITY_LIGHTNING_BOLT_IMPACT, 0.8f, 1.2f);
-
-                if (hasHighWrath) {
-                    createCircularAoE(living.getLocation(), 3, 1, 80)
-                            .onEnter((aoe, ent) -> {
-                                if (Spellbook.canAttack(caster, ent) && ent != living) {
-                                    Vector additionalPull = caster.getLocation().toVector().subtract(ent.getLocation().toVector()).normalize();
-                                    ent.setVelocity(additionalPull.multiply(pullSpeed * 0.7));
-                                    ent.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, ent.getLocation(), 5, 0.3, 0.3, 0.3);
-                                }
-                            })
-                            .onTick(aoe -> {
-                                for (LivingEntity ent : aoe.getEntitiesInside()) {
-                                    if (Spellbook.canAttack(caster, ent)) {
-                                        ent.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, ent.getLocation(), 1, 0.2, 0.2, 0.2);
-                                    }
-                                }
-                            });
-                }
-            }
-        }
         super.onTick();
+        if (landed || chainPoint == null) return;
+        chainPoint.add(direction.clone().multiply(1.2));
+        if (!chainPoint.getBlock().isPassable()) {
+            landed = true;
+            return;
+        }
+        chainPoint.getWorld().spawnParticle(Particle.END_ROD, chainPoint,
+                SkillVfx.availableTo(caster) ? 1 : 5, 0.12, 0.12, 0.12, 0.01);
+        var first = chainPoint.getWorld().getNearbyLivingEntities(chainPoint, 1.1).stream()
+                .filter(entity -> entity != caster && Spellbook.canAttack(caster, entity)
+                        && caster.hasLineOfSight(entity))
+                .min(Comparator.comparingDouble(entity -> entity.getLocation().distanceSquared(chainPoint)))
+                .orElse(null);
+        if (first == null) return;
+        landed = true;
+        if (!hit(first, 50)) return;
+        if (empowered) {
+            first.getWorld().getNearbyLivingEntities(first.getLocation(), 3).stream()
+                    .filter(entity -> entity != first && entity != caster
+                            && Spellbook.canAttack(caster, entity) && caster.hasLineOfSight(entity))
+                    .sorted(Comparator.comparingDouble(entity -> entity.getLocation().distanceSquared(first.getLocation())))
+                    .limit(bonusEnemyCount)
+                    .forEach(entity -> hit(entity, 20));
+        }
     }
 
-    @Override
-    protected void cleanup() {
-        lineEffect.cancel();
-        super.cleanup();
+    private boolean hit(LivingEntity enemy, double control) {
+        double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, enemy, true,
+                Attribute.ADVANTAGE_MAGICAL);
+        double before = enemy.getHealth() + enemy.getAbsorptionAmount();
+        CombatSourceContext.runSpell(this, () -> enemy.damage(damage, caster, PDamageType.MAGIC));
+        if (enemy.getHealth() + enemy.getAbsorptionAmount() >= before) return false;
+        if (!BossControl.apply(caster, enemy, control)) {
+            Vector pull = caster.getLocation().toVector().subtract(enemy.getLocation().toVector()).setY(0);
+            if (pull.lengthSquared() > 0.01) {
+                enemy.setVelocity(enemy.getVelocity().add(pull.normalize().multiply(0.4)));
+            }
+        }
+        enemy.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, enemy.getEyeLocation(),
+                SkillVfx.availableTo(caster) ? 2 : 10, 0.25, 0.3, 0.25, 0.04);
+        enemy.getWorld().playSound(enemy.getLocation(), Sound.BLOCK_CHAIN_HIT, 0.9f, 1.0f);
+        triggerTraits(enemy);
+        return true;
     }
 }

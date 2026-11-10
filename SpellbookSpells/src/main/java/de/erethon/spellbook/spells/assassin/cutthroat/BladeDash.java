@@ -1,29 +1,36 @@
 package de.erethon.spellbook.spells.assassin.cutthroat;
 
 import de.erethon.spellbook.Spellbook;
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.LineEffect;
-import de.slikey.effectlib.effect.SphereEffect;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.combat.BossControl;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class BladeDash extends CutthroatBaseSpell {
 
+
     // The Cutthroat dashes forward, dealing damage to all enemies in its path.
-    // Affected enemies are weakened.
+    // A confirmed cut applies the Cutthroat's single Wound state (Bleeding).
     // After dashing, the Cutthroat gains energy based on the number of enemies hit.
 
     private final double dashDistance = data.getDouble("distance", 6.0);
@@ -31,12 +38,11 @@ public class BladeDash extends CutthroatBaseSpell {
     private final double sideDashStrength = data.getDouble("sideDashStrength", 1.5);
     private final double damageWidth = data.getDouble("damageWidth", 1.5);
     private final double energyPerTarget = data.getDouble("energyPerTarget", 5.0);
-    private final int weaknessDurationMin = data.getInt("weaknessDurationMin", 2) * 20;
-    private final int weaknessStacksMin = data.getInt("weaknessStacksMin", 1);
-    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 5) * 20;
-    private final int weaknessStacksMax = data.getInt("weaknessStacksMax", 3);
+    private final int maximumEnergyReturn = data.getInt("maximumEnergyReturn", 20);
+    private final int woundDurationMin = data.getInt("woundDurationMin", 5) * 20;
+    private final int woundDurationMax = data.getInt("woundDurationMax", 10) * 20;
 
-    private final EffectData weaknessEffectData = Spellbook.getEffectData("Weakness");
+    private final EffectData woundEffectData = Spellbook.getEffectData("Bleeding");
     private final Set<LivingEntity> affected = new HashSet<>();
 
     public BladeDash(LivingEntity caster, SpellData spellData) {
@@ -48,7 +54,6 @@ public class BladeDash extends CutthroatBaseSpell {
         if (!super.onCast()) {
             return false;
         }
-
         Location location = caster.getLocation();
         location.setPitch(-10);
         Vector direction = location.getDirection().normalize();
@@ -64,36 +69,34 @@ public class BladeDash extends CutthroatBaseSpell {
                 inputOffset.add(right.clone().multiply(sideDashStrength));
             }
         }
-        Vector forwardDash = direction.multiply(dashDistance);
+        Vector forwardDash = direction.clone().multiply(dashDistance);
         // Combine forward dash and side dash (inputOffset)
         Vector dashVector = forwardDash.add(inputOffset);
         Location startLocation = location.clone().add(0, 0.5, 0);
-        Location endLocation = startLocation.clone().add(dashVector);
+        RayTraceResult obstacle = caster.getWorld().rayTraceBlocks(startLocation, dashVector.clone().normalize(),
+                dashVector.length());
+        Location endLocation = obstacle == null ? startLocation.clone().add(dashVector)
+                : obstacle.getHitPosition().toLocation(caster.getWorld()).subtract(dashVector.clone().normalize().multiply(0.4));
+        Vector actualDash = endLocation.toVector().subtract(startLocation.toVector());
 
-        playDashWindup(startLocation, direction);
-        executeDash(startLocation, endLocation, dashVector, direction);
+        playDashWindup(startLocation, endLocation, direction);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (caster.isValid() && !caster.isDead()) {
+                    executeDash(startLocation, endLocation, actualDash);
+                }
+            }
+        }.runTaskLater(Spellbook.getInstance().getImplementer(), 4L);
 
         return true;
     }
 
-    private void playDashWindup(Location startLocation, Vector direction) {
-        caster.getWorld().spawnParticle(Particle.SMOKE, startLocation, 10, 0.3, 0.3, 0.3, 0.05);
-        caster.getWorld().spawnParticle(Particle.ENCHANTED_HIT, startLocation, 8, 0.2, 0.2, 0.2, 0.1);
+    private void playDashWindup(Location startLocation, Location endLocation, Vector direction) {
+        SkillSignatureVfx.accent(startLocation, getClass(), "lead", 2.4f, 13, true);
         caster.getWorld().playSound(startLocation, Sound.ENTITY_ENDERMAN_TELEPORT, 0.3f, 2.0f);
-
-        EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-        if (effectManager != null) {
-            SphereEffect chargeEffect = new SphereEffect(effectManager);
-            chargeEffect.setLocation(startLocation);
-            chargeEffect.radius = 1.0f;
-            chargeEffect.particle = Particle.DUST;
-            chargeEffect.particles = 15;
-            chargeEffect.duration = 5;
-            chargeEffect.start();
-        }
     }
-
-    private void executeDash(Location startLocation, Location endLocation, Vector dashVector, Vector direction) {
+    private void executeDash(Location startLocation, Location endLocation, Vector dashVector) {
         Set<LivingEntity> affectedTargets = new HashSet<>();
         BoundingBox dashPathBox = BoundingBox.of(startLocation, endLocation).expand(damageWidth / 2.0, 0.5, damageWidth / 2.0);
 
@@ -103,25 +106,35 @@ public class BladeDash extends CutthroatBaseSpell {
                 living.getCollidableExemptions().add(caster.getUniqueId());
 
                 double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, living, true, Attribute.ADVANTAGE_PHYSICAL);
-                living.damage(damage, caster);
-
-                int weaknessDuration = (int) Spellbook.getRangedValue(data, caster, living, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration");
-                int weaknessStacks = (int) Spellbook.getRangedValue(data, caster, living, Attribute.ADVANTAGE_MAGICAL, weaknessStacksMin, weaknessStacksMax, "weaknessStacks");
-                living.addEffect(caster, weaknessEffectData, weaknessDuration, weaknessStacks);
-
-                affectedTargets.add(living);
-                playSlashEffect(living.getLocation());
+                double before = living.getHealth() + living.getAbsorptionAmount();
+                CombatSourceContext.runSpell(this, () -> living.damage(damage, caster, PDamageType.PHYSICAL));
+                if (living.getHealth() + living.getAbsorptionAmount() < before) {
+                    BossControl.apply(caster, living, 15);
+                    int woundDuration = (int) Spellbook.getRangedValue(data, caster, living,
+                            Attribute.ADVANTAGE_MAGICAL, woundDurationMin, woundDurationMax, "woundDuration");
+                    living.addEffect(caster, woundEffectData, woundDuration, 1);
+                    affectedTargets.add(living);
+                    playSlashEffect(living.getLocation());
+                }
             }
         }
 
-        for (LivingEntity target : affected) {
-            target.getCollidableExemptions().remove(caster.getUniqueId());
-        }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (LivingEntity target : affected) {
+                    if (target.isValid()) {
+                        target.getCollidableExemptions().remove(caster.getUniqueId());
+                    }
+                }
+                affected.clear();
+            }
+        }.runTaskLater(Spellbook.getInstance().getImplementer(), 8L);
 
-        int energyGain = affectedTargets.size() * (int) energyPerTarget;
+        int energyGain = Math.min(maximumEnergyReturn, (int) (affectedTargets.size() * energyPerTarget));
         caster.setEnergy(caster.getEnergy() + energyGain);
 
-        Vector velocity = direction.multiply(dashSpeedMultiplier);
+        Vector velocity = dashVector.clone().normalize().multiply(dashSpeedMultiplier);
         caster.setVelocity(velocity);
 
         createDashTrail(startLocation, endLocation);
@@ -131,80 +144,20 @@ public class BladeDash extends CutthroatBaseSpell {
     }
 
     private void createDashTrail(Location start, Location end) {
-        EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-        if (effectManager != null) {
-            LineEffect slashTrail = new LineEffect(effectManager);
-            slashTrail.setLocation(start);
-            slashTrail.setTarget(end);
-            slashTrail.particle = Particle.SWEEP_ATTACK;
-            slashTrail.particles = (int) (dashDistance * 4);
-            slashTrail.duration = 15;
-            slashTrail.start();
-
-            LineEffect energyTrail = new LineEffect(effectManager);
-            energyTrail.setLocation(start);
-            energyTrail.setTarget(end);
-            energyTrail.particle = Particle.DUST;
-            energyTrail.particles = (int) (dashDistance * 6);
-            energyTrail.duration = 20;
-            energyTrail.start();
-        }
-
-        new BukkitRunnable() {
-            int ticks = 0;
-            final double totalDistance = start.distance(end);
-
-            @Override
-            public void run() {
-                if (ticks >= 15) {
-                    this.cancel();
-                    return;
-                }
-
-                double progress = ticks / 15.0;
-                Location currentPos = start.clone().add(end.clone().subtract(start).multiply(progress));
-
-                currentPos.getWorld().spawnParticle(Particle.DUST, currentPos, 2, 0.1, 0.1, 0.1, 0,
-                    new Particle.DustOptions(org.bukkit.Color.SILVER, 1.0f));
-
-                ticks++;
-            }
-        }.runTaskTimer(Spellbook.getInstance().getImplementer(), 0L, 1L);
+        Vector direction = end.toVector().subtract(start.toVector());
+        SkillSignatureVfx.accent(start.clone().add(direction.clone().multiply(0.5)),
+                getClass(), "wake", 3.0f, 17, false, direction);
     }
 
     private void playSlashEffect(Location hitLocation) {
-        Location adjustedLoc = hitLocation.add(0, 1, 0);
-        adjustedLoc.getWorld().spawnParticle(Particle.CRIT, adjustedLoc, 8, 0.3, 0.3, 0.3, 0.2);
-        adjustedLoc.getWorld().spawnParticle(Particle.SWEEP_ATTACK, adjustedLoc, 3, 0.2, 0.2, 0.2, 0.1);
-        adjustedLoc.getWorld().spawnParticle(Particle.DUST, adjustedLoc, 5, 0.2, 0.2, 0.2, 0,
-            new Particle.DustOptions(org.bukkit.Color.RED, 1.2f));
-
-        adjustedLoc.getWorld().playSound(adjustedLoc, Sound.ENTITY_PLAYER_ATTACK_CRIT, 0.6f, 1.4f);
+        SkillSignatureVfx.accent(hitLocation.clone().add(0, 1, 0), getClass(),
+                "main", 2.2f, 16, false);
     }
 
     private void createDashImpact(Location endLocation, int targetsHit) {
-        endLocation.getWorld().spawnParticle(Particle.EXPLOSION, endLocation, 1, 0, 0, 0, 0);
-        endLocation.getWorld().spawnParticle(Particle.DUST, endLocation, 15, 1.0, 0.5, 1.0, 0.1,
-            new Particle.DustOptions(org.bukkit.Color.GRAY, 1.5f));
-
-        if (targetsHit > 0) {
-            endLocation.getWorld().spawnParticle(Particle.BLOCK, endLocation, 20, 0.8, 0.8, 0.8, 0.1,
-                Material.REDSTONE_BLOCK.createBlockData());
-            endLocation.getWorld().playSound(endLocation, Sound.ENTITY_GENERIC_EXPLODE, 0.3f, 1.8f);
-        }
-
-        EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-        if (effectManager != null) {
-            SphereEffect impactWave = new SphereEffect(effectManager);
-            impactWave.setLocation(endLocation);
-            impactWave.radius = 2.0f;
-            impactWave.particle = Particle.DUST;
-            impactWave.particles = 25;
-            impactWave.duration = 10;
-            impactWave.start();
-        }
+        SkillSignatureVfx.accent(endLocation, getClass(),
+                targetsHit > 0 ? "main" : "wake", 3.4f, 18, true);
     }
-
     private void playDashSounds(Location location) {
         location.getWorld().playSound(location, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1.2f, 1.2f);
         location.getWorld().playSound(location, Sound.ENTITY_ENDERMAN_TELEPORT, 0.8f, 1.5f);
@@ -213,10 +166,9 @@ public class BladeDash extends CutthroatBaseSpell {
 
     @Override
     protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration") / 20, VALUE_COLOR));
-        placeholderNames.add("weaknessDuration");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessStacksMin, weaknessStacksMax, "weaknessStacks"), VALUE_COLOR));
-        placeholderNames.add("weaknessStacks");
+        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL,
+                woundDurationMin, woundDurationMax, "woundDuration") / 20, VALUE_COLOR));
+        placeholderNames.add("woundDuration");
     }
 
 }

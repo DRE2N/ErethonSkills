@@ -12,6 +12,7 @@ import de.erethon.hecate.data.dao.CharacterDao;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.progression.LevelUtil;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.api.SpellTrait;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -53,6 +54,7 @@ public class HCharacter {
     private final HPlayer hPlayer;
     private int level;
     private String classId;
+    private String traitlineId;
     private HClass hClass;
     private Traitline traitline;
     private Integer[] selectedTraits;
@@ -82,6 +84,7 @@ public class HCharacter {
             hClass = plugin.getHClass(classId);
             if (hClass != null) {
                 this.traitline = hClass.getStarterTraitline(); // Default traitline
+                this.traitlineId = this.traitline != null ? this.traitline.getId() : null;
             }
         }
     }
@@ -91,29 +94,101 @@ public class HCharacter {
         this.hPlayer = hPlayer;
         this.level = level;
         this.classId = classId;
+        this.traitlineId = traitlineId;
         this.createdAt = createdAt;
         this.lockedBy = lockedBy;
         this.skills = skills;
         this.gamemode = gamemode;
         this.selectedTraits = (traits != null) ? traits : new Integer[]{-1, -1, -1};
 
-        if (classId != null) {
-            this.hClass = plugin.getHClass(classId);
-            if (this.hClass == null) {
-                Hecate.log("Class " + classId + " not found for character " + characterID);
-            } else {
-                if (traitlineId != null) {
-                    this.traitline = plugin.getTraitline(traitlineId);
-                }
-                if (this.traitline == null) {
-                    Hecate.log("Traitline " + traitlineId + " not found or null for character " + characterID + ", using class default.");
-                    this.traitline = hClass.getStarterTraitline();
-                    this.selectedTraits = new Integer[]{-1, -1, -1};
+        refreshContentReferences();
+
+        if (this.hClass == null) {
+            Hecate.log("Class " + classId + " not found for character " + characterID);
+        } else if (this.traitline == null) {
+            Hecate.log("Traitline " + traitlineId + " not found or null for character " + characterID + ", using class default.");
+            this.traitline = hClass.getStarterTraitline();
+            this.traitlineId = this.traitline != null ? this.traitline.getId() : null;
+            this.selectedTraits = new Integer[]{-1, -1, -1};
+        }
+    }
+
+    public void refreshContentReferences() {
+        HClass loadedClass = classId != null ? plugin.getHClass(classId) : null;
+        Traitline loadedTraitline = traitlineId != null ? plugin.getTraitline(traitlineId) : null;
+
+        if (loadedClass != null) {
+            this.hClass = loadedClass;
+        }
+        if (loadedTraitline != null) {
+            this.traitline = loadedTraitline;
+        } else if (traitlineId != null) {
+            this.traitline = findRenamedTraitline(classId, traitlineId, this.hClass);
+        }
+
+        // Ownership is useful for recovering an archetype ID that no longer exists.
+        // Normal selection is checked against class and character level before combat mode starts.
+        if (loadedClass == null && this.traitline != null) {
+            HClass traitlineClass = plugin.getHClasses().stream()
+                    .filter(candidate -> candidate.getTraitlines().contains(this.traitline))
+                    .findFirst()
+                    .orElse(null);
+            if (traitlineClass != null) {
+                String previousClassId = this.classId;
+                this.hClass = traitlineClass;
+                this.classId = traitlineClass.getId();
+                if (previousClassId == null || !previousClassId.equalsIgnoreCase(this.classId)) {
+                    Hecate.log("Recovered renamed class '" + previousClassId + "' as '" + this.classId
+                            + "' from traitline " + this.traitline.getId() + " for character " + characterID);
                 }
             }
-        } else {
-            Hecate.log("Class ID is null for character " + characterID);
         }
+
+        if (this.traitline != null) {
+            this.traitlineId = this.traitline.getId();
+        }
+    }
+
+    private Traitline findRenamedTraitline(String storedClassId, String storedTraitlineId, HClass resolvedClass) {
+        List<Traitline> candidates = plugin.getTraitlines().stream()
+                .filter(candidate -> resolvedClass == null || resolvedClass.getTraitlines().contains(candidate))
+                .filter(candidate -> hasMatchingDisciplineSuffix(storedClassId, storedTraitlineId, resolvedClass, candidate))
+                .toList();
+
+        if (candidates.size() != 1) {
+            return null;
+        }
+
+        Traitline renamedTraitline = candidates.getFirst();
+        Hecate.log("Recovered renamed traitline '" + storedTraitlineId + "' as '"
+                + renamedTraitline.getId() + "' for character " + characterID);
+        return renamedTraitline;
+    }
+
+    private boolean hasMatchingDisciplineSuffix(String storedClassId, String storedTraitlineId,
+                                                HClass resolvedClass, Traitline candidate) {
+        String candidateId = candidate.getId();
+        String disciplineSuffix;
+
+        if (resolvedClass != null
+                && candidateId.regionMatches(true, 0, resolvedClass.getId(), 0, resolvedClass.getId().length())) {
+            disciplineSuffix = candidateId.substring(resolvedClass.getId().length());
+        } else if (storedClassId != null
+                && storedTraitlineId.regionMatches(true, 0, storedClassId, 0, storedClassId.length())) {
+            disciplineSuffix = storedTraitlineId.substring(storedClassId.length());
+        } else {
+            return false;
+        }
+
+        return !disciplineSuffix.isBlank()
+                && storedTraitlineId.length() > disciplineSuffix.length()
+                && storedTraitlineId.regionMatches(
+                        true,
+                        storedTraitlineId.length() - disciplineSuffix.length(),
+                        disciplineSuffix,
+                        0,
+                        disciplineSuffix.length()
+                );
     }
 
     /**
@@ -522,6 +597,10 @@ public class HCharacter {
                             }
                         }
 
+                        // Loading the character NBT sends its stored vanilla experience to the client.
+                        // Restore the character-level display only after that packet has been applied.
+                        LevelUtil.displayCharLevel(bukkitPlayer);
+
                     } catch (Exception e) {
                         Hecate.log("Critical error applying deserialized player data for character " + characterID + " on main thread:");
                         e.printStackTrace();
@@ -536,6 +615,15 @@ public class HCharacter {
     }
 
     public void switchCastMode(CombatModeReason reason, boolean newMode) {
+        if (newMode) {
+            refreshContentReferences();
+            if (hClass == null || traitline == null) {
+                Hecate.log("Cannot enter combat mode for character " + characterID + ": archetype="
+                        + classId + ", discipline=" + traitlineId);
+                MessageUtil.sendMessage(getPlayer(), "<red>Your archetype or discipline could not be loaded.");
+                return;
+            }
+        }
         if (castingManager == null) {
             castingManager = new CharacterCastingManager(this);
         }
@@ -562,7 +650,6 @@ public class HCharacter {
                                 if (player.isOnline()) { // Double-check player online status
                                     castingManager.switchCastMode(reason, true, weapon);
                                     isInCastMode = true;
-                                    MessageUtil.sendMessage(player, "Entered cast mode");
                                 } else {
                                     Hecate.log("Player logged off before cast mode switch could complete for " + characterID);
                                 }
@@ -576,7 +663,6 @@ public class HCharacter {
             if (player.isOnline()) {
                 castingManager.switchCastMode(reason, false, null);
                 isInCastMode = false;
-                MessageUtil.sendMessage(player, "Left cast mode");
                 for (int i = 0; i < 9; i++) {
                     player.getInventory().setItem(i, hotbar[i]);
                 }
@@ -618,9 +704,17 @@ public class HCharacter {
 
     public int getLevel() {
         try {
-            return LevelUtil.getCharacterLevel(this).get();
+            int resolvedLevel = Math.max(1, LevelUtil.getCharacterLevel(this).get());
+            this.level = resolvedLevel;
+            return resolvedLevel;
         } catch (InterruptedException | ExecutionException e) {
-            return 0; // Handle potential errors gracefully
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            int fallbackLevel = Math.max(1, level);
+            Hecate.log("Failed to resolve Tyche level for character " + characterID
+                    + "; using persisted level " + fallbackLevel + ": " + e.getMessage());
+            return fallbackLevel;
         }
     }
     public String getClassId() { return classId; }
@@ -636,9 +730,32 @@ public class HCharacter {
         return traitline;
     }
 
+    public void ensureUnlockedTraitline(int characterLevel) {
+        if (hClass == null) {
+            return;
+        }
+        if (traitline != null && hClass.getTraitlines().contains(traitline)) {
+            return;
+        }
+        Traitline starter = hClass.getStarterTraitline();
+        Hecate.log("Restoring starter discipline for character " + characterID
+                + ": stored=" + traitlineId + ", level=" + characterLevel);
+        traitline = starter;
+        traitlineId = starter != null ? starter.getId() : null;
+        selectedTraits = new Integer[]{-1, -1, -1};
+    }
+
     public void setTraitline(Traitline traitline) {
-        getPlayer().getActiveTraits().clear();
+        Player player = getPlayer();
+        if (player != null && hPlayer.getSelectedCharacter() == this) {
+            player.getActiveTraits().stream()
+                    .map(SpellTrait::getData)
+                    .distinct()
+                    .toList()
+                    .forEach(player::removeTrait);
+        }
         this.traitline = traitline;
+        this.traitlineId = traitline != null ? traitline.getId() : null;
     }
 
     public Timestamp getCreatedAt() { return createdAt; }

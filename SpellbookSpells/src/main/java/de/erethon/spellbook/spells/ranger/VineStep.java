@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.ranger;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.utils.SpellbookCommonMessages;
@@ -32,12 +34,12 @@ public class VineStep extends RangerBaseSpell {
         }
         targetBlock = caster.getTargetBlockExact(data.getInt("range", 64));
         if (targetBlock == null) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         int heightDiff = targetBlock.getY() - caster.getLocation().getBlockY();
         if (heightDiff < 0 || heightDiff > data.getInt("maxHeight", 16)) {
-            caster.sendParsedActionBar("<color:#ff0000>Zu hoch!");
+            SpellbookFeedback.send(caster, "<color:#ff0000>Zu hoch!");
             return false;
         }
         return super.onPrecast();

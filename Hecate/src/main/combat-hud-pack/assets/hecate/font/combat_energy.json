@@ -1,0 +1,13 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "hecate:font/combat_energy.png",
+      "ascent": 11,
+      "height": 15,
+      "chars": [
+        "\ue240\ue241\ue242\ue243\ue244\ue245\ue246\ue247\ue248\ue249\ue24a\ue24b\ue24c\ue24d\ue24e\ue24f\ue250\ue251\ue252\ue253\ue254"
+      ]
+    }
+  ]
+}

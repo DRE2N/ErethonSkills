@@ -2,16 +2,16 @@ class: warrior.bladeweaver.BladeSlash
 cooldown: 3
 energyBuildUpFromUse: 8
 projectileSpeed: 1.5
-maxDistance: 20.0
-hitboxWidth: 1.0
+maxDistance: 20
+hitboxWidth: 1
 razorMarkStacksPerHit: 1
 coefficients:
   players:
     damage:
-      minecraft:advantage_physical: 1.2
+      minecraft:advantage_physical: 3
   entities:
     damage:
-      minecraft:advantage_physical: 1.8
+      minecraft:advantage_physical: 6
 name:
   de: Klingenwurf
   en: Blade Slash
@@ -51,4 +51,3 @@ availablePlaceholders:
   '4': hitboxWidth
   '5': razorMarkStacksPerHit
   '6': coefficients.entities.damage.minecraft:advantage_physical
-

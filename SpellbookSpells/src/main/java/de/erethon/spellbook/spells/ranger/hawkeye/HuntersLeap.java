@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.ranger.hawkeye;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.ranger.RangerBaseSpell;
 import org.bukkit.Particle;
@@ -25,7 +27,7 @@ public class HuntersLeap extends RangerBaseSpell {
     protected boolean onPrecast() {
         targetBlock = caster.getTargetBlockExact(range);
         if (targetBlock == null || targetBlock.getType().isAir()) {
-            caster.sendParsedActionBar("<red>Target Block not found!");
+            SpellbookFeedback.send(caster, "<red>Target Block not found!");
             return false;
         }
         return super.onPrecast();

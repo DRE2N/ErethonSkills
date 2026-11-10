@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.ranger.beastmaster;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import net.kyori.adventure.sound.Sound;
@@ -24,7 +26,7 @@ public class PetFixedBite extends RangerPetBaseSpell {
     @Override
     protected boolean onPrecast() {
         if (pet.getTarget() == null) {
-            caster.sendParsedActionBar("<color:#ff0000>Pet hat kein Ziel!");
+            SpellbookFeedback.send(caster, "<color:#ff0000>Pet hat kein Ziel!");
             return false;
         }
         return super.onPrecast();
@@ -32,7 +34,7 @@ public class PetFixedBite extends RangerPetBaseSpell {
 
     @Override
     public boolean onCast() {
-        target = pet.getTarget().getBukkitLivingEntity();
+        target = (org.bukkit.entity.LivingEntity) pet.getTarget().getBukkitEntity();
         pet.makeAttack(target);
         if (Spellbook.getInstance().isCCImmune(target)) {
             return true;

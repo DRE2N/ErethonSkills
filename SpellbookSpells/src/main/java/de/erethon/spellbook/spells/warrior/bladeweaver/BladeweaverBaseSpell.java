@@ -5,6 +5,8 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellEffect;
 import de.erethon.spellbook.api.SpellTrait;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
 import de.erethon.spellbook.spells.warrior.WarriorBaseSpell;
 import de.erethon.spellbook.traits.warrior.bladeweaver.BladeweaverBasicAttack;
 import org.bukkit.Color;
@@ -12,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.ItemDisplay;
 
 public class BladeweaverBaseSpell extends WarriorBaseSpell {
 
@@ -64,10 +67,9 @@ public class BladeweaverBaseSpell extends WarriorBaseSpell {
         if (razorMarkEffectData == null) return;
 
         int currentStacks = getRazorMarkStacks(target);
-        int newStacks = Math.min(currentStacks + stacks, MAX_RAZOR_MARK_STACKS);
-
-        // Apply or refresh the effect with new stack count
-        target.addEffect(caster, razorMarkEffectData, RAZOR_MARK_DURATION, newStacks);
+        int gained = Math.max(0, Math.min(stacks, MAX_RAZOR_MARK_STACKS - currentStacks));
+        // SpellCaster.addEffect adds stacks to an existing effect; passing the total over-stacked it.
+        if (gained > 0) target.addEffect(caster, razorMarkEffectData, RAZOR_MARK_DURATION, gained);
     }
 
     /**
@@ -106,6 +108,19 @@ public class BladeweaverBaseSpell extends WarriorBaseSpell {
         return isInDemonForm() ? BLADEWEAVER_DEMON : BLADEWEAVER_PRIMARY;
     }
 
+    protected void bladeFlash(Location location, String effectId, float scale, int ticks) {
+        SkillSignatureVfx.accent(location, getClass(), "wake", scale, ticks, false);
+    }
+
+    protected void bladeGroundFlash(Location location, String effectId, float scale, int ticks) {
+        SkillSignatureVfx.accent(location, getClass(), "wake", scale, ticks, true);
+    }
+
+    protected void bladeImpact(LivingEntity target) {
+        bladeFlash(target.getLocation().add(0, target.getHeight() * 0.55, 0),
+                "", 1.8f, 12);
+    }
+
     /**
      * Grants bonus health to the caster for hitting an enemy.
      * This hooks into the BladeweaverBasicAttack trait if present.
@@ -138,6 +153,6 @@ public class BladeweaverBaseSpell extends WarriorBaseSpell {
     @Override
     protected boolean onPrecast() {
         // Bladeweaver abilities don't consume rage, so skip the parent check
-        return true;
+        return isOffCooldown();
     }
 }

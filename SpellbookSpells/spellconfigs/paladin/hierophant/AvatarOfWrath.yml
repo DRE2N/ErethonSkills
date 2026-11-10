@@ -1,9 +1,9 @@
 class: paladin.hierophant.AvatarOfWrath
 cooldown: 99
-duration: 15
-magicDamageBonus: 1.5
-attackRangeBonus: 4.0
-cleaveDamageMultiplier: 1.5
+duration: 8
+magicDamageBonus: 0.35
+attackRangeBonus: 1.0
+cleaveDamageMultiplier: 0.7
 cleaveRadius: 3.0
 weaknessDurationMin: 6
 weaknessDurationMax: 12
@@ -11,7 +11,7 @@ burningDurationMin: 6
 burningDurationMax: 12
 burningStacksMin: 1
 burningStacksMax: 3
-sizeIncrease: 1.2
+sizeIncrease: 0.1
 name:
   de: Avatar des Zorns
   en: Avatar of Wrath
@@ -25,7 +25,7 @@ description:
   - <#94958B>einen Puls aus heiligem Feuer aus, der Gegner in der
   - <#94958B>Nähe schädigt, schwächt und verbrennt.
   - <#94958B>Die Größe des Hierophanten wird erhöht und er kann
-  - <#94958B>in dieser Form keine anderen Zauber wirken.
+  - <#94958B>in dieser Form weiterhin Kette und Barriere wirken.
   - ' '
   - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
   - '<!i><yellow>⏳ <#94958B>Dauer: <arg:1> Sekunden'
@@ -46,8 +46,8 @@ description:
   - <#94958B>increased damage and attack range, cleaving attacks.
   - <#94958B>On every attack, the Hierophant emits a pulse of holy fire,
   - <#94958B>damaging, weakening and burning enemies nearby.
-  - <#94958B>The Hierophant's size is increased and he is unable to
-  - <#94958B>use other spells while in this form.
+  - <#94958B>The Hierophant grows and can still use
+  - <#94958B>Chain and Barrier during this form.
   - ' '
   - ' '
   - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'

@@ -1,62 +1,34 @@
 class: paladin.guardian.LightOfPurification
 cooldown: 15
-energyCost: 60
+energyCost: 30
 range: 5
-effectsToRemove: 3
+effectsToRemove: 2
 devotionPerEffect: 5
-resistanceDurationMin: 6
-resistanceDurationMax: 12
+baseHealing: 7
+healingPowerCoefficient: 0.2
+playerCombatMultiplier: 0.5
 name:
-  de: Licht der Reinigung
   en: Light of Purification
+  de: Licht der Reinigung
 description:
-  de:
-  - <!i><#757575>Wächter
-  - ' '
-  - <#94958B>Der Wächter kanalisiert einen Lichtkreis,
-  - <#94958B>der negative Effekte von Verbündeten entfernt
-  - <#94958B>und ihnen einen Schub Resistenz gewährt.
-  - <#94958B>Der Wächter erhält Entschlossenheit für jeden
-  - <#94958B>entfernten Effekt.
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
-  - '<!i><yellow>⚡ <#94958B>Entschlossenheit: <arg:1>'
-  - '<!i><yellow>↔  <#94958B>Reichweite: <arg:2>'
-  - '<!i><yellow>   <#94958B>Entfernte Effekte: <arg:3>'
-  - '<!i><yellow>   <#94958B>Entschlossenheit pro Effekt: <arg:4>'
-  - '<!i><yellow>   <#94958B>Resistenz: <arg:8>s <dark_gray>(<arg:5>-<arg:6> <#0fdcfa>-♦<dark_gray>)</dark_gray>'
   en:
-  - <!i><#757575>Guardian
-  - ' '
-  - <#94958B>The Guardian channels a circle of light,
-  - <#94958B>removing negative effects from allies and
-  - <#94958B>granting them a burst of resistance. The Guardian
-  - <#94958B>gains Devotion for each effect removed.
-  - ' '
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
-  - '<!i><yellow>⚡ <#94958B>Devotion: <arg:1>'
-  - '<!i><yellow>↔  <#94958B>Range: <arg:2>'
-  - '<!i><yellow> <#94958B>Removed effects: <arg:3>'
-  - '<!i><yellow> <#94958B>Devotion per effect: <arg:4>'
-  - '<!i><yellow> <#94958B>Resistance: <arg:8>s <dark_gray>(<arg:5>-<arg:6> <#0fdcfa>-♦<dark_gray>)</dark_gray>'
+  - "<!i><#757575>Guardian"
+  - "<#94958B>Mark a small circle, then cleanse and heal allies inside it."
+  - "<#94958B>Even without a debuff, the pulse restores health and grants 2 seconds of Resistance."
+  - "<#94958B>Enemies in the circle take magic damage; confirmed hits pressure a boss bar."
+  - "<#94958B>Removing debuffs refunds up to 10 Devotion."
+  - "<!i><yellow>Cooldown: 15 seconds"
+  - "<!i><yellow>Devotion: 30"
+  de:
+  - "<!i><#757575>Wächter"
+  - "<#94958B>Markiere einen kleinen Kreis, der Verbündete darin reinigt und heilt."
+  - "<#94958B>Auch ohne negativen Effekt heilt der Impuls und gewährt 2 Sekunden Resistenz."
+  - "<#94958B>Feinde im Kreis erleiden magischen Schaden; Treffer füllen die Boss-Kontrollleiste."
+  - "<#94958B>Entfernte Effekte erstatten bis zu 10 Hingabe."
+  - "<!i><yellow>Abklingzeit: 15 Sekunden"
+  - "<!i><yellow>Hingabe: 30"
 coefficients:
   players:
-    resistanceDuration:
-      minecraft:advantage_magical: 0.5
+    minecraft:advantage_magical: 0.6
   entities:
-    resistanceDuration:
-      minecraft:resistance_magical: 0.5
-# This list contains all placeholders that can be used in this spell.
-# You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
-availablePlaceholders:
-  '0': cooldown
-  '1': energyCost
-  '2': range
-  '3': effectsToRemove
-  '4': devotionPerEffect
-  '5': resistanceDurationMin
-  '6': resistanceDurationMax
-  '7': coefficients.entities.resistanceDuration.minecraft:resistance_magical
-  '8': resistanceDuration
+    minecraft:advantage_magical: 1.2

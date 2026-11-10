@@ -1,139 +1,184 @@
 package de.erethon.spellbook.spells.assassin.shadow;
 
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
-import de.erethon.spellbook.aoe.AoE;
-import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import de.erethon.spellbook.spells.vfx.TerrainRing;
 import de.erethon.spellbook.traits.assassin.shadow.ShadowEchoReturnTrait;
-import io.papermc.paper.entity.TeleportFlag;
-import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.Component;
+import de.erethon.spellbook.utils.SpellbookFeedback;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
-public class ShadowEcho extends ShadowBaseSpell {
+import java.util.List;
 
-    private final int energyRestoreOnMarkedDamage = data.getInt("energyRestoreOnMarkedDamage", 25);
-    private final int resistanceMinDuration = data.getInt("resistanceMinDuration", 6) * 20;
-    private final int resistanceMaxDuration = data.getInt("resistanceMaxDuration", 16) * 20;
+/** Eight-second visible return anchor. Enemy hits can destroy it. */
+public class ShadowEcho extends ShadowBaseSpell implements Listener {
 
-    private ShadowEchoReturnTrait echo = null;
-    private final TraitData echoTraitData = Bukkit.getServer().getSpellbookAPI().getLibrary().getTraitByID("ShadowEchoReturnTrait");
-    private final EffectData resistanceData = Spellbook.getEffectData("Resistance");
-    private int visualTicks = 10;
-    private AoE shadowPortal = null;
+    private static final NamespacedKey GUARD_KEY = new NamespacedKey("spellbook", "shadow_echo_guard");
+    private final TraitData echoTraitData = Bukkit.getServer().getSpellbookAPI().getLibrary()
+            .getTraitByID("ShadowEchoReturnTrait");
+    private final int maxReturnRange = data.getInt("maxReturnRange", 16);
+    private final int guardTicks = data.getInt("guardTicks", 20);
+    private ShadowEchoReturnTrait echo;
+    private ArmorStand anchor;
+    private TerrainRing terrainRing;
+    private int anchorHits;
 
     public ShadowEcho(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
         keepAliveTicks = duration * 20;
+        tickInterval = 1;
     }
 
     @Override
     protected boolean onPrecast() {
-        getOrAddEchoTrait();
-        if (echo.isWaitingForReturn()) {
-            Location returnLoc = echo.getReturnLocation();
-
-            caster.getWorld().spawnParticle(Particle.PORTAL, caster.getLocation().add(0, 1, 0), 30, 1, 1, 1, 1);
-            caster.getWorld().spawnParticle(Particle.PORTAL, returnLoc.add(0, 1, 0), 30, 1, 1, 1, 1);
-            caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation().add(0, 1, 0), 20, 0.8, 0.8, 0.8, 0.1, new Particle.DustOptions(Color.BLACK, 1.5f));
-
-            caster.getWorld().playSound(caster.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 0.8f);
-            caster.getWorld().playSound(returnLoc, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.2f);
-
-            caster.teleport(returnLoc, PlayerTeleportEvent.TeleportCause.PLUGIN);
-            caster.addEffect(caster, resistanceData, (int) Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, resistanceMinDuration, resistanceMaxDuration,"resistanceDuration"), 1);
-
-            if (echo.hasDamagedMarkedTarget()) {
-                caster.setEnergy(caster.getEnergy() + energyRestoreOnMarkedDamage);
-                caster.getWorld().spawnParticle(Particle.ENCHANT, caster.getLocation().add(0, 1, 0), 15, 0.5, 0.5, 0.5, 1);
-            }
-
-            if (shadowPortal != null) {
-                shadowPortal.revertBlockChanges();
-                shadowPortal = null;
-            }
-
-            caster.removeTrait(echoTraitData);
+        findEchoTrait();
+        if (echo != null && echo.isWaitingForReturn()) {
+            returnToAnchor();
             return false;
         }
-        return super.onPrecast();
+        if (echo != null) {
+            caster.removeTrait(echoTraitData);
+            echo = null;
+        }
+        if (!super.onPrecast()) return false;
+        caster.addTrait(echoTraitData);
+        findEchoTrait();
+        return echo != null;
+    }
+
+    private void findEchoTrait() {
+        for (SpellTrait trait : caster.getActiveTraits()) {
+            if (trait instanceof ShadowEchoReturnTrait found) {
+                echo = found;
+                return;
+            }
+        }
+        echo = null;
+    }
+
+    private void returnToAnchor() {
+        Location destination = echo.getReturnLocation();
+        if (destination == null || destination.getWorld() != caster.getWorld()
+                || destination.distanceSquared(caster.getLocation()) > maxReturnRange * maxReturnRange) {
+            SpellbookFeedback.send(caster, "<red>Echo anchor is out of range.");
+            return;
+        }
+        if (!destination.getBlock().isPassable()
+                || !destination.clone().add(0, 1, 0).getBlock().isPassable()) {
+            SpellbookFeedback.send(caster, "<red>Echo anchor is blocked.");
+            return;
+        }
+        Location departure = caster.getLocation().clone();
+        if (!caster.teleport(destination, PlayerTeleportEvent.TeleportCause.PLUGIN)) return;
+        caster.getWorld().playSound(destination, Sound.ENTITY_ENDERMAN_TELEPORT, 0.9f, 1.2f);
+        SkillSignatureVfx.accent(departure, getClass(), "wake", 2.2f, 16, true);
+        SkillSignatureVfx.accent(destination.clone().add(0, 1, 0), getClass(),
+                "main", 3.2f, 20, false);
+        grantReturnGuard();
+        echo.finishReturn();
+        caster.removeTrait(echoTraitData);
+    }
+
+    private void grantReturnGuard() {
+        for (Attribute attribute : new Attribute[]{Attribute.RESISTANCE_PHYSICAL, Attribute.RESISTANCE_MAGICAL}) {
+            var instance = caster.getAttribute(attribute);
+            if (instance == null) continue;
+            if (instance.getModifier(GUARD_KEY) != null) instance.removeModifier(GUARD_KEY);
+            double bonus = Math.min(10, 2 + Math.max(0, instance.getValue()) * 0.08);
+            instance.addTransientModifier(new AttributeModifier(GUARD_KEY, bonus,
+                    AttributeModifier.Operation.ADD_NUMBER));
+        }
+        Bukkit.getScheduler().runTaskLater(Spellbook.getInstance().getImplementer(), () -> {
+            for (Attribute attribute : new Attribute[]{Attribute.RESISTANCE_PHYSICAL, Attribute.RESISTANCE_MAGICAL}) {
+                var instance = caster.getAttribute(attribute);
+                if (instance != null && instance.getModifier(GUARD_KEY) != null) instance.removeModifier(GUARD_KEY);
+            }
+        }, guardTicks);
     }
 
     @Override
     public boolean onCast() {
-        Location markLoc = caster.getLocation().clone();
-        echo.setReturnLocation(markLoc);
-
-        caster.getWorld().playSound(markLoc, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 0.8f, 0.5f);
-        caster.getWorld().playSound(markLoc, org.bukkit.Sound.BLOCK_BEACON_ACTIVATE, 0.6f, 1.8f);
-
-        caster.getWorld().spawnParticle(Particle.PORTAL, markLoc.add(0, 1, 0), 20, 0.8, 0.5, 0.8, 0.5);
-        caster.getWorld().spawnParticle(Particle.DUST, markLoc.add(0, 0.5, 0), 15, 1, 0.2, 1, 0.1, new Particle.DustOptions(Color.PURPLE, 1.2f));
-
-        shadowPortal = createCircularAoE(markLoc, 2.0, 0.5, keepAliveTicks)
-            .addBlockChange(Material.BLACK_CONCRETE)
-            .sendBlockChanges();
-
-        return super.onCast();
+        if (!super.onCast()) return false;
+        Location center = caster.getLocation().clone();
+        anchor = center.getWorld().spawn(center, ArmorStand.class, stand -> {
+            stand.setSmall(true);
+            stand.setVisible(false);
+            stand.setGlowing(true);
+            stand.setGravity(false);
+            stand.setSilent(true);
+        });
+        echo.setAnchor(center, anchor);
+        terrainRing = new TerrainRing(center, 1.35,
+                "terrain_band_shadow", 28, 0.32f);
+        SkillSignatureVfx.accent(center.clone().add(0, 1, 0), getClass(),
+                "main", 2.2f, 22, false);
+        caster.getWorld().playSound(center, Sound.BLOCK_BEACON_ACTIVATE, 0.7f, 1.6f);
+        Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
+        return true;
     }
 
     @Override
     protected void onTick() {
-        visualTicks--;
-        if (visualTicks <= 0) {
-            visualTicks = 10;
-            Location portalLoc = echo.getReturnLocation();
-            portalLoc.getWorld().spawnParticle(Particle.PORTAL, portalLoc.clone().add(0, 1, 0), 8, 0.8, 0.3, 0.8, 0.2);
-            portalLoc.getWorld().spawnParticle(Particle.DUST, portalLoc.clone().add(0, 0.5, 0), 3, 0.5, 0.1, 0.5, 0, new Particle.DustOptions(Color.PURPLE, 0.8f));
-            portalLoc.getWorld().spawnParticle(Particle.WHITE_ASH, portalLoc.clone().add(0, 2, 0), 2, 1, 0.5, 1, 0.01);
-        }
         super.onTick();
+        if (echo == null || !echo.isWaitingForReturn()) {
+            currentTicks = keepAliveTicks;
+            return;
+        }
+        if (currentTicks % 10 == 0) {
+            anchor.getWorld().spawnParticle(Particle.DUST, anchor.getLocation().add(0, 0.7, 0),
+                    4, 0.25, 0.3, 0.25, 0,
+                    new Particle.DustOptions(Color.fromRGB(153, 162, 169), 0.9f));
+        }
     }
 
-    @Override
-    protected void onTickFinish() {
-        super.onTickFinish();
-        caster.removeTrait(echoTraitData);
-        if (shadowPortal != null) {
-            shadowPortal.revertBlockChanges();
-        }
-
-        Location portalLoc = echo.getReturnLocation();
-        portalLoc.getWorld().spawnParticle(Particle.SMOKE, portalLoc.clone().add(0, 1, 0), 15, 1, 0.5, 1, 0.1);
-        portalLoc.getWorld().playSound(portalLoc, org.bukkit.Sound.BLOCK_FIRE_EXTINGUISH, 0.8f, 1.5f);
-    }
-
-    private void getOrAddEchoTrait() {
-        for (SpellTrait trait : caster.getActiveTraits()) {
-            if (trait instanceof ShadowEchoReturnTrait echoTrait) {
-                echo = echoTrait;
-                return;
-            }
-        }
-        if (echo == null) {
-            caster.addTrait(echoTraitData);
-            for (SpellTrait trait : caster.getActiveTraits()) {
-                if (trait instanceof ShadowEchoReturnTrait echoTrait) {
-                    echo = echoTrait;
-                    break;
-                }
-            }
+    @EventHandler
+    public void onAnchorHit(EntityDamageByEntityEvent event) {
+        if (event.getEntity() != anchor || echo == null || !echo.isWaitingForReturn()) return;
+        LivingEntity attacker = event.getDamager() instanceof LivingEntity living ? living
+                : event.getDamager() instanceof Projectile projectile
+                && projectile.getShooter() instanceof LivingEntity shooter ? shooter : null;
+        event.setCancelled(true);
+        if (attacker == null || !Spellbook.canAttack(attacker, caster)) return;
+        anchorHits++;
+        anchor.getWorld().playSound(anchor.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_HIT, 0.8f, 0.8f);
+        SkillSignatureVfx.accent(anchor.getLocation().add(0, 0.7, 0), getClass(),
+                "wake", 1.8f, 12, false);
+        if (anchorHits >= 2) {
+            echo.finishReturn();
+            caster.removeTrait(echoTraitData);
+            currentTicks = keepAliveTicks;
         }
     }
 
     @Override
-    protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, resistanceMinDuration, resistanceMaxDuration,"resistanceDuration"), VALUE_COLOR));
-        placeholderNames.add("resistanceDuration");
+    protected void cleanup() {
+        if (terrainRing != null) terrainRing.close();
+        HandlerList.unregisterAll(this);
+        if (anchor != null) {
+            if (echo != null && echo.isWaitingForReturn()) echo.finishReturn();
+            if (echo != null) caster.removeTrait(echoTraitData);
+        }
+        super.cleanup();
     }
 }

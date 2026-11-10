@@ -25,13 +25,13 @@ public class NMSUtils {
     public static ArmorStand spawnInvisibleArmorstand(Location location, boolean gravity, boolean marker, boolean invulnerable, boolean physics) {
         CraftWorld craftWorld = (CraftWorld) location.getWorld();
         Level world = craftWorld.getHandle();
-        ArmorStand stand = new ArmorStand(net.minecraft.world.entity.EntityType.ARMOR_STAND, world);
+        ArmorStand stand = new ArmorStand(net.minecraft.world.entity.EntityTypes.ARMOR_STAND, world);
         stand.setInvisible(true);
         stand.setNoGravity(!gravity);
         stand.setMarker(marker);
         stand.noPhysics = !physics;
         stand.collides = false;
-        stand.setInvulnerable(invulnerable);
+        stand.getBukkitEntity().setInvulnerable(invulnerable);
         stand.setPos(location.getX(), location.getY(), location.getZ());
         world.addFreshEntity(stand, CreatureSpawnEvent.SpawnReason.CUSTOM);
         return stand;
@@ -39,9 +39,9 @@ public class NMSUtils {
 
     // less stupid than ItemMeta at least
     public static org.bukkit.inventory.ItemStack getItemStackWithModelData(Material material, String modelData) {
-        ItemStack itemStack = ItemStack.fromBukkitCopy(new org.bukkit.inventory.ItemStack(material, 1));
+        ItemStack itemStack = CraftItemStack.asNMSCopy(new org.bukkit.inventory.ItemStack(material, 1));
         itemStack.applyComponents(DataComponentMap.builder().set(DataComponents.ITEM_MODEL, Identifier.parse(modelData)).build());
-        return itemStack.getBukkitStack();
+        return CraftItemStack.asBukkitMirror(itemStack);
     }
 
     public static void setEntityBoundingBox(Entity entity, BoundingBox box) {
@@ -66,7 +66,7 @@ public class NMSUtils {
     public static net.minecraft.world.entity.Entity spawnEntityWithoutSending(Location location, org.bukkit.entity.EntityType type) {
         CraftWorld craftWorld = (CraftWorld) location.getWorld();
         Level world = craftWorld.getHandle();
-        Optional<net.minecraft.world.entity.EntityType<?>> types = net.minecraft.world.entity.EntityType.byString(String.valueOf(type.getKey()));
+        Optional<net.minecraft.world.entity.EntityType<?>> types = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.parse(String.valueOf(type.getKey())));
         if (types.isPresent()) {
             net.minecraft.world.entity.EntityType<?> entityTypes = types.get();
             return entityTypes.create(world, EntitySpawnReason.NATURAL);

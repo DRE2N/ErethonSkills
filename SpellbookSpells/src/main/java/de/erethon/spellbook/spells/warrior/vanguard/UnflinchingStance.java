@@ -4,6 +4,9 @@ import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.combat.HealingContext;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import de.erethon.spellbook.spells.vfx.TerrainRing;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,9 +14,10 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Transformation;
+import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -22,148 +26,85 @@ import java.util.List;
 
 public class UnflinchingStance extends VanguardBaseSpell {
 
-    private final int minDuration = data.getInt("minDuration", 4) * 20;
-    private final int maxDuration = data.getInt("maxDuration", 8) * 20;
-    private final int minResistanceStacks = data.getInt("minResistanceStacks", 2);
-    private final int maxResistanceStacks = data.getInt("maxResistanceStacks", 4);
-    private final int minStabilityStacks = data.getInt("minStabilityStacks", 1);
-    private final int maxStabilityStacks = data.getInt("maxStabilityStacks", 2);
+    private final int guardTicks = data.getInt("guardTicks", 40);
+    private final double baseHealing = data.getDouble("baseHealing", 16);
+    private final double healingPowerCoefficient = data.getDouble("healingPowerCoefficient", 0.3);
+    private final double baseGuard = data.getDouble("baseGuard", 10);
+    private final double resistanceCoefficient = data.getDouble("resistanceCoefficient", 0.18);
+    private double remainingGuard;
 
-    private final EffectData resistanceEffectData = Spellbook.getEffectData("Resistance");
-    private final EffectData stabilityEffectData = Spellbook.getEffectData("Stability");
-
-    private final List<BlockDisplay> shieldDisplays = new ArrayList<>();
+    private TerrainRing guardRing;
 
     public UnflinchingStance(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, minDuration, maxDuration);
+        tickInterval = 1;
+        keepAliveTicks = guardTicks;
     }
 
     @Override
     public boolean onCast() {
-        int duration = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, minDuration, maxDuration, "duration");
-        int resistanceStacks = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, minResistanceStacks, maxResistanceStacks, "resistanceStacks");
-        int stabilityStacks = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, minStabilityStacks, maxStabilityStacks, "stabilityStacks");
+        if (!super.onCast()) return false;
+        double healingPower = Math.min(100, Math.max(0,
+                caster.getAttribute(Attribute.STAT_HEALINGPOWER).getValue()));
+        double healing = Math.min(caster.getMaxHealth() * 0.25,
+                baseHealing + healingPower * healingPowerCoefficient);
+        caster.heal(HealingContext.isPlayerCombat(caster) ? healing * 0.65 : healing);
+        double resistance = Math.max(0, caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).getValue())
+                + Math.max(0, caster.getAttribute(Attribute.RESISTANCE_MAGICAL).getValue());
+        remainingGuard = Math.min(caster.getMaxHealth() * 0.2,
+                baseGuard + Math.min(100, resistance) * resistanceCoefficient);
 
-        caster.addEffect(caster, resistanceEffectData, duration, resistanceStacks);
-        caster.addEffect(caster, stabilityEffectData, duration, stabilityStacks);
-
-        spawnShieldDisplays();
+        guardRing = new TerrainRing(caster.getLocation(), 1.15,
+                "terrain_band_vanguard", 24, 0.3f);
+        SkillSignatureVfx.accent(caster.getLocation(), getClass(), "main", 2.5f, 18, true);
         playStanceEffects();
 
-        caster.getTags().add("warrior.unflinching_stance");
-
-        return super.onCast();
-    }
-
-    private void spawnShieldDisplays() {
-        Location center = caster.getLocation().add(0, 0.5, 0);
-        for (int i = 0; i < 4; i++) {
-            final int idx = i;
-            double angle = Math.PI / 2 * i;
-            float x = (float) (Math.cos(angle) * 1.0);
-            float z = (float) (Math.sin(angle) * 1.0);
-            BlockDisplay block = center.getWorld().spawn(center.clone().add(x, 0, z), BlockDisplay.class, d -> {
-                d.setBlock(Material.IRON_BLOCK.createBlockData());
-                d.setPersistent(false);
-                d.setGlowing(true);
-                d.setInterpolationDuration(2);
-                d.setTeleportDuration(2);
-                d.setTransformation(new Transformation(
-                    new Vector3f(-0.2f, -0.2f, -0.2f),
-                    new Quaternionf(),
-                    new Vector3f(0.4f, 0.4f, 0.4f),
-                    new Quaternionf()
-                ));
-            });
-            shieldDisplays.add(block);
-        }
+        return true;
     }
 
     @Override
     protected void onTick() {
         super.onTick();
-
-        // Orbit shield displays around caster
-        Location center = caster.getLocation().add(0, 0.5, 0);
-        float time = currentTicks * 0.08f;
-        for (int i = 0; i < shieldDisplays.size(); i++) {
-            BlockDisplay block = shieldDisplays.get(i);
-            if (block == null || !block.isValid()) continue;
-            double angle = Math.PI / 2 * i + time;
-            double x = Math.cos(angle) * 1.0;
-            double z = Math.sin(angle) * 1.0;
-            block.teleport(center.clone().add(x, 0, z));
-        }
-
-        if (currentTicks % 8 == 0) {
-            playAuraEffect();
-        }
+        if (guardRing != null && currentTicks % 4 == 0)
+            guardRing.move(caster.getLocation());
     }
-
     @Override
     public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
-        return super.onDamage(attacker, damage, type);
+        double prevented = Math.min(remainingGuard, Math.max(0, damage) * 0.3);
+        remainingGuard -= prevented;
+        if (prevented > 0) playFacingHit(attacker);
+        return super.onDamage(attacker, damage - prevented, type);
     }
 
+    private void playFacingHit(LivingEntity attacker) {
+        Vector incoming = attacker == null ? caster.getLocation().getDirection().setY(0)
+                : attacker.getLocation().toVector().subtract(caster.getLocation().toVector()).setY(0);
+        if (incoming.lengthSquared() < 0.001) incoming = new Vector(0, 0, 1);
+        SkillSignatureVfx.accent(caster.getLocation().add(incoming.normalize().multiply(0.85))
+                .add(0, 1.1, 0), getClass(), "wake", 1.2f, 8, false);
+    }
     public void onCCAbsorbed() {
         playAbsorptionEffect();
     }
 
     private void playStanceEffects() {
-        caster.getWorld().spawnParticle(Particle.ENCHANTED_HIT, caster.getLocation().add(0, 1, 0), 30, 0.8, 1.0, 0.8, 0.1);
-        caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation().add(0, 1, 0), 25, 0.6, 0.8, 0.6, 0,
-            new Particle.DustOptions(Color.SILVER, 1.5f));
-        caster.getWorld().spawnParticle(Particle.FIREWORK, caster.getLocation().add(0, 0.5, 0), 8, 0.4, 0.2, 0.4, 0.05);
-        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_ANVIL_USE, 0.8f, 1.2f);
-        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_IRON_GOLEM_REPAIR, 0.6f, 1.4f);
-        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 0.4f, 1.8f);
-    }
-
-    private void playAuraEffect() {
-        Location loc = caster.getLocation().add(0, 1, 0);
-        for (int i = 0; i < 8; i++) {
-            double angle = Math.PI * 2 * i / 8;
-            Location p = loc.clone().add(Math.cos(angle) * 1.2, 0, Math.sin(angle) * 1.2);
-            loc.getWorld().spawnParticle(Particle.DUST, p, 1, 0, 0, 0, 0,
-                new Particle.DustOptions(Color.SILVER, 0.8f));
-        }
+        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_ANVIL_USE, 0.65f, 1.2f);
     }
 
     private void playAbsorptionEffect() {
-        // Flare all shield displays white momentarily
-        for (BlockDisplay block : shieldDisplays) {
-            if (block != null && block.isValid()) {
-                block.setGlowColorOverride(Color.WHITE);
-            }
-        }
         Location loc = caster.getLocation().add(0, 1, 0);
-        loc.getWorld().spawnParticle(Particle.ENCHANTED_HIT, loc, 15, 0.5, 0.5, 0.5, 0.1);
-        loc.getWorld().playSound(loc, Sound.BLOCK_ANVIL_PLACE, 0.8f, 1.5f);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (BlockDisplay block : shieldDisplays) {
-                    if (block != null && block.isValid()) {
-                        block.setGlowColorOverride(null);
-                    }
-                }
-            }
-        }.runTaskLater(Spellbook.getInstance().getImplementer(), 5L);
+        SkillSignatureVfx.accent(loc, getClass(), "main", 1.4f, 8, false);
+        loc.getWorld().playSound(loc, Sound.BLOCK_ANVIL_PLACE, 0.65f, 1.5f);
     }
-
     @Override
     protected void onTickFinish() {
         super.onTickFinish();
-        caster.getTags().remove("warrior.unflinching_stance");
     }
 
     @Override
     protected void cleanup() {
-        for (BlockDisplay block : shieldDisplays) {
-            if (block != null && block.isValid()) block.remove();
-        }
-        shieldDisplays.clear();
+        if (guardRing != null) guardRing.close();
+        guardRing = null;
+        super.cleanup();
     }
 }

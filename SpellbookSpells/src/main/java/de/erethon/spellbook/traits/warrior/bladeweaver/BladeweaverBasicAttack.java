@@ -1,15 +1,22 @@
 package de.erethon.spellbook.traits.warrior.bladeweaver;
 
 import de.erethon.papyrus.PDamageType;
+import de.erethon.papyrus.combat.CombatSource;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -18,7 +25,7 @@ import org.bukkit.scheduler.BukkitRunnable;
  * Each basic attack grants energy (ult charge) and temporary bonus health.
  * The bonus health decays over time, encouraging aggressive play.
  */
-public class BladeweaverBasicAttack extends SpellTrait {
+public class BladeweaverBasicAttack extends SpellTrait implements Listener {
 
     private final int energyPerAttack = data.getInt("energyPerAttack", 5);
     private final double bonusHealthPercentPerHit = data.getDouble("bonusHealthPercentPerHit", 1.0); // 1% per hit
@@ -30,6 +37,7 @@ public class BladeweaverBasicAttack extends SpellTrait {
     private static final NamespacedKey BONUS_HEALTH_KEY = NamespacedKey.fromString("spellbook:bladeweaver_bonus_health");
 
     private double currentBonusHealth = 0;
+    private double appliedBonusHealth = 0;
     private AttributeModifier currentModifier = null;
     private BukkitRunnable decayTask = null;
 
@@ -37,28 +45,21 @@ public class BladeweaverBasicAttack extends SpellTrait {
         super(data, caster);
     }
 
-    @Override
-    public double onAttack(LivingEntity target, double damage, PDamageType type) {
-        if (!Spellbook.canAttack(caster, target)) {
-            return super.onAttack(target, damage, type);
-        }
-
-        // Grant energy
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onConfirmedWeaponHit(EntityDamageByEntityEvent event) {
+        CombatSource source = event.getCombatSource();
+        if (event.getDamager() != caster || !(event.getEntity() instanceof LivingEntity target)
+                || source == null || source.type() != CombatSource.Type.BASIC_ATTACK
+                || event.getFinalDamage() <= 0 || !Spellbook.canAttack(caster, target)) return;
         caster.addEnergy(energyPerAttack);
-
-        // Grant bonus health (calculate from percentage)
         double baseMaxHealth = getBaseMaxHealth();
         double bonusHealthAmount = baseMaxHealth * (bonusHealthPercentPerHit / 100.0);
         addBonusHealth(bonusHealthAmount);
-
-        return super.onAttack(target, damage, type);
     }
 
-    /**
-     * Gets the caster's base max health without any modifiers
-     */
+    /** Max health from level and gear, excluding this trait's temporary modifier. */
     private double getBaseMaxHealth() {
-        return caster.getAttribute(Attribute.MAX_HEALTH).getBaseValue();
+        return Math.max(1.0, caster.getAttribute(Attribute.MAX_HEALTH).getValue() - currentBonusHealth);
     }
 
     /**
@@ -96,11 +97,12 @@ public class BladeweaverBasicAttack extends SpellTrait {
             );
             caster.getAttribute(Attribute.MAX_HEALTH).addTransientModifier(currentModifier);
 
-            // Also heal for the amount gained (so the bonus health is actually usable)
+            // Only the new temporary health is filled; refreshing never reheals old bonus health.
             double currentHealth = caster.getHealth();
             double maxHealth = caster.getAttribute(Attribute.MAX_HEALTH).getValue();
-            caster.setHealth(Math.min(currentHealth + currentBonusHealth, maxHealth));
+            caster.setHealth(Math.min(currentHealth + Math.max(0, currentBonusHealth - appliedBonusHealth), maxHealth));
         }
+        appliedBonusHealth = currentBonusHealth;
     }
 
     private void playBonusHealthEffect() {
@@ -153,19 +155,24 @@ public class BladeweaverBasicAttack extends SpellTrait {
             currentModifier = null;
         }
         currentBonusHealth = 0;
+        appliedBonusHealth = 0;
     }
 
     @Override
     protected void onAdd() {
+        super.onAdd();
         caster.setMaxEnergy(100);
+        Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
     }
 
     @Override
     protected void onRemove() {
+        HandlerList.unregisterAll(this);
         removeBonusHealth();
         if (decayTask != null) {
             decayTask.cancel();
             decayTask = null;
         }
+        super.onRemove();
     }
 }

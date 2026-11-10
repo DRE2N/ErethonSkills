@@ -27,9 +27,11 @@ configurations.all {
 }
 
 dependencies {
-    paperweight.devBundle("de.erethon.papyrus", "26.1.2-SNAPSHOT") { isChanging = true }
+    paperweight.devBundle("de.erethon.papyrus", "26.3-SNAPSHOT") { isChanging = true }
     implementation("com.elmakers.mine.bukkit:EffectLib:10.12-SNAPSHOT")
     implementation("de.erethon:Daedalus:1.4-SNAPSHOT")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.4")
 }
 
 java {
@@ -37,6 +39,9 @@ java {
 }
 
 tasks {
+    test {
+        useJUnitPlatform()
+    }
     compileJava {
         options.encoding = Charsets.UTF_8.name()
         options.release.set(25)

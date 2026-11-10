@@ -1,0 +1,13 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "hecate:font/combat_health.png",
+      "ascent": 11,
+      "height": 15,
+      "chars": [
+        "\ue200\ue201\ue202\ue203\ue204\ue205\ue206\ue207\ue208\ue209\ue20a\ue20b\ue20c\ue20d\ue20e\ue20f\ue210\ue211\ue212\ue213\ue214"
+      ]
+    }
+  ]
+}

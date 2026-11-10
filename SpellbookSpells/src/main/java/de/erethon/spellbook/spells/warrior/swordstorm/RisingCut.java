@@ -4,21 +4,27 @@ import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
-import de.erethon.spellbook.spells.warrior.WarriorBaseSpell;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInputEvent;
 import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RisingCut extends SwordstormBaseSpell implements Listener {
 
@@ -33,6 +39,7 @@ public class RisingCut extends SwordstormBaseSpell implements Listener {
     private final double followUpDamageMultiplierMax = data.getDouble("followUpDamageMultiplierMax", 2.0);
 
     private boolean wasLaunched = false;
+    private ItemDisplay launchMark;
 
     public RisingCut(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -47,6 +54,7 @@ public class RisingCut extends SwordstormBaseSpell implements Listener {
     @Override
     public boolean onCast() {
         caster.swingMainHand();
+        playRisingBlade(target.getLocation());
         double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
         target.damage(damage, caster, PDamageType.PHYSICAL);
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
@@ -64,6 +72,7 @@ public class RisingCut extends SwordstormBaseSpell implements Listener {
             World world = caster.getWorld();
             world.playSound(t.getLocation(), Sound.ENTITY_WIND_CHARGE_THROW, SoundCategory.RECORDS, 1, 1);
             world.spawnParticle(Particle.CLOUD, target.getLocation(), 3);
+            playFollowUpBreak(t);
         }
         return super.onAttack(t, damage, type);
     }
@@ -77,6 +86,7 @@ public class RisingCut extends SwordstormBaseSpell implements Listener {
             double upwardLaunchVelocity = Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_MAGICAL, upwardLaunchVelocityMin, upwardLaunchVelocityMax, "upwardLaunchVelocity");
             Vector launchVelocity = new Vector(0, upwardLaunchVelocity, 0);
             target.setVelocity(target.getVelocity().add(launchVelocity));
+            playLaunchCage(target);
             World world = caster.getWorld();
             world.playSound(target.getLocation(), Sound.ENTITY_WIND_CHARGE_WIND_BURST, SoundCategory.RECORDS, 1, 1);
             Location location = target.getLocation().clone().add(0, -2, 0);
@@ -89,6 +99,34 @@ public class RisingCut extends SwordstormBaseSpell implements Listener {
         }
     }
 
+    private void playRisingBlade(Location targetLocation) {
+        SkillSignatureVfx.accent(targetLocation.clone().add(0, 1, 0), getClass(),
+                "main", 2.2f, 8, false);
+    }
+
+    private void playLaunchCage(LivingEntity entity) {
+        if (launchMark != null && launchMark.isValid()) launchMark.remove();
+        launchMark = trackVfx(SkillVfx.billboard(entity.getLocation().add(0, 2.2, 0),
+                "sig_warrior_swordstorm_risingcut_wake_f4", 1.5f));
+        trackVfxTask(new org.bukkit.scheduler.BukkitRunnable() {
+            private int age;
+            @Override public void run() {
+                if (++age >= ticksForFollowUp || !entity.isValid() || launchMark == null
+                        || !launchMark.isValid()) {
+                    if (launchMark != null && launchMark.isValid()) launchMark.remove();
+                    cancel();
+                    return;
+                }
+                launchMark.teleport(entity.getLocation().add(0, 2.2, 0));
+            }
+        }.runTaskTimer(Spellbook.getInstance().getImplementer(), 1L, 1L));
+    }
+
+    private void playFollowUpBreak(LivingEntity entity) {
+        if (launchMark != null && launchMark.isValid()) launchMark.remove();
+        SkillSignatureVfx.accent(entity.getLocation().add(0, 1.5, 0), getClass(),
+                "main", 2.5f, 10, false);
+    }
     @Override
     protected void onTickFinish() {
         super.onTickFinish();

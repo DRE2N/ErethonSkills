@@ -2,7 +2,7 @@ class: warrior.vanguard.ExecutionersSwing
 cooldown: 120
 energyBuildUpFromUse: 0
 range: 4
-channelDuration: 3
+channelTicks: 16
 missingHealthMultiplier: 2.0
 momentumDamagePerStack: 0.15
 momentumPerStack: 10
@@ -18,52 +18,29 @@ name:
   en: Executioner's Swing
 description:
   en:
-  - <!i><#757575>Vanguard | Ultimate
+  - <!i><#757575>Vanguard | Optional finisher
   - ' '
-  - <#94958B>Channel for 1.5 seconds, then unleash a single,
-  - <#94958B>devastating overhead blow on a target.
-  - ' '
-  - <#FF6600>⚔ Deals massive physical damage, which is significantly
-  - <#FF6600>⚔ increased based on the target's missing health.
-  - ' '
-  - <#FF6600>⚔ Consumes and is empowered by any active Momentum stacks.
-  - <#FF6600>⚔ Each Momentum stack adds +15% damage.
+  - <#94958B>Commit to a visible 16-tick axe windup.
+  - <#94958B>A landed blow scales with missing health and Momentum,
+  - <#94958B>with a lower cap against players. It deals 35 boss control.
+  - <#94958B>Moving out of range or breaking sight makes it miss.
   - ' '
   - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
-  - '<!i><yellow>📏 <#94958B>Range: <arg:2> blocks'
-  - '<!i><yellow>⏱️ <#94958B>Channel Time: <arg:3>s'
-  - '<!i><yellow>⚔️ <#94958B>Missing Health Multiplier: <arg:4>x'
-  - '<!i><yellow>⚡ <#94958B>Momentum Bonus per Stack: <arg:5>x'
+  - '<!i><yellow>📏 <#94958B>Range: <arg:2>'
   de:
-  - <!i><#757575>Vorhut | Ultimate
+  - <!i><#757575>Vorhut | Optionaler Finisher
   - ' '
-  - <#94958B>Kanalisiere für 1,5 Sekunden und entfessle dann einen
-  - <#94958B>einzelnen, verheerenden Überkopfschlag auf ein Ziel.
-  - ' '
-  - <#FF6600>⚔ Verursacht massiven physischen Schaden, der
-  - <#FF6600>⚔ erheblich basierend auf der fehlenden Gesundheit
-  - <#FF6600>⚔ des Ziels erhöht wird.
-  - ' '
-  - <#FF6600>⚔ Verbraucht und wird von aktiven Momentum-Stapeln verstärkt.
-  - <#FF6600>⚔ Jeder Momentum-Stapel fügt +15% Schaden hinzu.
+  - <#94958B>Bereite einen sichtbaren Axthieb für 16 Ticks vor.
+  - <#94958B>Ein Treffer skaliert mit fehlendem Leben und Momentum,
+  - <#94958B>gegen Spieler jedoch begrenzt. Er verursacht 35 Boss-Kontrolle.
+  - <#94958B>Außer Reichweite oder ohne Sicht verfehlt der Hieb.
   - ' '
   - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
-  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2> Blöcke'
-  - '<!i><yellow>⏱️ <#94958B>Kanalisierungszeit: <arg:3>s'
-  - '<!i><yellow>⚔️ <#94958B>Fehlende-Gesundheit-Multiplikator: <arg:4>x'
-  - '<!i><yellow>⚡ <#94958B>Momentum-Bonus pro Stapel: <arg:5>x'
-# This list contains all placeholders that can be used in this spell.
-# You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+  - '<!i><yellow>📏 <#94958B>Reichweite: <arg:2>'
 availablePlaceholders:
   '0': cooldown
   '1': energyBuildUpFromUse
   '2': range
-  '3': channelDuration
+  '3': channelTicks
   '4': missingHealthMultiplier
   '5': momentumDamagePerStack
-  '6': momentumPerStack
-  '7': coefficients.entities.damage.minecraft:advantage_physical
-
-
-

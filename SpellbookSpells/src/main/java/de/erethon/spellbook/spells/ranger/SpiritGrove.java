@@ -1,4 +1,7 @@
 package de.erethon.spellbook.spells.ranger;
+import de.erethon.spellbook.utils.TargetedParticles;
+
+import de.erethon.spellbook.utils.SpellbookFeedback;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
@@ -32,7 +35,7 @@ public class SpiritGrove extends RangerBaseSpell {
     protected boolean onPrecast() {
         Block targetBlock = caster.getTargetBlockExact(data.getInt("range", 32));
         if (targetBlock == null || targetBlock.getType().isAir()) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         return super.onPrecast();
@@ -88,8 +91,7 @@ public class SpiritGrove extends RangerBaseSpell {
                 player.getWorld().spawnParticle(particle, player.getLocation().add(0, 1, 0), 5, 0.2, 0.2, 0.2);
             } else {
                 player.heal(Spellbook.getScaledValue(data, caster, player, Attribute.STAT_HEALINGPOWER));
-                Particle particle = Particle.HEART;
-                player.getWorld().spawnParticle(particle, player.getLocation().add(0, 1, 0), 2, 0.2, 0.2, 0.2);
+                TargetedParticles.spawnForOthers(Particle.HEART, player, player.getLocation().add(0, 1, 0), 2, 0.2, 0.2, 0.2);
             }
         }
     }

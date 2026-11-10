@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.assassin;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.spells.EntityTargetSpell;
@@ -30,20 +32,20 @@ public class Masterthief extends AssassinBaseSpell {
         keepAliveTicks = duration * 20; // Do this here for trait access
         List<SpellData> datas = target.getUsedSpells().keySet().stream().toList();
         if (datas.isEmpty()) {
-            caster.sendParsedActionBar("<#ff0000>Das Ziel hat keine Spells eingesetzt.");
+            SpellbookFeedback.send(caster, "<#ff0000>Das Ziel hat keine Spells eingesetzt.");
             return false;
         }
         spell = datas.get(random.nextInt(datas.size()));
         caster.addSpell(spell);
         triggerTraits(target);
-        caster.sendParsedActionBar("<green>Du hast " + spell.getId() + " gestohlen!");
+        SpellbookFeedback.send(caster, "<green>Du hast " + spell.getId() + " gestohlen!");
         return true;
     }
 
     @Override
     protected void cleanup() {
         caster.removeSpell(spell);
-        caster.sendParsedActionBar("<gray>Dein gestohlener Spell " + spell.getId() + " ist ausgelaufen.");
+        SpellbookFeedback.send(caster, "<gray>Dein gestohlener Spell " + spell.getId() + " ist ausgelaufen.");
     }
 
 }

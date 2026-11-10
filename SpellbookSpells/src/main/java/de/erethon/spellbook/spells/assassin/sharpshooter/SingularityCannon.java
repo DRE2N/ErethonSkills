@@ -3,21 +3,27 @@ package de.erethon.spellbook.spells.assassin.sharpshooter;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.LineEffect;
-import de.slikey.effectlib.effect.SphereEffect;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
+
+import de.erethon.spellbook.spells.vfx.TerrainRing;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.bukkit.util.RayTraceResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,17 +35,19 @@ public class SingularityCannon extends SharpshooterBaseSpell {
     // Enemies hit are marked with Singular Weakness for 5 seconds, causing them to take 20% increased damage from your Charged Shot.
     // If an enemy is killed by the initial beam, you instantly regain a full bar of Focus.
 
-    private final double beamRange = data.getDouble("beamRange", 200.0);
+    private final double beamRange = data.getDouble("beamRange", 32.0);
     private final double beamWidth = data.getDouble("beamWidth", 1.5);
     private final double subsequentDamageMultiplier = data.getDouble("subsequentDamageMultiplier", 0.5);
     private final int singularWeaknessDuration = data.getInt("singularWeaknessDuration", 5) * 20;
-    private final int maxFocusRefund = data.getInt("maxFocusRefund", 100);
-    private final String singularWeaknessTag = "singular_weakness";
+    private final int maxFocusRefund = data.getInt("maxFocusRefund", 20);
+    private final String singularWeaknessTag = "singular_weakness_" + caster.getUniqueId();
 
     private final int customChannelDuration = 30; // 1.5 seconds in ticks
 
     private Vector targetDirection;
     private boolean hasBeamFired = false;
+    private boolean previewBuilt = false;
+    private ItemDisplay cannonDisplay;
 
     public SingularityCannon(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -76,70 +84,49 @@ public class SingularityCannon extends SharpshooterBaseSpell {
     }
 
     private void createChannelStartVFX() {
-        Location eyeLoc = caster.getEyeLocation();
-
-        EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-        if (effectManager != null) {
-            SphereEffect chargeSphere = new SphereEffect(effectManager);
-            chargeSphere.setLocation(eyeLoc);
-            chargeSphere.radius = 3.0f;
-            chargeSphere.particle = Particle.DUST;
-            chargeSphere.color = Color.BLACK;
-            chargeSphere.particles = 40;
-            chargeSphere.duration = customChannelDuration;
-            chargeSphere.start();
-        }
-
-        eyeLoc.getWorld().spawnParticle(Particle.PORTAL, eyeLoc, 30, 1.5, 1.5, 1.5, 0.5);
-        eyeLoc.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, eyeLoc, 20, 1, 1, 1, 0.3);
+        Location muzzle = caster.getEyeLocation().add(targetDirection.clone().multiply(1.5));
+        cannonDisplay = trackVfx(SkillVfx.billboard(muzzle,
+                "sig_assassin_sharpshooter_singularitycannon_lead_f4", 2.5f));
+        SkillSignatureVfx.accent(caster.getLocation(), getClass(), "lead", 3.4f, 23, true);
     }
 
     private void createChannelVFX() {
-        Location eyeLoc = caster.getEyeLocation();
-        double progress = (double) currentTicks / customChannelDuration;
-
-        int particleCount = (int) (10 + (progress * 20));
-        float radius = (float) (2.0 - progress);
-
-        eyeLoc.getWorld().spawnParticle(Particle.DUST, eyeLoc, particleCount, radius, radius, radius, 0,
-            new Particle.DustOptions(Color.fromRGB((int)(255 * progress), 0, (int)(255 * (1 - progress))), 1.5f));
-
+        Location muzzle = caster.getEyeLocation().add(targetDirection.clone().multiply(1.5));
+        if (cannonDisplay != null && cannonDisplay.isValid()) cannonDisplay.teleport(muzzle);
         if (currentTicks % 5 == 0) {
-            eyeLoc.getWorld().spawnParticle(Particle.FLASH, eyeLoc, 1, 0, 0, 0, 0, Color.BLUE);
-            eyeLoc.getWorld().playSound(eyeLoc, Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 0.3f, (float) (1.5f + progress));
+            SkillSignatureVfx.accent(muzzle, getClass(), "wake",
+                    1.6f + currentTicks / (float) customChannelDuration, 9, false);
+            muzzle.getWorld().playSound(muzzle, Sound.BLOCK_BEACON_POWER_SELECT,
+                    SoundCategory.PLAYERS, 0.3f,
+                    1.5f + currentTicks / (float) customChannelDuration);
         }
-
-        if (currentTicks > customChannelDuration / 2) {
-            Location endLoc = eyeLoc.clone().add(targetDirection.clone().multiply(beamRange));
-            EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-            if (effectManager != null) {
-                LineEffect previewLine = new LineEffect(effectManager);
-                previewLine.setLocation(eyeLoc);
-                previewLine.setTarget(endLoc);
-                previewLine.particle = Particle.DUST;
-                previewLine.color = Color.PURPLE;
-                previewLine.particles = 20;
-                previewLine.duration = 5;
-                previewLine.start();
-            }
+        if (currentTicks > customChannelDuration / 2 && !previewBuilt) {
+            buildPreview(caster.getEyeLocation());
+            previewBuilt = true;
         }
     }
 
+    private void buildPreview(Location start) {
+        double visibleRange = visibleBeamRange(start);
+        for (int i = 1; i <= 12; i++) SkillSignatureVfx.accent(
+                start.clone().add(targetDirection.clone().multiply(visibleRange * i / 13.0)),
+                getClass(), "lead", 0.9f, 18, false);
+    }
     private void fireSingularityBeam() {
         Location startLoc = caster.getEyeLocation();
+        double visibleRange = visibleBeamRange(startLoc);
 
         caster.getWorld().playSound(startLoc, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 2.0f, 0.8f);
         caster.getWorld().playSound(startLoc, Sound.ENTITY_WITHER_SPAWN, SoundCategory.PLAYERS, 1.5f, 2.0f);
         caster.getWorld().playSound(startLoc, Sound.ENTITY_ENDER_DRAGON_SHOOT, SoundCategory.PLAYERS, 2.0f, 0.5f);
 
-        startLoc.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, startLoc, 1, 0, 0, 0, 0, null, true);
-        startLoc.getWorld().spawnParticle(Particle.FLASH, startLoc, 3, 0.5, 0.5, 0.5, 0, Color.RED, true);
-        startLoc.getWorld().spawnParticle(Particle.END_ROD, startLoc, 50, 2, 2, 2, 0.5, null, true);
+        SkillSignatureVfx.accent(startLoc.clone().add(targetDirection.clone().multiply(1.5)),
+                getClass(), "main", 5.5f, 24, false);
 
-        Location endLoc = startLoc.clone().add(targetDirection.clone().multiply(beamRange));
+        Location endLoc = startLoc.clone().add(targetDirection.clone().multiply(visibleRange));
         createMassiveBeamEffect(startLoc, endLoc);
 
-        List<LivingEntity> hitTargets = findTargetsInBeam(startLoc, targetDirection);
+        List<LivingEntity> hitTargets = findTargetsInBeam(startLoc, targetDirection, visibleRange);
 
         for (int i = 0; i < hitTargets.size(); i++) {
             LivingEntity target = hitTargets.get(i);
@@ -150,8 +137,10 @@ public class SingularityCannon extends SharpshooterBaseSpell {
                 baseDamage *= subsequentDamageMultiplier;
             }
 
-            double targetHealthBefore = target.getHealth();
-            target.damage(baseDamage, caster, PDamageType.MAGIC);
+            double targetHealthBefore = target.getHealth() + target.getAbsorptionAmount();
+            double damage = baseDamage;
+            CombatSourceContext.runSpell(this, () -> target.damage(damage, caster, PDamageType.MAGIC));
+            if (target.getHealth() + target.getAbsorptionAmount() >= targetHealthBefore) continue;
 
             target.getTags().add(singularWeaknessTag);
             new BukkitRunnable() {
@@ -164,52 +153,38 @@ public class SingularityCannon extends SharpshooterBaseSpell {
             createTargetHitVFX(target, isPrimaryTarget);
 
             if (isPrimaryTarget && target.getHealth() <= 0 && targetHealthBefore > 0) {
-                caster.setEnergy(maxFocusRefund);
+                caster.addEnergy(maxFocusRefund);
                 createKillVFX(target.getLocation());
                 caster.getWorld().playSound(caster.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.PLAYERS, 1.0f, 1.5f);
             }
         }
 
-        createGlobalBeamEffects(startLoc, endLoc);
+        createGlobalBeamEffects(startLoc);
     }
 
     private void createMassiveBeamEffect(Location start, Location end) {
-        EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-        if (effectManager != null) {
-            LineEffect mainBeam = new LineEffect(effectManager);
-            mainBeam.setLocation(start);
-            mainBeam.setTarget(end);
-            mainBeam.particle = Particle.DUST;
-            mainBeam.color = Color.WHITE;
-            mainBeam.particles = 100;
-            mainBeam.duration = 40;
-            mainBeam.particleForceShow = true;
-            mainBeam.start();
-
-            LineEffect energyBeam = new LineEffect(effectManager);
-            energyBeam.setLocation(start);
-            energyBeam.setTarget(end);
-            energyBeam.particle = Particle.END_ROD;
-            energyBeam.particles = 80;
-            energyBeam.duration = 30;
-            energyBeam.particleForceShow = true;
-            energyBeam.start();
-        }
+        Vector span = end.toVector().subtract(start.toVector());
+        int count = Math.max(4, Math.min(24, (int) Math.ceil(span.length() / 1.5)));
+        for (int i = 0; i < count; i++) SkillSignatureVfx.accent(
+                start.clone().add(span.clone().multiply((i + 0.5) / count)),
+                getClass(), i % 3 == 0 ? "main" : "wake", i % 3 == 0 ? 2.2f : 1.4f,
+                25, false);
+    }
+    private double visibleBeamRange(Location start) {
+        RayTraceResult hit = start.getWorld().rayTraceBlocks(start, targetDirection, beamRange,
+                FluidCollisionMode.NEVER, true);
+        return hit == null ? beamRange : Math.max(0, hit.getHitPosition().distance(start.toVector()) - 0.1);
     }
 
-    private List<LivingEntity> findTargetsInBeam(Location start, Vector direction) {
+    private List<LivingEntity> findTargetsInBeam(Location start, Vector direction, double visibleRange) {
         List<LivingEntity> targets = new ArrayList<>();
 
-        for (double distance = 0; distance < beamRange; distance += 2.0) {
+        for (double distance = 0; distance < visibleRange; distance += 1.0) {
             Location checkLoc = start.clone().add(direction.clone().multiply(distance));
 
             for (LivingEntity entity : checkLoc.getNearbyLivingEntities(beamWidth)) {
                 if (entity != caster && !targets.contains(entity) && Spellbook.canAttack(caster, entity)) {
-                    if (entity instanceof Player) {
-                        targets.add(0, entity); // Add players at the beginning for priority
-                    } else {
-                        targets.add(entity);
-                    }
+                    targets.add(entity);
                 }
             }
         }
@@ -218,58 +193,26 @@ public class SingularityCannon extends SharpshooterBaseSpell {
     }
 
     private void createTargetHitVFX(LivingEntity target, boolean isPrimary) {
-        Location targetLoc = target.getLocation().add(0, 1, 0);
-
+        Location center = target.getLocation().add(0, 1, 0);
+        SkillSignatureVfx.accent(center, getClass(), "main",
+                isPrimary ? 5.0f : 3.1f, 24, false);
         if (isPrimary) {
-            targetLoc.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, targetLoc, 1, 0, 0, 0, 0,null, true);
-            targetLoc.getWorld().spawnParticle(Particle.FLASH, targetLoc, 3, 0.5, 0.5, 0.5, 0, Color.RED, true);
-            targetLoc.getWorld().playSound(targetLoc, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 2.0f, 0.8f);
-        } else {
-            targetLoc.getWorld().spawnParticle(Particle.EXPLOSION, targetLoc, 2, 0.3, 0.3, 0.3, 0,null, true);
-            targetLoc.getWorld().playSound(targetLoc, Sound.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 1.2f, 1.2f);
+            TerrainRing terrain = new TerrainRing(target.getLocation(), 2.1,
+                    "terrain_band_sharpshooter", 32, 0.35f);
+            org.bukkit.Bukkit.getScheduler().runTaskLater(Spellbook.getInstance().getImplementer(),
+                    terrain::close, 23L);
         }
-
-        targetLoc.getWorld().spawnParticle(Particle.DUST, targetLoc, 20, 0.5, 0.5, 0.5, 0,
-            new Particle.DustOptions(Color.RED, 2.0f), true);
-        targetLoc.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, targetLoc, 15, 0.8, 0.8, 0.8, 0.3,null, true);
-
-        targetLoc.getWorld().spawnParticle(Particle.DUST, targetLoc, 10, 0.3, 0.3, 0.3, 0,
-            new Particle.DustOptions(Color.PURPLE, 1.5f), true);
+        center.getWorld().playSound(center, Sound.ENTITY_GENERIC_EXPLODE,
+                SoundCategory.PLAYERS, isPrimary ? 2.0f : 1.2f, 0.8f);
     }
 
     private void createKillVFX(Location killLoc) {
-        killLoc.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, killLoc, 30, 1, 1, 1, 0.5,null, true);
-        killLoc.getWorld().spawnParticle(Particle.FLASH, killLoc, 5, 1, 1, 1, 0,Color.RED, true);
-        killLoc.getWorld().playSound(killLoc, Sound.ITEM_TOTEM_USE, SoundCategory.PLAYERS, 1.0f, 1.8f);
+        SkillSignatureVfx.accent(killLoc.clone().add(0, 1, 0), getClass(),
+                "wake", 3.3f, 21, false);
+        killLoc.getWorld().playSound(killLoc, Sound.ITEM_TOTEM_USE,
+                SoundCategory.PLAYERS, 1.0f, 1.8f);
     }
-
-    private void createGlobalBeamEffects(Location start, Location end) {
-        new BukkitRunnable() {
-            int ticks = 0;
-            @Override
-            public void run() {
-                if (ticks >= 20) {
-                    this.cancel();
-                    return;
-                }
-
-                Vector direction = end.toVector().subtract(start.toVector()).normalize();
-                double step = beamRange / 20.0;
-
-                for (int i = 0; i < 10; i++) {
-                    Location trailLoc = start.clone().add(direction.clone().multiply(i * step));
-                    trailLoc.getWorld().spawnParticle(Particle.DUST, trailLoc, 3, 0.3, 0.3, 0.3, 0,
-                        new Particle.DustOptions(Color.WHITE, 1.8f), true);
-
-                    if (ticks < 5) {
-                        trailLoc.getWorld().spawnParticle(Particle.END_ROD, trailLoc, 1, 0.1, 0.1, 0.1, 0.05,null, true);
-                    }
-                }
-
-                ticks++;
-            }
-        }.runTaskTimer(Spellbook.getInstance().getImplementer(), 0L, 1L);
-
+    private void createGlobalBeamEffects(Location start) {
         for (Player player : start.getWorld().getPlayers()) {
             if (player.getLocation().distance(start) <= 64) {
                 player.playSound(player.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 0.5f, 0.3f);

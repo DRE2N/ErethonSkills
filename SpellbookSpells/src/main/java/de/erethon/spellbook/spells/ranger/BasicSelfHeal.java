@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.ranger;
 
-import com.destroystokyo.paper.ParticleBuilder;
+import de.erethon.spellbook.utils.TargetedParticles;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
@@ -34,7 +34,7 @@ public class BasicSelfHeal extends RangerBaseSpell {
 
     @Override
     protected void onTick() {
-        new ParticleBuilder(Particle.HEART).allPlayers().location(caster.getLocation().add(0, 1, 0)).count(3).spawn();
+        TargetedParticles.spawnForOthers(Particle.HEART, caster, caster.getLocation().add(0, 1, 0), 3, 0, 0, 0);
     }
 
     @Override

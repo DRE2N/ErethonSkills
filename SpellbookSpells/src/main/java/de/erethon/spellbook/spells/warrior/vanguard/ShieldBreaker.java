@@ -4,20 +4,18 @@ import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.Display;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Transformation;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,24 +61,8 @@ public class ShieldBreaker extends VanguardBaseSpell {
 
     private void spawnWindupDisplay() {
         Location loc = caster.getLocation().add(0, 1.5, 0);
-        windupDisplay = loc.getWorld().spawn(loc, ItemDisplay.class, d -> {
-            d.setItemStack(new ItemStack(Material.IRON_SWORD));
-            d.setBillboard(Display.Billboard.FIXED);
-            d.setPersistent(false);
-            d.setGlowing(true);
-            d.setInterpolationDuration(8);
-            d.setInterpolationDelay(-1);
-            d.setTeleportDuration(2);
-            // Start raised, interpolate to drawn-back position
-            Vector3f dir = new Vector3f((float) caster.getLocation().getDirection().getX(),
-                0, (float) caster.getLocation().getDirection().getZ()).normalize();
-            d.setTransformation(new Transformation(
-                new Vector3f(-dir.x * 0.5f, 0.2f, -dir.z * 0.5f),
-                new Quaternionf().rotateY((float) Math.atan2(-dir.x, dir.z)).rotateX(-(float) Math.PI / 4),
-                new Vector3f(1.3f, 1.3f, 1.3f),
-                new Quaternionf()
-            ));
-        });
+        windupDisplay = SkillVfx.billboard(loc,
+                "sig_warrior_vanguard_shieldbreaker_lead_f4", 1.8f);
     }
 
     private void removeWindupDisplay() {
@@ -116,6 +98,7 @@ public class ShieldBreaker extends VanguardBaseSpell {
             spawnShatterFragments(target.getLocation().add(0, 1, 0));
         } else {
             target.addEffect(caster, slowEffectData, slowDuration, slowStacks);
+            spawnSlowRestraint(target);
             target.getWorld().spawnParticle(Particle.BLOCK_CRUMBLE, target.getLocation().add(0, 0.5, 0), 12, 0.3, 0.3, 0.3, 0.1,
                 Material.DIRT.createBlockData());
             target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 0.8f, 0.8f);
@@ -123,45 +106,12 @@ public class ShieldBreaker extends VanguardBaseSpell {
     }
 
     private void spawnShatterFragments(Location origin) {
-        float[][] directions = {{1, 0}, {-1, 0}, {0, 1}};
-        List<BlockDisplay> fragments = new ArrayList<>();
-        for (float[] dir : directions) {
-            BlockDisplay frag = origin.getWorld().spawn(origin, BlockDisplay.class, d -> {
-                d.setBlock(Material.IRON_BLOCK.createBlockData());
-                d.setPersistent(false);
-                d.setInterpolationDuration(4);
-                d.setTransformation(new Transformation(
-                    new Vector3f(0, 0, 0),
-                    new Quaternionf(),
-                    new Vector3f(0.25f, 0.25f, 0.25f),
-                    new Quaternionf()
-                ));
-            });
-            fragments.add(frag);
-        }
-
-        new BukkitRunnable() {
-            int t = 0;
-
-            @Override
-            public void run() {
-                t++;
-                for (int i = 0; i < fragments.size(); i++) {
-                    BlockDisplay frag = fragments.get(i);
-                    if (!frag.isValid()) continue;
-                    float[] dir = directions[i];
-                    frag.teleport(origin.clone().add(dir[0] * t * 0.15, t * 0.1, dir[1] * t * 0.15));
-                }
-                if (t >= 8) {
-                    for (BlockDisplay frag : fragments) {
-                        if (frag.isValid()) frag.remove();
-                    }
-                    cancel();
-                }
-            }
-        }.runTaskTimer(Spellbook.getInstance().getImplementer(), 0L, 1L);
+        SkillSignatureVfx.accent(origin, getClass(), "main", 2.4f, 12, false);
     }
 
+    private void spawnSlowRestraint(LivingEntity entity) {
+        SkillSignatureVfx.accent(entity.getLocation(), getClass(), "wake", 2.1f, 12, true);
+    }
     private void playStrikeEffects() {
         target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 1, 0), 20, 0.4, 0.4, 0.4, 0.2);
         target.getWorld().spawnParticle(Particle.ENCHANTED_HIT, target.getLocation().add(0, 1, 0), 8, 0.3, 0.3, 0.3, 0.1);

@@ -1,37 +1,35 @@
 package de.erethon.spellbook.spells.paladin.inquisitor;
 
-
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
-import net.kyori.adventure.text.Component;
+import de.erethon.spellbook.combat.BossControl;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.combat.HealingContext;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.util.BoundingBox;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import java.util.List;
 
+/** A shown spear cone that spends Judgement for one bounded rescue and burn. */
 public class Condemn extends InquisitorBaseSpell {
 
-    // RMB.
-    // Slam down the spear, dealing damage and weakness to all enemies in a cone in front of you.
-    // Consumes all judgement on enemies and applies burning for each stack of judgement consumed.
-    // Heals allies in a small radius per judgement consumed.
-
-    private final int burningStacksPerJudgement = data.getInt("burningStacksPerJudgement", 1);
-    private final int burningDurationMin = data.getInt("burningDurationMin", 4);
-    private final int burningDurationMax = data.getInt("burningDurationMax", 8);
-    private final int weaknessDurationMin = data.getInt("weaknessDuration", 12) ;
-    private final int weaknessDurationMax = data.getInt("weaknessDurationMax", 20);
-    private final int weaknessStacks = data.getInt("weaknessStacks", 1);
-    private final int healRadiusMin = data.getInt("healRadiusMin", 3);
-    private final int healRadiusMax = data.getInt("healRadiusMax", 5);
-    private final int healingPerJudgement = data.getInt("healingPerJudgement", 20);
-
+    private final double range = data.getDouble("range", 5);
+    private final double halfAngleCosine = Math.cos(Math.toRadians(data.getDouble("coneAngle", 80) / 2));
+    private final double baseHealing = data.getDouble("baseHealing", 12);
+    private final double healingPowerCoefficient = data.getDouble("healingPowerCoefficient", 0.3);
+    private final double healPerJudgement = data.getDouble("healPerJudgement", 2);
+    private final double playerCombatMultiplier = data.getDouble("playerCombatMultiplier", 0.65);
     private final EffectData burning = Spellbook.getEffectData("Burning");
-    private final EffectData weakness = Spellbook.getEffectData("Weakness");
 
     public Condemn(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -39,82 +37,83 @@ public class Condemn extends InquisitorBaseSpell {
 
     @Override
     public boolean onCast() {
-        Vector direction = caster.getEyeLocation().getDirection();
-
-        createConeAoE(caster.getLocation(), 5, 90, 2, direction, 10)
-                .onEnter((aoe, entity) -> {
-                    if (Spellbook.canAttack(caster, entity)) {
-                        double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, true, Attribute.ADVANTAGE_PHYSICAL);
-                        entity.damage(damage, caster);
-
-                        int judgementStacks = getJudgementStacksOnTarget(entity);
-                        if (judgementStacks > 0) {
-                            int stacksToApply = judgementStacks * burningStacksPerJudgement;
-                            int burningDuration = (int) Spellbook.getRangedValue(data, caster, entity, Attribute.ADVANTAGE_MAGICAL, burningDurationMin, burningDurationMax, "burningDuration") * 20;
-                            int weaknessDuration = (int) Spellbook.getRangedValue(data, caster, entity, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration") * 20;
-
-                            entity.addEffect(caster, burning, burningDuration, stacksToApply);
-                            entity.addEffect(caster, weakness, weaknessDuration, weaknessStacks);
-                            removeJudgement(entity);
-
-                            entity.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, entity.getLocation().add(0, 1, 0), stacksToApply * 3, 0.5, 0.5, 0.5);
-                            entity.getWorld().spawnParticle(Particle.SMOKE, entity.getLocation(), 8, 0.3, 0.3, 0.3);
-                            entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.0f, 1.2f);
-                        }
-
-                        entity.getWorld().spawnParticle(Particle.CRIT, entity.getLocation().add(0, 1, 0), 5, 0.3, 0.5, 0.3);
-                        entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 0.8f);
-                    }
-                });
-
-        // Count total judgement consumed for healing calculation
-        double totalJudgementConsumed = caster.getLocation().getNearbyLivingEntities(8).stream().filter(entity -> Spellbook.canAttack(caster, entity)).mapToDouble(this::getJudgementStacksOnTarget).sum();
-
-        if (totalJudgementConsumed > 0) {
-            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.5f, 0.8f);
-            caster.getWorld().spawnParticle(Particle.EXPLOSION, caster.getLocation().add(0, 0.5, 0), 3, 1.0, 0.5, 1.0);
-            caster.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, caster.getLocation(), 15, 2, 0.5, 2);
-
-            int healRadius = (int) Spellbook.getRangedValue(data, caster, null, Attribute.ADVANTAGE_MAGICAL, healRadiusMin, healRadiusMax, "healRadius");
-
-            // Create healing sanctuary that provides regeneration
-            createCircularAoE(caster.getLocation(), healRadius, 1, 60)
-                    .onEnter((aoe, entity) -> {
-                        if (entity != caster && !Spellbook.canAttack(caster, entity)) {
-                            double healAmount = (totalJudgementConsumed * healingPerJudgement) + Spellbook.getRangedValue(data, caster, entity, Attribute.STAT_HEALINGPOWER, 5, 25, "healAmount");
-                            entity.heal(healAmount);
-                            entity.getWorld().spawnParticle(Particle.HEART, entity.getLocation().add(0, 2, 0), 4, 0.5, 0.5, 0.5);
-                            entity.getWorld().spawnParticle(Particle.ENCHANTED_HIT, entity.getLocation(), 5, 0.3, 0.5, 0.3);
-                            entity.getWorld().playSound(entity.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 0.8f, 1.2f);
-                        }
-                    })
-                    .onTick(aoe -> {
-                        // Provide continuous regeneration while in sanctuary
-                        for (LivingEntity entity : aoe.getEntitiesInside()) {
-                            if (entity != caster && !Spellbook.canAttack(caster, entity)) {
-                                if (entity.getTicksLived() % 20 == 0) { // Every second
-                                    entity.heal(2.0);
-                                    entity.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, entity.getLocation(), 2, 0.3, 0.3, 0.3);
-                                }
-                            }
-                        }
-                    });
-
-            caster.heal(totalJudgementConsumed * healingPerJudgement);
-            caster.getWorld().spawnParticle(Particle.HEART, caster.getLocation().add(0, 2, 0), 4, 0.5, 0.5, 0.5);
-            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_AMBIENT, 1.0f, 1.0f);
-        }
-
-        return super.onCast();
+        if (!super.onCast()) return false;
+        Location origin = caster.getLocation();
+        Vector direction = origin.getDirection().setY(0);
+        if (direction.lengthSquared() < 0.01) direction.setZ(1);
+        direction.normalize();
+        showSpearLane(origin, direction);
+        Vector committedDirection = direction.clone();
+        Bukkit.getScheduler().runTaskLater(Spellbook.getInstance().getImplementer(), () -> {
+            if (caster.isDead() || !caster.isValid() || caster.getWorld() != origin.getWorld()) return;
+            int totalJudgement = strikeCone(origin, committedDirection);
+            healRescue(totalJudgement);
+            SkillSignatureVfx.accent(origin, getClass(), "wake", (float) range, 18, true);
+        }, 6L);
+        return true;
     }
 
-    @Override
-    protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, burningDurationMin, burningDurationMax, "burningDuration"), VALUE_COLOR));
-        placeholderNames.add("burningDuration");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, weaknessDurationMin, weaknessDurationMax, "weaknessDuration"), VALUE_COLOR));
-        placeholderNames.add("weaknessDuration");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.STAT_HEALINGPOWER, healRadiusMin, healRadiusMax, "healRadius"), VALUE_COLOR));
-        placeholderNames.add("healRadius");
+    private int strikeCone(Location origin, Vector direction) {
+        int spent = 0;
+        int hits = 0;
+        for (LivingEntity target : caster.getWorld().getNearbyLivingEntities(origin, range, 2.5, range)) {
+            if (target == caster || !Spellbook.canAttack(caster, target) || !caster.hasLineOfSight(target)) continue;
+            Vector toward = target.getLocation().toVector().subtract(origin.toVector()).setY(0);
+            if (toward.lengthSquared() > range * range || toward.lengthSquared() < 0.01
+                    || direction.dot(toward.normalize()) < halfAngleCosine) continue;
+            double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target,
+                    true, Attribute.ADVANTAGE_MAGICAL);
+            double before = target.getHealth() + target.getAbsorptionAmount();
+            CombatSourceContext.runSpell(this, () -> target.damage(damage, caster, PDamageType.MAGIC));
+            if (target.getHealth() + target.getAbsorptionAmount() >= before) continue;
+            int marks = Math.min(5, getJudgementStacksOnTarget(target));
+            if (marks > 0) {
+                removeJudgement(target);
+                target.addEffect(caster, burning, 60, target instanceof Player ? Math.min(2, marks) : marks);
+                spent += marks;
+            }
+            BossControl.apply(caster, target, marks > 0 ? 40 : 15);
+            SkillSignatureVfx.accent(target.getLocation().add(0, 1, 0), getClass(),
+                    marks > 0 ? "main" : "wake", 2.2f, 14, false);
+            hits++;
+            if (hits >= 5) break;
+        }
+        caster.getWorld().playSound(caster.getLocation(), Sound.ITEM_TRIDENT_HIT, 0.9f, 0.8f);
+        return Math.min(5, spent);
+    }
+
+    private void healRescue(int marks) {
+        double healingPower = Math.min(100, Math.max(0,
+                caster.getAttribute(Attribute.STAT_HEALINGPOWER).getValue()));
+        double healing = baseHealing + healingPower * healingPowerCoefficient + marks * healPerJudgement;
+        healOne(caster, healing);
+        if (caster.getTargetEntity(6, true) instanceof LivingEntity ally && ally != caster
+                && !Spellbook.canAttack(caster, ally) && caster.hasLineOfSight(ally)) {
+            healOne(ally, healing);
+        }
+        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 0.65f, 1.3f);
+    }
+
+    private void healOne(LivingEntity target, double healing) {
+        double capped = Math.min(target.getMaxHealth() * 0.25, healing);
+        target.heal(HealingContext.isPlayerCombat(caster, target)
+                ? capped * playerCombatMultiplier : capped);
+        SkillSignatureVfx.accent(target.getLocation().add(0, 1.2, 0), getClass(),
+                "lead", 1.7f, 15, false);
+    }
+
+    private void showSpearLane(Location origin, Vector direction) {
+        Vector side = new Vector(-direction.getZ(), 0, direction.getX());
+        for (int step = 1; step <= 5; step++) {
+            double distance = step * range / 5;
+            double width = 0.4 + distance * 0.5;
+            for (int edge : new int[]{-1, 1}) {
+                Location point = origin.clone().add(direction.clone().multiply(distance))
+                        .add(side.clone().multiply(width * edge)).add(0, 0.15, 0);
+                caster.getWorld().spawnParticle(Particle.DUST, point, 2, 0.08, 0.02, 0.08, 0,
+                        new Particle.DustOptions(org.bukkit.Color.fromRGB(205, 54, 75), 1.0f));
+            }
+        }
+        caster.getWorld().playSound(origin, Sound.ITEM_TRIDENT_THROW, 0.8f, 0.7f);
     }
 }

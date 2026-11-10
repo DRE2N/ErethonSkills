@@ -8,3 +8,4 @@ pluginManagement {
 rootProject.name = "ErethonSkills"
 include("Hecate")
 include("SpellbookSpells")
+includeBuild("../Rhea")

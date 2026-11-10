@@ -2,8 +2,8 @@ class: warrior.swordstorm.BladeDance
 cooldown: 99
 duration: 10
 energyCost: 75
-secondaryDamageRadiusMin: 2.0
-secondaryDamageRadiusMax: 5.0
+secondaryDamageRadiusMin: 3.0
+secondaryDamageRadiusMax: 6.0
 secondaryDamageMultiplierMin: 0.5
 secondaryDamageMultiplierMax: 1.5
 resistanceMultiplier: 0.66

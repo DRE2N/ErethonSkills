@@ -24,8 +24,8 @@ public class SuppressionOfTheHeretics extends SpellTrait {
     @Override
     protected SpellbookSpell onSpellCast(SpellbookSpell cast) {
         if (cast instanceof JudgementOfGod spell) {
-            spell.deathDamageRange *= (int) rangeMultiplier;
-            spell.deathDamageMultiplier += bonusDamageMultiplier;
+            spell.radius = Math.min(6, spell.radius * rangeMultiplier);
+            spell.markBonusPerStack = Math.min(0.3, spell.markBonusPerStack + bonusDamageMultiplier);
         }
         return super.onSpellCast(cast);
     }

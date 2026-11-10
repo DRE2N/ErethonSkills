@@ -20,7 +20,7 @@ public class RangerUtils {
     public static boolean hasMana(LivingEntity caster, SpellData data) {
         boolean canCast = data.getInt("manaCost", 0) <= caster.getEnergy();
         if (!canCast) {
-            caster.sendParsedActionBar("<color:#0000ff>Nicht genug Mana!");
+            SpellbookFeedback.send(caster, "<color:#0000ff>Nicht genug Mana!");
         }
         return canCast;
     }
@@ -29,7 +29,7 @@ public class RangerUtils {
         if (Spellbook.getInstance().getPetLookup().get(caster) != null) {
             return true;
         }
-        caster.sendParsedActionBar("<color:#ff0000>Kein Pet aktiv!");
+        SpellbookFeedback.send(caster, "<color:#ff0000>Kein Pet aktiv!");
         return false;
     }
 

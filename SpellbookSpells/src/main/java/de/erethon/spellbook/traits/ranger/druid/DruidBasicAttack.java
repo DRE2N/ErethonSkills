@@ -1,4 +1,5 @@
 package de.erethon.spellbook.traits.ranger.druid;
+import de.erethon.spellbook.utils.TargetedParticles;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
@@ -56,8 +57,8 @@ public class DruidBasicAttack extends SpellTrait {
             }
         }
         target.addEffect(caster, seed, seedDuration, Math.min(seedStacks, Math.max(1, maxSeedStacks - currentStacks)));
-        target.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, target.getLocation().add(0, 1.4, 0), 3, 0.25, 0.35, 0.25, 0.01);
-        target.getWorld().spawnParticle(Particle.DUST, target.getLocation().add(0, 1.1, 0), 4, 0.2, 0.25, 0.2, 0,
+        TargetedParticles.spawnForOthers(Particle.HAPPY_VILLAGER, target, target.getLocation().add(0, 1.4, 0), 3, 0.25, 0.35, 0.25, 0.01);
+        TargetedParticles.spawnForOthers(Particle.DUST, target, target.getLocation().add(0, 1.1, 0), 4, 0.2, 0.25, 0.2, 0,
             new Particle.DustOptions(Color.fromRGB(99, 174, 71), 0.8f));
         target.getWorld().playSound(target.getLocation(), Sound.BLOCK_AZALEA_LEAVES_HIT, 0.25f, 1.4f);
     }

@@ -34,7 +34,7 @@ public class PaladinBlocking extends ClassMechanic {
             energyPerDamage = endurantEnergyPerDamage;
         }
         if (nmsPlayer.isBlocking() && caster.getEnergy() > 0) {// The Bukkit method is delayed by 5 ticks for whatever reason
-            caster.setEnergy((int) Math.round(caster.getEnergy() - damage * energyPerDamage));
+            caster.setEnergy(Math.max(0, (int) Math.round(caster.getEnergy() - damage * energyPerDamage)));
             triggerTraits();
             return damage * damageMultiplier;
         }

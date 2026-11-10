@@ -211,7 +211,15 @@ public class XpCommand extends ECommand {
                     MessageUtil.sendMessage(sender, "<red>" + target.getName() + " has no active character.");
                     return;
                 }
-                setXpBalance(character.getCharacterID(), OwnerType.CHARACTER, "xp_character", amount);
+                setXpBalance(character.getCharacterID(), OwnerType.CHARACTER, "xp_character", amount, () -> {
+                    int level = LevelUtil.getLevelFromXp(amount, LevelUtil.CHARACTER_BASE_XP,
+                            LevelUtil.CHARACTER_GROWTH_FACTOR);
+                    character.setLevel(level);
+                    if (hPlayer.getSelectedCharacter() == character && character.getCastingManager() != null) {
+                        character.getCastingManager().refreshUnlockedSkills(level);
+                    }
+                    LevelUtil.displayCharLevel(target);
+                });
                 MessageUtil.sendMessage(sender, "<green>Set character XP for " + target.getName() + " to " + amount);
                 break;
             case "alliance":
@@ -237,6 +245,10 @@ public class XpCommand extends ECommand {
     }
 
     private void setXpBalance(Object ownerId, OwnerType ownerType, String currency, long amount) {
+        setXpBalance(ownerId, ownerType, currency, amount, null);
+    }
+
+    private void setXpBalance(Object ownerId, OwnerType ownerType, String currency, long amount, Runnable onComplete) {
         TychePlugin tychePlugin = (TychePlugin) Bukkit.getPluginManager().getPlugin("Tyche");
         if (tychePlugin == null) {
             return;
@@ -249,6 +261,9 @@ public class XpCommand extends ECommand {
             }
             if (amount > 0) {
                 economyService.deposit(uuid, ownerType, currency, amount, "Hecate XP Command", null);
+            }
+            if (onComplete != null) {
+                Bukkit.getScheduler().runTask(Hecate.getInstance(), onComplete);
             }
         });
     }

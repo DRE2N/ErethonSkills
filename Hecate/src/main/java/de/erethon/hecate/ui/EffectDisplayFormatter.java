@@ -14,7 +14,7 @@ public class EffectDisplayFormatter {
 
     /**
      * Formats a collection of spell effects into positive and negative components.
-     * Effects with less than 20 ticks remaining are filtered out.
+     * Effects remain visible until they actually expire.
      *
      * @param effects The collection of spell effects to format
      * @return An array with two components: [0] = positive effects, [1] = negative effects
@@ -24,7 +24,7 @@ public class EffectDisplayFormatter {
         Component negativeEffects = Component.empty();
 
         for (SpellEffect effect : effects) {
-            if (effect.getTicksLeft() <= 20) {
+            if (effect.getTicksLeft() <= 0) {
                 continue;
             }
 
@@ -68,7 +68,7 @@ public class EffectDisplayFormatter {
             display = display.append(icon);
         }
 
-        int duration = effect.getTicksLeft() / 20;
+        int duration = (effect.getTicksLeft() + 19) / 20;
         if (duration > 0) {
             String durationText = duration + "s";
             int padding = 3 - durationText.length();

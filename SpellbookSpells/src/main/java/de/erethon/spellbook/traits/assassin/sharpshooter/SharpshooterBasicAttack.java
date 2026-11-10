@@ -1,13 +1,16 @@
 package de.erethon.spellbook.traits.assassin.sharpshooter;
 
 import de.erethon.papyrus.PDamageType;
+import de.erethon.papyrus.combat.CombatContext;
+import de.erethon.papyrus.combat.CombatSource;
 import de.erethon.spellbook.Spellbook;
+import de.erethon.spellbook.combat.BossControl;
 import de.erethon.spellbook.api.SpellTrait;
 import de.erethon.spellbook.api.TraitData;
 import de.slikey.effectlib.effect.LineEffect;
-import io.papermc.paper.raytracing.RayTraceTarget;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -38,16 +41,13 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
     private final int attackMaxChargeTicks = data.getInt("attackMaxChargeTicks", 60);
     private final double attackRaySize = data.getDouble("attackRaySize", 0.2);
     private final double attackRange = data.getDouble("attackRange", 64.0);
-    private final double bonusDamagePerBlock = data.getDouble("bonusDamagePerBlock", 0.1);
     private final double headshotRangeFromEye = data.getDouble("headshotRangeFromEye", 0.33);
     private final double headshotMultiplier = data.getDouble("headshotMultiplier", 1.5);
     private final double movementSpeedMultiplier = data.getDouble("movementSpeedMultiplier", 0.8);
     private final int focusPerSecond = data.getInt("focusPerSecond", 1);
+    private final int focusPerBodyshot = data.getInt("focusPerBodyshot", 10);
     private final int focusPerHeadshot = data.getInt("focusPerHeadshot", 25);
-    private final double huntersFocusChargeBonus = data.getDouble("huntersFocusChargeBonus", 0.5);
-    private final String huntersFocusTag = "hunters_focus_active";
     private final double ultChargedShotDamageBonus = data.getDouble("ultChargedShotDamageBonus", 0.2);
-    private final double meleeRangeBonus = data.getDouble("meleeRangeBonus", 3.0);
 
     private final AttributeModifier movementSpeedModifier = new AttributeModifier(NamespacedKey.fromString("spellbook:sharpshooter_basic_attack"), -movementSpeedMultiplier, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
 
@@ -70,20 +70,8 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         if (!caster.getPersistentDataContainer().has(Spellbook.PERSISTENT_CASTING_KEY)) {
             return;
         }
-        if (event.getClickedBlock() != null || caster.getTargetEntity((int) caster.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).getValue()) != null) {
-            return;
-        }
-
-        LivingEntity nearbyEnemy = null;
-        double meleeRange = caster.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).getValue() + meleeRangeBonus;
-        for (LivingEntity entity : caster.getLocation().getNearbyLivingEntities(meleeRange)) {
-            if (entity != caster && Spellbook.canAttack(caster, entity)) {
-                nearbyEnemy = entity;
-                break;
-            }
-        }
-
-        if (nearbyEnemy != null) {
+        if (currentChargeTicks == -1 && (event.getClickedBlock() != null
+                || caster.getTargetEntity((int) caster.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).getValue()) != null)) {
             return;
         }
 
@@ -122,27 +110,31 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         }
         // Shooting mechanic
         if (currentChargeTicks >= 0) {
-            int chargeIncrement = 1;
-            if (caster.getTags().contains(huntersFocusTag)) {
-                chargeIncrement += (int) (huntersFocusChargeBonus);
-            }
-            currentChargeTicks += chargeIncrement;
+            currentChargeTicks++;
 
             if (currentChargeTicks >= attackMaxChargeTicks) {
                 releaseShot();
                 return;
             }
+            if (currentChargeTicks % 5 != 0) {
+                return;
+            }
+            Location eye = caster.getEyeLocation();
             LineEffect lineEffect = new LineEffect(Spellbook.getInstance().getEffectManager());
-            lineEffect.setLocation(caster.getLocation().add(caster.getEyeLocation().getDirection().normalize().multiply(0.5)));
+            lineEffect.setLocation(eye.clone().add(eye.getDirection().multiply(0.5)));
             Vector direction = caster.getEyeLocation().getDirection().normalize();
             direction = direction.multiply((attackRange * (currentChargeTicks / (double) attackMaxChargeTicks)));
-            lineEffect.setTarget(caster.getLocation().add(direction.toLocation(caster.getWorld())));
-            lineEffect.duration = 50;
+            lineEffect.setTarget(eye.clone().add(direction));
+            lineEffect.duration = 5;
             lineEffect.particle = Particle.DUST;
-            lineEffect.color = caster.getScoreboardTags().contains(huntersFocusTag) ? Color.ORANGE : Color.BLACK;
+            lineEffect.color = Color.AQUA;
             lineEffect.particleData = 0;
-            lineEffect.particles = 16;
+            lineEffect.particles = 8;
             lineEffect.start();
+            if (currentChargeTicks % 20 == 0) {
+                caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME,
+                        SoundCategory.PLAYERS, 0.7f, 0.9f + currentChargeTicks / 80.0f);
+            }
         }
     }
 
@@ -152,37 +144,48 @@ public class SharpshooterBasicAttack extends SpellTrait implements Listener {
         }
         caster.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(movementSpeedModifier);
         nmsPlayer.getAbilities().setWalkingSpeed(oldFov);
-        RayTraceResult ray = caster.getWorld().rayTrace(b ->
-                b.start(caster.getEyeLocation())
-                        .targets(RayTraceTarget.ENTITY)
-                        .direction(caster.getEyeLocation().getDirection())
-                        .entityFilter(e -> e instanceof LivingEntity && e != caster)
-                        .ignorePassableBlocks(true)
-                        .maxDistance(attackRange)
-                        .raySize(attackRaySize));
+        Location shotOrigin = caster.getEyeLocation();
+        Vector shotDirection = shotOrigin.getDirection().normalize();
+        RayTraceResult ray = caster.getWorld().rayTraceEntities(shotOrigin, shotDirection, attackRange,
+                attackRaySize, entity -> entity instanceof LivingEntity living
+                        && living != caster && Spellbook.canAttack(caster, living));
+        RayTraceResult blockRay = caster.getWorld().rayTraceBlocks(shotOrigin, shotDirection,
+                attackRange, FluidCollisionMode.NEVER, true);
+        if (ray != null && blockRay != null && blockRay.getHitPosition().distanceSquared(shotOrigin.toVector())
+                < ray.getHitPosition().distanceSquared(shotOrigin.toVector())) {
+            ray = null;
+        }
         if (ray == null || ray.getHitEntity() == null || !(ray.getHitEntity() instanceof LivingEntity target) || target == caster || !Spellbook.canAttack(caster, target)) {
             currentChargeTicks = -1;
             caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_RESIN_BREAK, SoundCategory.RECORDS, 1f, 1.0f);
             return;
         }
-        double distance = caster.getLocation().distance(target.getLocation());
-        double damagePerTick = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_MAGICAL);
-        double damage = (distance * bonusDamagePerBlock) + (currentChargeTicks * damagePerTick);
+        double baseDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_MAGICAL);
+        double chargeFraction = Math.min(1.0, currentChargeTicks / (double) attackMaxChargeTicks);
+        double damage = baseDamage * (1.0 + chargeFraction);
         Location location = target.getEyeLocation();
         BoundingBox boundingBox = new BoundingBox(location.getX() - headshotRangeFromEye, location.getY() - headshotRangeFromEye, location.getZ() - headshotRangeFromEye,
                 location.getX() + headshotRangeFromEye, location.getY() + headshotRangeFromEye, location.getZ() + headshotRangeFromEye);
-        if (boundingBox.contains(ray.getHitPosition())) {
+        boolean headshot = boundingBox.rayTrace(shotOrigin.toVector(), shotOrigin.getDirection(), attackRange) != null;
+        if (headshot) {
             damage *= headshotMultiplier;
-            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_ANVIL_HIT, SoundCategory.PLAYERS, 1f, 1f);
-            caster.getWorld().playSound(target.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 1f, 1f);
-            caster.addEnergy(focusPerHeadshot);
-        } else {
-            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.RECORDS, 1f, 1.2f);
         }
-        if (caster.getTags().contains("singular_weakness")) {
+        if (target.getTags().contains("singular_weakness_" + caster.getUniqueId())) {
             damage *= (1 + ultChargedShotDamageBonus);
         }
-        target.damage(damage, caster, PDamageType.MAGIC);
+        double before = target.getHealth() + target.getAbsorptionAmount();
+        try (CombatContext.Scope ignored = CombatContext.enter(CombatSource.trait(this))) {
+            target.damage(damage, caster, PDamageType.MAGIC);
+        }
+        if (target.getHealth() + target.getAbsorptionAmount() < before) {
+            BossControl.apply(caster, target, 10 + 5 * chargeFraction + (headshot ? 5 : 0));
+            caster.addEnergy(headshot ? focusPerHeadshot : focusPerBodyshot);
+            caster.getWorld().playSound(caster.getLocation(), headshot
+                    ? Sound.BLOCK_ANVIL_HIT : Sound.ENTITY_ARROW_HIT_PLAYER,
+                    SoundCategory.PLAYERS, headshot ? 1.0f : 0.65f, headshot ? 1.2f : 1.5f);
+            target.getWorld().spawnParticle(headshot ? Particle.CRIT : Particle.ENCHANTED_HIT,
+                    target.getEyeLocation(), headshot ? 12 : 5, 0.2, 0.2, 0.2, 0.08);
+        }
         currentChargeTicks = -1;
 
 }

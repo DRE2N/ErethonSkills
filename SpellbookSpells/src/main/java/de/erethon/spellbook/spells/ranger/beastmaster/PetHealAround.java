@@ -1,6 +1,6 @@
 package de.erethon.spellbook.spells.ranger.beastmaster;
 
-import com.destroystokyo.paper.ParticleBuilder;
+import de.erethon.spellbook.utils.TargetedParticles;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
@@ -28,7 +28,7 @@ public class PetHealAround extends RangerPetBaseSpell {
             if (living == pet.getBukkitLivingEntity()) continue;
             if (Spellbook.canAttack(caster, living)) continue;
             living.setHealth(Math.min(living.getHealth() + baseHeal * Spellbook.getScaledValue(data, caster, living, Attribute.STAT_HEALINGPOWER), living.getMaxHealth()));
-            new ParticleBuilder(Particle.HEART).location(living.getLocation().add(0, 1, 0)).count(3).spawn();
+            TargetedParticles.spawnForOthers(Particle.HEART, living, living.getLocation().add(0, 1, 0), 3, 0, 0, 0);
         }
         return super.onCast();
     }

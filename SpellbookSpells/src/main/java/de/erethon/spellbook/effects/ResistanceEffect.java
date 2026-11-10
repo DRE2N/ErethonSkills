@@ -23,7 +23,7 @@ public class ResistanceEffect extends SpellEffect {
 
     @Override
     public double onDamage(LivingEntity attacker, double damage, PDamageType type) {
-        damage *= damageModifier;
+        damage *= Math.pow(damageModifier, getStacks());
         return super.onDamage(attacker, damage, type);
     }
 }

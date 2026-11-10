@@ -46,6 +46,7 @@ public class StanceLastStand extends AbstractWarriorStance {
         display = caster.getWorld().spawn(caster.getLocation(), ItemDisplay.class, itemDisplay -> {
             itemDisplay.setItemStack(new ItemStack(Material.SHIELD));
             itemDisplay.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.FIRSTPERSON_RIGHTHAND);
+            itemDisplay.setPersistent(false);
             itemDisplay.setGlowing(true);
             itemDisplay.setGlowColorOverride(DUELIST_PRIMARY);
             itemDisplay.setTransformation(transformation);

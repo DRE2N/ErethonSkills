@@ -3,26 +3,26 @@ package de.erethon.spellbook.spells.paladin.hierophant;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
-import org.bukkit.Color;
-import org.bukkit.Material;
+import de.erethon.spellbook.combat.BossControl;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.persistence.PersistentDataType;
 
-public class RighteousBlow extends PaladinBaseSpell {
+import java.util.Comparator;
 
-    // RMB: The Hierophant strikes the target with a righteous blow, dealing physical and bonus magical damage. Generates Wrath on hit.
-    // If Wrath is above 50, this attack also cleaves on one additional target and creates a radiant burst effect.
+/** Right-click glaive contact builds Wrath; an optional spend cleaves two nearby enemies. */
+public class RighteousBlow extends HierophantBaseSpell {
 
-    private final int range = data.getInt("range", 3);
+    private static final NamespacedKey READY_KEY = new NamespacedKey("spellbook", "hierophant_righteous_ready_at");
+    private final double range = data.getDouble("range", 3.5);
     private final int wrathOnHit = data.getInt("wrathOnHit", 10);
-    private final double minimumCleaveWrath = data.getDouble("minimumCleaveWrath", 50);
-    private final double cleaveRadius = data.getDouble("cleaveRadius", 3);
-    private final double cleaveDamageModifier = data.getDouble("cleaveDamageMultiplier", 0.5);
-    private final int maxCleaveTargets = data.getInt("maxCleaveTargets", 1);
+    private final int empoweredCost = data.getInt("empoweredCost", 40);
+    private final int cooldownSeconds = data.getInt("cooldown", 4);
 
     public RighteousBlow(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -30,40 +30,45 @@ public class RighteousBlow extends PaladinBaseSpell {
 
     @Override
     protected boolean onPrecast() {
-        return super.onPrecast() && lookForTarget(range);
+        long readyAt = caster.getPersistentDataContainer().getOrDefault(READY_KEY, PersistentDataType.LONG, 0L);
+        return System.currentTimeMillis() >= readyAt && super.onPrecast()
+                && lookForTarget((int) Math.ceil(range));
     }
 
     @Override
     public boolean onCast() {
-        double physicalDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL);
-        double magicalDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_MAGICAL);
-        target.damage(physicalDamage, caster, PDamageType.PHYSICAL);
-        target.damage(magicalDamage, caster, PDamageType.MAGIC);
-        caster.setEnergy(caster.getEnergy() + wrathOnHit);
-
-        target.getWorld().spawnParticle(Particle.ENCHANTED_HIT, target.getLocation().add(0, 1, 0), 8, 0.3, 0.5, 0.3);
-        target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, 1, 0), 5, 0.2, 0.3, 0.2);
-        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1.0f, 1.2f);
-
-        if (caster.getEnergy() >= minimumCleaveWrath) {
-            createCircularAoE(target.getLocation(), cleaveRadius, 1, 10)
-                    .onEnter((aoe, entity) -> {
-                        if (entity != target && entity != caster && Spellbook.canAttack(caster, entity)) {
-                            double cleaveDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, true, Attribute.ADVANTAGE_PHYSICAL) * cleaveDamageModifier;
-                            entity.damage(cleaveDamage, caster, PDamageType.PHYSICAL);
-                            entity.getWorld().spawnParticle(Particle.ENCHANTED_HIT, entity.getLocation(), 3, 0.5, 0.5, 0.5);
-                            entity.getWorld().spawnParticle(Particle.CRIT, entity.getLocation(), 2, 0.3, 0.3, 0.3);
-                        }
-                    });
-
-            target.getWorld().spawnParticle(Particle.EXPLOSION, target.getLocation().add(0, 1, 0), 1);
-            target.getWorld().spawnParticle(Particle.FLASH, target.getLocation().add(0, 1, 0), 3, 0.5, 0.5, 0.5, Color.AQUA);
-            target.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.8f, 1.5f);
-
-            caster.setEnergy(0);
-            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 0.8f, 0.8f);
-        }
-
-        return super.onCast();
+        boolean empowered = caster.getEnergy() >= empoweredCost;
+        if (!super.onCast()) return false;
+        caster.getPersistentDataContainer().set(READY_KEY, PersistentDataType.LONG,
+                System.currentTimeMillis() + cooldownSeconds * 1000L);
+        if (empowered) caster.setEnergy(Math.max(0, caster.getEnergy() - empoweredCost));
+        if (target == null || !target.isValid() || !Spellbook.canAttack(caster, target)
+                || target.getWorld() != caster.getWorld() || !caster.hasLineOfSight(target)
+                || caster.getLocation().distanceSquared(target.getLocation()) > range * range) return true;
+        Attribute attribute = empowered ? Attribute.ADVANTAGE_MAGICAL : Attribute.ADVANTAGE_PHYSICAL;
+        double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, attribute);
+        double before = target.getHealth() + target.getAbsorptionAmount();
+        CombatSourceContext.runSpell(this, () -> target.damage(damage, caster,
+                empowered ? PDamageType.MAGIC : PDamageType.PHYSICAL));
+        if (target.getHealth() + target.getAbsorptionAmount() >= before) return true;
+        if (!empowered) caster.addEnergy(wrathOnHit);
+        BossControl.apply(caster, target, empowered ? 25 : 20);
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG,
+                0.85f, empowered ? 0.8f : 1.2f);
+        target.getWorld().spawnParticle(Particle.END_ROD, target.getEyeLocation(),
+                SkillVfx.availableTo(caster) ? 2 : empowered ? 12 : 5,
+                0.25, 0.3, 0.25, 0.03);
+        if (empowered) target.getWorld().getNearbyLivingEntities(target.getLocation(), 3).stream()
+                .filter(enemy -> enemy != target && Spellbook.canAttack(caster, enemy)
+                        && caster.hasLineOfSight(enemy))
+                .sorted(Comparator.comparingDouble(enemy -> enemy.getLocation().distanceSquared(target.getLocation())))
+                .limit(2)
+                .forEach(enemy -> {
+                    double cleave = Spellbook.getVariedAttributeBasedDamage(data, caster, enemy, false,
+                            Attribute.ADVANTAGE_MAGICAL) * 0.5;
+                    CombatSourceContext.runSpell(this, () -> enemy.damage(cleave, caster, PDamageType.MAGIC));
+                });
+        triggerTraits(target);
+        return true;
     }
 }

@@ -1,10 +1,10 @@
 class: paladin.inquisitor.HolyFire
 cooldown: 20
-duration: 10
+duration: 3
 rangeMin: 0.8
 rangeMax: 3.0
 baseFinishHeal: 15
-bonusHealPerJudgementStack: 25
+bonusHealPerJudgementStack: 10
 coefficients:
   players:
     damage:
@@ -21,7 +21,7 @@ description:
   - ' '
   - <#94958B>Channel an expanding circle of holy fire around you.
   - <#94958B>Damages enemies and applies Weakness while healing
-  - <#94958B>allies and granting them Regeneration.
+  - <#94958B>allies and granting them Regeneration. You recover on cast.
   - ' '
   - '<#FFD700>✦ Judgement:'
   - <#94958B>Upon completion, heals based on Judgement stacks
@@ -37,7 +37,7 @@ description:
   - ' '
   - <#94958B>Kanalisiere einen sich ausdehnenden Kreis heiligen Feuers.
   - <#94958B>Schadet Feinden und gibt Schwäche, während Verbündete
-  - <#94958B>geheilt werden und Regeneration erhalten.
+  - <#94958B>geheilt werden und Regeneration erhalten. Du heilst beim Wirken.
   - ' '
   - '<#FFD700>✦ Urteil:'
   - <#94958B>Nach Abschluss heilt basierend auf Urteil-Stacks

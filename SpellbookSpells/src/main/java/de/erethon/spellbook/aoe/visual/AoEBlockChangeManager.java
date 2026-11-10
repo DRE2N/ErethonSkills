@@ -7,6 +7,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.BoundingBox;
 
 import java.util.*;
 
@@ -33,10 +34,26 @@ public class AoEBlockChangeManager {
         newState.setBlockData(blockData);
 
         for (Player player : players) {
+            if (causesFireOverlay(player, block, blockData)) {
+                continue;
+            }
             playerBlockChanges.computeIfAbsent(player, k -> new HashSet<>()).add(newState);
         }
 
         affectedBlocks.add(location);
+    }
+
+    private boolean causesFireOverlay(Player player, Block block, BlockData blockData) {
+        Material material = blockData.getMaterial();
+        if (material != Material.FIRE && material != Material.SOUL_FIRE) {
+            return false;
+        }
+        BoundingBox visualBlockBox = new BoundingBox(
+                block.getX(), block.getY(), block.getZ(),
+                block.getX() + 1, block.getY() + 1, block.getZ() + 1
+        );
+        return player.getWorld().equals(block.getWorld())
+                && player.getBoundingBox().overlaps(visualBlockBox);
     }
 
     /**

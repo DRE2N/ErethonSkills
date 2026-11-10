@@ -31,6 +31,7 @@ public class Traitline extends YamlConfiguration {
     SpellbookAPI spellbookAPI = SpellbookAPI.getInstance();
     MiniMessage mm = MiniMessage.miniMessage();
     private String id;
+    private File sourceFile;
     private Component displayName;
     private final List<Component> description = new ArrayList<>();
     private int initialLevelRequirement = 0;
@@ -39,7 +40,7 @@ public class Traitline extends YamlConfiguration {
     public List<SpellData> defaultSpellSlots = new ArrayList<>();
     private final Map<SpecialActionKey, SpellData> specialActionMap = new HashMap<>();
     private final Set<TraitData> innateTraits = new HashSet<>();
-    private TextColor energyColor = TextColor.fromHexString("#0xFF00");
+    private TextColor energyColor = TextColor.fromHexString("#00FF00");
     private @Nullable String energySymbol = "\u26A1"; // Symbol for energy in the UI
     private final List<Component> attackModifierDescription = new ArrayList<>();
     private final HashSet<String> armorTags = new HashSet<>();
@@ -65,6 +66,10 @@ public class Traitline extends YamlConfiguration {
 
     public int getInitialLevelRequirement() {
         return initialLevelRequirement;
+    }
+
+    public int getSpellUnlockLevel(SpellData spell) {
+        return Math.max(1, getInt("spellUnlockLevels." + spell.getId(), 1));
     }
 
     public HashMap<Integer, List<TraitLineEntry>> getTraitMap() {
@@ -119,6 +124,18 @@ public class Traitline extends YamlConfiguration {
     @Override
     public void load(File file) throws IOException, InvalidConfigurationException {
         super.load(file);
+        sourceFile = file;
+        description.clear();
+        traitMap.clear();
+        spells.clear();
+        defaultSpellSlots.clear();
+        specialActionMap.clear();
+        innateTraits.clear();
+        attackModifierDescription.clear();
+        armorTags.clear();
+        accessoryTags.clear();
+        weaponTags.clear();
+        levelInfo.clear();
         final SpellbookTranslator translator = Hecate.getInstance().getTranslator();
         id = file.getName().replace(".yml", "");
 
@@ -174,7 +191,11 @@ public class Traitline extends YamlConfiguration {
         }
 
         initialLevelRequirement = getInt("initialLevelRequirement", 0);
-        energyColor = TextColor.fromCSSHexString(getString("energyColor", "#0xFF00"));
+        String configuredEnergyColor = getString("energyColor", "#00FF00");
+        // Older traitline files used this malformed green value.
+        if ("#0xFF00".equalsIgnoreCase(configuredEnergyColor)) configuredEnergyColor = "#00FF00";
+        energyColor = TextColor.fromCSSHexString(configuredEnergyColor);
+        if (energyColor == null) energyColor = TextColor.fromHexString("#00FF00");
         energySymbol = getString("energySymbol", "\u26A1");
         if (contains("attackModifierDescription")) {
             ConfigurationSection attackModifierSection = getConfigurationSection("attackModifierDescription");
@@ -213,7 +234,7 @@ public class Traitline extends YamlConfiguration {
             accessoryTags.addAll(getStringList("accessoryTags"));
         }
         for (String id : getStringList("spells")) {
-            SpellData spell = spellbookAPI.getLibrary().getSpellByID(id);
+            SpellData spell = SpellbookLookup.spell(id);
             if (spell == null) {
                 Hecate.log("Unknown spell '" + id + "' found for 'spells' in traitline file " + id);
                 continue;
@@ -221,7 +242,7 @@ public class Traitline extends YamlConfiguration {
             spells.add(spell);
         }
         for (String id : getStringList("defaultSpellSlots")) {
-            SpellData spell = spellbookAPI.getLibrary().getSpellByID(id);
+            SpellData spell = SpellbookLookup.spell(id);
             if (spell == null) {
                 Hecate.log("Unknown spell '" + id + "' found for 'defaultSpellSlots' in traitline file " + id);
                 continue;
@@ -242,7 +263,7 @@ public class Traitline extends YamlConfiguration {
                     Hecate.log("Invalid special action key '" + key + "' found in class file " + getId());
                     continue;
                 }
-                SpellData spellData = Hecate.getInstance().getAPI().getLibrary().getSpellByID(spellId);
+                SpellData spellData = SpellbookLookup.spell(spellId);
                 if (spellData == null) {
                     Hecate.log("Unknown spell '" + spellId + "' found under 'spells' in class file " + getId());
                     continue;
@@ -251,7 +272,7 @@ public class Traitline extends YamlConfiguration {
             }
         }
         for (String id : getStringList("innateTraits")) {
-            TraitData trait = spellbookAPI.getLibrary().getTraitByID(id);
+            TraitData trait = SpellbookLookup.trait(id);
             if (trait == null) {
                 Hecate.log("Unknown trait '" + id + "' found for 'innateTraits' in traitline file " + getId());
                 continue;
@@ -264,7 +285,7 @@ public class Traitline extends YamlConfiguration {
                 List<TraitLineEntry> traits = new ArrayList<>();
                 for (String traitId : getConfigurationSection("traitLine." + level).getKeys(false)) {
                     ConfigurationSection traitSection = getConfigurationSection("traitLine." + level + "." + traitId);
-                    TraitData traitData = spellbookAPI.getLibrary().getTraitByID(traitId);
+                    TraitData traitData = SpellbookLookup.trait(traitId);
                     if (traitData == null) {
                         Hecate.log("Unknown trait '" + traitId + "' found in traitline file " + id);
                         continue;
@@ -314,6 +335,17 @@ public class Traitline extends YamlConfiguration {
                 LevelInfo info = new LevelInfo(level, "characterlevel." + id + "." + level, attributes);
                 levelInfo.put(level, info);
             }
+        }
+    }
+
+    public void refreshSpellbookReferences() {
+        if (sourceFile == null) {
+            return;
+        }
+        try {
+            load(sourceFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            Hecate.log("Failed to refresh Spellbook references for discipline " + id + ": " + e.getMessage());
         }
     }
 }

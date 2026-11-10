@@ -1,9 +1,15 @@
 package de.erethon.hecate.ui;
 
-import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.hecate.Hecate;
+import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.craftbukkit.entity.CraftEntity;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -14,6 +20,7 @@ public class EntityStatusDisplayManager {
 
     private final HashMap<Entity, EntityStatusDisplay> displays = new HashMap<>();
     private final Set<EntityStatusDisplay> tickingStatusDisplays = new HashSet<>();
+    private final Set<EntityStatusDisplay> pendingHealthUpdates = new HashSet<>();
     public static NamespacedKey ENTITY_STATUS_KEY = new NamespacedKey("spellbook", "status");
 
     public EntityStatusDisplayManager() {
@@ -27,6 +34,10 @@ public class EntityStatusDisplayManager {
         BukkitRunnable tickDisplays = new BukkitRunnable() {
             @Override
             public void run() {
+                for (EntityStatusDisplay display : displays.values()) {
+                    display.updateLayout();
+                    display.updateHealthDisplay();
+                }
                 Set<EntityStatusDisplay> copy = new HashSet<>(tickingStatusDisplays);
                 for (EntityStatusDisplay display : copy) {
                     display.onTick();
@@ -42,6 +53,33 @@ public class EntityStatusDisplayManager {
 
     public void addStatusDisplay(Entity entity, EntityStatusDisplay display) {
         displays.put(entity, display);
+    }
+
+    public void queueHealthUpdate(EntityStatusDisplay display) {
+        if (pendingHealthUpdates.add(display) && pendingHealthUpdates.size() == 1) {
+            Bukkit.getScheduler().runTask(Hecate.getInstance(), () -> {
+                pendingHealthUpdates.forEach(EntityStatusDisplay::updateHealthDisplay);
+                pendingHealthUpdates.clear();
+            });
+        }
+    }
+
+    public void refreshPackText(Player viewer) {
+        for (EntityStatusDisplay display : displays.values()) {
+            resendText(viewer, display.healthDisplay);
+            resendText(viewer, display.entityNameTag);
+        }
+    }
+
+    private void resendText(Player viewer, TextDisplay display) {
+        if (!display.isValid() || !display.isTrackedBy(viewer)) {
+            return;
+        }
+        // Receiving text metadata invalidates the client's cached layout after a pack reload.
+        var textData = ((CraftEntity) display).getHandle().getEntityData().packAll().stream()
+                .filter(value -> value.serializer() == EntityDataSerializers.COMPONENT)
+                .toList();
+        ((CraftPlayer) viewer).getHandle().connection.send(new ClientboundSetEntityDataPacket(display.getEntityId(), textData));
     }
 
     public void markForTicking(EntityStatusDisplay display) {

@@ -4,6 +4,8 @@ import de.erethon.bedrock.chat.MessageUtil;
 import de.erethon.bedrock.command.ECommand;
 import de.erethon.hecate.Hecate;
 import de.erethon.hecate.classes.Traitline;
+import de.erethon.hecate.classes.HClass;
+import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.data.HPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -19,10 +21,9 @@ public class DisciplineCommand extends ECommand {
     public DisciplineCommand() {
         setCommand("discipline");
         setAliases("tl");
-        setMinArgs(1);
+        setMinArgs(0);
         setMaxArgs(3);
-        setHelp("<red>Invalid syntax. Use /discipline <discipline> [<player>] [force]");
-        setPermission("hecate.discipline");
+        setHelp("<red>Use /discipline to browse, or /discipline <discipline> [<player>] [force]");
         setPlayerCommand(true);
         setConsoleCommand(false);
         setRegisterSeparately(true);
@@ -34,7 +35,7 @@ public class DisciplineCommand extends ECommand {
         HPlayer hPlayer;
 
         if (args.length < 2) {
-            MessageUtil.sendMessage(player, "<red>Invalid syntax. Use /discipline <discipline> [<player>] [force]");
+            plugin.getDisciplineDialog().open(player);
             return;
         }
 
@@ -61,6 +62,15 @@ public class DisciplineCommand extends ECommand {
             }
         }
 
+        if (force && !player.isOp() && !player.hasPermission("hecate.discipline.force")) {
+            MessageUtil.sendMessage(player, "<red>You cannot force a discipline change.");
+            return;
+        }
+        if (targetPlayer != player && !player.hasPermission("hecate.discipline.others")) {
+            MessageUtil.sendMessage(player, "<red>You cannot change another player's discipline.");
+            return;
+        }
+
         hPlayer = plugin.getDatabaseManager().getHPlayer(targetPlayer);
         if (hPlayer == null) {
             MessageUtil.sendMessage(player, "<red>Player data not found.");
@@ -78,19 +88,50 @@ public class DisciplineCommand extends ECommand {
             return;
         }
 
-        // Check permission unless force is used
-        if (!force && !targetPlayer.hasPermission("hecate.traitline." + traitlineData.getId())) {
-            MessageUtil.sendMessage(player, "<red>Discipline " + traitlineData.getId() + " is not yet unlocked" + (targetPlayer == player ? "" : " for " + targetPlayer.getName()) + ".");
+        HCharacter character = hPlayer.getSelectedCharacter();
+        HClass disciplineClass = plugin.getHClasses().stream()
+                .filter(candidate -> candidate.getTraitlines().contains(traitlineData))
+                .findFirst().orElse(null);
+        if (disciplineClass == null) {
+            MessageUtil.sendMessage(player, "<red>Discipline " + traitlineData.getId() + " has no class.");
             return;
         }
 
-        hPlayer.getSelectedCharacter().setTraitline(traitlineData);
-        if (targetPlayer == player) {
-            MessageUtil.sendMessage(player, "<green>Discipline " + traitlineData.getId() + " set.");
-        } else {
-            MessageUtil.sendMessage(player, "<green>Discipline " + traitlineData.getId() + " set for " + targetPlayer.getName() + ".");
-            MessageUtil.sendMessage(targetPlayer, "<green>Your discipline has been set to " + traitlineData.getId() + ".");
+        if (!force) {
+            if (character.getHClass() != disciplineClass) {
+                MessageUtil.sendMessage(player, "<red>This discipline belongs to another archetype.");
+                return;
+            }
+            int requirement = Math.max(1, traitlineData.getInitialLevelRequirement());
+            if (character.getLevel() < requirement) {
+                MessageUtil.sendMessage(player, "<red>This discipline unlocks at level " + requirement + ".");
+                return;
+            }
         }
+
+        Integer[] traits = character.getTraitline() == traitlineData
+                ? character.getSelectedTraits() : new Integer[]{-1, -1, -1};
+        Player target = targetPlayer;
+        plugin.getDatabaseManager().updateCharacterDiscipline(character.getCharacterID(),
+                disciplineClass.getId(), traitlineData.getId(), traits).whenComplete((saved, error) ->
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (error != null || !Boolean.TRUE.equals(saved)) {
+                        MessageUtil.sendMessage(player, "<red>Could not save the discipline change.");
+                        return;
+                    }
+                    character.setSelectedTraits(traits);
+                    character.setHClass(disciplineClass);
+                    character.setTraitline(traitlineData);
+                    if (hPlayer.getSelectedCharacter() == character && character.getCastingManager() != null) {
+                        character.getCastingManager().refreshDiscipline();
+                    }
+                    if (target == player) {
+                        MessageUtil.sendMessage(player, "<green>Discipline " + traitlineData.getId() + " set.");
+                    } else {
+                        MessageUtil.sendMessage(player, "<green>Discipline " + traitlineData.getId() + " set for " + target.getName() + ".");
+                        MessageUtil.sendMessage(target, "<green>Your discipline has been set to " + traitlineData.getId() + ".");
+                    }
+                }));
     }
 
     @Override

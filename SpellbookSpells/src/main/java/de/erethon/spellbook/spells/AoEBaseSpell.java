@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
@@ -96,13 +98,13 @@ public class AoEBaseSpell extends SpellbookBaseSpell {
         Block targetBlock = caster.getTargetBlockExact(64);
         if (targetBlock != null && targetBlock.isSolid()) {
             if (targetBlock.getLocation().distanceSquared(caster.getLocation()) > maxDistance * maxDistance) {
-                caster.sendParsedActionBar("<color:#ff0000>Ziel zu weit entfernt!");
+                SpellbookFeedback.send(caster, "<color:#ff0000>Ziel zu weit entfernt!");
                 return false;
             }
             target = targetBlock.getLocation().add(0.5, 1,0.5);
             return true;
         }
-        caster.sendParsedActionBar("<color:#ff0000>Kein gültiges Ziel!");
+        SpellbookFeedback.send(caster, "<color:#ff0000>Kein gültiges Ziel!");
         return false;
     }
 
@@ -162,7 +164,7 @@ public class AoEBaseSpell extends SpellbookBaseSpell {
     @Override
     protected void cleanup() {
         if (packet) {
-            for (ServerPlayer player : server.getServer().getPlayerList().players) {
+            for (ServerPlayer player : server.getServer().getPlayerList().getPlayers()) {
                 for (int entityID : entityIDs) {
                     player.connection.send(new ClientboundRemoveEntitiesPacket(entityID));
                 }
@@ -177,9 +179,9 @@ public class AoEBaseSpell extends SpellbookBaseSpell {
     private void sendPackets(Player player, int id, BlockPos pos) {
         ServerPlayer nmsplayer = ((CraftPlayer) player).getHandle();
         Level level = ((CraftWorld) caster.getWorld()).getHandle();
-        Display.ItemDisplay display = new Display.ItemDisplay(EntityType.ITEM_DISPLAY, level);
+        Display.ItemDisplay display = new Display.ItemDisplay(net.minecraft.world.entity.EntityTypes.ITEM_DISPLAY, level);
         display.setPos(pos.getX(), pos.getY(), pos.getZ());
-        ItemStack item = new ItemStack(Items.WHITE_DYE);
+        ItemStack item = CraftItemStack.asNMSCopy(new org.bukkit.inventory.ItemStack(org.bukkit.Material.WHITE_DYE));
         org.bukkit.inventory.ItemStack enemyItem = CraftItemStack.asBukkitCopy(item);
         ItemMeta meta = enemyItem.getItemMeta();
         meta.setCustomModelData(id);

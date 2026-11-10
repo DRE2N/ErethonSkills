@@ -1,5 +1,7 @@
 package de.erethon.spellbook;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.spells.SpellbookBaseSpell;
@@ -30,7 +32,7 @@ public class ChannelingSpell extends SpellbookBaseSpell implements Listener {
     protected void onTick() {
         super.onTick();
         currentTicks++;
-        caster.sendParsedActionBar("<color:#ff0000>Channeling... <color:#ffffff>" + currentTicks + " / " + channelTime);
+        SpellbookFeedback.send(caster, "<color:#ff0000>Channeling... <color:#ffffff>" + currentTicks + " / " + channelTime);
         if(currentTicks >= channelTime) {
             onChannelFinish();
         }

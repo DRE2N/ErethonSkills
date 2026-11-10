@@ -1,44 +1,42 @@
 package de.erethon.spellbook.spells.paladin.guardian;
 
+import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.aoe.AoE;
-import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Material;
+import de.erethon.spellbook.combat.BossControl;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.spells.vfx.TerrainRing;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 
-public class BastionOfResolve extends GuardianBaseSpell {
+import java.util.List;
 
-    // The Guardian creates a protective bastion that follows them, granting nearby allies increased resistance, stability and power.
-    // The bastion creates pillars of light that strengthen allies and weaken enemies who dare approach.
+/** A visible, finite defense that can be collapsed into one shield slam. */
+public class BastionOfResolve extends GuardianBaseSpell implements Listener {
 
-    private final int range = data.getInt("range", 8);
-    private final int powerDurationMin = data.getInt("powerDurationMin", 8) * 20;
-    private final int powerDurationMax = data.getInt("powerDurationMax", 20) * 20;
-    private final int resistanceDurationMin = data.getInt("resistanceDurationMin", 8) * 20;
-    private final int resistanceDurationMax = data.getInt("resistanceDurationMax", 20) * 20;
-    private final int stabilityDurationMin = data.getInt("stabilityDurationMin", 8) * 20;
-    private final int stabilityDurationMax = data.getInt("stabilityDurationMax", 20) * 20;
-    private final int bastionDuration = data.getInt("bastionDuration", 200);
-    private final double weaknessDamage = data.getDouble("weaknessDamage", 5.0);
-
-    private final EffectData resistanceEffect = Spellbook.getEffectData("Resistance");
-    private final EffectData powerEffect = Spellbook.getEffectData("Power");
-    private final EffectData stabilityEffect = Spellbook.getEffectData("Stability");
-    private final EffectData weaknessEffect = Spellbook.getEffectData("Weakness");
-
-    private AoE bastionAura;
-    private int applyTicks = 20;
+    private final double radius = data.getDouble("range", 4);
+    private final double baseAbsorb = data.getDouble("baseAbsorb", 18);
+    private final double resistanceCoefficient = data.getDouble("resistanceCoefficient", 0.5);
+    private Location center;
+    private double remainingAbsorb;
+    private double absorbed;
+    private boolean collapsed;
+    private TerrainRing sanctuaryBoundary;
 
     public BastionOfResolve(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = duration * 20;
+        keepAliveTicks = data.getInt("duration", 6) * 20;
     }
 
     @Override
@@ -48,91 +46,86 @@ public class BastionOfResolve extends GuardianBaseSpell {
 
     @Override
     public boolean onCast() {
-        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.RECORDS, 1.0f, 0.5f);
-        caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, SoundCategory.RECORDS, 0.8f, 0.7f);
+        if (!super.onCast()) return false;
+        center = caster.getLocation().clone();
+        double resistance = Math.max(0, caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).getValue())
+                + Math.max(0, caster.getAttribute(Attribute.RESISTANCE_MAGICAL).getValue());
+        remainingAbsorb = Math.min(caster.getMaxHealth() * 0.4,
+                baseAbsorb + Math.min(100, resistance) * resistanceCoefficient);
+        if (SkillVfx.availableTo(caster)) {
+            sanctuaryBoundary = new TerrainRing(center, radius,
+                    "terrain_band_guardian", 48, 0.6f);
+        }
+        center.getWorld().playSound(center, Sound.BLOCK_BEACON_ACTIVATE, 0.9f, 1.1f);
+        Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
+        return true;
+    }
 
-        bastionAura = createCircularAoE(caster.getLocation(), range, 1, bastionDuration)
-                .followEntity(caster)
-                .onTick(aoe -> {
-                    if (caster.getTicksLived() % 15 == 0) {
-                        aoe.getCenter().getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME,
-                            aoe.getCenter().add(0, 2, 0),
-                            12, range * 0.6, 1.5, range * 0.6, 0.02);
-                    }
-                    if (caster.getTicksLived() % 25 == 0) {
-                        aoe.getCenter().getWorld().spawnParticle(Particle.END_ROD,
-                            aoe.getCenter().add(0, 0.5, 0),
-                            8, range * 0.7, 0.8, range * 0.7, 0.03);
-                    }
-                })
-                .onEnter((aoe, entity) -> {
-                    if (entity instanceof LivingEntity t) {
-                        if (Spellbook.canAttack(caster, t)) {
-                            t.addEffect(caster, weaknessEffect, 60, 1);
-                            t.damage(weaknessDamage, caster);
-                            t.getWorld().spawnParticle(Particle.WITCH,
-                                t.getLocation().add(0, 1, 0),
-                                5, 0.5, 1, 0.5, 0.02);
-                        }
-                    }
-                })
-                .addBlockChange(Material.BLUE_STAINED_GLASS, Material.CYAN_STAINED_GLASS, Material.LIGHT_BLUE_STAINED_GLASS)
-                .sendBlockChanges();
-
-        return super.onCast();
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    private void protect(EntityDamageEvent event) {
+        if (collapsed || center == null || !(event.getEntity() instanceof LivingEntity ally)
+                || Spellbook.canAttack(caster, ally) || ally.getWorld() != center.getWorld()
+                || ally.getLocation().distanceSquared(center) > radius * radius
+                || event.getDamage() <= 0 || remainingAbsorb <= 0) return;
+        double blocked = Math.min(remainingAbsorb, event.getDamage());
+        remainingAbsorb -= blocked;
+        absorbed += blocked;
+        event.setDamage(Math.max(0, event.getDamage() - blocked));
+        ally.getWorld().spawnParticle(Particle.ENCHANTED_HIT, ally.getEyeLocation(),
+                8, 0.35, 0.5, 0.35);
+        ally.getWorld().playSound(ally.getLocation(), Sound.ITEM_SHIELD_BLOCK, 0.9f, 1.0f);
+        if (remainingAbsorb <= 0) collapse();
     }
 
     @Override
     protected void onTick() {
         super.onTick();
-        applyTicks--;
-        if (applyTicks <= 0) {
-            applyTicks = 20;
+        if (collapsed) return;
+        if (currentTicks % 10 == 0) {
+            center.getWorld().spawnParticle(Particle.END_ROD, center.clone().add(0, 0.2, 0),
+                    4, radius * 0.6, 0.1, radius * 0.6, 0.01);
+        }
+        if (currentTicks >= 20 && caster instanceof Player player && player.isSneaking()
+                && player.getWorld() == center.getWorld()
+                && player.getLocation().distanceSquared(center) <= radius * radius) collapse();
+    }
 
-            for (LivingEntity ally : caster.getLocation().getNearbyLivingEntities(range)) {
-                if (Spellbook.canAttack(caster, ally)) continue;
-
-                if (!ally.hasEffect(resistanceEffect)) {
-                    int duration = (int) Spellbook.getRangedValue(data, caster, ally, Attribute.RESISTANCE_MAGICAL, resistanceDurationMin, resistanceDurationMax, "resistanceDuration") + (caster.getEnergy() / 2);
-                    ally.addEffect(caster, resistanceEffect, duration, 1);
-
-                    ally.getWorld().spawnParticle(Particle.ENCHANTED_HIT,
-                        ally.getLocation().add(0, 1.5, 0),
-                        3, 0.3, 0.5, 0.3, 0.02);
-                }
-
-                if (!ally.hasEffect(powerEffect)) {
-                    int duration = (int) Spellbook.getRangedValue(data, caster, ally, Attribute.ADVANTAGE_MAGICAL, powerDurationMin, powerDurationMax, "powerDuration") + (caster.getEnergy() / 2);
-                    ally.addEffect(caster, powerEffect, duration, 1);
-                }
-
-                if (!ally.hasEffect(stabilityEffect)) {
-                    int duration = (int) Spellbook.getRangedValue(data, caster, ally, Attribute.RESISTANCE_MAGICAL, stabilityDurationMin, stabilityDurationMax, "stabilityDuration") + (caster.getEnergy() / 2);
-                    ally.addEffect(caster, stabilityEffect, duration, 1);
-                }
-            }
-
-            if (caster.getTicksLived() % 60 == 0) {
-                caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_BEACON_AMBIENT, SoundCategory.RECORDS, 0.6f, 1.2f);
+    private void collapse() {
+        if (collapsed || center == null) return;
+        collapsed = true;
+        HandlerList.unregisterAll(this);
+        if (sanctuaryBoundary != null) {
+            sanctuaryBoundary.close();
+            sanctuaryBoundary = null;
+        }
+        center.getWorld().playSound(center, Sound.ITEM_SHIELD_BREAK, 1.0f, 0.75f);
+        center.getWorld().spawnParticle(Particle.SWEEP_ATTACK, center.clone().add(0, 0.8, 0),
+                3, radius * 0.4, 0.2, radius * 0.4);
+        for (LivingEntity target : center.getWorld().getNearbyLivingEntities(center, radius, 2.5, radius)) {
+            if (!Spellbook.canAttack(caster, target)
+                    || target.getLocation().distanceSquared(center) > radius * radius
+                    || !caster.hasLineOfSight(target)) continue;
+            double damage = Math.min(caster.getMaxHealth() * 0.3,
+                    Spellbook.getVariedAttributeBasedDamage(data, caster, target, false,
+                            Attribute.ADVANTAGE_MAGICAL, "collapseDamage") + absorbed * 0.35);
+            double before = target.getHealth() + target.getAbsorptionAmount();
+            CombatSourceContext.runSpell(this, () -> target.damage(damage, caster, PDamageType.MAGIC));
+            if (target.getHealth() + target.getAbsorptionAmount() < before) {
+                BossControl.apply(caster, target, 40);
             }
         }
+    }
+
+    @Override
+    protected void onTickFinish() {
+        if (!collapsed) collapse();
+        super.onTickFinish();
     }
 
     @Override
     protected void cleanup() {
-        if (bastionAura != null) {
-            bastionAura.revertBlockChanges();
-        }
+        HandlerList.unregisterAll(this);
+        if (sanctuaryBoundary != null) sanctuaryBoundary.close();
         super.cleanup();
-    }
-
-    @Override
-    protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, resistanceDurationMin, resistanceDurationMax, "resistanceDuration") / 20, VALUE_COLOR));
-        placeholderNames.add("resistanceDuration");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, powerDurationMin, powerDurationMax, "powerDuration") / 20, VALUE_COLOR));
-        placeholderNames.add("powerDuration");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, stabilityDurationMin, stabilityDurationMax, "stabilityDuration") / 20, VALUE_COLOR));
-        placeholderNames.add("stabilityDuration");
     }
 }

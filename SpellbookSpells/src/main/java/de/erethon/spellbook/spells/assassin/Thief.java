@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.assassin;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
@@ -31,14 +33,14 @@ public class Thief extends AssassinBaseSpell {
     public boolean onCast() {
         List<SpellEffect> datas = target.getEffects().stream().toList();
         if (datas.isEmpty()) {
-            caster.sendParsedActionBar("<#ff0000>Das Ziel hat keine Effekte");
+            SpellbookFeedback.send(caster, "<#ff0000>Das Ziel hat keine Effekte");
             return false;
         }
         EffectData effectData = datas.get(random.nextInt(datas.size())).data;
         caster.addEffect(caster, effectData, effectDuration * 20, 1);
         target.removeEffect(effectData);
         triggerTraits(target);
-        caster.sendParsedActionBar("<green>Du hast " + effectData.getName() + " gestohlen!");
+        SpellbookFeedback.send(caster, "<green>Du hast " + effectData.getName() + " gestohlen!");
         return true;
     }
 

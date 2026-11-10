@@ -1,4 +1,5 @@
 package de.erethon.spellbook.effects.ranger;
+import de.erethon.spellbook.utils.TargetedParticles;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.api.EffectData;
@@ -19,7 +20,8 @@ public class MarkOfTheHuntedEffect extends SpellEffect {
 
     @Override
     public void tick() {
-        target.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, target.getLocation().add(random.nextDouble(-0.5, 0.5), 1.9,random.nextDouble(-0.5, 0.5)), 1);
+        TargetedParticles.spawnForOthers(Particle.HAPPY_VILLAGER, target,
+                target.getLocation().add(random.nextDouble(-0.5, 0.5), 1.9, random.nextDouble(-0.5, 0.5)), 1, 0, 0, 0);
 
     }
 

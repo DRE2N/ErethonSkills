@@ -1,4 +1,5 @@
 package de.erethon.spellbook.spells.ranger;
+import de.erethon.spellbook.utils.TargetedParticles;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
@@ -39,7 +40,7 @@ public class HealingWave extends RangerBaseSpell {
             if (livingEntity.getLocation().distanceSquared(caster.getLocation()) > 9) continue;
             livingEntity.setHealth(Math.min(livingEntity.getHealth() + Spellbook.getScaledValue(data, caster, Attribute.STAT_HEALINGPOWER), livingEntity.getAttribute(Attribute.MAX_HEALTH).getValue()));
             caster.getWorld().playSound(livingEntity.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1, 0.5f);
-            caster.getWorld().spawnParticle(Particle.HEART, livingEntity.getLocation().clone().add(0, 1, 0), 4, 1, 0, 1);
+            TargetedParticles.spawnForOthers(Particle.HEART, livingEntity, livingEntity.getLocation().clone().add(0, 1, 0), 4, 1, 0, 1);
         }
         return super.onCast();
     }

@@ -44,6 +44,7 @@ public class ShieldWall extends WarriorBaseSpell {
             ItemDisplay dis = caster.getWorld().spawn(loc, ItemDisplay.class, itemDisplay -> {
                 itemDisplay.setItemStack(new ItemStack(Material.SHIELD));
                 itemDisplay.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.FIRSTPERSON_RIGHTHAND);
+                itemDisplay.setPersistent(false);
                 itemDisplay.setTransformation(transformation);
             });
             MessageUtil.broadcastMessage("Spawned shield at " + dis.getLocation().toString());
@@ -55,6 +56,7 @@ public class ShieldWall extends WarriorBaseSpell {
             ItemDisplay dis = caster.getWorld().spawn(caster.getLocation().getDirection().add(new Vector(currentSpacing * -1, 0, 0)).toLocation(caster.getWorld()), ItemDisplay.class, itemDisplay -> {
                 itemDisplay.setItemStack(new ItemStack(Material.SHIELD));
                 itemDisplay.setItemDisplayTransform(ItemDisplay.ItemDisplayTransform.FIRSTPERSON_RIGHTHAND);
+                itemDisplay.setPersistent(false);
                 itemDisplay.setTransformation(transformation);
             });
             displays.add(dis);

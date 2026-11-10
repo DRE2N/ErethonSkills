@@ -3,6 +3,7 @@ package de.erethon.spellbook.effects;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellEffect;
+import de.erethon.spellbook.combat.CombatSourceContext;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 
@@ -19,7 +20,8 @@ public class RegenerationEffect extends SpellEffect {
         tick++;
         if (tick >= 20) {
             tick = 0;
-            target.heal(Spellbook.getScaledValue(data, caster, target, Attribute.STAT_HEALINGPOWER));
+            CombatSourceContext.runEffect(this, () ->
+                    target.heal(Spellbook.getScaledValue(data, caster, target, Attribute.STAT_HEALINGPOWER)));
         }
     }
 }

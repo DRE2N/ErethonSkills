@@ -5,6 +5,7 @@ import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.aoe.visual.AoEDisplayManager;
 import de.erethon.spellbook.aoe.visual.AoEBlockChangeManager;
 import de.erethon.spellbook.aoe.visual.AoEDisplayBuilder;
+import de.erethon.spellbook.combat.CombatSourceContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -49,6 +50,7 @@ public class AoE {
     private final AoEDisplayManager displayManager;
     private final AoEBlockChangeManager blockChangeManager;
     private Material currentBlockMaterial;
+    private boolean particlesEnabled = true;
 
     public AoE(SpellbookSpell sourceSpell, LivingEntity caster, Location center,
                AoEShape shape, AoEParameters parameters, Vector rotation, long duration) {
@@ -389,7 +391,7 @@ public class AoE {
     public void onEntityEnter(LivingEntity entity) {
         if (entitiesInside.add(entity)) {
             if (enterCallback != null) {
-                enterCallback.onEntityEnter(this, entity);
+                CombatSourceContext.runSpell(sourceSpell, () -> enterCallback.onEntityEnter(this, entity));
             }
         }
     }
@@ -400,7 +402,7 @@ public class AoE {
     public void onEntityLeave(LivingEntity entity) {
         if (entitiesInside.remove(entity)) {
             if (leaveCallback != null) {
-                leaveCallback.onEntityLeave(this, entity);
+                CombatSourceContext.runSpell(sourceSpell, () -> leaveCallback.onEntityLeave(this, entity));
             }
         }
     }
@@ -428,8 +430,31 @@ public class AoE {
             displayManager.updateDisplayPositions(center);
         }
 
+        updateEntitiesInside();
+
         if (tickCallback != null) {
-            tickCallback.onAoETick(this);
+            CombatSourceContext.runSpell(sourceSpell, () -> tickCallback.onAoETick(this));
+        }
+    }
+
+    public AoE setParticlesEnabled(boolean enabled) {
+        this.particlesEnabled = enabled;
+        return this;
+    }
+
+    private void updateEntitiesInside() {
+        Set<LivingEntity> nearbyEntities = new HashSet<>(center.getNearbyLivingEntities(calculateSearchRadius()));
+        nearbyEntities.addAll(entitiesInside);
+
+        for (LivingEntity entity : nearbyEntities) {
+            boolean isInside = entity.isValid()
+                    && entity.getWorld().equals(center.getWorld())
+                    && contains(entity);
+            if (isInside) {
+                onEntityEnter(entity);
+            } else {
+                onEntityLeave(entity);
+            }
         }
     }
 
@@ -445,6 +470,7 @@ public class AoE {
      * Displays particles for this AoE to nearby players
      */
     public void displayParticles() {
+        if (!particlesEnabled) return;
         Set<Player> nearbyPlayers = getNearbyPlayers();
 
         for (Player player : nearbyPlayers) {

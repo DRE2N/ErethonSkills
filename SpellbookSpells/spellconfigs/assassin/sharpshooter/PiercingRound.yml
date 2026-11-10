@@ -2,7 +2,7 @@ class: assassin.sharpshooter.PiercingRound
 cooldown: 10
 energyCost: 50
 lanceSpeed: 3.0
-lanceRange: 48.0
+lanceRange: 32.0
 lanceWidth: 0.8
 headshotRangeFromEye: 0.4
 headshotMultiplier: 1.5
@@ -24,9 +24,8 @@ description:
   - ' '
   - <#94958B>Fire a fast energy lance that pierces through all
   - <#94958B>enemies in a line, dealing moderate damage to each.
-  - <#94958B>Headshots refund 50% of the Energy cost plus bonus Energy.
+  - <#94958B>A confirmed headshot refunds up to 25 Focus. Cover stops the shot.
   - ' '
-  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
   - '<!i><yellow>⚡ <#94958B>Energy Cost: <arg:1> Energy'
   - '<!i><yellow>📏 <#94958B>Range: <arg:3> blocks'
   - '<!i><yellow>🎯 <#94958B>Headshot Multiplier: <arg:10>x'
@@ -36,9 +35,8 @@ description:
   - ' '
   - <#94958B>Feuere eine schnelle Energielanze, die alle Feinde
   - <#94958B>in einer Linie durchdringt und jedem moderaten
-  - <#94958B>Schaden zufügt. Kopfschüsse erstatten 50% der Energie plus Bonus.
+  - <#94958B>Schaden zufügt. Bestätigte Kopfschüsse erstatten bis zu 25 Fokus. Deckung stoppt den Schuss.
   - ' '
-  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
   - '<!i><yellow>⚡ <#94958B>Energiekosten: <arg:1> Energie'
   - '<!i><yellow>📏 <#94958B>Reichweite: <arg:3> Blöcke'
   - '<!i><yellow>🎯 <#94958B>Kopfschuss Multiplikator: <arg:10>x'
@@ -59,4 +57,3 @@ availablePlaceholders:
   '9': coefficients.entities.damage.minecraft:advantage_magical
   '10': headshotMultiplier
   '11': focusRefundPercentage
-

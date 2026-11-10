@@ -3,8 +3,8 @@ cooldown: 24
 energyCost: 40
 range: 5
 ticksForFollowUp: 20
-upwardLaunchVelocityMin: 0.5
-upwardLaunchVelocityMax: 1.0
+upwardLaunchVelocityMin: 1.0
+upwardLaunchVelocityMax: 1.4
 followUpDamageMultiplierMin: 1.5
 followUpDamageMultiplierMax: 2.0
 coefficients:
@@ -25,8 +25,8 @@ description:
   en:
   - <!i><#757575>Swordstorm
   - ' '
-  - <#94958B>Perform a powerful upward slash. If Jumping, launch
-  - <#94958B>the target into the air, interrupting their actions.
+  - <#94958B>Perform a powerful upward slash. Jump within one second
+  - <#94958B>after the hit to launch the target and interrupt their actions.
   - <#94958B>Attacks while the target is airborne deal additional damage.
   - ' '
   - '<!i><yellow>⚡ <#94958B>Rage: <arg:1> Rage'
@@ -38,8 +38,8 @@ description:
   de:
   - <!i><#757575>Schwersturm
   - ' '
-  - <#94958B>Führe einen kraftvollen aufsteigenden Schnitt aus. Wenn gesprungen wird,
-  - <#94958B>wird das Ziel in die Luft katapultiert, was Aktionen unterbricht.
+  - <#94958B>Führe einen kraftvollen aufsteigenden Schnitt aus. Springe innerhalb
+  - <#94958B>einer Sekunde nach dem Treffer, um das Ziel hochzuschleudern und Aktionen zu unterbrechen.
   - <#94958B>Angriffe, während das Ziel in der Luft ist, fügen zusätzlichen Schaden
     zu.
   - ' '

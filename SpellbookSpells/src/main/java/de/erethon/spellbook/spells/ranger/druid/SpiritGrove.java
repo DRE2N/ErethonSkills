@@ -1,4 +1,5 @@
 package de.erethon.spellbook.spells.ranger.druid;
+import de.erethon.spellbook.utils.TargetedParticles;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.aoe.AoE;
@@ -107,7 +108,7 @@ public class SpiritGrove extends DruidBaseSpell {
             if (seeds == 0) {
                 addSeed(entity, 1);
             }
-            entity.getWorld().spawnParticle(Particle.HEART, entity.getLocation().add(0, 1, 0), 2, 0.3, 0.5, 0.3, 0);
+            TargetedParticles.spawnForOthers(Particle.HEART, entity, entity.getLocation().add(0, 1, 0), 2, 0.3, 0.5, 0.3);
         }
 
         caster.getWorld().playSound(targetLocation, Sound.BLOCK_MOSS_STEP, SoundCategory.RECORDS, 0.4f, 1.2f);

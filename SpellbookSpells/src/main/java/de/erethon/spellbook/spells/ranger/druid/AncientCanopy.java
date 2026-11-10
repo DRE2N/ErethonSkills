@@ -1,4 +1,5 @@
 package de.erethon.spellbook.spells.ranger.druid;
+import de.erethon.spellbook.utils.TargetedParticles;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.aoe.AoE;
@@ -100,7 +101,7 @@ public class AncientCanopy extends DruidBaseSpell {
             if (stability != null && seeds > 0) {
                 entity.addEffect(caster, stability, stabilityDuration, 1);
             }
-            entity.getWorld().spawnParticle(Particle.HEART, entity.getLocation().add(0, 1, 0), 2 + seeds, 0.3, 0.45, 0.3, 0);
+            TargetedParticles.spawnForOthers(Particle.HEART, entity, entity.getLocation().add(0, 1, 0), 2 + seeds, 0.3, 0.45, 0.3);
         }
         canopyLocation.getWorld().playSound(canopyLocation, Sound.BLOCK_AZALEA_LEAVES_BREAK, SoundCategory.RECORDS, 0.45f, 1.2f);
     }

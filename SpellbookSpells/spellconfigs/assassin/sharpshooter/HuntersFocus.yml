@@ -1,39 +1,44 @@
-class: assassin.sharpshooter.HuntersFocus
-cooldown: 2
-minFocusDrain: 10.0
-maxFocusDrain: 20.0
-trueSightRadius: 30.0
+# Keep this ID for existing hotbar icons and saved spell references.
+class: assassin.sharpshooter.FieldDressing
+cooldown: 22
+energyCost: 0
+baseHealing: 14
+healingPowerCoefficient: 0.35
+focusHealingPerPoint: 0.4
+maximumFocusSpend: 20
+playerCombatHealingMultiplier: 0.65
+allyRange: 8
 name:
-  de: Jägerfokus
-  en: Hunter's Focus
+  de: Feldversorgung
+  en: Field Dressing
 description:
   en:
-  - <!i><#757575>Sharpshooter
-  - ' '
-  - <#94958B>Toggle ability. Drains Focus per second while active.
-  - <#94958B>Grants True Sight, revealing invisible enemies within
-  - <#94958B>range, and makes Charged Shot charge 50% faster.
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Toggle Cooldown: <arg:0>s'
-  - '<!i><yellow>⚡ <#94958B>Focus Drain: <arg:1>/s'
-  - '<!i><yellow>👁️ <#94958B>True Sight Radius: <arg:2> blocks'
+    - <!i><#757575>Sharpshooter
+    - ' '
+    - <#94958B>Treat yourself or the ally you deliberately aim at.
+    - <#94958B>Both receive the same base healing over four pulses.
+    - <#94958B>Taking damage weakens later pulses. Self treatment slows you.
+    - <#94958B>Sneak to spend up to 20 Focus for stronger treatment.
+    - <#94958B>Works at zero Focus.
+    - ' '
+    - '<!i><yellow>⏱ <#94958B>Cooldown: <arg:0>s'
+    - '<!i><yellow>   <#94958B>Base healing: <arg:2> + healing power'
   de:
-  - <!i><#757575>Sharpshooter
-  - ' '
-  - <#94958B>Umschaltbare Fähigkeit. Verbraucht Fokus pro Sekunde.
-  - <#94958B>Gewährt Wahre Sicht, die unsichtbare Feinde in
-  - <#94958B>Reichweite aufdeckt, und beschleunigt Charged Shot um 50%.
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Umschalt-Abklingzeit: <arg:0>s'
-  - '<!i><yellow>⚡ <#94958B>Fokus Verbrauch: <arg:4>/s <dark_gray>(<arg:1>-<arg:2> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
-  - '<!i><yellow>👁️ <#94958B>Wahre Sicht Radius: <arg:3> Blöcke'
-# This list contains all placeholders that can be used in this spell.
-# You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+    - <!i><#757575>Scharfschütze
+    - ' '
+    - <#94958B>Versorge dich oder einen gezielt anvisierten Verbündeten.
+    - <#94958B>Beide erhalten dieselbe Grundheilung in vier Pulsen.
+    - <#94958B>Schaden schwächt spätere Pulse. Selbstversorgung verlangsamt dich.
+    - <#94958B>Schleiche, um bis zu 20 Fokus für stärkere Heilung einzusetzen.
+    - <#94958B>Funktioniert auch ohne Fokus.
+    - ' '
+    - '<!i><yellow>⏱ <#94958B>Abklingzeit: <arg:0>s'
+    - '<!i><yellow>   <#94958B>Grundheilung: <arg:2> + Heilkraft'
 availablePlaceholders:
   '0': cooldown
-  '1': minFocusDrain
-  '2': maxFocusDrain
-  '3': trueSightRadius
-  '4': focusDrain
-
+  '1': energyCost
+  '2': baseHealing
+  '3': healingPowerCoefficient
+  '4': focusHealingPerPoint
+  '5': maximumFocusSpend
+  '6': allyRange

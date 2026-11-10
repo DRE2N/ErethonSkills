@@ -3,21 +3,16 @@ package de.erethon.spellbook.spells.warrior.vanguard;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Display;
-import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+
+import java.util.List;
 
 public class SweepingCleave extends VanguardBaseSpell {
 
@@ -38,8 +33,13 @@ public class SweepingCleave extends VanguardBaseSpell {
     @Override
     public boolean onCast() {
         Vector direction = caster.getLocation().getDirection();
+        direction.setY(0);
+        if (direction.lengthSquared() == 0) {
+            direction.setZ(1);
+        } else {
+            direction.normalize();
+        }
 
-        ItemDisplay swingDisplay = spawnSwingDisplay();
         playWindupEffect();
 
         createConeAoE(caster.getLocation(), coneRange, coneAngle, coneHeight, direction, 20)
@@ -59,64 +59,11 @@ public class SweepingCleave extends VanguardBaseSpell {
                     }
                 });
 
-        animateSwingArc(swingDisplay, direction);
+        SkillSignatureVfx.accent(caster.getLocation().add(direction.clone().multiply(2)).add(0, 1.4, 0),
+                ShieldBreaker.class, "main", 2.0f, 12, false);
         playSwingEffect(direction);
 
         return super.onCast();
-    }
-
-    private ItemDisplay spawnSwingDisplay() {
-        Location loc = caster.getLocation().add(0, 1.5, 0);
-        return loc.getWorld().spawn(loc, ItemDisplay.class, d -> {
-            d.setItemStack(new ItemStack(Material.IRON_SWORD));
-            d.setBillboard(Display.Billboard.FIXED);
-            d.setPersistent(false);
-            d.setGlowing(true);
-            d.setInterpolationDuration(2);
-            d.setTeleportDuration(2);
-            Vector dir = caster.getLocation().getDirection();
-            float yaw = (float) Math.atan2(-dir.getX(), dir.getZ());
-            d.setTransformation(new Transformation(
-                new Vector3f(0, 0.5f, 0),
-                new Quaternionf().rotateY(yaw).rotateX(-(float) Math.PI / 4),
-                new Vector3f(1.5f, 1.5f, 1.5f),
-                new Quaternionf()
-            ));
-        });
-    }
-
-    private void animateSwingArc(ItemDisplay display, Vector direction) {
-        new BukkitRunnable() {
-            int tick = 0;
-            final float totalArc = (float) Math.toRadians(coneAngle);
-            final float startYaw = (float) Math.atan2(-direction.getX(), direction.getZ()) - totalArc / 2;
-
-            @Override
-            public void run() {
-                if (tick >= 10 || !display.isValid()) {
-                    if (display.isValid()) display.remove();
-                    cancel();
-                    return;
-                }
-                float progress = tick / 10.0f;
-                float currentYaw = startYaw + totalArc * progress;
-                Location casterLoc = caster.getLocation().add(0, 1.5, 0);
-                display.teleport(casterLoc);
-
-                display.setInterpolationDelay(-1);
-                display.setTransformation(new Transformation(
-                    new Vector3f((float) Math.sin(currentYaw) * -1.2f, 0.3f, (float) Math.cos(currentYaw) * 1.2f),
-                    new Quaternionf().rotateY(currentYaw).rotateX(-(float) Math.PI / 5),
-                    new Vector3f(1.4f, 1.4f, 1.4f),
-                    new Quaternionf()
-                ));
-
-                casterLoc.getWorld().spawnParticle(Particle.SWEEP_ATTACK,
-                    casterLoc.clone().add(Math.sin(currentYaw) * -1.8, 0, Math.cos(currentYaw) * 1.8),
-                    1, 0.1, 0.1, 0.1, 0);
-                tick++;
-            }
-        }.runTaskTimer(Spellbook.getInstance().getImplementer(), 0L, 1L);
     }
 
     private void playWindupEffect() {
@@ -150,7 +97,15 @@ public class SweepingCleave extends VanguardBaseSpell {
         double knockbackStrength = Spellbook.getRangedValue(data, caster, target, Attribute.ADVANTAGE_PHYSICAL, minKnockback, maxKnockback, "knockbackStrength");
         knockbackDirection.multiply(knockbackStrength);
         knockbackDirection.setY(0.2);
-        target.setVelocity(target.getVelocity().add(knockbackDirection));
+        Vector resultingVelocity = target.getVelocity().add(knockbackDirection);
+        new org.bukkit.scheduler.BukkitRunnable() {
+            @Override
+            public void run() {
+                if (target.isValid() && !target.isDead()) {
+                    target.setVelocity(resultingVelocity);
+                }
+            }
+        }.runTaskLater(Spellbook.getInstance().getImplementer(), 1L);
     }
 
     private void playHitEffect(LivingEntity target) {

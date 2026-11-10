@@ -1,0 +1,13 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "hecate:font/combat_damage.png",
+      "ascent": 7,
+      "height": 8,
+      "chars": [
+        "0123456789.-"
+      ]
+    }
+  ]
+}

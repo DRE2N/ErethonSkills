@@ -1,17 +1,17 @@
 class: warrior.bladeweaver.BladeStep
-cooldown: 5
+cooldown: 12
 energyBuildUpFromUse: 5
-teleportDistance: 6.0
-invincibilityTicks: 8
-afterimageDamageRadius: 3.0
+teleportDistance: 6
+invincibilityTicks: 3
+afterimageDamageRadius: 3
 afterimageDelay: 15
 coefficients:
   players:
     afterimageDamage:
-      minecraft:advantage_physical: 1.0
+      minecraft:advantage_physical: 1.8
   entities:
     afterimageDamage:
-      minecraft:advantage_physical: 1.5
+      minecraft:advantage_physical: 3.5
 name:
   de: Klingenschritt
   en: Blade Step
@@ -53,4 +53,3 @@ availablePlaceholders:
   '4': afterimageDamageRadius
   '5': afterimageDelay
   '6': coefficients.entities.afterimageDamage.minecraft:advantage_physical
-

@@ -1,60 +1,40 @@
 class: paladin.hierophant.WrathfulBurst
 cooldown: 20
-radius: 5
-minWrathForBurst: 50
-burstDamageMultiplier: 1.5
-burningMinDuration: 6
-burningMaxDuration: 25
+radius: 4
+empoweredCost: 40
+burstDamageMultiplier: 1.35
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_magical: 1.3
+  entities:
+    damage:
+      minecraft:advantage_magical: 2.1
 name:
   de: Zornesausbruch
   en: Wrathful Burst
 description:
-  de:
-  - <!i><#757575>Hierophant
-  - ' '
-  - <#94958B>Der Hierophant entfesselt eine Explosion von Energie,
-  - <#94958B>die Gegner in einem Radius um ihn herum beschädigt.
-  - <#94958B>Wenn der Hierophant genug Zorn hat, werden die Gegner
-  - <#94958B>in Brand gesetzt und der Schaden erhöht.
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
-  - '<!i><yellow>↔  <#94958B>Reichweite: <arg:1>'
-  - '<!i><yellow>   <#94958B>Min. Zorn für Ausbruch: <arg:2>'
-  - '<!i><yellow>   <#94958B>Ausbruch-Schaden Multiplikator: <arg:3>x'
-  - '<!i><yellow>   <#94958B>Brenn-Dauer: <arg:7>s <dark_gray>(<arg:4>-<arg:5> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
   en:
   - <!i><#757575>Hierophant
   - ' '
-  - <#94958B> The Hierophant unleashes a burst of energy, damaging
-  - <#94958B>enemies in a radius around him. If the Hierophant has enough
-  - <#94958B>Wrath, the enemies are set on fire and damage is increased.
+  - <#94958B>Show a radiant circle, then strike after 8 ticks.
+  - <#94958B>Spend 40 Wrath if available for a stronger hit and burn.
+  - <#94958B>Deals 15 boss control, or 25 when empowered.
+  - <#94958B>Enemies can leave the circle or take cover.
   - ' '
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
   - '<!i><yellow>↔  <#94958B>Radius: <arg:1>'
-  - '<!i><yellow>   <#94958B>Min. Wrath for Burst: <arg:2>'
-  - '<!i><yellow>   <#94958B>Burst Damage Multiplier: <arg:3>x'
-  - '<!i><yellow>   <#94958B>Burning Duration: <arg:7>s <dark_gray>(<arg:4>-<arg:5>
-    <#0fdcfa>+♦<dark_gray>)</dark_gray>'
-coefficients:
-  players:
-    minecraft:advantage_physical: 1.5
-    burningDuration:
-      minecraft:advantage_magical: 0.5
-  entities:
-    minecraft:advantage_physical: 1.5
-    burningDuration:
-      minecraft:advantage_magical: 0.5
-# This list contains all placeholders that can be used in this spell.
-# You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+  de:
+  - <!i><#757575>Hierophant
+  - ' '
+  - <#94958B>Zeige einen strahlenden Kreis und triff nach 8 Ticks.
+  - <#94958B>Verbrauche bei Bedarf 40 Zorn für mehr Schaden und Brand.
+  - <#94958B>Verursacht 15 oder verstärkt 25 Boss-Kontrolle.
+  - <#94958B>Gegner können den Kreis verlassen oder Deckung suchen.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>↔  <#94958B>Radius: <arg:1>'
 availablePlaceholders:
   '0': cooldown
   '1': radius
-  '2': minWrathForBurst
-  '3': burstDamageMultiplier
-  '4': burningMinDuration
-  '5': burningMaxDuration
-  '6': coefficients.entities.minecraft:advantage_physical
-  '7': coefficients.entities.burningDuration.minecraft:advantage_magical
-  '8': burningDuration
+  '2': empoweredCost

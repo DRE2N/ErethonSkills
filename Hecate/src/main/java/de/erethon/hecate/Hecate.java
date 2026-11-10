@@ -8,14 +8,18 @@ import de.erethon.hecate.charselection.CharacterLobby;
 import de.erethon.hecate.arenas.ArenaManager;
 import de.erethon.hecate.data.DatabaseManager;
 import de.erethon.hecate.classes.HClass;
+import de.erethon.hecate.classes.SpellbookLookup;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.commands.HecateCommandCache;
+import de.erethon.hecate.combatlog.CombatLogManager;
 import de.erethon.hecate.listeners.EntityListener;
 import de.erethon.hecate.listeners.HPlayerListener;
 import de.erethon.hecate.progression.LevelMessages;
 import de.erethon.hecate.progression.LevelUtil;
 import de.erethon.hecate.translations.TranslationManager;
 import de.erethon.hecate.ui.EntityStatusDisplayManager;
+import de.erethon.hecate.ui.DisciplineDialog;
+import de.erethon.hecate.util.ResourcePackServer;
 import de.erethon.hecate.web.WebAccountService;
 import de.erethon.hecate.web.WebInventoryService;
 import de.erethon.spellbook.utils.SpellbookTranslator;
@@ -60,7 +64,10 @@ public final class Hecate extends EPlugin {
     private WebAccountService webAccountService;
     private WebInventoryService webInventoryService;
     private EntityStatusDisplayManager statusDisplayManager;
+    private DisciplineDialog disciplineDialog;
     private TranslationManager translationManager;
+    private CombatLogManager combatLogManager;
+    private ResourcePackServer resourcePackServer;
     private final Set<Traitline> traitlines = new HashSet<>();
     private final Set<HClass> hClasses = new HashSet<>();
 
@@ -106,19 +113,26 @@ public final class Hecate extends EPlugin {
             e.printStackTrace();
             return;
         }
+        try {
+            resourcePackServer = new ResourcePackServer(this, config);
+        } catch (IOException e) {
+            getLogger().severe("Could not start resource pack server: " + e.getMessage());
+        }
         initFolders();
         instantiate();
         registerCommands();
+        getServer().getPluginManager().registerEvents(combatLogManager, this);
         getServer().getPluginManager().registerEvents(new HPlayerListener(), this);
         getServer().getPluginManager().registerEvents(new EntityListener(), this);
-        Bukkit.getScheduler().runTaskLater(this, () -> { // Workaround for Spellbook not loading spells on load
-            Bukkit.getServer().getSpellbookAPI().getLibrary().reload();
-            loadTraitlines();
-            loadClasses();
-            registerTranslations();
-            translator.addSource(reg);
-            createPlaceholderDefinitions(Bukkit.getWorlds().get(0));
-            ready = true;
+        loadTraitlines();
+        loadClasses();
+        disciplineDialog = new DisciplineDialog(this);
+        registerTranslations();
+        translator.addSource(reg);
+        createPlaceholderDefinitions(Bukkit.getWorlds().get(0));
+        ready = true;
+        // Tyche enables after Hecate, so initialize its currencies once plugins have loaded.
+        Bukkit.getScheduler().runTaskLater(this, () -> {
             if (Bukkit.getPluginManager().isPluginEnabled("Tyche")) {
                 LevelUtil.createCurrencies();
                 File levelMessagesFile = new File(getDataFolder(), "levelMessages.yml");
@@ -277,12 +291,22 @@ public final class Hecate extends EPlugin {
 
     @Override
     public void onDisable() {
+        if (combatLogManager != null) {
+            combatLogManager.shutdown();
+        }
         if (arenaManager != null) {
             arenaManager.shutdown();
+        }
+        if (resourcePackServer != null) {
+            resourcePackServer.close();
         }
         Bukkit.getScheduler().cancelTasks(this);
         HandlerList.unregisterAll(this);
         databaseManager.close();
+    }
+
+    public ResourcePackServer getResourcePackServer() {
+        return resourcePackServer;
     }
 
     public void reloadContent() {
@@ -296,9 +320,11 @@ public final class Hecate extends EPlugin {
         }
         traitlines.clear();
         hClasses.clear();
+        SpellbookLookup.reloadLibrary();
         loadTraitlines();
         loadClasses();
         registerTranslations();
+        disciplineDialog.clearLoreCache();
     }
 
     private void loadClasses() {
@@ -354,6 +380,7 @@ public final class Hecate extends EPlugin {
     public void instantiate() {
         statusDisplayManager = new EntityStatusDisplayManager();
         arenaManager = new ArenaManager(this);
+        combatLogManager = new CombatLogManager(this);
     }
 
     public void registerCommands() {
@@ -409,6 +436,14 @@ public final class Hecate extends EPlugin {
 
     public EntityStatusDisplayManager getStatusDisplayManager() {
         return statusDisplayManager;
+    }
+
+    public DisciplineDialog getDisciplineDialog() {
+        return disciplineDialog;
+    }
+
+    public CombatLogManager getCombatLogManager() {
+        return combatLogManager;
     }
 
     public SpellbookTranslator getTranslator() {

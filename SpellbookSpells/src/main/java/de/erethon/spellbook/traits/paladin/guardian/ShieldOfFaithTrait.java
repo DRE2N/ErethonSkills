@@ -1,4 +1,5 @@
 package de.erethon.spellbook.traits.paladin.guardian;
+import de.erethon.spellbook.utils.TargetedParticles;
 
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
@@ -35,7 +36,7 @@ public class ShieldOfFaithTrait extends SpellTrait {
                 for (LivingEntity living : caster.getLocation().getNearbyLivingEntities(healRadius)) {
                     if (living != caster && living != attacker && !Spellbook.canAttack(caster, living)) {
                         living.heal(heal);
-                        living.getWorld().spawnParticle(Particle.HEART, living.getLocation(), 2, 0.5, 0.5, 0.5);
+                        TargetedParticles.spawnForOthers(Particle.HEART, living, living.getLocation(), 2, 0.5, 0.5, 0.5);
                         living.getWorld().playSound(living.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.RECORDS,0.5f, 1);
                     }
                 }

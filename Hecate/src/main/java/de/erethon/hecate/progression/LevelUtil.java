@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.Objects;
+import java.util.function.IntConsumer;
 
 public class LevelUtil {
 
@@ -27,7 +28,8 @@ public class LevelUtil {
 
     public final static double CHARACTER_BASE_XP = 200.0;
     public final static double CHARACTER_GROWTH_FACTOR = 1.1;
-    public final static long MAX_CHARACTER_XP = calculateMaxXp(20, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR);
+    public static final int MAX_CHARACTER_LEVEL = 20;
+    public final static long MAX_CHARACTER_XP = calculateMaxXp(MAX_CHARACTER_LEVEL, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR);
     public final static double ALLIANCE_BASE_XP = 5000.0;
     public final static double ALLIANCE_GROWTH_FACTOR = 1.12;
     public final static long MAX_ALLIANCE_XP = calculateMaxXp(20, ALLIANCE_BASE_XP, ALLIANCE_GROWTH_FACTOR);
@@ -75,7 +77,13 @@ public class LevelUtil {
                 "XP",
                 "character",
                 "character",
-                () -> { }
+                newLevel -> {
+                    character.setLevel(newLevel);
+                    if (character.getHPlayer().getSelectedCharacter() == character
+                            && character.getCastingManager() != null) {
+                        character.getCastingManager().refreshUnlockedSkills(newLevel);
+                    }
+                }
         );
     }
 
@@ -92,7 +100,7 @@ public class LevelUtil {
                 "Alliance XP",
                 "player",
                 "alliance",
-                () -> { }
+                newLevel -> { }
         );
     }
 
@@ -109,7 +117,7 @@ public class LevelUtil {
                 "World Seeker XP",
                 "player",
                 "exploration",
-                () -> { }
+                newLevel -> { }
         );
     }
 
@@ -126,7 +134,7 @@ public class LevelUtil {
                 "Job XP",
                 "character",
                 "job",
-                () -> { }
+                newLevel -> { }
         );
     }
 
@@ -142,7 +150,7 @@ public class LevelUtil {
             String xpLabel,
             String targetLabel,
             String messageType,
-            Runnable levelUpLoggerSupplier
+            IntConsumer levelUpHandler
     ) {
         if (amount <= 0) return;
         XpKey key = new XpKey(ownerId, ownerType, currency);
@@ -171,16 +179,17 @@ public class LevelUtil {
                         int newLevel = getLevelFromXp(updatedXp, baseXp, growthFactor);
 
                         if (newLevel > currentLevel) {
-                            levelUpLoggerSupplier.run();
                             if (player != null) {
-                                Bukkit.getScheduler().runTask(Hecate.getInstance(), () ->
+                                Bukkit.getScheduler().runTask(Hecate.getInstance(), () -> {
+                                        levelUpHandler.accept(newLevel);
                                         LevelMessages.displayLevelMessage(
                                                 player,
                                                 newLevel,
                                                 updatedXp,
                                                 calculateMaxXp(newLevel + 1, baseXp, growthFactor),
                                                 messageType
-                                        ));
+                                        );
+                                });
                             }
                         }
                         if (player != null) {
@@ -321,14 +330,22 @@ public class LevelUtil {
         if (character == null) {
             return;
         }
+        UUID characterId = character.getCharacterID();
         CompletableFuture<Long> xpFuture = economyService.getBalance(character.getCharacterID(), OwnerType.CHARACTER, "xp_character");
         xpFuture.thenAccept(totalXp -> {
             int currentLevel = getLevelFromXp(totalXp, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR);
             float currentProgress = getProgressForCurrentLevel(currentLevel, totalXp, CHARACTER_BASE_XP, CHARACTER_GROWTH_FACTOR);
             // Ensure packet send happens on the main thread
-            if (player != null) {
-                Bukkit.getScheduler().runTask(Hecate.getInstance(), () -> sendFakeLevel(player, currentLevel, currentProgress));
-            }
+            Bukkit.getScheduler().runTask(Hecate.getInstance(), () -> {
+                HCharacter currentCharacter = Hecate.getInstance().getDatabaseManager().getCurrentCharacter(player);
+                if (!player.isOnline() || currentCharacter == null || !characterId.equals(currentCharacter.getCharacterID())) {
+                    return;
+                }
+                sendFakeLevel(player, currentLevel, currentProgress);
+            });
+        }).exceptionally(ex -> {
+            Hecate.log("Failed to display character level for " + characterId + ": " + ex.getMessage());
+            return null;
         });
     }
 

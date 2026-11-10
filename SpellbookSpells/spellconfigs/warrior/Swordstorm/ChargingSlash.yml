@@ -1,9 +1,8 @@
 class: warrior.swordstorm.ChargingSlash
 cooldown: 15
 energyCost: 20
-range: 5
-knockbackSprintingMultiplier: 1.5
-knockbackNormalMultiplier: 1.1
+range: 4.5
+laneHalfWidth: 0.8
 coefficients:
   players:
     sprintingDamage:
@@ -22,36 +21,24 @@ description:
   en:
   - <!i><#757575>Swordstorm
   - ' '
-  - <#94958B>Perform a powerful forward slash.
-  - <#94958B>If sprinting while activated, deal significantly more damage
-  - <#94958B>and knockback to enemies.
+  - <#94958B>Warn a narrow ground lane, then slash after 4 ticks.
+  - <#94958B>Sprinting at cast makes the hit heavier and deals 35 boss control.
+  - <#94958B>A normal cast deals 25 boss control. Missing leaves you exposed.
   - ' '
-  - '<!i><yellow>⚡ <#94958B>Rage: <arg:1> Rage'
+  - '<!i><yellow>⚡ <#94958B>Rage: <arg:1>'
   - '<!i><yellow>↔  <#94958B>Range: <arg:2>'
-  - '<!i><yellow>    <#94958B>Knockback (Sprinting): <arg:3> <dark_gray>(<arg:4> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
-  - '<!i><yellow>    <#94958B>Knockback (Normal): <arg:5> <dark_gray>(<arg:6> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
   de:
-  - <!i><#757575>Schwersturm
+  - <!i><#757575>Schwertsturm
   - ' '
-  - <#94958B>Führe einen kraftvollen Vorwärtshieb aus.
-  - <#94958B>Wenn beim Aktivieren gesprintet wird, füge deutlich mehr Schaden
-  - <#94958B>und Rückstoß an Gegnern zu.
+  - <#94958B>Markiere eine schmale Bahn und schlage nach 4 Ticks zu.
+  - <#94958B>Beim Sprinten trifft der Hieb härter und verursacht 35 Boss-Kontrolle.
+  - <#94958B>Ohne Sprint verursacht er 25 Boss-Kontrolle.
   - ' '
-  - '<!i><yellow>⚡ <#94958B>Zorn: <arg:1> Zorn'
+  - '<!i><yellow>⚡ <#94958B>Zorn: <arg:1>'
   - '<!i><yellow>↔  <#94958B>Reichweite: <arg:2>'
-  - '<!i><yellow>    <#94958B>Rückstoß (Sprinten): <arg:3> <dark_gray>(<arg:4> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
-  - '<!i><yellow>    <#94958B>Rückstoß (Normal): <arg:5> <dark_gray>(<arg:6> <#0fdcfa>+♦<dark_gray>)</dark_gray>'
-# This list contains all placeholders that can be used in this spell.
-# You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
 availablePlaceholders:
   '0': cooldown
   '1': energyCost
   '2': range
-  '3': knockbackSprintingMultiplier
-  '4': knockbackNormalMultiplier
-  '5': coefficients.entities.sprintingDamage.minecraft:advantage_physical
-  '6': coefficients.entities.normalDamage.minecraft:advantage_physical
-# This list contains all placeholders that can be used in this spell.
-# You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+  '3': coefficients.entities.sprintingDamage.minecraft:advantage_physical
+  '4': coefficients.entities.normalDamage.minecraft:advantage_physical

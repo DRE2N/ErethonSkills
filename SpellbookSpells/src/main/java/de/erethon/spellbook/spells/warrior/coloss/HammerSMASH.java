@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.warrior.coloss;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCaster;
@@ -72,7 +74,7 @@ public class HammerSMASH extends WarriorBaseSpell implements Listener {
             //new Animation(new AnimationStage(new AnimationPart(0, 20))).run(caster);
         }
         if (animationTicks == smashAfterTicks) {
-            caster.sendParsedActionBar("<red><bold>SMASH!");
+            SpellbookFeedback.send(caster, "<red><bold>SMASH!");
             spawnFallingBlocks(caster.getLocation());
             CylinderEffect effect = new CylinderEffect(manager);
             effect.setLocation(caster.getLocation());

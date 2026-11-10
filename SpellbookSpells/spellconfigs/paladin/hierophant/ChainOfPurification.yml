@@ -1,47 +1,41 @@
 class: paladin.hierophant.ChainOfPurification
 cooldown: 20
 range: 16
-duration: 6
 minimumEnergyForBonus: 50
 bonusEnemyCount: 2
-pullSpeed: 3.0
+coefficients:
+  players:
+    damage:
+      minecraft:advantage_magical: 1.1
+  entities:
+    damage:
+      minecraft:advantage_magical: 1.8
 name:
   de: Kette der Reinigung
   en: Chain of Purification
 description:
-  de:
-  - <!i><#757575>Hierophant
-  - ' '
-  - <#94958B>Der Hierophant entfesselt eine Kette aus heiligem Licht,
-  - <#94958B>die den ersten Gegner trifft und zu ihm zieht.
-  - <#94958B>Der Gegner wird für kurze Zeit betäubt.Wenn der Hierophant genug
-  - <#94958B>Zorn hat, zieht die Kette zusätzliche Gegner.
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
-  - '<!i><yellow>⚡ <#94958B>Zorn: <arg:1>'
-  - '<!i><yellow>↔  <#94958B>Reichweite: <arg:2>'
-  - '<!i><yellow>   <#94958B>Min. Zorn für Bonus: <arg:3>'
-  - '<!i><yellow>   <#94958B>Bonus-Gegneranzahl: <arg:4>'
   en:
   - <!i><#757575>Hierophant
   - ' '
-  - <#94958B>The Hierophant launches a chain of holy energy in front of him.
-  - <#94958B>The first enemy hit is pulled towards the caster and
-  - <#94958B>stunned for a short duration. If the Hierophant has enough Wrath,
-  - <#94958B>the chain will pull & stun additional enemies.
+  - <#94958B>Send an aimed chain. The first confirmed hit deals
+  - <#94958B>damage and 50 boss control, or briefly pulls a normal target.
+  - <#94958B>At 50 Wrath, spend it to strike up to 2 nearby enemies too.
+  - <#94958B>Walls and missed aim stop the chain.
   - ' '
-  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
-  - '<!i><yellow>⚡ <#94958B>Wrath: <arg:1>'
-  - '<!i><yellow>↔  <#94958B>Range: <arg:2>'
-  - '<!i><yellow>   <#94958B>Minimum Wrath for Bonus: <arg:3>'
-  - '<!i><yellow>   <#94958B>Bonus Enemy Count: <arg:4>'
-# This list contains all placeholders that can be used in this spell.
-# You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>↔  <#94958B>Range: <arg:1>'
+  de:
+  - <!i><#757575>Hierophant
+  - ' '
+  - <#94958B>Schicke eine gezielte Kette. Der erste Treffer
+  - <#94958B>verursacht Schaden und 50 Boss-Kontrolle.
+  - <#94958B>Mit 50 Zorn trifft sie bis zu 2 weitere nahe Feinde.
+  - <#94958B>Wände und verfehltes Zielen stoppen die Kette.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>↔  <#94958B>Reichweite: <arg:1>'
 availablePlaceholders:
   '0': cooldown
   '1': range
-  '2': duration
-  '3': minimumEnergyForBonus
-  '4': bonusEnemyCount
-  '5': pullSpeed
+  '2': minimumEnergyForBonus
+  '3': bonusEnemyCount

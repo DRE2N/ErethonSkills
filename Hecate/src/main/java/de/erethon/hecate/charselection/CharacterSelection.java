@@ -13,6 +13,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
@@ -21,6 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.AxisAngle4f;
@@ -495,6 +497,16 @@ public class CharacterSelection extends BaseSelection {
                     HCharacter newCharacter = new HCharacter(UUID.randomUUID(), hPlayer, 1, null, new Timestamp(System.currentTimeMillis()), new ArrayList<>());
                     hPlayer.getCharacters().add(newCharacter);
                     playerIsDone = true;
+
+                    // The previous character was saved before entering selection. Clear the live
+                    // player state so the new character's initial NBT cannot copy its inventory.
+                    player.getInventory().clear();
+                    player.getInventory().setArmorContents(new ItemStack[4]);
+                    player.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
+                    player.setItemOnCursor(new ItemStack(Material.AIR));
+                    player.setLevel(0);
+                    player.setExp(0);
+                    player.setTotalExperience(0);
 
                     // Save the player first to ensure it exists in the database, then save the character
                     plugin.getDatabaseManager().savePlayerData(hPlayer).thenCompose(v -> {

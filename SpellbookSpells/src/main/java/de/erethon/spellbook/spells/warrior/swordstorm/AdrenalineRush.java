@@ -1,95 +1,99 @@
 package de.erethon.spellbook.spells.warrior.swordstorm;
 
-import de.erethon.papyrus.PDamageType;
+import de.erethon.papyrus.combat.CombatSource;
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.api.SpellEffect;
-import de.erethon.spellbook.spells.warrior.WarriorBaseSpell;
-import net.kyori.adventure.text.Component;
+import de.erethon.spellbook.combat.HealingContext;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
-import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.HashSet;
-import java.util.Set;
+/** Weapon-first recovery: immediate help, then earned healing from landed sword hits. */
+public class AdrenalineRush extends SwordstormBaseSpell implements Listener {
 
-public class AdrenalineRush extends SwordstormBaseSpell {
-
-    // Instantly gain a large burst of Fury and Power for a moderate duration.
-    // If below 30% health when activated: Also gain Stability and Resistance for a short duration.
-    // The caster gains lifesteal for the next 5 seconds.
-    // Clears all negative effects on the caster.
-
-    private final double healthThreshold = data.getDouble("healthThreshold", 0.3);
-    private final double lifestealAmount = data.getDouble("lifestealAmount", 0.1);
-    private final int furyMinDuration = data.getInt("furyMinDuration", 3);
-    private final int furyMaxDuration = data.getInt("furyMaxDuration", 5);
-    private final int powerMinDuration = data.getInt("powerMinDuration", 3);
-    private final int powerMaxDuration = data.getInt("powerMaxDuration", 5);
-    private final int stabilityMinDuration = data.getInt("stabilityMinDuration", 10);
-    private final int stabilityMaxDuration = data.getInt("stabilityMaxDuration", 15);
-    private final int resistanceMinDuration = data.getInt("resistanceMinDuration", 10);
-    private final int resistanceMaxDuration = data.getInt("resistanceMaxDuration", 20);
-
-    private final EffectData furyEffect = Spellbook.getEffectData("Fury");
-    private final EffectData powerEffect = Spellbook.getEffectData("Power");
-    private final EffectData stabilityEffect = Spellbook.getEffectData("Stability");
-    private final EffectData resistanceEffect = Spellbook.getEffectData("Resistance");
+    private final int activeTicks = data.getInt("activeTicks", 100);
+    private final double castHealBase = data.getDouble("castHealBase", 12);
+    private final double hitHealBase = data.getDouble("hitHealBase", 2);
+    private final double playerCombatMultiplier = data.getDouble("playerCombatMultiplier", 0.6);
+    private final double playerDamageMultiplier = data.getDouble("playerDamageMultiplier", 1.2);
+    private final double entityDamageMultiplier = data.getDouble("entityDamageMultiplier", 1.4);
+    private double remainingHitHealing;
 
     public AdrenalineRush(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = duration * 20;
+        keepAliveTicks = activeTicks;
+        tickInterval = 1;
     }
 
-    @Override
-    protected boolean onPrecast() {
-        return super.onPrecast() && !caster.getTags().contains("swordstorm.bladedance");
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void strengthenSwordHit(EntityDamageByEntityEvent event) {
+        CombatSource source = event.getCombatSource();
+        if (event.getDamager() != caster || !(event.getEntity() instanceof LivingEntity target)
+                || source == null || source.type() != CombatSource.Type.BASIC_ATTACK
+                || event.getDamage() <= 0 || !Spellbook.canAttack(caster, target)) return;
+        double multiplier = HealingContext.isPlayerCombat(caster, target)
+                ? playerDamageMultiplier : entityDamageMultiplier;
+        event.setDamage(event.getDamage() * multiplier);
     }
 
     @Override
     public boolean onCast() {
-        caster.addEffect(caster, furyEffect, (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, furyMinDuration, furyMaxDuration, "furyDuration") * 20, 1);
-        caster.addEffect(caster, powerEffect, (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, powerMinDuration, powerMaxDuration, "powerDuration") * 20, 1);
-        if (caster.getHealth() / caster.getAttribute(Attribute.MAX_HEALTH).getValue() < healthThreshold) {
-            caster.addEffect(caster, stabilityEffect, (int) Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_PHYSICAL, stabilityMinDuration, stabilityMaxDuration, "stabilityDuration") * 20, 1);
-            caster.addEffect(caster, resistanceEffect, (int) Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_PHYSICAL, resistanceMinDuration, resistanceMaxDuration, "resistanceDuration") * 20, 1);
+        if (!super.onCast()) return false;
+        double healingPower = Math.min(100, Math.max(0,
+                caster.getAttribute(Attribute.STAT_HEALINGPOWER).getValue()));
+        double castHeal = Math.min(caster.getMaxHealth() * 0.2,
+                castHealBase + 0.3 * healingPower);
+        caster.heal(HealingContext.isPlayerCombat(caster)
+                ? castHeal * playerCombatMultiplier : castHeal);
+        remainingHitHealing = Math.min(caster.getMaxHealth() * 0.25,
+                12 + 0.4 * healingPower);
+        Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
+        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_IRON_GOLEM_REPAIR, 0.8f, 1.3f);
+        SkillSignatureVfx.accent(caster.getLocation(), getClass(), "wake", 2.5f, 18, true);
+        SkillSignatureVfx.accent(caster.getLocation().add(0, 1.1, 0), getClass(),
+                "main", 1.2f, 10, false);
+        return true;
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onConfirmedSwordHit(EntityDamageByEntityEvent event) {
+        CombatSource source = event.getCombatSource();
+        if (event.getDamager() != caster || !(event.getEntity() instanceof LivingEntity target)
+                || source == null || source.type() != CombatSource.Type.BASIC_ATTACK
+                || event.getFinalDamage() <= 0 || remainingHitHealing <= 0
+                || !Spellbook.canAttack(caster, target)) return;
+        double healingPower = Math.min(100, Math.max(0,
+                caster.getAttribute(Attribute.STAT_HEALINGPOWER).getValue()));
+        double amount = Math.min(remainingHitHealing, hitHealBase + 0.1 * healingPower);
+        remainingHitHealing -= amount;
+        if (HealingContext.isPlayerCombat(caster) || HealingContext.isPlayerCombat(target)) {
+            amount *= playerCombatMultiplier;
         }
-        Set<EffectData> toRemove = new HashSet<>();
-        for (SpellEffect effect : caster.getEffects()) {
-            if (!effect.data.isPositive()) {
-                toRemove.add(effect.data);
-            }
-        }
-        toRemove.forEach(caster::removeEffect);
-        World world = caster.getWorld();
-        world.spawnParticle(Particle.SPORE_BLOSSOM_AIR, caster.getLocation(), 20, 2, 0.5, 2);
-        world.spawnParticle(Particle.SPLASH, caster.getLocation(), 5, 1, 0.5, 1);
-        world.playSound(caster.getLocation(), Sound.ITEM_GOAT_HORN_SOUND_0, SoundCategory.RECORDS, 0.7f, 1.5f);
-        return super.onCast();
+        caster.heal(amount);
+        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_PLAYER_ATTACK_STRONG, 0.45f, 1.4f);
+        SkillSignatureVfx.accent(target.getLocation().add(0, 1.1, 0), getClass(),
+                "wake", 0.9f, 7, false);
     }
 
     @Override
-    public double onAttack(LivingEntity target, double damage, PDamageType type) {
-        caster.heal(damage * lifestealAmount);
-        World world = caster.getWorld();
-        world.spawnParticle(Particle.HEART, caster.getLocation(), 3, 0.5, 0.5, 0.5);
-        world.spawnParticle(Particle.WITCH, caster.getLocation(), 5, 1, 0.5, 1);
-        return super.onAttack(target, damage, type);
+    protected void onTick() {
+        super.onTick();
+        if (currentTicks % 16 == 0) SkillSignatureVfx.accent(caster.getLocation(),
+                getClass(), "lead", 1.5f, 12, true);
     }
 
     @Override
-    protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, furyMinDuration, furyMaxDuration, "furyDuration"), VALUE_COLOR));
-        placeholderNames.add("furyDuration");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_PHYSICAL, powerMinDuration, powerMaxDuration, "powerDuration"), VALUE_COLOR));
-        placeholderNames.add("powerDuration");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_PHYSICAL, stabilityMinDuration, stabilityMaxDuration, "stabilityDuration"), VALUE_COLOR));
-        placeholderNames.add("stabilityDuration");
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_PHYSICAL, resistanceMinDuration, resistanceMaxDuration, "resistanceDuration"), VALUE_COLOR));
-        placeholderNames.add("resistanceDuration");
+    protected void cleanup() {
+        HandlerList.unregisterAll(this);
+        super.cleanup();
     }
 }

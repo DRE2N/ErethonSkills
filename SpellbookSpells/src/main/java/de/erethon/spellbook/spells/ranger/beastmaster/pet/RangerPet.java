@@ -49,7 +49,7 @@ public class RangerPet extends net.minecraft.world.entity.animal.wolf.Wolf {
     private boolean isIdleMoving = false;
 
     public RangerPet(org.bukkit.entity.LivingEntity bukkitOwner, World world) {
-        super(EntityType.WOLF, ((CraftWorld) world).getHandle());
+        super(net.minecraft.world.entity.EntityTypes.WOLF, ((CraftWorld) world).getHandle());
         CraftLivingEntity craftOwner = (CraftLivingEntity) bukkitOwner;
         this.owner = craftOwner.getHandle();
         this.bukkitMob = (org.bukkit.entity.Mob) this.getBukkitEntity();
@@ -74,11 +74,11 @@ public class RangerPet extends net.minecraft.world.entity.animal.wolf.Wolf {
 
     public void setScaledAttributes(double attributeMultiplier) {
         for (Attribute attribute : BuiltInRegistries.ATTRIBUTE.stream().toList()) {
-            if (attribute == Attributes.MOVEMENT_SPEED) continue; // We don't want to make the pet extremely slow
-            if (attribute == Attributes.ATTACK_SPEED) continue; // We don't want to make the pet attack extremely slow either
-            if (attribute == Attributes.FOLLOW_RANGE) continue; // Don't change the follow range either
-            if (attribute == Attributes.JUMP_STRENGTH) continue; // Don't change jumping
-            if (attribute == Attributes.STEP_HEIGHT) continue; // Don't change stepping
+            if (attribute == Attributes.MOVEMENT_SPEED.value()) continue; // We don't want to make the pet extremely slow
+            if (attribute == Attributes.ATTACK_SPEED.value()) continue; // We don't want to make the pet attack extremely slow either
+            if (attribute == Attributes.FOLLOW_RANGE.value()) continue; // Don't change the follow range either
+            if (attribute == Attributes.JUMP_STRENGTH.value()) continue; // Don't change jumping
+            if (attribute == Attributes.STEP_HEIGHT.value()) continue; // Don't change stepping
             Holder<Attribute> holder = BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute);
             if (getAttribute(holder) == null || owner.getAttribute(holder) == null) continue;
             getAttribute(holder).setBaseValue(owner.getAttribute(holder).getBaseValue() * attributeMultiplier);
@@ -95,6 +95,10 @@ public class RangerPet extends net.minecraft.world.entity.animal.wolf.Wolf {
         if (living == this || living == owner || !Spellbook.canAttack(this.getBukkitLivingEntity(), bukkitLiving)) return; // Don't attack yourself or your owner
         setTarget(living, EntityTargetEvent.TargetReason.CUSTOM);
         statusDisplay.text(Component.text("⚔").color(NamedTextColor.RED));
+    }
+
+    public org.bukkit.entity.LivingEntity getBukkitLivingEntity() {
+        return (org.bukkit.entity.LivingEntity) getBukkitEntity();
     }
 
     public void stopAttack() {

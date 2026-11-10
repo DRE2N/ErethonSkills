@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.priest;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import org.bukkit.entity.LivingEntity;
@@ -20,7 +22,7 @@ public class PriestBaseSpell extends SpellbookSpell {
     protected boolean onPrecast() {
         boolean canCast = manaCost <= caster.getEnergy();
         if (!canCast) {
-            caster.sendParsedActionBar("<color:#ff0000>Nicht genug Mana!");
+            SpellbookFeedback.send(caster, "<color:#ff0000>Nicht genug Mana!");
         }
         return canCast;
     }

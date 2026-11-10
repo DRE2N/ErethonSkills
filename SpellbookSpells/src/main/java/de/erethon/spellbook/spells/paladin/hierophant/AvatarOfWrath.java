@@ -7,7 +7,9 @@ import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.spells.paladin.PaladinBaseSpell;
-import de.slikey.effectlib.effect.CircleEffect;
+
+import de.erethon.spellbook.spells.vfx.TerrainRing;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -16,7 +18,14 @@ import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AvatarOfWrath extends HierophantBaseSpell {
 
@@ -25,10 +34,10 @@ public class AvatarOfWrath extends HierophantBaseSpell {
     // Normal attacks cleave in a cone and deal 50% increased damage. All other spells are disabled.
     // Creates a burning ground effect around the caster that moves with them.
 
-    private final int duration = data.getInt("duration", 15);
-    private final double magicDamageBonus = data.getDouble("magicDamageBonus", 1.5f);
-    private final double attackRangeBonus = data.getDouble("attackRangeBonus", 4.0f);
-    private final double cleaveDamageMultiplier = data.getDouble("cleaveDamageMultiplier", 1.5f);
+    private final int duration = data.getInt("duration", 8);
+    private final double magicDamageBonus = data.getDouble("magicDamageBonus", 0.35);
+    private final double attackRangeBonus = data.getDouble("attackRangeBonus", 1.0);
+    private final double cleaveDamageMultiplier = data.getDouble("cleaveDamageMultiplier", 0.7);
     private final double cleaveRadius = data.getDouble("cleaveRadius", 3.0);
     private final double cleaveConeAngle = data.getDouble("cleaveConeAngle", 90.0);
     private final double cleaveConeRange = data.getDouble("cleaveConeRange", 4.0);
@@ -38,7 +47,7 @@ public class AvatarOfWrath extends HierophantBaseSpell {
     private final int burningDurationMax = data.getInt("burningDurationMax", 20) * 20;
     private final int burningStacksMin = data.getInt("burningStacksMin", 1);
     private final int burningStacksMax = data.getInt("burningStacksMax", 3);
-    private final double sizeIncrease = data.getDouble("sizeIncrease", 1.2f);
+    private final double sizeIncrease = data.getDouble("sizeIncrease", 0.1);
 
     private final AttributeModifier bonusDamageModifier = new AttributeModifier(NamespacedKey.fromString("spellbook:avatar_wrath"), magicDamageBonus, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
     private final AttributeModifier sizeModifier = new AttributeModifier(NamespacedKey.fromString("spellbook:avatar_wrath_size"), sizeIncrease, AttributeModifier.Operation.MULTIPLY_SCALAR_1);
@@ -47,6 +56,8 @@ public class AvatarOfWrath extends HierophantBaseSpell {
     private final EffectData burningEffect = Spellbook.getEffectData("Burning");
 
     private AoE burningGroundAoE;
+    private boolean cleanedUp;
+    private TerrainRing avatarRing;
 
     public AvatarOfWrath(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -74,14 +85,11 @@ public class AvatarOfWrath extends HierophantBaseSpell {
                     }
                 })
                 .onTick(aoe -> {
-                    for (LivingEntity entity : aoe.getEntitiesInside()) {
-                        if (Spellbook.canAttack(caster, entity)) {
-                            entity.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, entity.getLocation(), 2, 0.3, 0.3, 0.3);
-                        }
-                    }
-                })
-                .addBlockChange(Material.MAGMA_BLOCK, Material.ORANGE_STAINED_GLASS, Material.ORANGE_CONCRETE, Material.ORANGE_CONCRETE_POWDER)
-                .sendBlockChanges();
+                    // The moving solar sigil carries the persistent area telegraph.
+                });
+
+        if (SkillVfx.availableTo(caster)) avatarRing = new TerrainRing(caster.getLocation(), 2.8,
+                "terrain_band_hierophant", 40, 0.7f);
 
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 2.0f, 0.5f);
 
@@ -91,8 +99,7 @@ public class AvatarOfWrath extends HierophantBaseSpell {
     @Override
     protected void onTick() {
         super.onTick();
-        caster.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, caster.getLocation().add(0, 1, 0), 3, 0.8, 0.8, 0.8);
-        caster.getWorld().spawnParticle(Particle.FLAME, caster.getLocation().add(0, 0.5, 0), 2, 0.5, 0.3, 0.5);
+        if (avatarRing != null && currentTicks % 3 == 0) avatarRing.move(caster.getLocation());
     }
 
     @Override
@@ -119,7 +126,8 @@ public class AvatarOfWrath extends HierophantBaseSpell {
         new BukkitRunnable() {
             @Override
             public void run() {
-                caster.getWorld().spawnParticle(Particle.EXPLOSION, target.getLocation().add(0, 1, 0), 1);
+                caster.getWorld().spawnParticle(Particle.EXPLOSION, target.getLocation().add(0, 1, 0),
+                        SkillVfx.availableTo(caster) ? 0 : 1);
                 caster.getWorld().playSound(target.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 0.5f, 1.5f);
             }
         }.runTaskLater(Spellbook.getInstance().getImplementer(), 3L);
@@ -133,10 +141,21 @@ public class AvatarOfWrath extends HierophantBaseSpell {
     }
 
     @Override
+    protected void onTickFinish() {
+        cleanup();
+    }
+
+    @Override
     protected void cleanup() {
+        if (cleanedUp) {
+            return;
+        }
+        cleanedUp = true;
         if (burningGroundAoE != null) {
             burningGroundAoE.end();
+            burningGroundAoE = null;
         }
+        if (avatarRing != null) avatarRing.close();
         caster.getAttribute(Attribute.ADVANTAGE_MAGICAL).removeModifier(bonusDamageModifier);
         caster.getAttribute(Attribute.SCALE).removeModifier(sizeModifier);
         caster.getAttribute(Attribute.ENTITY_INTERACTION_RANGE).removeModifier(attackRangeModifier);

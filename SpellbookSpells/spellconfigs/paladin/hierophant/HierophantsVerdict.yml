@@ -1,62 +1,44 @@
 class: paladin.hierophant.HierophantsVerdict
-cooldown: 30
-radius: 4
-damageFalloffPerBlock: 0.5
-weaknessDuration: 6
-weaknessStacks: 1
-minWrathForWeakness: 50
+cooldown: 16
+range: 5.5
+halfWidth: 0.9
+empoweredCost: 40
+coefficients:
+  players:
+    normalDamage:
+      minecraft:advantage_physical: 1.7
+    empoweredDamage:
+      minecraft:advantage_magical: 2.0
+  entities:
+    normalDamage:
+      minecraft:advantage_physical: 2.4
+    empoweredDamage:
+      minecraft:advantage_magical: 3.1
 name:
   de: Urteil des Hierophanten
   en: Hierophant's Verdict
 description:
-  de:
-  - <!i><#757575>Hierophant
-  - ' '
-  - <#94958B>Der Hierophant schlägt mit seiner Waffe auf den Boden
-  - <#94958B>und verursacht physischen und magischen Schaden
-  - <#94958B>an Gegnern in der Nähe. Der Schaden nimmt mit der Entfernung ab.
-  - <#94958B>Wenn der Hierophant genug Zorn hat, schwächt er die Gegner.
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0> Sekunden'
-  - '<!i><yellow>    <#94958B>Magischer Schaden: <#0fdcfa><arg:5>'
-  - '<!i><yellow>    <#94958B>Physischer Schaden: <#f02607"><arg:6>'
-  - '<!i><yellow>↔  <#94958B>Radius: <arg:1>'
-  - '<!i><yellow>   <#94958B>Schaden-Reduktion pro Block: <arg:2>'
-  - '<!i><yellow>   <#94958B>Min. Zorn für Schwäche: <arg:5>'
-  - '<!i><yellow>   <#94958B>Schwäche-Dauer: <arg:3>s'
-  - '<!i><yellow>   <#94958B>Schwäche-Stacks: <arg:4>'
   en:
   - <!i><#757575>Hierophant
   - ' '
-  - <#94958B>The Hierophant slams his weapon down, dealing
-  - <#94958B>physical and magical damage to nearby enemies.
-  - <#94958B>The damage falloff is lessened by the caster's wrath.
-  - <#94958B>If the Hierophant has enough wrath, he weakens enemies hit.
+  - <#94958B>Mark a narrow glaive lane, then strike after 8 ticks.
+  - <#94958B>At 40 Wrath, spend it for a radiant hit and 35 boss control.
+  - <#94958B>The basic physical hit deals 25 boss control.
+  - <#94958B>Moving out of the lane or breaking sight avoids the blow.
   - ' '
-  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0> seconds'
-  - '<!i><yellow>    <#94958B>Magic Damage: <#0fdcfa><arg:5>'
-  - '<!i><yellow>    <#94958B>Physical Damage: <#f02607"><arg:6>'
-  - '<!i><yellow>↔  <#94958B>Radius: <arg:1>'
-  - '<!i><yellow>   <#94958B>Damage Falloff per Block: <arg:2>'
-  - '<!i><yellow>   <#94958B>Min Wrath for Weakness: <arg:5>'
-  - '<!i><yellow>   <#94958B>Weakness Duration: <arg:3>s'
-  - '<!i><yellow>   <#94958B>Weakness Stacks: <arg:4>'
-coefficients:
-  players:
-    minecraft:advantage_magical: 1.5
-    minecraft:advantage_physical: 1.5
-  entities:
-    minecraft:advantage_magical: 1.5
-    minecraft:advantage_physical: 1.5
-# This list contains all placeholders that can be used in this spell.
-# You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
+  - '<!i><yellow>↔  <#94958B>Range: <arg:1>'
+  de:
+  - <!i><#757575>Hierophant
+  - ' '
+  - <#94958B>Markiere eine schmale Glevenbahn und schlage nach 8 Ticks zu.
+  - <#94958B>Mit 40 Zorn wird der Treffer strahlend und verursacht
+  - <#94958B>35 Boss-Kontrolle; ohne Zorn sind es 25.
+  - <#94958B>Verlasse die Bahn oder unterbrich die Sichtlinie.
+  - ' '
+  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
+  - '<!i><yellow>↔  <#94958B>Reichweite: <arg:1>'
 availablePlaceholders:
   '0': cooldown
-  '1': radius
-  '2': damageFalloffPerBlock
-  '3': weaknessDuration
-  '4': weaknessStacks
-  '5': minWrathForWeakness
-  '6': coefficients.entities.minecraft:advantage_magical
-  '7': coefficients.entities.minecraft:advantage_physical
+  '1': range
+  '2': empoweredCost

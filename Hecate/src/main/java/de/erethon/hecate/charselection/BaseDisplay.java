@@ -14,6 +14,7 @@ import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.Mannequin;
 import net.minecraft.world.item.ItemStack;
@@ -50,7 +51,7 @@ public class BaseDisplay {
 
     public void display(Player player, Location location) {
         uuid = UUID.randomUUID();
-        entityId = Bukkit.getUnsafe().nextEntityId();
+        entityId = Bukkit.getUnsafe().nextEntityId(location.getWorld());
         sendPlayerPackets(player, location);
     }
 
@@ -75,10 +76,10 @@ public class BaseDisplay {
             CraftPlayerProfile craftPlayerProfile = new CraftPlayerProfile(uuid, "CharSel");
             craftPlayerProfile.getProperties().addAll(properties);
             // Send info to the client to display the player
-            Mannequin mannequin = new Mannequin(EntityType.MANNEQUIN, serverPlayer.level());
+            Mannequin mannequin = new Mannequin(EntityTypes.MANNEQUIN, serverPlayer.level());
             mannequin.setProfile(craftPlayerProfile.buildResolvableProfile());
 
-            ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(entityId, uuid, x, y, z, pitch, yaw, EntityType.MANNEQUIN, 0, Vec3.ZERO, yaw);
+            ClientboundAddEntityPacket addEntityPacket = new ClientboundAddEntityPacket(entityId, uuid, x, y, z, pitch, yaw, EntityTypes.MANNEQUIN, 0, Vec3.ZERO, yaw);
             ClientboundSetEntityDataPacket entityDataPacket = new ClientboundSetEntityDataPacket(entityId, mannequin.getEntityData().packAll());
             connection.send(addEntityPacket);
             connection.send(entityDataPacket);

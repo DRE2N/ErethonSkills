@@ -3,24 +3,19 @@ package de.erethon.spellbook.spells.warrior.bladeweaver;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
+import de.erethon.spellbook.spells.vfx.TerrainRing;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.entity.Display;
-import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Transformation;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Blade Step - Short range forward dash with brief invincibility.
@@ -28,9 +23,12 @@ import java.util.List;
  */
 public class BladeStep extends BladeweaverBaseSpell {
 
+    private static final NamespacedKey READY_KEY = new NamespacedKey("spellbook", "bladeweaver_step_ready_at");
+
     private final double dashSpeed = data.getDouble("dashSpeed", 1.1);
     private final int dashDurationTicks = data.getInt("dashDurationTicks", 2);
-    private final int invincibilityTicks = data.getInt("invincibilityTicks", 8);
+    private final int invincibilityTicks = data.getInt("invincibilityTicks", 3);
+    private final int cooldownSeconds = data.getInt("cooldown", 12);
     private final double afterimageDamageRadius = data.getDouble("afterimageDamageRadius", 3.0);
     private final int afterimageDelay = data.getInt("afterimageDelay", 15);
 
@@ -48,7 +46,7 @@ public class BladeStep extends BladeweaverBaseSpell {
     private Vector dashDirection;
     private int dashTicksRemaining = 0;
 
-    private final List<ItemDisplay> afterimageSwords = new ArrayList<>();
+    private TerrainRing afterimageRing;
 
     public BladeStep(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -56,7 +54,15 @@ public class BladeStep extends BladeweaverBaseSpell {
     }
 
     @Override
+    protected boolean onPrecast() {
+        long readyAt = caster.getPersistentDataContainer().getOrDefault(READY_KEY, PersistentDataType.LONG, 0L);
+        return System.currentTimeMillis() >= readyAt && super.onPrecast();
+    }
+
+    @Override
     public boolean onCast() {
+        caster.getPersistentDataContainer().set(READY_KEY, PersistentDataType.LONG,
+                System.currentTimeMillis() + cooldownSeconds * 1000L);
         startLocation = caster.getLocation().clone();
         dashDirection = caster.getLocation().getDirection().setY(0).normalize();
 
@@ -82,11 +88,6 @@ public class BladeStep extends BladeweaverBaseSpell {
         }
 
         return super.onCast();
-    }
-
-    @Override
-    protected boolean onPrecast() {
-        return super.onPrecast();
     }
 
     @Override
@@ -124,6 +125,7 @@ public class BladeStep extends BladeweaverBaseSpell {
 
     private void spawnDepartureEffect(Location loc) {
         Location effectLoc = loc.clone().add(0, 1, 0);
+        bladeFlash(effectLoc, "", 2.5f, 14);
         Particle.DustOptions dust = new Particle.DustOptions(getThemeColor(), 1.2f);
         effectLoc.getWorld().spawnParticle(Particle.DUST, effectLoc, 30, 0.3, 0.5, 0.3, 0, dust);
         effectLoc.getWorld().spawnParticle(Particle.SWEEP_ATTACK, effectLoc, 5, 0.5, 0.5, 0.5, 0);
@@ -131,6 +133,7 @@ public class BladeStep extends BladeweaverBaseSpell {
 
     private void spawnArrivalEffect(Location loc) {
         Location effectLoc = loc.clone().add(0, 1, 0);
+        bladeFlash(effectLoc, "", 1.8f, 12);
         Particle.DustOptions dust = new Particle.DustOptions(getThemeColor(), 1.2f);
         effectLoc.getWorld().spawnParticle(Particle.DUST, effectLoc, 20, 0.3, 0.5, 0.3, 0, dust);
         effectLoc.getWorld().spawnParticle(Particle.END_ROD, effectLoc, 10, 0.2, 0.3, 0.2, 0.05);
@@ -138,33 +141,11 @@ public class BladeStep extends BladeweaverBaseSpell {
 
     private void createAfterimageAnimation() {
         Location center = afterimageLocation.clone().add(0, 1, 0);
-
-        for (int i = 0; i < 3; i++) {
-            final int index = i;
-            ItemDisplay sword = center.getWorld().spawn(center, ItemDisplay.class, display -> {
-                display.setItemStack(new ItemStack(Material.GOLDEN_SWORD));
-                display.setBillboard(Display.Billboard.FIXED);
-                display.setGlowing(true);
-                display.setPersistent(false);
-                display.setGlowColorOverride(BLADEWEAVER_DEMON);
-                display.setInterpolationDuration(2);
-
-                double angle = (Math.PI * 2 * index / 3);
-                float x = (float) (Math.cos(angle) * 1.2);
-                float z = (float) (Math.sin(angle) * 1.2);
-
-                Quaternionf rotation = new Quaternionf();
-                rotation.rotateY((float) angle);
-                rotation.rotateX((float) Math.PI / 4);
-
-                display.setTransformation(new Transformation(
-                    new Vector3f(x, 0, z),
-                    rotation,
-                    new Vector3f(0.8f, 0.8f, 0.8f),
-                    new Quaternionf()
-                ));
-            });
-            afterimageSwords.add(sword);
+        if (SkillVfx.availableTo(caster)) {
+            afterimageRing = new TerrainRing(afterimageLocation, afterimageDamageRadius,
+                    "terrain_band_bladeweaver");
+            bladeGroundFlash(afterimageLocation.clone().add(0, 0.06, 0),
+                    "", 2.7f, afterimageDelay);
         }
 
         Particle.DustOptions demonDust = new Particle.DustOptions(BLADEWEAVER_DEMON, 1.5f);
@@ -178,33 +159,6 @@ public class BladeStep extends BladeweaverBaseSpell {
         if (afterimageLocation == null) return;
 
         Location center = afterimageLocation.clone().add(0, 1, 0);
-        float time = (afterimageDelay - afterimageTimer) * 0.3f;
-
-        for (int i = 0; i < afterimageSwords.size(); i++) {
-            ItemDisplay sword = afterimageSwords.get(i);
-            if (sword == null || !sword.isValid()) continue;
-
-            double angle = (Math.PI * 2 * i / 3) + time;
-            float radius = 1.2f - (afterimageTimer / (float) afterimageDelay) * 0.4f;
-            float x = (float) (Math.cos(angle) * radius);
-            float z = (float) (Math.sin(angle) * radius);
-            float y = (float) Math.sin(time * 2 + i) * 0.2f;
-
-            Location swordLoc = center.clone().add(x, y, z);
-            sword.teleport(swordLoc);
-
-            Quaternionf rotation = new Quaternionf();
-            rotation.rotateY((float) angle + (float) Math.PI / 2);
-            rotation.rotateZ((float) Math.PI / 4);
-            rotation.rotateX(time);
-
-            sword.setTransformation(new Transformation(
-                new Vector3f(0, 0, 0),
-                rotation,
-                new Vector3f(0.8f, 0.8f, 0.8f),
-                new Quaternionf()
-            ));
-        }
 
         if (afterimageTimer % 3 == 0) {
             Particle.DustOptions demonDust = new Particle.DustOptions(BLADEWEAVER_DEMON, 1.0f);
@@ -216,16 +170,13 @@ public class BladeStep extends BladeweaverBaseSpell {
     private void triggerAfterimageExplosion() {
         if (afterimageLocation == null) return;
 
-        Location center = afterimageLocation.clone().add(0, 1, 0);
-
-        for (ItemDisplay sword : afterimageSwords) {
-            if (sword != null && sword.isValid()) {
-                Location swordLoc = sword.getLocation();
-                sword.getWorld().spawnParticle(Particle.FLAME, swordLoc, 5, 0.1, 0.1, 0.1, 0.05);
-                sword.remove();
-            }
+        if (afterimageRing != null) {
+            afterimageRing.close();
+            afterimageRing = null;
         }
-        afterimageSwords.clear();
+
+        Location center = afterimageLocation.clone().add(0, 1, 0);
+        bladeFlash(center, "", 3.8f, 14);
 
         center.getWorld().spawnParticle(Particle.EXPLOSION, center, 1);
         Particle.DustOptions demonDust = new Particle.DustOptions(BLADEWEAVER_DEMON, 2.0f);
@@ -244,8 +195,9 @@ public class BladeStep extends BladeweaverBaseSpell {
         for (LivingEntity entity : center.getWorld().getNearbyLivingEntities(afterimageLocation, afterimageDamageRadius)) {
             if (Spellbook.canAttack(caster, entity)) {
                 double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, true, Attribute.ADVANTAGE_PHYSICAL, "afterimageDamage");
-                entity.damage(damage, caster, PDamageType.PHYSICAL);
-                grantBonusHealthForHit();
+                double before = entity.getHealth() + entity.getAbsorptionAmount();
+                CombatSourceContext.runSpell(this, () -> entity.damage(damage, caster, PDamageType.PHYSICAL));
+                if (entity.getHealth() + entity.getAbsorptionAmount() < before) grantBonusHealthForHit();
             }
         }
     }
@@ -260,14 +212,12 @@ public class BladeStep extends BladeweaverBaseSpell {
 
     @Override
     protected void cleanup() {
+        if (afterimageRing != null) {
+            afterimageRing.close();
+            afterimageRing = null;
+        }
         removeInvincibility();
         dashing = false;
-        for (ItemDisplay sword : afterimageSwords) {
-            if (sword != null && sword.isValid()) {
-                sword.remove();
-            }
-        }
-        afterimageSwords.clear();
         super.cleanup();
     }
 }

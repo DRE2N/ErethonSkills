@@ -1,5 +1,7 @@
 package de.erethon.spellbook.traits.ranger.beastmaster;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellTrait;
@@ -64,7 +66,7 @@ public class SpawnPetTrait extends SpellTrait implements Listener {
     @EventHandler
     public void onPetDeath(PetDeathEvent event) {
         if (event.getPet() != pet) return;
-        caster.sendParsedActionBar("<#ff0000>Dein Begleiter ist gestorben!");
+        SpellbookFeedback.send(caster, "<#ff0000>Dein Begleiter ist gestorben!");
         pet = null;
         deathTime = System.currentTimeMillis();
     }

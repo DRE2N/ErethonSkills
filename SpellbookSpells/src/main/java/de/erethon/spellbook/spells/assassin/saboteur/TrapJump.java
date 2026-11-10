@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.assassin.saboteur;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellTrait;
@@ -37,7 +39,7 @@ public class TrapJump extends AssassinBaseSpell {
             return false;
         }
         if (trapTrackingTrait.getTraps().isEmpty()) {
-            caster.sendParsedActionBar("<red>No traps!");
+            SpellbookFeedback.send(caster, "<red>No traps!");
             return false;
         }
         return super.onPrecast();
@@ -46,20 +48,20 @@ public class TrapJump extends AssassinBaseSpell {
     @Override
     public boolean onCast() {
         if (trapTrackingTrait == null) {
-            caster.sendParsedActionBar("<red>Missing trait.");
+            SpellbookFeedback.send(caster, "<red>Missing trait.");
             return false;
         }
         if (trapTrackingTrait.getTraps().isEmpty()) {
-            caster.sendParsedActionBar("<red>No traps!");
+            SpellbookFeedback.send(caster, "<red>No traps!");
             return false;
         }
         AssassinBaseTrap trap = trapTrackingTrait.getClosestTrap(caster.getLocation());
         if (trap == null) {
-            caster.sendParsedActionBar("<red>No traps!");
+            SpellbookFeedback.send(caster, "<red>No traps!");
             return false;
         }
         if (trap.target.distance(caster.getLocation()) > maxDistance) {
-            caster.sendParsedActionBar("<red>Trap too far!");
+            SpellbookFeedback.send(caster, "<red>Trap too far!");
             return false;
         }
         caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_CHARGE, 0.6f, 1.0f);

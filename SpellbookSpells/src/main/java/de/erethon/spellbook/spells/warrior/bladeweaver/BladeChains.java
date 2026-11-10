@@ -3,6 +3,9 @@ package de.erethon.spellbook.spells.warrior.bladeweaver;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
+import de.erethon.spellbook.combat.BossControl;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -46,10 +49,16 @@ public class BladeChains extends BladeweaverBaseSpell {
         if (tetheredEntities.size() < 2) {
             if (tetheredEntities.size() == 1) {
                 LivingEntity target = tetheredEntities.get(0);
+                bladeFlash(target.getLocation().add(0, 1, 0), "", 1.7f, 14);
                 double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, true, Attribute.ADVANTAGE_PHYSICAL, "singleTargetDamage");
-                target.damage(damage, caster, PDamageType.PHYSICAL);
-                addRazorMarkStacks(target, 1);
-                playChainHitEffect(target);
+                double before = target.getHealth() + target.getAbsorptionAmount();
+                CombatSourceContext.runSpell(this, () -> target.damage(damage, caster, PDamageType.PHYSICAL));
+                if (target.getHealth() + target.getAbsorptionAmount() < before) {
+                    addRazorMarkStacks(target, 1);
+                    grantBonusHealthForHit();
+                    BossControl.apply(caster, target, 50);
+                    target.getWorld().playSound(target.getLocation(), Sound.BLOCK_CHAIN_HIT, 1.0f, 1.2f);
+                }
             }
             tetheredEntities.clear();
             return super.onCast();
@@ -96,7 +105,7 @@ public class BladeChains extends BladeweaverBaseSpell {
             pullTowardsCenter(entity);
         }
 
-        spawnChainParticles();
+        if (tetherTimer % 12 == 0) showTethers();
 
         if (isInDemonForm() && tetherTimer % demonDotInterval == 0) {
             applyDemonDot();
@@ -119,6 +128,7 @@ public class BladeChains extends BladeweaverBaseSpell {
             double angle = direction.angle(toEntity);
 
             if (angle <= halfAngle) {
+                if (!caster.hasLineOfSight(entity)) continue;
                 tetheredEntities.add(entity);
             }
         }
@@ -143,7 +153,7 @@ public class BladeChains extends BladeweaverBaseSpell {
         Vector toCenter = tetherCenter.toVector().subtract(entity.getLocation().toVector());
         double distance = toCenter.length();
 
-        if (distance > 1) {
+        if (distance > 1 && !BossControl.apply(caster, entity, 0)) {
             double strengthMultiplier = Math.min(distance / 5, 2.0);
             Vector pull = toCenter.normalize().multiply(pullStrength * strengthMultiplier);
 
@@ -155,14 +165,9 @@ public class BladeChains extends BladeweaverBaseSpell {
 
     private void playChainLaunchEffect(Vector direction) {
         Location origin = caster.getEyeLocation();
-
-        for (int i = 0; i < 10; i++) {
-            Vector offset = direction.clone().multiply(i * 0.5);
-            Location loc = origin.clone().add(offset);
-
-            Particle.DustOptions dust = new Particle.DustOptions(getThemeColor(), 1.5f);
-            caster.getWorld().spawnParticle(Particle.DUST, loc, 3, 0.2, 0.2, 0.2, 0, dust);
-        }
+        bladeFlash(origin.clone().add(direction.clone().multiply(1.5)), "", 2.0f, 14);
+        SkillSignatureVfx.accent(origin.clone().add(direction.clone().multiply(chainRange * 0.5)),
+                getClass(), "lead", 2.5f, 12, false);
 
         caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_CHAIN_PLACE, 1.0f, 0.7f);
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_FISHING_BOBBER_THROW, 0.8f, 0.8f);
@@ -170,47 +175,31 @@ public class BladeChains extends BladeweaverBaseSpell {
 
     private void playChainHitEffect(LivingEntity target) {
         Location loc = target.getLocation().add(0, 1, 0);
+        bladeFlash(loc, "", 1.7f, 16);
+        bladeImpact(target);
 
         Particle.DustOptions dust = new Particle.DustOptions(getThemeColor(), 1.2f);
         target.getWorld().spawnParticle(Particle.DUST, loc, 15, 0.3, 0.5, 0.3, 0, dust);
         target.getWorld().playSound(loc, Sound.BLOCK_CHAIN_HIT, 1.0f, 1.2f);
 
         double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, target, false, Attribute.ADVANTAGE_PHYSICAL, "chainHitDamage");
-        target.damage(damage, caster, PDamageType.PHYSICAL);
-
-        grantBonusHealthForHit();
-    }
-
-    private void spawnChainParticles() {
-        if (tetheredEntities.size() < 2) return;
-        for (int i = 0; i < tetheredEntities.size(); i++) {
-            for (int j = i + 1; j < tetheredEntities.size(); j++) {
-                drawChainBetween(tetheredEntities.get(i), tetheredEntities.get(j));
-            }
+        double before = target.getHealth() + target.getAbsorptionAmount();
+        CombatSourceContext.runSpell(this, () -> target.damage(damage, caster, PDamageType.PHYSICAL));
+        if (target.getHealth() + target.getAbsorptionAmount() < before) {
+            BossControl.apply(caster, target, 30);
+            grantBonusHealthForHit();
         }
-        Particle.DustOptions centerDust = new Particle.DustOptions(BLADEWEAVER_ACCENT, 1.0f);
-        tetherCenter.getWorld().spawnParticle(Particle.DUST, tetherCenter.clone().add(0, 1, 0), 3, 0.2, 0.2, 0.2, 0, centerDust);
     }
 
-    private void drawChainBetween(LivingEntity a, LivingEntity b) {
-        Location locA = a.getLocation().add(0, 1, 0);
-        Location locB = b.getLocation().add(0, 1, 0);
-
-        Vector direction = locB.toVector().subtract(locA.toVector());
-        double distance = direction.length();
-        direction.normalize();
-
-        Particle.DustOptions dust = new Particle.DustOptions(getThemeColor(), 0.8f);
-
-        int particles = (int) Math.ceil(distance * 2);
-        for (int i = 0; i <= particles; i++) {
-            double progress = (double) i / particles;
-            Location point = locA.clone().add(direction.clone().multiply(distance * progress));
-
-            double wave = Math.sin(progress * Math.PI * 2 + currentTicks * 0.2) * 0.1;
-            point.add(0, wave, 0);
-
-            a.getWorld().spawnParticle(Particle.DUST, point, 1, 0, 0, 0, 0, dust);
+    private void showTethers() {
+        Location center = tetherCenter.clone().add(0, 0.9, 0);
+        for (LivingEntity entity : tetheredEntities) {
+            Location from = entity.getLocation().add(0, 1, 0);
+            Vector delta = center.toVector().subtract(from.toVector());
+            for (int i = 1; i <= 2; i++) {
+                SkillSignatureVfx.accent(from.clone().add(delta.clone().multiply(i / 3.0)),
+                        getClass(), "wake", 1.3f, 14, false);
+            }
         }
     }
 

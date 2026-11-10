@@ -1,4 +1,5 @@
 package de.erethon.spellbook.spells.ranger.druid;
+import de.erethon.spellbook.utils.TargetedParticles;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
@@ -67,8 +68,8 @@ public class Lifeweave extends DruidBaseSpell {
             weaveTarget.heal(shield);
         }
 
-        weaveTarget.getWorld().spawnParticle(Particle.HEART, weaveTarget.getLocation().add(0, 1.2, 0), 4 + seeds, 0.35, 0.45, 0.35, 0);
-        weaveTarget.getWorld().spawnParticle(Particle.DUST, weaveTarget.getLocation().add(0, 1, 0), 14, 0.45, 0.55, 0.45, 0,
+        TargetedParticles.spawnForOthers(Particle.HEART, weaveTarget, weaveTarget.getLocation().add(0, 1.2, 0), 4 + seeds, 0.35, 0.45, 0.35);
+        TargetedParticles.spawnForOthers(Particle.DUST, weaveTarget, weaveTarget.getLocation().add(0, 1, 0), 14, 0.45, 0.55, 0.45, 0,
             new Particle.DustOptions(DRUID_GOLD, 1.2f));
         weaveTarget.getWorld().playSound(weaveTarget.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.RECORDS, 0.8f, 1.6f);
         return super.onCast();

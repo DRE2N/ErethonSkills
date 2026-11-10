@@ -1,5 +1,8 @@
 package de.erethon.spellbook.spells;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.animation.Animation;
 import de.erethon.spellbook.aoe.AoE;
@@ -64,7 +67,7 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
     protected Set<Animation> activeAnimations = new HashSet<>();
 
     public int range = data.getInt("range", 32);
-    public int targetRaytraceSize = data.getInt("targetRaySize", 1);
+    public double targetRaytraceSize = data.getDouble("targetRaySize", 1);
     public LivingEntity target;
 
     public SpellbookBaseSpell(LivingEntity caster, SpellData spellData) {
@@ -86,7 +89,9 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
 
     @Override
     public boolean onCast() {
-        return super.onCast();
+        boolean cast = super.onCast();
+        if (cast) SkillSignatureVfx.cast(caster, target, getClass());
+        return cast;
     }
 
     /**
@@ -126,7 +131,97 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
         addBaseDataPlaceholdersOrdered();
         getCoefficientValuePlaceholders(caster);
         addSpellPlaceholders();
+        addPlayerCoefficientPlaceholders(caster);
+        addTooltipValuePlaceholders(caster);
         return spellAddedPlaceholders;
+    }
+
+    private void addPlayerCoefficientPlaceholders(SpellCaster caster) {
+        ConfigurationSection players = data.getConfigurationSection("coefficients.players");
+        if (players == null) return;
+        for (String key : players.getKeys(false)) {
+            if (ATTRIBUTE_NAMES.contains(key)) {
+                addPlayerCoefficient(caster, key, null);
+                continue;
+            }
+            ConfigurationSection section = players.getConfigurationSection(key);
+            if (section == null) continue;
+            for (String attributeKey : section.getKeys(false)) {
+                if (ATTRIBUTE_NAMES.contains(attributeKey)) {
+                    addPlayerCoefficient(caster, attributeKey, key);
+                }
+            }
+        }
+    }
+
+    private void addPlayerCoefficient(SpellCaster caster, String attributeKey, String section) {
+        Attribute attribute = Registry.ATTRIBUTE.get(Key.key(attributeKey));
+        if (attribute == null) return;
+        String path = "coefficients.players." + (section == null ? "" : section + ".") + attributeKey;
+        double value = ((LivingEntity) caster).getAttribute(attribute).getValue() * data.getDouble(path, 1.0);
+        TextColor color = attribute == Attribute.ADVANTAGE_PHYSICAL ? ATTR_PHYSICAL_COLOR
+                : attribute == Attribute.ADVANTAGE_MAGICAL ? ATTR_MAGIC_COLOR
+                : attribute == Attribute.STAT_HEALINGPOWER ? ATTR_HEALING_POWER_COLOR : VALUE_COLOR;
+        addTooltipValue(path, value, color);
+    }
+
+    private void addTooltipValuePlaceholders(SpellCaster caster) {
+        LivingEntity living = (LivingEntity) caster;
+        double physical = living.getAttribute(Attribute.ADVANTAGE_PHYSICAL).getValue();
+        double magical = living.getAttribute(Attribute.ADVANTAGE_MAGICAL).getValue();
+        double healingPower = Math.max(0, Math.min(
+                data.getString("class", "").startsWith("assassin.") ? 80 : 100,
+                living.getAttribute(Attribute.STAT_HEALINGPOWER).getValue()));
+        double resistance = Math.min(100,
+                Math.max(0, living.getAttribute(Attribute.RESISTANCE_PHYSICAL).getValue())
+                        + Math.max(0, living.getAttribute(Attribute.RESISTANCE_MAGICAL).getValue()));
+        addTooltipValue("tooltip.physical", physical, ATTR_PHYSICAL_COLOR);
+        addTooltipValue("tooltip.magical", magical, ATTR_MAGIC_COLOR);
+        addTooltipValue("tooltip.heal", data.getDouble("baseHealing")
+                + data.getDouble("healingPowerCoefficient") * healingPower, ATTR_HEALING_POWER_COLOR);
+        addTooltipValue("tooltip.castHeal", data.getDouble("castHealBase") + 0.3 * healingPower,
+                ATTR_HEALING_POWER_COLOR);
+        addTooltipValue("tooltip.hitHeal", data.getDouble("hitHealBase") + 0.1 * healingPower,
+                ATTR_HEALING_POWER_COLOR);
+        addTooltipValue("tooltip.shieldHeal", data.getDouble("healAmount") + 0.12 * healingPower,
+                ATTR_HEALING_POWER_COLOR);
+        addTooltipValue("tooltip.holyFireImmediate", 8 + 0.2 * healingPower,
+                ATTR_HEALING_POWER_COLOR);
+        addTooltipValue("tooltip.holyFireFinish", data.getDouble("baseFinishHeal") + 0.25 * healingPower,
+                ATTR_HEALING_POWER_COLOR);
+        addTooltipValue("tooltip.absorb", data.getDouble("baseAbsorb")
+                + data.getDouble("resistanceCoefficient") * resistance, VALUE_COLOR);
+        addTooltipValue("tooltip.guard", data.getDouble("baseGuard")
+                + data.getDouble("resistanceCoefficient") * resistance, VALUE_COLOR);
+        addTooltipValue("tooltip.prevented", data.getDouble("basePrevented")
+                + data.getDouble("resistanceCoefficient") * resistance, VALUE_COLOR);
+        addTooltipValue("tooltip.flankBonus", Math.min(data.getDouble("flankBonusMax"),
+                data.getDouble("flankBonusMin") + Math.max(0, magical)
+                        * data.getDouble("flankBonusMagicalCoefficient")), ATTR_MAGIC_COLOR);
+        addTooltipValue("tooltip.shadowBuffer", Math.min(0.25,
+                data.getDouble("baseBufferReduction")
+                        + Math.max(0, Math.max(
+                                living.getAttribute(Attribute.RESISTANCE_PHYSICAL).getValue(),
+                                living.getAttribute(Attribute.RESISTANCE_MAGICAL).getValue()))
+                        * data.getDouble("resistanceCoefficient")), VALUE_COLOR);
+        addTooltipValue("tooltip.shieldBash", data.getDouble("counterDamage")
+                + Math.min(100, Math.max(0, physical)) * 0.2, ATTR_PHYSICAL_COLOR);
+        double physicalResistance = Math.max(0, living.getAttribute(Attribute.RESISTANCE_PHYSICAL).getValue());
+        double magicalResistance = Math.max(0, living.getAttribute(Attribute.RESISTANCE_MAGICAL).getValue());
+        addTooltipValue("tooltip.echoPhysicalGuard", Math.min(10, 2 + physicalResistance * 0.08), VALUE_COLOR);
+        addTooltipValue("tooltip.echoMagicalGuard", Math.min(10, 2 + magicalResistance * 0.08), VALUE_COLOR);
+        addTooltipValue("tooltip.launchPhysicalGuard", Math.min(8, 1.5 + physicalResistance * 0.06), VALUE_COLOR);
+        addTooltipValue("tooltip.launchMagicalGuard", Math.min(8, 1.5 + magicalResistance * 0.06), VALUE_COLOR);
+        addTooltipValue("tooltip.celestialMagicBonus", Math.min(20, Math.max(0, magical)) * 0.2,
+                ATTR_MAGIC_COLOR);
+    }
+
+    private void addTooltipValue(String name, double value, TextColor color) {
+        double rounded = Math.round(value * 100.0) / 100.0;
+        String display = rounded == Math.rint(rounded)
+                ? String.valueOf((long) rounded) : String.valueOf(rounded);
+        spellAddedPlaceholders.add(Component.text(display, color));
+        placeholderNames.add(name);
     }
 
     protected void addBaseDataPlaceholdersOrdered() {
@@ -310,11 +405,11 @@ public abstract class SpellbookBaseSpell extends SpellbookSpell implements Targe
         );
 
         if (result == null || result.getHitEntity() == null) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         if (!(result.getHitEntity() instanceof LivingEntity)) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         this.target = (LivingEntity) result.getHitEntity();

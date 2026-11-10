@@ -1,23 +1,39 @@
 package de.erethon.spellbook.spells.assassin.cutthroat;
 
+import de.erethon.papyrus.combat.CombatSource;
 import de.erethon.papyrus.PDamageType;
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.aoe.AoE;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.combat.HealingContext;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.CircleEffect;
-import de.slikey.effectlib.effect.SphereEffect;
-import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import de.erethon.spellbook.spells.vfx.TerrainRing;
+import de.erethon.spellbook.utils.TargetedParticles;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.ItemDisplay;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.util.Vector;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
-public class BloodCraze extends CutthroatBaseSpell {
+import java.util.ArrayList;
+import java.util.List;
+
+public class BloodCraze extends CutthroatBaseSpell implements Listener {
 
     // The Cutthroat enters a blood frenzy, increasing their movement speed and dealing cleaving damage to nearby enemies.
     // The Cutthroat heals for a portion of the damage dealt. The healing scales with resistance_magical.
@@ -25,8 +41,9 @@ public class BloodCraze extends CutthroatBaseSpell {
 
     private final double cleavingRange = data.getDouble("cleavingRange", 3.0);
     private final double cleavingDamageMultiplier = data.getDouble("cleavingDamageMultiplier", 0.8);
-    private final double damageAsHealingMultiplierMin = data.getDouble("damageAsHealingMultiplierMin", 0.15);
-    private final double damageAsHealingMultiplierMax = data.getDouble("damageAsHealingMultiplierMax", 0.25);
+    private final double castHealBase = data.getDouble("castHealBase", 8.0);
+    private final double hitHealBase = data.getDouble("hitHealBase", 1.5);
+    private final double playerHealingMultiplier = data.getDouble("playerHealingMultiplier", 0.55);
     private final double bloodAuraRadius = data.getDouble("bloodAuraRadius", 4.0);
     private final double speedDurationMin = data.getDouble("speedDurationMin", 5.0) * 20;
     private final double speedDurationMax = data.getDouble("speedDurationMax", 8.0) * 20;
@@ -35,6 +52,9 @@ public class BloodCraze extends CutthroatBaseSpell {
 
     private int visualTicks = 20;
     private int auraUpdateTicks = 40;
+    private boolean dealingCleaveDamage;
+    private double remainingHitHealing;
+    private TerrainRing terrainRing;
 
     public BloodCraze(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
@@ -51,64 +71,34 @@ public class BloodCraze extends CutthroatBaseSpell {
 
     @Override
     public boolean onCast() {
+        if (!super.onCast()) {
+            return false;
+        }
         int speedDuration = (int) Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, speedDurationMin, speedDurationMax, "speedDuration");
         caster.addEffect(caster, speedBoostData, speedDuration, 1);
+        double healingPower = Math.min(80, Math.max(0, caster.getAttribute(Attribute.STAT_HEALINGPOWER).getValue()));
+        double castHealing = Math.min(caster.getMaxHealth() * 0.2, castHealBase + 0.3 * healingPower);
+        caster.heal(HealingContext.isPlayerCombat(caster) ? castHealing * playerHealingMultiplier : castHealing);
+        remainingHitHealing = Math.min(caster.getMaxHealth() * 0.25, 12 + 0.5 * healingPower);
+        playHealingEffect();
         playBloodCrazeActivation();
         createBloodAura();
         caster.getTags().add("assassin.blood_craze");
+        Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
 
-        return super.onCast();
+        return true;
     }
 
     private void playBloodCrazeActivation() {
         Location casterLoc = caster.getLocation().add(0, 1, 0);
-
-        caster.getWorld().spawnParticle(Particle.BLOCK, casterLoc, 30, 1.0, 1.0, 1.0, 0.1, Material.REDSTONE_BLOCK.createBlockData());
-        caster.getWorld().spawnParticle(Particle.DUST, casterLoc, 20, 0.8, 0.8, 0.8, 0.1, new Particle.DustOptions(org.bukkit.Color.MAROON, 2.0f));
-
+        SkillSignatureVfx.accent(caster.getLocation(), getClass(), "main", 7.0f, 28, true);
+        SkillSignatureVfx.accent(casterLoc, getClass(), "wake", 3.0f, 20, false);
         caster.getWorld().playSound(casterLoc, Sound.ENTITY_WITHER_HURT, 0.6f, 1.5f);
-        caster.getWorld().playSound(casterLoc, Sound.ENTITY_ZOMBIE_VILLAGER_CONVERTED, 0.4f, 1.2f);
-
-        EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-        if (effectManager != null) {
-            SphereEffect bloodBurst = new SphereEffect(effectManager);
-            bloodBurst.setLocation(casterLoc);
-            bloodBurst.radius = 2.0f;
-            bloodBurst.particle = Particle.DUST;
-            bloodBurst.particles = 40;
-            bloodBurst.duration = 15;
-            bloodBurst.start();
-        }
     }
 
     private void createBloodAura() {
-        AoE bloodAura = createCircularAoE(caster.getLocation(), bloodAuraRadius, 1.0, keepAliveTicks)
-                .followEntity(caster)
-                .onTick(aoe -> {
-                    if (currentTicks % 20 == 0) {
-                        Location auraCenter = caster.getLocation().add(0, 0.5, 0);
-                        caster.getWorld().spawnParticle(Particle.DUST, auraCenter, 2, bloodAuraRadius * 0.7, 0.2, bloodAuraRadius * 0.7, 0,
-                            new Particle.DustOptions(org.bukkit.Color.RED, 0.5f));
-                        for (LivingEntity entity : aoe.getEntitiesInside()) {
-                            if (Spellbook.canAttack(caster, entity)) {
-                                double auraDamage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, true, Attribute.ADVANTAGE_PHYSICAL);
-                                entity.damage(auraDamage, caster, PDamageType.PHYSICAL);
-                                Location entityLoc = entity.getLocation().add(0, 1, 0);
-                                entity.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, entityLoc, 1, 0.3, 0.3, 0.3);
-                                entity.getWorld().spawnParticle(Particle.DUST, entityLoc, 1, 0.2, 0.2, 0.2, 0,
-                                        new Particle.DustOptions(org.bukkit.Color.MAROON, 1.0f));
-                                entity.getWorld().playSound(entityLoc, Sound.ENTITY_PLAYER_HURT, 0.4f, 1.3f);
-                            }
-                        }
-                    }
-                });
-        float scale = (float) (bloodAuraRadius * 4);
-        bloodAura.addDisplay(bloodAura.createDisplay()
-                .blockDisplay(Material.REDSTONE_WIRE)
-                .scale(scale, 0.1f, scale)
-                .translate(0, 0, 0)
-                .build())
-                .sendBlockChanges();
+        terrainRing = new TerrainRing(caster.getLocation(), bloodAuraRadius,
+                "terrain_band_cutthroat", 48, 0.4f);
     }
 
     @Override
@@ -120,7 +110,9 @@ public class BloodCraze extends CutthroatBaseSpell {
 
     @Override
     protected void cleanup() {
+        if (terrainRing != null) terrainRing.close();
         super.cleanup();
+        HandlerList.unregisterAll(this);
         caster.getTags().remove("assassin.blood_craze");
     }
 
@@ -139,68 +131,71 @@ public class BloodCraze extends CutthroatBaseSpell {
 
         if (visualTicks <= 0) {
             visualTicks = 20;
-            Location casterLoc = caster.getLocation().add(0, 1, 0);
-            caster.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, casterLoc, 3, 0.5, 0.5, 0.5);
-            caster.getWorld().spawnParticle(Particle.DUST, casterLoc, 3, 0.3, 0.3, 0.3, 0,
-                new Particle.DustOptions(org.bukkit.Color.MAROON, 0.3f));
+            SkillSignatureVfx.accent(caster.getLocation(), getClass(), "wake", 4.5f, 20, true);
         }
 
         if (auraUpdateTicks <= 0) {
             auraUpdateTicks = 40;
             createPulsingBloodEffect();
         }
+        animateBloodAura();
     }
 
     private void createPulsingBloodEffect() {
-        EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-        if (effectManager != null) {
-            CircleEffect bloodPulse = new CircleEffect(effectManager);
-            bloodPulse.setLocation(caster.getLocation().add(0, 0.1, 0));
-            bloodPulse.radius = (float) bloodAuraRadius;
-            bloodPulse.particle = Particle.DUST;
-            bloodPulse.particles = 16;
-            bloodPulse.duration = 50;
-            bloodPulse.start();
-        }
     }
 
-    @Override
-    public double onAttack(LivingEntity target, double damage, PDamageType type) {
-        double cleavingDamage = damage * cleavingDamageMultiplier;
-        double healingMultiplier = Spellbook.getRangedValue(data, caster, target, Attribute.RESISTANCE_MAGICAL, damageAsHealingMultiplierMin, damageAsHealingMultiplierMax, "healing");
-        double healingAmount = damage * healingMultiplier;
-        caster.heal(healingAmount);
+    private void animateBloodAura() {
+        Location center = caster.getLocation();
+        if (terrainRing != null && currentTicks % 4 == 0) terrainRing.move(center);
+    }
 
-        playHealingEffect();
-
-        for (LivingEntity entity : target.getLocation().getNearbyLivingEntities(cleavingRange)) {
-            if (entity != target && entity != caster && Spellbook.canAttack(caster, entity)) {
-                entity.damage(cleavingDamage, caster);
-                playCleavingEffect(entity);
-            }
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onConfirmedWeaponHit(EntityDamageByEntityEvent event) {
+        CombatSource source = event.getCombatSource();
+        if (dealingCleaveDamage || event.getDamager() != caster || !(event.getEntity() instanceof LivingEntity target)
+                || source == null || source.type() != CombatSource.Type.BASIC_ATTACK
+                || event.getDamage() <= 0 || !Spellbook.canAttack(caster, target)) {
+            return;
         }
-        return super.onAttack(target, damage, type);
+        double healingPower = Math.min(80, Math.max(0, caster.getAttribute(Attribute.STAT_HEALINGPOWER).getValue()));
+        double healingAmount = Math.min(remainingHitHealing, hitHealBase + 0.1 * healingPower);
+        remainingHitHealing -= healingAmount;
+        if (target instanceof Player || HealingContext.isPlayerCombat(caster)) {
+            healingAmount *= playerHealingMultiplier;
+        }
+        if (healingAmount > 0) {
+            caster.heal(healingAmount);
+            playHealingEffect();
+        }
+        double cleavingDamage = event.getDamage() * cleavingDamageMultiplier;
+        dealingCleaveDamage = true;
+        try {
+            for (LivingEntity entity : target.getLocation().getNearbyLivingEntities(cleavingRange)) {
+                if (entity != target && entity != caster && Spellbook.canAttack(caster, entity)) {
+                    CombatSourceContext.runSpell(this, () -> entity.damage(cleavingDamage, caster, PDamageType.PHYSICAL));
+                    playCleavingEffect(entity);
+                }
+            }
+        } finally {
+            dealingCleaveDamage = false;
+        }
     }
 
     private void playHealingEffect() {
-        Location casterLoc = caster.getLocation().add(0, 1, 0);
-        caster.getWorld().spawnParticle(Particle.HEART, casterLoc, 1, 0.3, 0.3, 0.3, 0);
-        caster.getWorld().spawnParticle(Particle.DUST, casterLoc, 1, 0.4, 0.4, 0.4, 0,
-            new Particle.DustOptions(org.bukkit.Color.RED, 1.0f));
+        SkillSignatureVfx.accent(caster.getLocation().add(0, 1, 0), getClass(),
+                "lead", 1.3f, 12, false);
     }
 
     private void playCleavingEffect(LivingEntity entity) {
         Location entityLoc = entity.getLocation().add(0, 1, 0);
-        entity.getWorld().spawnParticle(Particle.CRIT, entityLoc, 5, 0.3, 0.3, 0.3, 0);
-        entity.getWorld().spawnParticle(Particle.DUST, entityLoc, 3, 0.2, 0.2, 0.2, 0,
-            new Particle.DustOptions(org.bukkit.Color.MAROON, 1.0f));
+        SkillSignatureVfx.accent(entityLoc, getClass(), "wake", 1.9f, 14, false);
         entity.getWorld().playSound(entityLoc, Sound.ENTITY_PLAYER_ATTACK_SWEEP, 0.4f, 1.3f);
     }
 
     @Override
     protected void addSpellPlaceholders() {
-        spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.RESISTANCE_MAGICAL, damageAsHealingMultiplierMin, damageAsHealingMultiplierMax, "healing"), VALUE_COLOR));
-        placeholderNames.add("healing");
+        spellAddedPlaceholders.add(Component.text(castHealBase, VALUE_COLOR));
+        placeholderNames.add("castHealBase");
         spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, Attribute.ADVANTAGE_MAGICAL, speedDurationMin, speedDurationMax, "speedDuration") / 20, VALUE_COLOR));
         placeholderNames.add("speedDuration");
     }

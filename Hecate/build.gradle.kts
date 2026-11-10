@@ -36,11 +36,12 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
-val papyrusVersion = "26.1.2"
+val papyrusVersion = "26.3"
 
 dependencies {
     paperweight.devBundle("de.erethon.papyrus", "$papyrusVersion-SNAPSHOT") { isChanging = true }
     implementation(project(":SpellbookSpells"))
+    implementation("de.erethon.rhea:Rhea:0.1.0-SNAPSHOT")
     compileOnly("de.erethon.tyche:Tyche:1.0-SNAPSHOT")
     compileOnly("de.erethon.aergia:Aergia:1.0.1")
 }
@@ -48,11 +49,12 @@ dependencies {
 tasks {
     paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION
     runServer {
+        dependsOn("deployToSharedServer")
         if (!project.buildDir.exists()) {
             project.buildDir.mkdir()
         }
         val f = File(project.buildDir,  "server.jar");
-        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion-SNAPSHOT.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
+        uri("https://github.com/DRE2N/Papyrus/releases/download/latest/papyrus-paperclip-$papyrusVersion.jar").toURL().openStream().use { it.copyTo(f.outputStream()) }
         serverJar(f)
         runDirectory.set(file("C:\\Dev\\Erethon"))
     }
@@ -64,11 +66,15 @@ tasks {
     }
     processResources {
         filteringCharset = Charsets.UTF_8.name()
+        dependsOn("verifyDisciplineRhea")
+        from(layout.buildDirectory.dir("rhea-discipline/templates")) { into("rhea/discipline") }
+        from(layout.projectDirectory.file("src/main/rhea/assets/AlegreyaSans-Regular.ttf")) { into("rhea/discipline") }
     }
 
     shadowJar {
         dependencies {
             include(project(":SpellbookSpells"))
+            include(dependency("de.erethon.rhea:Rhea:0.1.0-SNAPSHOT"))
             include(dependency("com.elmakers.mine.bukkit:EffectLib:10.12-SNAPSHOT"))
         }
         // Comment relocations out for hotswapping
@@ -81,6 +87,73 @@ tasks {
             )
         }
     }
+}
+
+val rheaCompilerDir = file("../../Rhea/compiler")
+val disciplineRheaSource = layout.projectDirectory.dir("src/main/rhea")
+val disciplineRheaOutput = layout.buildDirectory.dir("rhea-discipline")
+
+val installDisciplineRheaCompiler by tasks.registering(Exec::class) {
+    inputs.files(file("../../Rhea/compiler/package.json"), file("../../Rhea/compiler/package-lock.json"))
+    outputs.dir(file("../../Rhea/compiler/node_modules"))
+    workingDir = rheaCompilerDir
+    commandLine("npm.cmd", "ci")
+}
+
+val installDisciplineRheaBrowser by tasks.registering(Exec::class) {
+    dependsOn(installDisciplineRheaCompiler)
+    workingDir = rheaCompilerDir
+    commandLine("node", "node_modules/playwright/cli.js", "install", "chromium")
+}
+
+val compileDisciplineRhea by tasks.registering(Exec::class) {
+    dependsOn(installDisciplineRheaBrowser)
+    inputs.file(file("../../Rhea/compiler/compile.mjs"))
+    inputs.dir(disciplineRheaSource)
+    outputs.dir(disciplineRheaOutput)
+    workingDir = rheaCompilerDir
+    commandLine("node", "compile.mjs", "--source", disciplineRheaSource.asFile.absolutePath,
+        "--output", disciplineRheaOutput.get().asFile.absolutePath)
+}
+
+val verifyDisciplineRhea by tasks.registering(Exec::class) {
+    dependsOn(compileDisciplineRhea)
+    workingDir = rheaCompilerDir
+    commandLine("node", "verify.mjs", disciplineRheaOutput.get().asFile.absolutePath, "6")
+}
+
+val disciplineRheaPackFragment by tasks.registering(Zip::class) {
+    dependsOn(compileDisciplineRhea)
+    archiveFileName.set("hecate-discipline-ui-fragment.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("distributions"))
+    from(disciplineRheaOutput.map { it.dir("pack") })
+    from(layout.projectDirectory.dir("src/main/pack"))
+}
+
+val deployDisciplineRheaPackFragment by tasks.registering(Copy::class) {
+    group = "Erethon"
+    dependsOn(disciplineRheaPackFragment)
+    from(disciplineRheaPackFragment.flatMap { it.archiveFile })
+    into("C:/Dev/Erethon/plugins/Hecate/pack-fragments")
+}
+
+val combatHudPackFragment by tasks.registering(Zip::class) {
+    archiveFileName.set("hecate-combat-hud-fragment.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("distributions"))
+    from(layout.projectDirectory.dir("src/main/combat-hud-pack"))
+}
+
+val deployCombatHudPackFragment by tasks.registering(Copy::class) {
+    group = "Erethon"
+    dependsOn(combatHudPackFragment)
+    from(combatHudPackFragment.flatMap { it.archiveFile })
+    into("C:/Dev/Erethon/plugins/Hecate/pack-fragments")
+}
+
+// The shared run directory already receives Hecate from deployToSharedServer.
+// Adding the run task's automatic plugin jar would register Hecate twice.
+runPaper {
+    disablePluginJarDetection()
 }
 
 paper {
@@ -105,7 +178,7 @@ tasks.register<Copy>("deployToSharedServer") {
     group = "Erethon"
     description = "Used for deploying the plugin to the shared server. runServer will do this automatically." +
             "This task is only for manual deployment when running runServer from another plugin."
-    dependsOn(tasks.shadowJar)
+    dependsOn(tasks.shadowJar, deployDisciplineRheaPackFragment, deployCombatHudPackFragment)
     from(layout.buildDirectory.file("libs/Hecate-$version-all.jar"))
     into("C:\\Dev\\Erethon\\plugins")
 }

@@ -1,5 +1,7 @@
 package de.erethon.spellbook.spells.warrior;
 
+import de.erethon.spellbook.utils.SpellbookFeedback;
+
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellCaster;
 import de.erethon.spellbook.api.SpellData;
@@ -8,30 +10,70 @@ import de.erethon.spellbook.utils.SpellbookCommonMessages;
 import de.erethon.spellbook.utils.Targeted;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
 
     protected final int duration = data.getInt("duration", 0);
     public int rageCost = data.getInt("energyCost", data.getInt("rageCost", 0));
+    private final Set<Display> trackedVfxDisplays = new HashSet<>();
+    private final Set<BukkitTask> trackedVfxTasks = new HashSet<>();
 
     public WarriorBaseSpell(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
     }
 
+    protected <T extends Display> T trackVfx(T display) {
+        trackedVfxDisplays.add(display);
+        return display;
+    }
+
+    protected void trackVfx(Iterable<? extends Display> displays) {
+        displays.forEach(trackedVfxDisplays::add);
+    }
+
+    protected BukkitTask trackVfxTask(BukkitTask task) {
+        trackedVfxTasks.add(task);
+        return task;
+    }
+
+    @Override
+    protected void cleanup() {
+        trackedVfxTasks.forEach(BukkitTask::cancel);
+        trackedVfxTasks.clear();
+        trackedVfxDisplays.forEach(display -> {
+            if (display != null && display.isValid()) {
+                display.remove();
+            }
+        });
+        trackedVfxDisplays.clear();
+        super.cleanup();
+    }
+
 
     @Override
     protected boolean onPrecast() {
-        return hasEnergy(caster, data) || caster.getTags().contains("warrior.unflinching_stance");
+        return isOffCooldown() && hasEnergy(caster, data) && super.onPrecast();
+    }
+
+    protected boolean isOffCooldown() {
+        Long lastCast = caster.getUsedSpells().get(data);
+        if (lastCast != null && System.currentTimeMillis() - lastCast < data.getCooldown() * 1000L) {
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.ON_COOLDOWN);
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean onCast() {
-        if (!caster.getTags().contains("warrior.unflinching_stance")) {
-            caster.setEnergy(caster.getEnergy() - rageCost);
-        }
+        caster.setEnergy(Math.max(0, caster.getEnergy() - rageCost));
         caster.getUsedSpells().put(data, System.currentTimeMillis());
         return super.onCast();
     }
@@ -42,7 +84,7 @@ public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
             return true;
         }
         if (!canCast) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_ENERGY);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NO_ENERGY);
         }
         return canCast;
     }
@@ -62,15 +104,15 @@ public class WarriorBaseSpell extends SpellbookBaseSpell implements Targeted {
     protected boolean lookForTarget(boolean friendly, int range) {
         Entity target = caster.getTargetEntity(range);
         if (target == null) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         if (!(target instanceof LivingEntity)) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         if (friendly && Spellbook.canAttack(caster, (LivingEntity) target)) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NOT_FRIENDLY);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NOT_FRIENDLY);
             return false;
         }
         this.target = (LivingEntity) target;

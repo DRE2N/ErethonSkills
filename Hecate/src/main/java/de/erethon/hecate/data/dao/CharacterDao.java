@@ -118,6 +118,13 @@ public interface CharacterDao {
     @SqlUpdate("UPDATE Characters SET playerdata = :playerdata WHERE character_id = :characterId AND deleted_at IS NULL")
     int updateCharacterPlayerData(@Bind("characterId") UUID characterId, @Bind("playerdata") byte[] playerdata);
 
+    @SqlUpdate("UPDATE Characters SET class_id = :classId, traitline = :traitline, selected_traits = :selectedTraits " +
+            "WHERE character_id = :characterId AND deleted_at IS NULL")
+    int updateCharacterDiscipline(@Bind("characterId") UUID characterId,
+                                  @Bind("classId") String classId,
+                                  @Bind("traitline") String traitline,
+                                  @Bind("selectedTraits") Integer[] selectedTraits);
+
     // Lock: Update locked_by only if it's currently NULL and character is not deleted
     @SqlUpdate("UPDATE Characters SET locked_by = :lockOwner WHERE character_id = :characterId AND locked_by IS NULL AND deleted_at IS NULL")
     int lockCharacter(@Bind("characterId") UUID characterId, @Bind("lockOwner") String lockOwner);

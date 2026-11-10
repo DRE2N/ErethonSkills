@@ -1,4 +1,5 @@
 package de.erethon.spellbook.spells.ranger.druid;
+import de.erethon.spellbook.utils.TargetedParticles;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
@@ -63,8 +64,8 @@ public class VerdantBloom extends DruidBaseSpell {
 
         bloomTarget.getWorld().playSound(bloomTarget.getLocation(), Sound.BLOCK_MOSS_BREAK, SoundCategory.RECORDS, 1.0f, 0.8f);
         bloomTarget.getWorld().playSound(bloomTarget.getLocation(), Sound.ENTITY_ALLAY_AMBIENT_WITHOUT_ITEM, SoundCategory.RECORDS, 0.7f, 1.4f);
-        bloomTarget.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, bloomTarget.getLocation().add(0, 1, 0), 12, 0.5, 0.6, 0.5, 0.02);
-        bloomTarget.getWorld().spawnParticle(Particle.DUST, bloomTarget.getLocation().add(0, 1, 0), 18, 0.8, 0.3, 0.8, 0,
+        TargetedParticles.spawnForOthers(Particle.HAPPY_VILLAGER, bloomTarget, bloomTarget.getLocation().add(0, 1, 0), 12, 0.5, 0.6, 0.5, 0.02);
+        TargetedParticles.spawnForOthers(Particle.DUST, bloomTarget, bloomTarget.getLocation().add(0, 1, 0), 18, 0.8, 0.3, 0.8, 0,
             new Particle.DustOptions(Color.fromRGB(105, 186, 87), 1.4f));
 
         for (LivingEntity nearby : bloomTarget.getLocation().getNearbyLivingEntities(radius)) {
@@ -87,7 +88,7 @@ public class VerdantBloom extends DruidBaseSpell {
             if (seeds == 0) {
                 addSeed(nearby, 1);
             }
-            nearby.getWorld().spawnParticle(Particle.HEART, nearby.getLocation().add(0, 1, 0), 3, 0.3, 0.5, 0.3, 0);
+            TargetedParticles.spawnForOthers(Particle.HEART, nearby, nearby.getLocation().add(0, 1, 0), 3, 0.3, 0.5, 0.3);
         }
 
         return super.onCast();

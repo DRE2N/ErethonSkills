@@ -778,6 +778,13 @@ public class DatabaseManager extends EDatabaseManager implements Listener {
         }
     }
 
+    /** Persist a discipline change without serializing the live player inventory. */
+    public CompletableFuture<Boolean> updateCharacterDiscipline(UUID characterId, String classId, String disciplineId,
+                                                                 Integer[] selectedTraits) {
+        return queryAsync(handle -> handle.attach(CharacterDao.class)
+                .updateCharacterDiscipline(characterId, classId, disciplineId, selectedTraits) > 0);
+    }
+
     // This mostly handles plugins requesting player data via the API, for example, for lastSeen values.
     @EventHandler
     private void onPlayerDataRequest(PlayerDataRequestEvent event) {

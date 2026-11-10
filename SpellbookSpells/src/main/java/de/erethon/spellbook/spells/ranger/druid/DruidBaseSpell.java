@@ -1,4 +1,7 @@
 package de.erethon.spellbook.spells.ranger.druid;
+import de.erethon.spellbook.utils.TargetedParticles;
+
+import de.erethon.spellbook.utils.SpellbookFeedback;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.EffectData;
@@ -38,7 +41,7 @@ public class DruidBaseSpell extends RangerBaseSpell {
     protected boolean lookForAnyLivingTarget(double range) {
         Entity entity = caster.getTargetEntity((int) range);
         if (!(entity instanceof LivingEntity living)) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NO_TARGET);
             return false;
         }
         target = living;
@@ -48,7 +51,7 @@ public class DruidBaseSpell extends RangerBaseSpell {
     protected Location getTargetGround(int range) {
         Block block = caster.getTargetBlockExact(range);
         if (block == null || !block.isSolid()) {
-            caster.sendParsedActionBar(SpellbookCommonMessages.NO_TARGET);
+            SpellbookFeedback.send(caster, SpellbookCommonMessages.NO_TARGET);
             return null;
         }
         return block.getLocation().add(0.5, 1, 0.5);
@@ -111,8 +114,8 @@ public class DruidBaseSpell extends RangerBaseSpell {
 
     protected void playSeedEffect(LivingEntity entity, int stacks) {
         Location loc = entity.getLocation().add(0, 1.1, 0);
-        entity.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, loc, 2 + stacks, 0.25, 0.35, 0.25, 0.01);
-        entity.getWorld().spawnParticle(Particle.DUST, loc, 4 + stacks, 0.25, 0.35, 0.25, 0,
+        TargetedParticles.spawnForOthers(Particle.HAPPY_VILLAGER, entity, loc, 2 + stacks, 0.25, 0.35, 0.25, 0.01);
+        TargetedParticles.spawnForOthers(Particle.DUST, entity, loc, 4 + stacks, 0.25, 0.35, 0.25, 0,
             new Particle.DustOptions(DRUID_PRIMARY, 0.9f));
     }
 

@@ -1,27 +1,36 @@
 package de.erethon.spellbook.spells.assassin.sharpshooter;
 
 import de.erethon.spellbook.Spellbook;
-import de.erethon.spellbook.aoe.AoE;
 import de.erethon.spellbook.api.EffectData;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.SphereEffect;
+import de.erethon.spellbook.combat.CombatSourceContext;
+import de.erethon.spellbook.combat.BossControl;
+import de.erethon.papyrus.PDamageType;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
+import de.erethon.spellbook.spells.vfx.SkillVfx;
+
+import de.erethon.spellbook.spells.vfx.TerrainRing;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Color;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Display;
+import org.bukkit.entity.ItemDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.Set;
+import java.util.HashSet;
+import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GravitySnare extends SharpshooterBaseSpell {
 
@@ -31,7 +40,7 @@ public class GravitySnare extends SharpshooterBaseSpell {
     private final double projectileSpeed = data.getDouble("projectileSpeed", 1.5);
     private final double snareRadius = data.getDouble("snareRadius", 4.0);
     private final int snareDuration = data.getInt("snareDuration", 3) * 20;
-    private final double pullStrength = data.getDouble("pullStrength", 0.3);
+    private final double pullStrength = data.getDouble("pullStrength", 0.08);
     private final double minSlowAmplifier = data.getDouble("minSlowAmplifier", 1.0);
     private final double maxSlowAmplifier = data.getDouble("maxSlowAmplifier", 3.0);
     private final double slowDuration = data.getDouble("slowDuration", 1.0) * 20;
@@ -58,8 +67,10 @@ public class GravitySnare extends SharpshooterBaseSpell {
         Vector direction = startLoc.getDirection().normalize();
 
         caster.getWorld().playSound(startLoc, Sound.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 0.8f, 1.8f);
+        ItemDisplay projectile = SkillVfx.projectile(startLoc, direction,
+                "sig_assassin_sharpshooter_gravitysnare_lead_f4", 1.4f);
 
-        new BukkitRunnable() {
+        trackVfxTask(new BukkitRunnable() {
             final Location currentLoc = startLoc.clone();
             int ticks = 0;
             final int maxTicks = (int) (range / projectileSpeed);
@@ -68,15 +79,22 @@ public class GravitySnare extends SharpshooterBaseSpell {
             public void run() {
                 ticks++;
 
+                RayTraceResult blockHit = currentLoc.getWorld().rayTraceBlocks(currentLoc, direction,
+                        projectileSpeed, FluidCollisionMode.NEVER, true);
+                if (blockHit != null && blockHit.getHitBlock() != null) {
+                    Block hitBlock = blockHit.getHitBlock();
+                    // Anchor the ground circle and center displays to the hit block.
+                    deploySnare(hitBlock.getLocation().add(0.5, 1.0, 0.5));
+                    projectile.remove();
+                    this.cancel();
+                    return;
+                }
+
                 currentLoc.add(direction.clone().multiply(projectileSpeed));
-
-                currentLoc.getWorld().spawnParticle(Particle.DUST, currentLoc, 2, 0.1, 0.1, 0.1, 0,
-                    new Particle.DustOptions(Color.PURPLE, 1.2f));
-                currentLoc.getWorld().spawnParticle(Particle.WITCH, currentLoc, 1, 0, 0, 0, 0);
-
-                Block hitBlock = currentLoc.getBlock();
-                if (hitBlock.getType().isSolid() || ticks >= maxTicks) {
+                projectile.teleport(currentLoc);
+                if (ticks >= maxTicks) {
                     deploySnare(currentLoc);
+                    projectile.remove();
                     this.cancel();
                     return;
                 }
@@ -84,54 +102,71 @@ public class GravitySnare extends SharpshooterBaseSpell {
                 for (LivingEntity entity : currentLoc.getNearbyLivingEntities(1.0)) {
                     if (entity != caster && Spellbook.canAttack(caster, entity)) {
                         deploySnare(currentLoc);
+                        projectile.remove();
                         this.cancel();
                         return;
                     }
                 }
             }
-        }.runTaskTimer(Spellbook.getInstance().getImplementer(), 0L, 1L);
+        }.runTaskTimer(Spellbook.getInstance().getImplementer(), 0L, 1L));
     }
 
     private void deploySnare(Location impactLocation) {
         Location snareCenter = impactLocation.clone();
         snareCenter.getWorld().playSound(snareCenter, Sound.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 1.0f, 0.6f);
-        snareCenter.getWorld().spawnParticle(Particle.PORTAL, snareCenter, 30, 2, 0.5, 2, 0.5);
+        createGravityLattice(snareCenter);
+        // The visible ring arms before it begins controlling movement.
+        org.bukkit.Bukkit.getScheduler().runTaskLater(Spellbook.getInstance().getImplementer(),
+                () -> { if (caster.isValid()) activateSnare(snareCenter); }, 8L);
+    }
 
-        EffectManager effectManager = Spellbook.getInstance().getEffectManager();
-        if (effectManager != null) {
-            SphereEffect sphereEffect = new SphereEffect(effectManager);
-            sphereEffect.setLocation(snareCenter);
-            sphereEffect.radius = snareRadius;
-            sphereEffect.particle = Particle.DUST;
-            sphereEffect.color = Color.PURPLE;
-            sphereEffect.particles = 20;
-            sphereEffect.duration = snareDuration;
-            sphereEffect.start();
-        }
-
+    private void activateSnare(Location snareCenter) {
+        final int[] fieldTicks = {0};
+        Set<UUID> bossTargets = new HashSet<>();
         createCircularAoE(snareCenter, snareRadius, 3.0, snareDuration)
+            .setParticlesEnabled(false)
             .onEnter((aoe, entity) -> {
                 if (entity != caster && Spellbook.canAttack(caster, entity)) {
-                    double slowIntensity = Spellbook.getRangedValue(data, caster, entity, Attribute.ADVANTAGE_MAGICAL, minSlowAmplifier, maxSlowAmplifier, "slowAmplifier");
+                    double damage = Spellbook.getVariedAttributeBasedDamage(data, caster, entity, true, Attribute.ADVANTAGE_MAGICAL);
+                    double before = entity.getHealth() + entity.getAbsorptionAmount();
+                    CombatSourceContext.runSpell(this, () -> entity.damage(damage, caster, PDamageType.MAGIC));
+                    boolean confirmed = entity.getHealth() + entity.getAbsorptionAmount() < before;
+                    if (BossControl.apply(caster, entity, confirmed ? 30 : 0)) {
+                        bossTargets.add(entity.getUniqueId());
+                        return;
+                    }
+                    double slowIntensity = Math.min(entity instanceof org.bukkit.entity.Player ? 1 : 2,
+                            Spellbook.getRangedValue(data, caster, entity, Attribute.ADVANTAGE_MAGICAL,
+                                    minSlowAmplifier, maxSlowAmplifier, "slowAmplifier"));
                     entity.addEffect(caster, slowEffectData, (int) slowDuration, (int) slowIntensity);
                 }
             })
             .onTick((aoe) -> {
+                if (++fieldTicks[0] % 5 != 0) return;
                 Set<LivingEntity> entitiesInField = aoe.getEntitiesInside();
                 for (LivingEntity entity : entitiesInField) {
-                    if (entity != caster && Spellbook.canAttack(caster, entity)) {
-                        Vector pullDirection = snareCenter.toVector().subtract(entity.getLocation().toVector()).normalize();
+                    if (entity != caster && Spellbook.canAttack(caster, entity) && !bossTargets.contains(entity.getUniqueId())) {
+                        Vector pullDirection = snareCenter.toVector().subtract(entity.getLocation().toVector());
+                        if (pullDirection.lengthSquared() < 0.01 || !entity.isOnGround()) continue;
+                        pullDirection.setY(0).normalize();
                         Vector currentVelocity = entity.getVelocity();
                         Vector newVelocity = currentVelocity.add(pullDirection.multiply(pullStrength));
                         entity.setVelocity(newVelocity);
 
-                        entity.getWorld().spawnParticle(Particle.DUST, entity.getLocation().add(0, 1, 0), 1, 0.2, 0.2, 0.2, 0,
-                            new Particle.DustOptions(Color.PURPLE, 0.8f));
                     }
                 }
             });
     }
 
+    private void createGravityLattice(Location center) {
+        TerrainRing outer = new TerrainRing(center, snareRadius,
+                "terrain_band_sharpshooter", 48, 0.42f);
+        TerrainRing inner = new TerrainRing(center, snareRadius * 0.55,
+                "terrain_band_sharpshooter", 32, 0.3f);
+        SkillSignatureVfx.accent(center, getClass(), "main", (float) (snareRadius * 1.8), 24, true);
+        org.bukkit.Bukkit.getScheduler().runTaskLater(Spellbook.getInstance().getImplementer(),
+                () -> { outer.close(); inner.close(); }, snareDuration + 8L);
+    }
     @Override
     protected void addSpellPlaceholders() {
         spellAddedPlaceholders.add(Component.text(Spellbook.getRangedValue(data, caster, caster, Attribute.ADVANTAGE_MAGICAL, minSlowAmplifier, maxSlowAmplifier, "slowAmplifier"), VALUE_COLOR));

@@ -2,8 +2,12 @@ package de.erethon.hecate.ui;
 
 import de.erethon.hecate.Hecate;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.entity.CraftEntity;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -17,6 +21,16 @@ import org.joml.Vector3f;
 
 public class EntityStatusDisplay {
 
+    private static final Color NAMEPLATE_BACKGROUND = Color.fromARGB(155, 18, 17, 23);
+    private static final float HEALTH_BAR_CLEARANCE = 0.18f;
+    private static final TextReplacementConfig MOB_LEVEL = TextReplacementConfig.builder()
+            .match("^Lv\\. ([0-9]+) $").once()
+            .replacement((match, text) -> Component.translatable("hecate.combat.mob_level", "Lv.")
+                    .append(Component.space())
+                    .append(Component.text(match.group(1), TextColor.color(0xF0C984), TextDecoration.BOLD))
+                    .append(Component.space()))
+            .build();
+
     private final EntityStatusDisplayManager manager = Hecate.getInstance().getStatusDisplayManager();
 
     public LivingEntity holder;
@@ -25,6 +39,8 @@ public class EntityStatusDisplay {
     public TextDisplay statusDisplay;
 
     private boolean removed = false;
+    private float healthBarOffset = Float.NaN;
+    private Component lastHealthBar;
 
     public EntityStatusDisplay(LivingEntity holder) {
         this.holder = holder;
@@ -32,12 +48,11 @@ public class EntityStatusDisplay {
         locWithOutRotation.setPitch(0);
         locWithOutRotation.setYaw(0);
         holder.getWorld().spawn(locWithOutRotation, TextDisplay.class, textDisplay -> {
-            Transformation nameTagTransform = new Transformation(new Vector3f(0, (float) Math.max(0.4f, holder.getHeight() - 1.6f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.5f, 0.5f, 0.5f), new AxisAngle4f(0, 0, 0, 0));
-            textDisplay.setTransformation(nameTagTransform);
             textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
-            textDisplay.text(holder.teamDisplayName());
-            textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
+            textDisplay.text(displayName());
+            textDisplay.setDefaultBackground(false);
+            textDisplay.setBackgroundColor(NAMEPLATE_BACKGROUND);
             textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 0);
             textDisplay.setPersistent(false);
             textDisplay.setViewRange(0.1f);
@@ -48,11 +63,10 @@ public class EntityStatusDisplay {
             entityNameTag = textDisplay;
         });
         holder.getWorld().spawn(locWithOutRotation, TextDisplay.class, textDisplay -> {
-            Transformation healthDisplayTransformation = new Transformation(new Vector3f(0, (float) Math.max(0.0f, holder.getHeight() - 2f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.2f, 3f, 0.4f), new AxisAngle4f(0, 0, 0, 0));
-            textDisplay.setTransformation(healthDisplayTransformation);
             textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
-            textDisplay.text(getHealth(holder.getHealth(), holder.getMaxHealth()));
+            lastHealthBar = getHealth(holder.getHealth(), holder.getMaxHealth());
+            textDisplay.text(lastHealthBar);
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
             textDisplay.getPersistentDataContainer().set(EntityStatusDisplayManager.ENTITY_STATUS_KEY, PersistentDataType.BYTE, (byte) 1);
             textDisplay.setPersistent(false);
@@ -64,8 +78,6 @@ public class EntityStatusDisplay {
             healthDisplay = textDisplay;
         });
         holder.getWorld().spawn(locWithOutRotation, TextDisplay.class, textDisplay -> {
-            Transformation statusDisplayTransform = new Transformation(new Vector3f(0, (float) Math.max(0.2f, holder.getHeight() - 2f), 0), new AxisAngle4f(0, 0, 0, 0), new Vector3f(0.4f, 0.4f, 0.4f), new AxisAngle4f(0, 0, 0, 0));
-            textDisplay.setTransformation(statusDisplayTransform);
             textDisplay.setAlignment(TextDisplay.TextAlignment.CENTER);
             textDisplay.setBillboard(Display.Billboard.VERTICAL);
             textDisplay.setBackgroundColor(Color.fromARGB(0, 1,1,1));
@@ -79,19 +91,57 @@ public class EntityStatusDisplay {
             holder.addPassenger(textDisplay);
             statusDisplay = textDisplay;
         });
+        updateLayout();
         if (holder instanceof Player player) {
             player.hideEntity(Hecate.getInstance(), statusDisplay);
             player.hideEntity(Hecate.getInstance(), healthDisplay);
             player.hideEntity(Hecate.getInstance(), entityNameTag);
+        } else {
+            holder.setCustomNameVisible(false);
         }
     }
 
-    public void updateDisplayName() {
-        entityNameTag.text(holder.teamDisplayName());
+    void updateLayout() {
+        // Aether can detach the displays and supply an anchor above a custom model.
+        float offset = 0f;
+        if (holder.equals(healthDisplay.getVehicle())) {
+            var entity = ((CraftEntity) holder).getHandle();
+            var rider = ((CraftEntity) healthDisplay).getHandle();
+            double ridingY = entity.getPassengerRidingPosition(rider).y - rider.getVehicleAttachmentPoint(entity).y;
+            offset = (float) (entity.getBoundingBox().maxY - ridingY) + HEALTH_BAR_CLEARANCE;
+        }
+        if (Float.compare(healthBarOffset, offset) == 0) {
+            return;
+        }
+        healthBarOffset = offset;
+        position(healthDisplay, offset, 0.65f);
+        position(statusDisplay, offset + 0.17f, 0.4f);
+        position(entityNameTag, offset + 0.31f, 0.5f);
     }
 
-    public void updateHealthDisplay(double damage) {
-        healthDisplay.text(getHealth(Math.max(0, holder.getHealth() - damage), holder.getMaxHealth()));
+    private void position(TextDisplay display, float y, float scale) {
+        display.setTransformation(new Transformation(new Vector3f(0, y, 0),
+                new AxisAngle4f(), new Vector3f(scale), new AxisAngle4f()));
+    }
+
+    public void updateDisplayName() {
+        entityNameTag.text(displayName());
+    }
+
+    private Component displayName() {
+        Component name = holder.teamDisplayName();
+        return holder instanceof Player ? name : name.replaceText(MOB_LEVEL);
+    }
+
+    void updateHealthDisplay() {
+        if (removed || !holder.isValid()) {
+            return;
+        }
+        Component bar = getHealth(holder.getHealth(), holder.getMaxHealth());
+        if (lastHealthBar != bar) {
+            healthDisplay.text(bar);
+            lastHealthBar = bar;
+        }
     }
 
     public void updateStatusDisplay() {
@@ -124,12 +174,11 @@ public class EntityStatusDisplay {
             manager.removeStatusDisplay(holder);
             return;
         }
-        healthDisplay.text(getHealth(Math.max(0, holder.getHealth()), holder.getMaxHealth()));
         updateStatusDisplay();
     }
 
     public Component getHealth(double currentHealth, double maxHealth) {
-        double healthPercentage = currentHealth / maxHealth;
+        double healthPercentage = maxHealth > 0 ? currentHealth / maxHealth : 0.0;
         return PrecomputedHealthDisplay.getComponentAt(healthPercentage);
     }
 

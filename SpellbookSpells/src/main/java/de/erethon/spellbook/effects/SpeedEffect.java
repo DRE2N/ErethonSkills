@@ -24,15 +24,28 @@ public class SpeedEffect extends SpellEffect {
 
     @Override
     public void onApply() {
+        if (instance == null) {
+            return;
+        }
+        removeAppliedModifier();
         value = data.getDouble("bonus", 0.2);
         modifier = new AttributeModifier(key, value, org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER, EquipmentSlotGroup.ANY);
-        if (!instance.getModifiers().contains(modifier)) {
-            instance.addTransientModifier(modifier);
-        }
+        instance.addTransientModifier(modifier);
     }
 
     @Override
     public void onRemove() {
-        instance.removeModifier(modifier);
+        removeAppliedModifier();
+        modifier = null;
+    }
+
+    private void removeAppliedModifier() {
+        if (instance == null) {
+            return;
+        }
+        instance.getModifiers().stream()
+                .filter(applied -> applied.getKey().equals(key))
+                .toList()
+                .forEach(instance::removeModifier);
     }
 }

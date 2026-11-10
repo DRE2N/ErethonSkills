@@ -1,54 +1,30 @@
 class: warrior.vanguard.UnflinchingStance
 cooldown: 18
-energyBuildUpFromUse: 0
-minDuration: 4
-maxDuration: 8
-minResistanceStacks: 2
-maxResistanceStacks: 4
-minStabilityStacks: 1
-maxStabilityStacks: 2
+energyCost: 0
+guardTicks: 40
+baseHealing: 16
+healingPowerCoefficient: 0.3
+baseGuard: 10
+resistanceCoefficient: 0.18
 name:
   de: Unbeugsame Haltung
   en: Unflinching Stance
 description:
   en:
-  - <!i><#757575>Vanguard | Defensive
-  - ' '
-  - <#94958B>For a few seconds, gain a significant amount of
-  - <#94958B>Resistance and Stability.
-  - ' '
-  - <#FF6600>⚔ Your Momentum stacks will not be consumed
-  - <#FF6600>⚔ when using an ability during this time.
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
-  - '<!i><yellow>⏱️ <#94958B>Duration: <arg:2>-<arg:3>s'
-  - '<!i><yellow>🛡️ <#94958B>Resistance Stacks: <arg:4>-<arg:5>'
-  - '<!i><yellow>🛡️ <#94958B>Stability Stacks: <arg:6>-<arg:7>'
+    - <!i><#757575>Vanguard | Defensive
+    - ' '
+    - <#94958B>Immediately recover health and guard against the next hits.
+    - <#94958B>The guard lasts 2 seconds and has a finite damage budget.
+    - <#94958B>Healing Power strengthens recovery; Resistance strengthens guard.
+    - ' '
+    - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
   de:
-  - <!i><#757575>Vorhut | Defensiv
-  - ' '
-  - <#94958B>Erhalte für einige Sekunden eine beträchtliche Menge
-  - <#94958B>an Resistenz und Stabilität.
-  - ' '
-  - <#FF6600>⚔ Deine Momentum-Stapel werden nicht verbraucht,
-  - <#FF6600>⚔ wenn du während dieser Zeit eine Fähigkeit verwendest.
-  - ' '
-  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
-  - '<!i><yellow>⏱️ <#94958B>Dauer: <dark_gray>(<arg:2>-<arg:3> <#f02607>+♦<dark_gray>)</dark_gray>s'
-  - '<!i><yellow>🛡️ <#94958B>Resistenzstapel: <dark_gray>(<arg:4>-<arg:5> <#f02607>-♦<dark_gray>)</dark_gray>'
-  - '<!i><yellow>🛡️ <#94958B>Stabilitätsstapel: <dark_gray>(<arg:6>-<arg:7> <#f02607>-♦<dark_gray>)</dark_gray>'
-# This list contains all placeholders that can be used in this spell.
-# You can use those placeholders in the description with
-# <arg:(index of placeholder)>. Example: <arg:1> for the first placeholder.
+    - <!i><#757575>Vorhut | Defensiv
+    - ' '
+    - <#94958B>Heile dich sofort und schütze dich gegen die nächsten Treffer.
+    - <#94958B>Der Schutz hält 2 Sekunden und hat ein festes Budget.
+    - <#94958B>Heilkraft stärkt die Heilung; Resistenz stärkt den Schutz.
+    - ' '
+    - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
 availablePlaceholders:
   '0': cooldown
-  '1': energyBuildUpFromUse
-  '2': minDuration
-  '3': maxDuration
-  '4': minResistanceStacks
-  '5': maxResistanceStacks
-  '6': minStabilityStacks
-  '7': maxStabilityStacks
-
-
-

@@ -16,8 +16,8 @@ attributeLevels:
     stat_crit_chance: 10
     stat_crit_dmg: 120
     stat_cdr: 0
-    stat_healthregen: 2
-    stat_energyregen: 1
+    stat_health_regen: 2
+    stat_energy_regen: 1
     stat_energy: 100
     stat_healingpower: 10
     stat_tenacity: 0

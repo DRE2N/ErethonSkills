@@ -1,11 +1,11 @@
 class: assassin.sharpshooter.SingularityCannon
 cooldown: 60
 duration: 2
-beamRange: 200.0
+beamRange: 32.0
 beamWidth: 1.5
 subsequentDamageMultiplier: 0.5
 singularWeaknessDuration: 5
-maxFocusRefund: 100
+maxFocusRefund: 20
 coefficients:
   players:
     damage:
@@ -20,8 +20,8 @@ description:
   en:
   - <!i><#757575>Sharpshooter | Ultimate
   - ' '
-  - <#94958B>After a 1.5-second channel, unleash a terrain-piercing
-  - <#94958B>beam of pure energy with global range. Deals immense
+  - <#94958B>After a 1.5-second visible channel, unleash a
+  - <#94958B>32-block beam stopped by cover. Deals immense
   - <#94958B>damage to first target, 50% to subsequent targets.
   - ' '
   - <#94958B>Enemies hit are marked with Singular Weakness for 5s,
@@ -29,9 +29,8 @@ description:
   - ' '
   - '<#FFD700>💀 Kill Bonus:'
   - <#94958B>Killing an enemy with the beam instantly refunds
-  - <#94958B>a full bar of Focus.
+  - <#94958B>up to 20 Focus.
   - ' '
-  - '<!i><yellow>⌚ <#94958B>Cooldown: <arg:0>s'
   - '<!i><yellow>⏱️ <#94958B>Channel Time: <arg:1>s'
   - '<!i><yellow>💥 <#94958B>Subsequent Damage: <arg:2>%'
   - '<!i><yellow>🔮 <#94958B>Weakness Duration: <arg:3>s'
@@ -39,8 +38,8 @@ description:
   - <!i><#757575>Sharpshooter | Ultimate
   - ' '
   - <#94958B>Nach 1,5 Sekunden Kanalisierung entfessle einen
-  - <#94958B>gelände-durchdringenden Strahl reiner Energie mit
-  - <#94958B>globaler Reichweite. Verursacht enormen Schaden am
+  - <#94958B>sichtbaren, 32 Block langen Strahl, den Deckung stoppt.
+  - <#94958B>Er verursacht enormen Schaden am
   - <#94958B>ersten Ziel, 50% an nachfolgenden Zielen.
   - ' '
   - <#94958B>Getroffene Feinde werden mit Singulärer Schwäche für 5s
@@ -48,9 +47,8 @@ description:
   - ' '
   - '<#FFD700>💀 Tötungs-Bonus:'
   - <#94958B>Das Töten eines Feindes mit dem Strahl erstattet
-  - <#94958B>sofort einen vollen Fokusbalken.
+  - <#94958B>sofort bis zu 20 Fokus.
   - ' '
-  - '<!i><yellow>⌚ <#94958B>Abklingzeit: <arg:0>s'
   - '<!i><yellow>⏱️ <#94958B>Kanalisierungszeit: <arg:1>s'
   - '<!i><yellow>💥 <#94958B>Nachfolgender Schaden: <arg:2>%'
   - '<!i><yellow>🔮 <#94958B>Schwäche Dauer: <arg:3>s'
@@ -69,4 +67,3 @@ availablePlaceholders:
   '8': channelDuration
   '9': subsequentDamageMultiplier
   '10': singularWeaknessDuration
-

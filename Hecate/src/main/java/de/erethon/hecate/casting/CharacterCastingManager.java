@@ -5,6 +5,7 @@ import de.erethon.aergia.player.EPlayer;
 import de.erethon.aergia.ui.UIComponent;
 import de.erethon.aergia.ui.UIUpdater;
 import de.erethon.hecate.Hecate;
+import de.erethon.hecate.classes.HClass;
 import de.erethon.hecate.classes.Traitline;
 import de.erethon.hecate.data.HCharacter;
 import de.erethon.hecate.events.CombatModeEnterEvent;
@@ -12,9 +13,12 @@ import de.erethon.hecate.events.CombatModeLeaveEvent;
 import de.erethon.hecate.events.CombatModeReason;
 import de.erethon.hecate.progression.LevelInfo;
 import de.erethon.hecate.ui.EffectDisplayFormatter;
+import de.erethon.hecate.ui.CombatHud;
 import de.erethon.spellbook.api.SpellData;
 import de.erethon.spellbook.api.SpellbookSpell;
 import de.erethon.spellbook.api.TraitData;
+import de.erethon.spellbook.spells.warrior.swordstorm.Blocking;
+import de.erethon.spellbook.utils.SpellbookFeedback;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.ItemLore;
 import io.papermc.paper.datacomponent.item.TooltipDisplay;
@@ -29,6 +33,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.event.Listener;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Material;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
@@ -55,12 +60,14 @@ public class CharacterCastingManager implements Listener {
     private boolean isInCastMode = false;
     private ItemStack castingItem;
     private ItemStack originalCastingItem; // Store the original weapon
+    private ItemStack combatOffhand;
     private int previousSlot;
     private boolean scaledLevelMode = false;
     private static final int LEVEL_FOR_SCALED_PVP = 18;
     private int scaledLevel = LEVEL_FOR_SCALED_PVP;
 
     private BukkitRunnable updateTask;
+    private int periodicUiTicks;
     private final Set<TraitData> combatOnlyTraits = new HashSet<>();
     private final SpellData[] slotSpells = new SpellData[8];
     private final SpellbookSpell[] cachedActiveSpells = new SpellbookSpell[8];
@@ -71,14 +78,11 @@ public class CharacterCastingManager implements Listener {
     private long castingItemNameSetTick = -1;
 
     // Global caches to prevent recreation on first entry
-    private static final Component HEALTH_ICON = Component.text("\u2665", NamedTextColor.RED);
-    private static final Component BETWEEN_SPACER = Component.text("     ");
     private static final Component DARK_GRAY_OPEN_BRACKET = Component.text("[", NamedTextColor.DARK_GRAY);
     private static final Component DARK_GRAY_CLOSE_BRACKET = Component.text("]", NamedTextColor.DARK_GRAY);
     private static final Component SPACE = Component.space();
     private static final Component EMPTY_COMPONENT = Component.empty();
     private static final Component RMB_TEXT = Component.text("RMB", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
-    private static final String DEFAULT_ENERGY_ICON = "\u26A1";
     private static final Key AIR_MODEL_KEY = Key.key("minecraft:air");
     private static final TooltipDisplay HIDDEN_TOOLTIP = TooltipDisplay.tooltipDisplay().hideTooltip(true).build();
 
@@ -112,6 +116,8 @@ public class CharacterCastingManager implements Listener {
             // Store the original and create a copy for cast mode
             this.originalCastingItem = castingItem;
             this.castingItem = castingItem != null ? castingItem.clone() : null;
+            ItemStack equippedOffhand = player.getInventory().getItemInOffHand();
+            this.combatOffhand = equippedOffhand == null ? null : equippedOffhand.clone();
             startCastMode();
             CombatModeEnterEvent event = new CombatModeEnterEvent(player, character, reason);
             Bukkit.getPluginManager().callEvent(event);
@@ -122,6 +128,7 @@ public class CharacterCastingManager implements Listener {
             // Clear references
             this.castingItem = null;
             this.originalCastingItem = null;
+            this.combatOffhand = null;
         }
     }
 
@@ -130,6 +137,51 @@ public class CharacterCastingManager implements Listener {
             return null;
         }
         return slotSpells[slot];
+    }
+
+    /** Update the active bar after a character level changes, without rebuilding the hotbar. */
+    public void refreshUnlockedSkills(int characterLevel) {
+        if (!isInCastMode || !Bukkit.isPrimaryThread()) return;
+        Traitline traitline = character.getTraitline();
+        if (traitline == null) return;
+        List<SpellData> defaults = traitline.defaultSpellSlots;
+        for (int i = 0; i < slotSpells.length; i++) {
+            SpellData equipped = slotSpells[i];
+            if (equipped != null && characterLevel < traitline.getSpellUnlockLevel(equipped)) {
+                slotSpells[i] = null;
+                cachedActiveSpells[i] = null;
+                player.getInventory().setItem(i, emptyStack());
+                equipped = null;
+            }
+            if (equipped != null || i >= defaults.size()) continue;
+            SpellData available = defaults.get(i);
+            if (available == null || characterLevel < traitline.getSpellUnlockLevel(available)) continue;
+            ItemStack item = getItemStackFromSpellData(i, available);
+            item.editPersistentDataContainer(pdc -> pdc.set(castingMarker, PersistentDataType.BYTE, (byte) 1));
+            player.getInventory().setItem(i, item);
+            slotSpells[i] = available;
+            cachedActiveSpells[i] = available.getActiveSpell(player);
+        }
+        updateSkillUI();
+    }
+
+    /** Rebuild the active combat bar after an admin changes class or discipline. */
+    public void refreshDiscipline() {
+        if (!isInCastMode || !Bukkit.isPrimaryThread()) return;
+        int savedPreviousSlot = previousSlot;
+        endActiveSpells();
+        if (updateTask != null) updateTask.cancel();
+        castingItem = originalCastingItem == null ? null : originalCastingItem.clone();
+        for (int i = 0; i < slotSpells.length; i++) {
+            slotSpells[i] = null;
+            cachedActiveSpells[i] = null;
+        }
+        cachedAttributes.clear();
+        try {
+            startCastMode();
+        } finally {
+            previousSlot = savedPreviousSlot;
+        }
     }
 
     public void updateCastingItemName(SpellData data) {
@@ -188,18 +240,35 @@ public class CharacterCastingManager implements Listener {
     }
 
     private void startCastMode() {
+        int level = character.getLevel();
+        character.ensureUnlockedTraitline(level);
+        character.getTraitline().refreshSpellbookReferences();
         updateTask = new BukkitRunnable() {
             @Override
             public void run() {
-                updateUI();
+                updateHud();
+                periodicUiTicks++;
+                if (periodicUiTicks >= 20) {
+                    periodicUiTicks = 0;
+                    updateUI();
+                }
             }
         };
-        updateTask.runTaskTimer(plugin, 0, 20);
-        int level = character.getLevel();
+        periodicUiTicks = 19; // Run the periodic UI update on the first tick as well.
+        updateTask.runTaskTimer(plugin, 0, 1);
         int movementSpeedLevel = level;
         if (scaledLevelMode) {
             level = scaledLevel;
         }
+        Hecate.log("Entering combat mode for " + character.getCharacterID()
+                + ": archetype=" + character.getClassId()
+                + ", discipline=" + character.getTraitline().getId()
+                + ", level=" + level
+                + ", configuredDefaultSpells=" + character.getTraitline().getStringList("defaultSpellSlots").size()
+                + ", defaultSpells=" + character.getTraitline().defaultSpellSlots.size()
+                + ", configuredInnateTraits=" + character.getTraitline().getStringList("innateTraits").size()
+                + ", innateTraits=" + character.getTraitline().getInnateTraits().size()
+                + ", configuredLevels=" + character.getTraitline().getLevelInfo().size());
         setAttributesForLevel(level, movementSpeedLevel);
         for (TraitData trait : combatOnlyTraits) {
             player.addTrait(trait);
@@ -216,6 +285,7 @@ public class CharacterCastingManager implements Listener {
     }
 
     private void stopCastMode() {
+        endActiveSpells();
         updateTask.cancel();
         for (TraitData trait : combatOnlyTraits) {
             player.removeTrait(trait);
@@ -298,37 +368,38 @@ public class CharacterCastingManager implements Listener {
             }
         }
 
-        // Always update HUD
-        int energy = player.getEnergy();
-        int maxEnergy = player.getMaxEnergy();
-        int health = (int) player.getHealth();
-        int maxHealth = (int) player.getMaxHealth();
+    }
 
-        Component healthNumbers = Component.text(health + "/" + maxHealth, NamedTextColor.RED);
-        Component healthText = HEALTH_ICON.append(SPACE).append(healthNumbers);
+    private void endActiveSpells() {
+        for (SpellbookSpell spell : List.copyOf(player.getActiveSpells())) {
+            try {
+                spell.interrupt();
+                spell.tick(); // Spellbook's interrupted tick invokes cleanup but does not remove the spell.
+            } catch (Exception e) {
+                Hecate.log("Failed to end active spell " + spell.getId() + " while changing combat state: "
+                        + e.getMessage());
+            } finally {
+                player.getActiveSpells().remove(spell);
+            }
+        }
+    }
 
+    public boolean isInCastMode() {
+        return isInCastMode;
+    }
+
+    private void updateHud() {
         Traitline traitline = character.getTraitline();
         if (traitline == null) {
             player.sendParsedActionBar("<red>Internal error: No traitline found.");
             return;
         }
-        TextColor energyColor = traitline.getEnergyColor();
-        String energyIconUnicode = traitline.getEnergySymbol();
-        if (energyIconUnicode == null || energyIconUnicode.isBlank()) {
-            energyIconUnicode = DEFAULT_ENERGY_ICON;
+        if (!SpellbookFeedback.isVisible(player)) {
+            player.sendActionBar(CombatHud.render(player, traitline));
         }
-        Component energyIcon = Component.text(energyIconUnicode, energyColor);
-        Component energyNumbers = Component.text(energy + "/" + maxEnergy, energyColor);
-        Component energyText = energyIcon.append(SPACE).append(energyNumbers);
 
         Component[] formatted = EffectDisplayFormatter.formatEffects(player.getEffects());
         updateBossbarUI(formatted[0], formatted[1]);
-
-        Component actionbar = healthText
-                .append(BETWEEN_SPACER)
-                .append(energyText);
-        actionbar = actionbar.shadowColor(ShadowColor.none());
-        player.sendActionBar(actionbar);
     }
 
     private void updateSkillUI() {
@@ -360,17 +431,27 @@ public class CharacterCastingManager implements Listener {
         for (int i = 0; i < 9; i++) {
             player.getInventory().setItem(i, null);
         }
-        // Clear the offhand in cast mode
-        player.getInventory().setItemInOffHand(null);
+        // Vanguard keeps ordinary shield timing even while its three skill slots are visible.
+        if ("WarriorVanguard".equals(character.getTraitline().getId())) {
+            player.getInventory().setItemInOffHand(combatOffhand != null
+                    && combatOffhand.getType() == Material.SHIELD
+                    ? combatOffhand.clone() : new ItemStack(Material.SHIELD));
+        } else {
+            player.getInventory().setItemInOffHand(null);
+        }
 
         // Add the weapon to its place
         previousSlot = player.getInventory().getHeldItemSlot();
         player.getInventory().setHeldItemSlot(8);
+        if (castingItem != null && "WarriorSwordstorm".equals(character.getTraitline().getId())) {
+            castingItem.setData(DataComponentTypes.BLOCKS_ATTACKS, Blocking.nativeSwordBlock());
+        }
         player.getInventory().setItem(8, castingItem);
         if (character.getTraitline() != null && character.getTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK) != null) {
             updateCastingItemLore(character.getTraitline().getSpecialAction(SpecialActionKey.RIGHT_CLICK));
         }
         List<SpellData> traitlineSpells = character.getTraitline().defaultSpellSlots;
+        int characterLevel = character.getLevel();
         // Populate the player's slots
         for (int i = 0; i < 8; i++) {
             if (i >= traitlineSpells.size()) {
@@ -381,6 +462,12 @@ public class CharacterCastingManager implements Listener {
                 continue;
             }
             SpellData spellData = traitlineSpells.get(i);
+            if (spellData != null && characterLevel < character.getTraitline().getSpellUnlockLevel(spellData)) {
+                player.getInventory().setItem(i, emptyStack());
+                slotSpells[i] = null;
+                cachedActiveSpells[i] = null;
+                continue;
+            }
             if (spellData == null) {
                 // Add an empty, invisible item so pickups don't go into the hotbar.
                 player.getInventory().setItem(i, emptyStack());
@@ -478,8 +565,11 @@ public class CharacterCastingManager implements Listener {
         }
 
         Map<Integer, LevelInfo> levelInfoMap = traitline.getLevelInfo();
+        HClass characterClass = hCharacter.getHClass();
+        Map<Attribute, HClass.AttributeCurve> attributeCurves = characterClass == null ? Map.of() : characterClass.getAttributeCurves();
 
-        if (levelInfoMap == null || levelInfoMap.isEmpty()) {
+        if (levelInfoMap.isEmpty() && attributeCurves.isEmpty()) {
+            applyMovementSpeed(movementSpeedLevel, null, null);
             return;
         }
 
@@ -489,8 +579,8 @@ public class CharacterCastingManager implements Listener {
         // First, reset all attributes to their default values to prevent stacking
         Attributable defaultAttributeInstance = player.getType().getDefaultAttributes();
         for (Attribute attribute : Registry.ATTRIBUTE) {
-            if (player.getAttribute(attribute) != null && defaultAttributeInstance.getAttribute(attribute) != null) {
-                double defaultBase = defaultAttributeInstance.getAttribute(attribute).getBaseValue();
+            if (!Attribute.MOVEMENT_SPEED.equals(attribute) && player.getAttribute(attribute) != null) {
+                double defaultBase = getPlayerDefaultBaseValue(defaultAttributeInstance, attribute);
                 player.getAttribute(attribute).setBaseValue(defaultBase);
             }
         }
@@ -504,7 +594,7 @@ public class CharacterCastingManager implements Listener {
             if (levelInfo != null && levelInfo.getBaseAttributeBonus() != null) {
                 for (Map.Entry<Attribute, Double> entry : levelInfo.getBaseAttributeBonus().entrySet()) {
                     Attribute attribute = entry.getKey();
-                    int effectiveLevel = attribute == Attribute.MOVEMENT_SPEED ? movementSpeedLevel : characterLevel;
+                    int effectiveLevel = Attribute.MOVEMENT_SPEED.equals(attribute) ? movementSpeedLevel : characterLevel;
                     if (level > effectiveLevel) {
                         continue;
                     }
@@ -514,21 +604,44 @@ public class CharacterCastingManager implements Listener {
             }
         }
 
-        // Apply the attribute bonuses from the current traitline
+        // A configured curve replaces the default base plus the discipline's level bonuses.
+        attributeCurves.keySet().forEach(attribute -> cumulativeAttributes.putIfAbsent(attribute, 0.0));
+        applyMovementSpeed(movementSpeedLevel, cumulativeAttributes.remove(Attribute.MOVEMENT_SPEED),
+                attributeCurves.get(Attribute.MOVEMENT_SPEED));
         for (Map.Entry<Attribute, Double> entry : cumulativeAttributes.entrySet()) {
             Attribute attribute = entry.getKey();
-            Double totalBonus = entry.getValue();
-
-            if (player.getAttribute(attribute) != null && defaultAttributeInstance.getAttribute(attribute) != null) {
-                double defaultBase = defaultAttributeInstance.getAttribute(attribute).getBaseValue();
-
-                double finalBaseValue = defaultBase + totalBonus;
+            if (player.getAttribute(attribute) != null) {
+                HClass.AttributeCurve curve = attributeCurves.get(attribute);
+                double finalBaseValue = curve == null
+                        ? getPlayerDefaultBaseValue(defaultAttributeInstance, attribute) + entry.getValue()
+                        : curve.valueAt(characterLevel);
                 player.getAttribute(attribute).setBaseValue(finalBaseValue);
+                if (attribute == Attribute.STAT_ENERGY) {
+                    int maxEnergy = Math.max(0, (int) Math.round(finalBaseValue));
+                    player.setMaxEnergy(maxEnergy);
+                    player.setEnergy(Math.clamp(player.getEnergy(), 0, maxEnergy));
+                }
             }
         }
         player.setHealthScaled(true);
         player.setHealthScale(20.0);
         player.setHealth(Math.min(player.getMaxHealth(), Math.max(0.0, player.getMaxHealth() * healthPercentage)));
+    }
+
+    private void applyMovementSpeed(int level, Double bonus, HClass.AttributeCurve curve) {
+        var movement = player.getAttribute(Attribute.MOVEMENT_SPEED);
+        if (movement != null) {
+            // Bukkit exposes double the player's walking-speed base. Leave sprint and effect modifiers intact.
+            double speedBonus = bonus == null ? 0.0 : bonus;
+            movement.setBaseValue(curve == null ? player.getWalkSpeed() / 2.0 + speedBonus : curve.valueAt(level));
+        }
+    }
+
+    private double getPlayerDefaultBaseValue(Attributable defaultAttributes, Attribute attribute) {
+        if (defaultAttributes.getAttribute(attribute) != null) {
+            return defaultAttributes.getAttribute(attribute).getBaseValue();
+        }
+        return player.getAttribute(attribute).getDefaultValue();
     }
 
     public void setScaledPvPMode(boolean scaledPvPMode) {
@@ -617,7 +730,7 @@ public class CharacterCastingManager implements Listener {
         if (component == null) {
             return;
         }
-        if (positive == Component.empty() && negative == Component.empty()) {
+        if (Component.empty().equals(positive) && Component.empty().equals(negative)) {
             component.setComponent(UIComponent.permanent(Component.empty()));
             return;
         }

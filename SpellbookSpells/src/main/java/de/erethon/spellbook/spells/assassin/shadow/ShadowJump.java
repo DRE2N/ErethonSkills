@@ -2,179 +2,101 @@ package de.erethon.spellbook.spells.assassin.shadow;
 
 import de.erethon.spellbook.Spellbook;
 import de.erethon.spellbook.api.SpellData;
-import de.erethon.spellbook.aoe.AoE;
-import de.erethon.spellbook.spells.assassin.AssassinBaseSpell;
-import net.kyori.adventure.text.Component;
+import de.erethon.spellbook.spells.vfx.SkillSignatureVfx;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Input;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
+/** Readable directional dash. Crossing a foe earns a brief defensive buffer. */
 public class ShadowJump extends ShadowBaseSpell implements Listener {
 
-    // Dash forward quickly, passing through enemies. If you pass through an enemy, you become invisible for a short duration.
-    // You can influence your dash direction slightly by moving left or right.
-
-    private final int durationTicks = data.getInt("durationTicks", 40);
-    private final double dashMultiplier = data.getDouble("dashMultiplier", 2.2);
-    private final double sideDashStrength = data.getDouble("sideDashStrength", 1.5);
-    private final int invisibilityDuration = data.getInt("invisibilityDuration", 6) * 20;
-
-    private boolean invisible = false;
-    private boolean hasPassedThroughEntity = false;
-    private AoE shadowTrail = null;
-    private Location startLocation = null;
+    private final int dashTicks = data.getInt("durationTicks", 15);
+    private final double dashSpeed = data.getDouble("dashMultiplier", 1.1);
+    private final double sideStrength = data.getDouble("sideDashStrength", 0.35);
+    private final int bufferTicks = data.getInt("bufferTicks", 20);
+    private final double baseBufferReduction = data.getDouble("baseBufferReduction", 0.1);
+    private final double resistanceCoefficient = data.getDouble("resistanceCoefficient", 0.0015);
+    private Location start;
+    private int bufferUntil;
 
     public ShadowJump(LivingEntity caster, SpellData spellData) {
         super(caster, spellData);
-        keepAliveTicks = durationTicks;
+        keepAliveTicks = dashTicks + bufferTicks;
         tickInterval = 1;
     }
 
     @Override
     public boolean onCast() {
-        startLocation = caster.getLocation().clone();
-        Location location = caster.getLocation();
-        location.setPitch(-10);
-        Vector direction = location.getDirection().normalize();
-        Vector inputOffset = new Vector();
-
+        if (!super.onCast()) return false;
+        start = caster.getLocation().clone();
+        double yaw = Math.toRadians(start.getYaw());
+        Vector forward = new Vector(-Math.sin(yaw), 0, Math.cos(yaw));
+        Vector side = new Vector(-forward.getZ(), 0, forward.getX());
+        Vector dash = forward.multiply(dashSpeed);
         if (caster instanceof Player player) {
             Input input = player.getCurrentInput();
-            Vector right = direction.clone().crossProduct(new Vector(0, 1, 0)).normalize();
-            if (input.isLeft()) {
-                inputOffset.add(right.clone().multiply(-sideDashStrength));
-            }
-            if (input.isRight()) {
-                inputOffset.add(right.clone().multiply(sideDashStrength));
-            }
+            if (input.isLeft()) dash.subtract(side.clone().multiply(sideStrength));
+            if (input.isRight()) dash.add(side.clone().multiply(sideStrength));
         }
-
-        Vector forwardDash = direction.multiply(dashMultiplier);
-        Vector dashVector = forwardDash.add(inputOffset);
-        caster.setVelocity(dashVector);
-
-        caster.getWorld().playSound(startLocation, Sound.ENTITY_PHANTOM_FLAP, SoundCategory.RECORDS, 0.8f, 1.5f);
-        caster.getWorld().playSound(startLocation, Sound.BLOCK_SOUL_SAND_BREAK, SoundCategory.RECORDS, 0.6f, 1.8f);
-
-        caster.getWorld().spawnParticle(Particle.DUST, startLocation.add(0, 1, 0), 20, 1, 1, 1, 0.1, new Particle.DustOptions(Color.BLACK, 1.5f));
-        caster.getWorld().spawnParticle(Particle.SMOKE, startLocation.add(0, 0.5, 0), 12, 0.8, 0.3, 0.8, 0.1);
-
-        shadowTrail = createCircularAoE(startLocation, 1.5, 0.5, 60)
-            .addBlockChange(Material.GRAY_CONCRETE_POWDER)
-            .sendBlockChanges();
-
-        triggerTraits(0);
+        if (dash.lengthSquared() > 1.5) dash.normalize().multiply(1.2);
+        dash.setY(caster.getVelocity().getY());
+        caster.setVelocity(dash);
+        caster.getWorld().playSound(start, Sound.ENTITY_PHANTOM_FLAP, 0.8f, 1.4f);
+        SkillSignatureVfx.accent(start.clone().add(0, 0.9, 0), getClass(),
+                "wake", 2.2f, 15, false);
         Bukkit.getPluginManager().registerEvents(this, Spellbook.getInstance().getImplementer());
-        return super.onCast();
+        triggerTraits(0);
+        return true;
     }
 
     @Override
     protected void onTick() {
-        if (invisible) {
-            caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation().add(0, 1, 0), 2, 0.3, 0.3, 0.3, 0, new Particle.DustOptions(Color.fromRGB(96, 96, 96), 0.6f));
-            return;
-        }
-
-        caster.getWorld().spawnParticle(Particle.WHITE_ASH, caster.getLocation().add(0, 0.8, 0), 2, 0.2, 0.2, 0.2, 0.02);
-        caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation(), 1, 0.1, 0.1, 0.1, 0, new Particle.DustOptions(Color.fromRGB(64, 64, 64), 0.8f));
-
-        for (LivingEntity entity : caster.getLocation().getNearbyLivingEntities(2.5)) {
-            if (entity == caster || !Spellbook.canAttack(caster, entity)) {
-                continue;
-            }
-            if (entity.getBoundingBox().overlaps(caster.getBoundingBox()) ||
-                caster.getLocation().distance(entity.getLocation()) < 1.5) {
-
-                activateInvisibility();
-                hasPassedThroughEntity = true;
+        super.onTick();
+        if (currentTicks > dashTicks) return;
+        if (currentTicks % 3 == 0) SkillSignatureVfx.accent(
+                caster.getLocation().add(0, 0.7, 0), getClass(), "wake", 1.3f, 10, false);
+        if (bufferUntil > 0 || caster.getLocation().distanceSquared(start) < 2.25) return;
+        for (LivingEntity entity : caster.getLocation().getNearbyLivingEntities(1.5)) {
+            if (entity != caster && Spellbook.canAttack(caster, entity)
+                    && caster.getBoundingBox().overlaps(entity.getBoundingBox())) {
+                bufferUntil = currentTicks + bufferTicks;
+                caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_CHIME,
+                        0.65f, 1.25f);
+                SkillSignatureVfx.accent(caster.getLocation().add(0, 1, 0), getClass(),
+                        "main", 2.0f, 14, false);
+                triggerTraits(1);
                 break;
             }
         }
     }
 
-    private void activateInvisibility() {
-        if (invisible) return;
-
-        invisible = true;
-        caster.setInvisible(true);
-        keepAliveTicks = Math.max(keepAliveTicks, invisibilityDuration);
-
-        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_PHANTOM_DEATH, SoundCategory.RECORDS, 0.5f, 1.8f);
-        caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation().add(0, 1, 0), 15, 0.8, 0.8, 0.8, 0.1, new Particle.DustOptions(Color.BLACK, 1.2f));
-        caster.getWorld().spawnParticle(Particle.SMOKE, caster.getLocation().add(0, 1, 0), 10, 0.5, 0.5, 0.5, 0.1);
-
-        if (hasPassedThroughEntity) {
-            triggerTraits(1);
-        }
-        // Clear mob targets
-        for (LivingEntity entity : caster.getLocation().getNearbyLivingEntities(16)) {
-            if (Spellbook.canAttack(caster, entity) && entity != caster && entity instanceof Mob mob) {
-                if (mob.getTarget() == caster) {
-                    mob.setTarget(null);
-                }
-            }
-        }
-        for (Player player : caster.getTrackedBy()) {
-            player.sendEquipmentChange(caster, EquipmentSlot.HAND, null);
-            player.sendEquipmentChange(caster, EquipmentSlot.OFF_HAND, null);
-            player.sendEquipmentChange(caster, EquipmentSlot.HEAD, null);
-            player.sendEquipmentChange(caster, EquipmentSlot.CHEST, null);
-            player.sendEquipmentChange(caster, EquipmentSlot.LEGS, null);
-            player.sendEquipmentChange(caster, EquipmentSlot.FEET, null);
-        }
-    }
-
-
-    @EventHandler
-    private void onTarget(EntityTargetEvent event) {
-        if (event.getTarget() == null || event.getTarget() != caster) {
-            return;
-        }
-        if (!caster.getTags().contains("shadow_cloak")) {
-            return;
-        }
-        if (event.getReason() == EntityTargetEvent.TargetReason.TARGET_INVALID || event.getReason() == EntityTargetEvent.TargetReason.FORGOT_TARGET) {
-            return;
-        }
-        event.setCancelled(true);
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onDamage(EntityDamageEvent event) {
+        if (event.getEntity() != caster || currentTicks >= bufferUntil || bufferUntil <= 0) return;
+        double physical = caster.getAttribute(Attribute.RESISTANCE_PHYSICAL) == null ? 0
+                : caster.getAttribute(Attribute.RESISTANCE_PHYSICAL).getValue();
+        double magical = caster.getAttribute(Attribute.RESISTANCE_MAGICAL) == null ? 0
+                : caster.getAttribute(Attribute.RESISTANCE_MAGICAL).getValue();
+        double reduction = Math.min(0.25, baseBufferReduction
+                + Math.max(0, Math.max(physical, magical)) * resistanceCoefficient);
+        event.setDamage(event.getDamage() * (1.0 - reduction));
     }
 
     @Override
-    protected void onTickFinish() {
-        caster.setInvisible(false);
-        if (shadowTrail != null) {
-            shadowTrail.revertBlockChanges();
-        }
-
-        if (invisible) {
-            caster.getWorld().spawnParticle(Particle.DUST, caster.getLocation().add(0, 1, 0), 12, 0.6, 0.6, 0.6, 0.1, new Particle.DustOptions(Color.fromRGB(128, 128, 128), 1.0f));
-            caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, SoundCategory.RECORDS, 0.4f, 2.0f);
-            // Restore equipment visibility
-            for (Player player : caster.getTrackedBy()) {
-                for (EquipmentSlot slot : EquipmentSlot.values()) {
-                    if (caster.getEquipment() != null) {
-                        caster.getEquipment().getItem(slot);
-                        if (caster.getEquipment().getItem(slot).getType() != Material.AIR) {
-                            player.sendEquipmentChange(caster, slot, caster.getEquipment().getItem(slot));
-                        }
-                    }
-                }
-            }
-        }
+    protected void cleanup() {
+        HandlerList.unregisterAll(this);
+        super.cleanup();
     }
-
 }
